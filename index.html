@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Great Art Race — web prototype</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ============================ TITLE SCREEN ========================== -->
+  <!-- Left visible on purpose: if a script fails to load the player still
+       sees something instead of a blank page. boot() re-shows it anyway. -->
+  <section id="screen-title">
+    <header class="title-bar">
+      <span class="title-bar-brand">The Great Art Race</span>
+      <span class="title-bar-meta" id="title-stats"></span>
+    </header>
+    <div class="title-canvas" id="title-canvas">
+      <div class="title-placard">
+        <h1 class="title-frame"><span class="the">The</span><span class="race">Great Art Race</span></h1>
+        <p class="title-tag">Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.</p>
+        <p class="title-foot">Prototype build · every number is exported from the Unity project</p>
+      </div>
+    </div>
+    <footer class="title-actions">
+      <button class="btn big primary" type="button" id="new-game">New Game</button>
+      <button class="btn big" type="button" id="show-help">How to Play</button>
+      <button class="btn big" type="button" id="show-data">Data Source</button>
+    </footer>
+  </section>
+
+  <!-- ============================== GAME =============================== -->
+  <section id="screen-game" hidden>
+
+    <header id="hud">
+      <div class="hud-brand">
+        <strong>The Great Art Race</strong>
+        <span class="hud-name" id="player-name">Henry</span>
+      </div>
+      <div class="hud-stead">
+        <span id="hud-city">Gallery in Amsterdam</span>
+        <span id="hud-sub">Netherlands · Europe</span>
+      </div>
+      <div id="hud-balance">
+        <span class="hud-chip" id="hud-cash">Cash $12,000</span>
+        <span class="hud-chip" id="hud-rep">Reputation 25</span>
+        <span class="hud-chip" id="hud-goal">Goal $400,000</span>
+      </div>
+    </header>
+
+    <div id="main">
+      <nav id="stations">
+        <button class="station" type="button" data-view="travel"><span class="st-ico">&#128646;</span>Travel</button>
+        <button class="station" type="button" data-view="dealer"><span class="st-ico">&#128444;</span>Dealer</button>
+        <button class="station" type="button" data-view="portfolio"><span class="st-ico">&#128230;</span>Portfolio</button>
+        <button class="station" type="button" data-view="auction"><span class="st-ico">&#128296;</span>Auction</button>
+        <button class="station" type="button" data-view="bank"><span class="st-ico">&#127974;</span>Bank</button>
+        <button class="station" type="button" data-view="studio"><span class="st-ico">&#127912;</span>Studio</button>
+        <button class="station" type="button" data-view="trade"><span class="st-ico">&#128176;</span>Trade</button>
+      </nav>
+
+      <div id="stage">
+        <div class="stage-frame">
+          <div id="backdrop"></div>
+          <p id="backdrop-caption">Berlin</p>
+        </div>
+        <div id="panel-wrap">
+          <div class="panel">
+            <div id="panel"></div>
+            <div class="panel-foot" id="panel-hint"></div>
+          </div>
+        </div>
+      </div>
+
+      <aside id="market-col">
+        <div class="card">
+          <h2>Market indices</h2>
+          <table id="market-table"></table>
+        </div>
+        <div class="card">
+          <h2>News</h2>
+          <ul id="news-list"></ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer id="dock">
+      <div id="calendar">
+        <div id="cal-date">
+          <span id="cal-day">1</span>
+          <span class="cal-sep">·</span>
+          <span id="cal-month">January</span>
+          <span id="cal-year">1925</span>
+        </div>
+        <div id="cal-timer"><i></i></div>
+        <label class="cal-auto"><input type="checkbox" id="cal-auto" /> auto</label>
+      </div>
+      <button class="btn go" type="button" id="end-day" data-action="next-day">End day</button>
+      <div id="ticker"><span id="ticker-text"></span></div>
+    </footer>
+  </section>
+
+</div>
+
+<!-- ============================ OVERLAY ================================ -->
+<div id="overlay" hidden>
+  <div class="dialog">
+    <div class="dialog-head">
+      <h2 id="dialog-title">Title</h2>
+      <button class="dialog-close" type="button" data-action="close-dialog" aria-label="Close">×</button>
+    </div>
+    <div class="dialog-body" id="dialog-body"></div>
+    <div class="dialog-actions" id="dialog-actions"></div>
+  </div>
+</div>
+
+<!-- ============================ COLONY SCREEN ============================ -->
+<div id="colony" hidden>
+  <div class="colony-screen">
+    <header class="colony-bar">
+      <div class="colony-bar-brand">
+        <strong id="colony-title">Colony</strong>
+        <span id="colony-sub">Colonial plantation</span>
+      </div>
+      <div class="colony-bar-stats">
+        <span class="colony-chip" id="colony-cash">Cash $0</span>
+        <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
+      </div>
+      <div class="colony-bar-actions">
+        <button class="btn go" type="button" data-colony="endday">End day</button>
+        <button class="btn primary" type="button" data-colony="back">Sail back</button>
+      </div>
+    </header>
+    <nav class="colony-menu">
+      <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage">Plantage</button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel">Handel</button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager">Lager</button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter">Arbeiter</button>
+    </nav>
+    <div class="colony-content" id="colony-content">
+      <!-- PLANTAGE view -->
+      <div class="colony-view colony-view--plantage" id="colony-view-plantage">
+        <div class="colony-layout">
+          <aside class="colony-side">
+            <div class="colony-panel" id="colony-palette"></div>
+            <div class="colony-panel" id="colony-workers"></div>
+          </aside>
+          <main class="colony-main">
+            <div class="colony-grid" id="colony-grid"></div>
+            <p class="colony-hint" id="colony-hint"></p>
+          </main>
+          <aside class="colony-side">
+            <div class="colony-panel" id="colony-inspector"></div>
+          </aside>
+        </div>
+      </div>
+      <!-- HANDEL view -->
+      <div class="colony-view colony-view--handel" id="colony-view-handel" hidden>
+        <div class="colony-simple-panel">
+          <h2>Handel</h2>
+          <p class="colony-note">Trade goods will be handled at the London or New York trade desk. Use the "Sail back" button to return with your harvest.</p>
+        </div>
+      </div>
+      <!-- LAGER view -->
+      <div class="colony-view colony-view--lager" id="colony-view-lager" hidden>
+        <div class="colony-simple-panel">
+          <h2>Lager</h2>
+          <div id="colony-lager-content"></div>
+        </div>
+      </div>
+      <!-- ARBEITER view -->
+      <div class="colony-view colony-view--arbeiter" id="colony-view-arbeiter" hidden>
+        <div class="colony-simple-panel">
+          <h2>Arbeiter</h2>
+          <div id="colony-arbeiter-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="images.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

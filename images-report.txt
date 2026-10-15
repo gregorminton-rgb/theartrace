@@ -1,0 +1,48 @@
+images written : 38 -> images/
+  city      :  29 files  <- D:\Projekte\Ren\ArtRace3Artwork\new
+  scene     :   9 files  <- D:\Projekte\Ren\ArtRace3Artwork\hdArtwork
+total size     : 15,3 MB (masters were 133,7 MB, saved 89%)
+matched to ids : amsterdam (city), berlin (city), london (city), newyork (city), paris (city)
+not in data.js : aktion, australien, brasilien, gemini-generated-image-jizxzkjizxzkjizx-1, hafen, hafen2, hd-01-city-square-1918, hd-02-colonial-town, hd-03-harbour-city, hd-04-plantation-savanna, hd-05-plantation-jungle, hd-06-hotel-room, hd-07-warehouse-interior, hd-08-world-map, hd-09-studio-easel-painting, hotel1, indien, indien2, indonesien, kaffee, kakao, kolonie1, lissabon, plantage1, plantage2, rio, sanfrancisco, stoffe, tabak, tee, unbekannt, unbekannt2, weltkarte
+
+cities with a picture    (5/13) : amsterdam, berlin, london, newyork, paris
+cities without a picture (8/13) : firenze, madrid, muenchen, prag, roma, tokio, wien, zuerich
+
+aktion                                     2752x1536  3.429KB -> 1600x893     322KB  city   -
+amsterdam                                  2400x1792  3.666KB -> 1600x1195    483KB  city   id-match: city
+australien                                 2400x1792  3.472KB -> 1600x1195    434KB  city   -
+berlin                                     2350x1792  3.296KB -> 1600x1220    369KB  city   id-match: city
+brasilien                                  2386x1792  3.548KB -> 1600x1202    435KB  city   -
+gemini-generated-image-jizxzkjizxzkjizx-1  2400x1792  3.732KB -> 1600x1195    456KB  city   -
+hafen                                      2400x1792  2.463KB -> 1600x1195    208KB  city   -
+hafen2                                     2752x1536  3.387KB -> 1600x893     331KB  city   -
+hotel1                                     2752x1536  3.051KB -> 1600x893     248KB  city   -
+indien                                     2400x1792  3.638KB -> 1600x1195    456KB  city   -
+indien2                                    2400x1792  3.636KB -> 1600x1195    480KB  city   -
+indonesien                                 1200x896   1.029KB -> 1200x896     323KB  city   -
+kaffee                                     2400x1792  3.925KB -> 1600x1195    500KB  city   -
+kakao                                      2400x1792  3.869KB -> 1600x1195    482KB  city   -
+kolonie1                                   2752x1536  3.650KB -> 1600x893     349KB  city   -
+lissabon                                   2400x1792  3.598KB -> 1600x1195    465KB  city   -
+london                                     2400x1792  3.732KB -> 1600x1195    456KB  city   id-match: city
+newyork                                    2400x1792  3.707KB -> 1600x1195    487KB  city   id-match: city
+paris                                      2400x1792  3.469KB -> 1600x1195    424KB  city   id-match: city
+plantage1                                  2752x1536  4.365KB -> 1600x893     379KB  city   -
+plantage2                                  2400x1792  5.577KB -> 1600x1195    696KB  city   -
+rio                                        2400x1792  3.731KB -> 1600x1195    498KB  city   -
+sanfrancisco                               2400x1792  3.486KB -> 1600x1195    440KB  city   -
+stoffe                                     2400x1792  3.699KB -> 1600x1195    476KB  city   -
+tabak                                      2400x1792  3.805KB -> 1600x1195    474KB  city   -
+tee                                        2400x1792  3.822KB -> 1600x1195    464KB  city   -
+unbekannt                                  2400x1792  3.503KB -> 1600x1195    461KB  city   -
+unbekannt2                                 2400x1792  3.693KB -> 1600x1195    469KB  city   -
+weltkarte                                  2400x1792  4.036KB -> 1600x1195    420KB  city   -
+hd-01-city-square-1918                     1920x1465  4.551KB -> 1600x1221    443KB  scene  -
+hd-02-colonial-town                        1920x1443  3.739KB -> 1600x1202    376KB  scene  -
+hd-03-harbour-city                         1920x1443  4.123KB -> 1600x1202    442KB  scene  -
+hd-04-plantation-savanna                   2032x1036  4.503KB -> 1600x816     474KB  scene  -
+hd-05-plantation-jungle                    2032x1036  4.634KB -> 1600x816     486KB  scene  -
+hd-06-hotel-room                           2032x1036  2.954KB -> 1600x816     243KB  scene  -
+hd-07-warehouse-interior                   2032x1036  2.439KB -> 1600x816     168KB  scene  -
+hd-08-world-map                            2032x976   2.490KB -> 1600x769     219KB  scene  -
+hd-09-studio-easel-painting                1871x1920  3.496KB -> 1600x1642    283KB  scene  -

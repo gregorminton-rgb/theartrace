@@ -1,0 +1,40 @@
+﻿el() references       : 48
+ids in index.html     : 59
+ids created in app.js : 5
+css #ids (not colours): 29
+MISSING IDS (el() with no element anywhere):
+  (none)
+STALE CSS (styled but no element in index.html):
+  (none)
+UNSTYLED (element with no css rule - informational):
+  cal-auto
+  colony-arbeiter-content
+  colony-cash
+  colony-content
+  colony-grid
+  colony-hint
+  colony-inspector
+  colony-lager-content
+  colony-palette
+  colony-sub
+  colony-title
+  colony-view-arbeiter
+  colony-view-handel
+  colony-view-lager
+  colony-view-plantage
+  colony-warehouse
+  colony-workers
+  dialog-actions
+  dialog-body
+  dialog-title
+  hud-cash
+  hud-rep
+  market-table
+  new-game
+  panel-hint
+  player-name
+  show-data
+  show-help
+  title-canvas
+  title-stats
+RESULT: OK

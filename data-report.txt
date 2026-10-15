@@ -1,0 +1,4 @@
+artists=20 cities=13 works=60 events=12
+artistGuidsMapped=20 worksWithoutArtist=0
+unresolved: 
+economyKeys=55

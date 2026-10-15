@@ -1,0 +1,15 @@
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# WSH / PowerShell scratch reports written by the tools
+_cfgcheck.txt
+_enginecheck.txt
+_syntax*.txt
+*.log
+
+# Static server cache
+__pycache__/
