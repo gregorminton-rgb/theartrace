@@ -1,0 +1,12 @@
+Add last 7 artwork plates and their descriptions
+
+Registered the final seven works delivered in ArtRace3Artwork\Bilder
+(Velazquez cooking eggs / man in black, Vermeer love letter / music
+lesson, Watteau Cythera / fete champetre / harlequin). Manifest and
+images are now 1:1 at 75 plates.
+
+Wrote the missing art-historical notes for all seven, and added the
+absent Watteau entry to the artist notes so the large view has a
+school line for him.
+
+Co-authored-by: Copilot App <223556219+Copilot@users.noreply.github.com>

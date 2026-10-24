@@ -1,5 +1,5 @@
-artwork images : 68/75 works in images/art/
-total size     : 8,6 MB (masters were 226,5 MB)
+artwork images : 75/75 works in images/art/
+total size     : 9,4 MB (masters were 242,1 MB)
 not mapped     : 
 scene plates   : 6
 images/scenes/auktion1.jpg   <- Auktion1.jpg
@@ -8,7 +8,7 @@ images/scenes/auktion3.jpg   <- Auktion3.jpg
 images/scenes/auktion4.jpg   <- Auktion4.jpg
 images/scenes/auktion5.jpg   <- Auktion5.jpg
 images/scenes/gemini-generated-image-d71uabd71uabd71u.jpg <- Gemini_Generated_Image_d71uabd71uabd71u.jpg
-works w/o image: velazquez_cooking_eggs, velazquez_man_in_black, vermeer_love_letter, vermeer_music_lesson_study, watteau_cythera_reduction, watteau_fete_champetre, watteau_harlequin_study
+works w/o image: 
 
 durer_praying_hands            alias    <- Albrecht Dürer – Betende Hände (ca. 1508).jpg
 durer_young_hare_after         alias    <- Albrecht Dürer – Feldhase (ca. 1502).jpg
@@ -22,6 +22,8 @@ lorrain_queen_of_sheba         alias    <- Claude Lorrain – Die Einschiffung d
 monet_haystack                 alias    <- Claude Monet – Heuhaufen (Heuschober, ca. 1891).jpg
 monet_impression_variant       quote    <- Claude Monet – Impression, Sonnenaufgang (1872).jpg
 monet_water_lilies             alias    <- Claude Monet – Seerosen (ca. 1916).jpg
+velazquez_man_in_black         alias    <- Diego Velázquez – Bildnis eines Mannes (ca. 1630).jpg
+velazquez_cooking_eggs         alias    <- Diego Velázquez – Die Eierköchin (1618).jpg
 velazquez_meninas_bozzetto     alias    <- Diego Velázquez – Las Meninas (1656).jpg
 degas_at_the_races             alias    <- Edgar Degas – Auf der Rennbahn (ca. 1876).jpg
 degas_the_star                 alias    <- Edgar Degas – Die Tanzklasse (1874).jpg
@@ -46,9 +48,14 @@ klimt_tree_of_life             alias    <- Gustav Klimt – Lebensbaum (ca. 1905
 toulouse_moulin_rouge          alias    <- Henri de Toulouse-Lautrec – Im Moulin Rouge (1892).jpg
 matisse_the_dance              alias    <- Henri Matisse – Der Tanz (1910).jpg
 vermeer_pearl_earring_copy     alias    <- Jan Vermeer – Das Mädchen mit dem Perlenohrring.jpg
+watteau_harlequin_study        alias    <- Jean-Antoine Watteau – Der Harlekin (ca. 1718).jpg
+watteau_cythera_reduction      alias    <- Jean-Antoine Watteau – Einschiffung nach Kythera (ca. 1717).jpg
+watteau_fete_champetre         alias    <- Jean-Antoine Watteau – Fête champêtre (ca. 1718–1721).jpg
 fragonard_young_girl_reading   alias    <- Jean-Honoré Fragonard – Die Lesende (ca. 1769).jpg
 fragonard_the_swing_engraved   alias    <- Jean-Honoré Fragonard – Die Schaukel (Kupferstich, 1767).jpg
 fragonard_gentleman_portrait   alias    <- Jean-Honoré Fragonard – Gentleman-Portrait (ca. 1769).jpg
+vermeer_love_letter            alias    <- Johannes Vermeer – Der Liebesbrief (ca. 1669–1670).jpg
+vermeer_music_lesson_study     alias    <- Johannes Vermeer – Die Musikstunde (ca. 1662–1665).jpg
 hokusai_great_wave             alias    <- Katsushika Hokusai – Die große Welle vor Kanagawa (ca. 1831).jpg
 hokusai_red_fuji               alias    <- Katsushika Hokusai – Roter Fuji (ca. 1831).jpg
 hokusai_sketchbook             alias    <- Katsushika Hokusai – Skizzenbuch (ca. 1814).jpg

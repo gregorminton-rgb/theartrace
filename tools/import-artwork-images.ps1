@@ -194,6 +194,15 @@ $titleAliasesRaw = @{
     'Venedig von der Lagune aus'          = 'turner_venice_laguna'
     'Schwertlilien'                       = 'van_gogh_irises'
     'Sonnenblumen'                        = 'van_gogh_sunflowers'
+
+    # Delivery of 24.10.2026 (final): the last works without a plate
+    'Die Eierkochin'                      = 'velazquez_cooking_eggs'
+    'Bildnis eines Mannes'                = 'velazquez_man_in_black'
+    'Der Liebesbrief'                     = 'vermeer_love_letter'
+    'Die Musikstunde'                     = 'vermeer_music_lesson_study'
+    'Einschiffung nach Kythera'           = 'watteau_cythera_reduction'
+    'Fete champetre'                      = 'watteau_fete_champetre'
+    'Der Harlekin'                        = 'watteau_harlequin_study'
 }
 
 # A few plates carry no "artist - title" separator at all, so Get-TitleParts

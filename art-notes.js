@@ -210,6 +210,57 @@
       dimensions: '81 x 99 cm',
       story: 'Two figures locked in a kiss, their faces merged into a single form.',
       note: 'Nothing separates the two faces in the painted surface — the pair literally become one colour field, one of the most direct expressions of Munch\'s idea of love as dissolution of the self.'
+    },
+
+    /* ---------------- Seville, Delft and the Rococo ---------------- */
+    velazquez_cooking_eggs: {
+      museum: 'Scottish National Gallery, Edinburgh',
+      medium: 'Oil on canvas',
+      dimensions: '100.5 x 119.5 cm',
+      story: 'Painted in Seville around 1618, before Velázquez moved to Madrid for good in 1623: an old woman fries or poaches eggs while a boy holds a melon and a flask. The scene is a kitchen, not a history.',
+      note: 'Velázquez built the picture from the people around him — the old woman reappears in his "Christ in the House of Martha and Mary" of the same year. Whether she is frying or poaching has been argued for centuries, which is why the title shifts between "Frying" and "Cooking Eggs". The copper pot, the eggs and the clay jug are painted with a still-life care that Spanish collectors of the period prized above narrative.'
+    },
+    velazquez_man_in_black: {
+      museum: 'Museo del Prado, Madrid (attributed)',
+      medium: 'Oil on canvas',
+      dimensions: 'approx. 115 x 85 cm',
+      story: 'A half-length portrait of a gentleman in a black doublet and white collar, dated to Velázquez\'s Madrid years around 1640, at the height of his work as court painter to Philip IV.',
+      note: 'Velázquez painted black as no one before him: the costume is built from a dozen near-blacks that separate satin, wool and shadow, so that the whole body reads without a single contour line. The face is lit from one side and left almost unmodelled, which is what gives his court portraits their stillness. Many pictures of this type were once labelled "Portrait of a Man" because the sitter\'s name had been lost.'
+    },
+    vermeer_love_letter: {
+      museum: 'Rijksmuseum, Amsterdam',
+      medium: 'Oil on canvas',
+      dimensions: '44 x 38.5 cm',
+      story: 'A maid hands a letter to her seated mistress, who has just been playing a cittern. In the foreground hangs a heavy tied-back curtain, as if the viewer had stepped into a private room.',
+      note: 'The curtain is painted trompe-l\'oeil — Dutch collectors really did hang little curtains over their pictures to keep the light off, and Vermeer painted the curtain into the scene itself. The cittern in the woman\'s lap identifies the letter as a love letter without a word of text. The diagonal of the checkered floor pulls the eye back to the figures, and the door in the background lets a second light into the room.'
+    },
+    vermeer_music_lesson_study: {
+      museum: 'Royal Collection, Picture Gallery, Buckingham Palace, London (original)',
+      medium: 'Oil on canvas (original); drawn copy in this catalogue',
+      dimensions: '74.6 x 64.1 cm (original)',
+      story: 'A young woman seated at a virginal while a man stands behind her, his mouth slightly open as though he were singing or counting the beat. Painted around 1662-1665.',
+      note: 'Music was the standard Dutch metaphor for harmony between lovers, and the man\'s half-open mouth is usually read as a courtship gesture. Vermeer repeats his signature objects here — the draped rug over the table, the black-and-white tiled floor, the window with its light falling from the left. The painting stayed in his household until his death in 1675, when his family had to sell it; after passing through the collection of the Venetian painter Pellegrini it entered the English Royal Collection.'
+    },
+    watteau_cythera_reduction: {
+      museum: 'Louvre, Paris (original of 1717); Schloss Charlottenburg, Berlin (second version)',
+      medium: 'Oil on canvas',
+      dimensions: '129 x 194 cm (Louvre original)',
+      story: 'Couples in silk and satin drift down a slope towards a gilded boat that will carry them to Cythera, the island of Venus. Watteau submitted the picture to the Académie in 1717 as his reception piece.',
+      note: 'The Académie had no category for a picture like this, so they invented one for him: "fête galante". The title says pilgrimage, but the figures seem to be leaving the island, not arriving — the ambiguity has been read as a quiet melancholy beneath the celebration. A later, more elaborate version of about 1718-1719 hangs at Charlottenburg in Berlin; an earlier, simpler treatment of c. 1709-1710 is in Frankfurt. Watteau died at 36, seven years after painting the Louvre picture.'
+    },
+    watteau_fete_champetre: {
+      museum: 'Musée du Louvre, Paris (a related version is in the Hermitage, St Petersburg)',
+      medium: 'Oil on canvas',
+      dimensions: 'approx. 125 x 188 cm',
+      story: 'A country party beneath tall trees: musicians, a dog, and groups of elegantly dressed figures in conversation, painted around 1718-1721.',
+      note: 'The "fête champêtre" is the older, pastoral form of Watteau\'s "fête galante" — the same open-air sociability, but in the country rather than on a mythic island. Watteau painted no finished outline first: the surface is built from light, thin touches laid side by side, which is why his landscapes seem to dissolve at the edges. The figures often look as if they have just stopped speaking.'
+    },
+    watteau_harlequin_study: {
+      museum: 'Musée du Louvre, Paris (related sheets in the British Museum)',
+      medium: 'Red chalk on paper',
+      dimensions: 'approx. 20 x 16 cm',
+      story: 'A figure study of Harlequin, the masked servant of the Italian commedia dell\'arte, drawn around 1716 — the years in which Watteau made the theatre his main subject.',
+      note: 'Watteau drew constantly from life and kept the sheets in bound volumes; the "Recueil Julienne" of about 500 drawings became the most famous of these albums. Harlequin and Pierrot figure in his paintings again and again, but he never painted them as clowns: their faces are painted from behind or in profile, which lets the costume carry the emotion. Red sanguine chalk is the medium of most of his surviving studies.'
     }
   };
 
@@ -227,6 +278,7 @@
     rembrandt: 'Leiden and Amsterdam; the Dutch Golden Age\'s portrait-lighting master.',
     vermeer: 'Delft; only around 35 attributions survive.',
     velazquez: 'Seville and Madrid; court painter to Philip IV.',
+    watteau: 'Valenciennes and Paris; invented the "fête galante" for the Académie in 1717, dead at 36.',
     lorrain: 'Lorraine-born, worked in Rome: the classical ideal landscape.',
     friedrich: 'Dresden; the painter of fog, ruins and back-turned figures.',
     goya: 'Zaragoza and Madrid; court painter and witness of the Napoleonic wars.',
