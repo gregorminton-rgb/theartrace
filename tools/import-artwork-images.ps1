@@ -151,12 +151,46 @@ $titleAliasesRaw = @{
     'Judith und Holofernes'               = 'caravaggio_judith'
     'Les Demoiselles dAvignon'            = 'picasso_demoiselles'
     'Improvisation 26'                    = 'kandinsky_improvisation_26'
+
+    # Delivery of 24.10.2026
+    'Primavera-Detail'                    = 'botticelli_primavera_detail'
+    'Apfel und Orangen'                   = 'cezanne_apples_oranges'
+    'Mont Sainte-Victoire'                = 'cezanne_sainte_victoire'
+    'Betende Hande'                       = 'durer_praying_hands'
+    'Melencolia I'                        = 'durer_melencolia'
+    'Kleine vierzehnjahrige Tanzerin'     = 'degas_little_dancer'
+    'Auf der Rennbahn'                    = 'degas_at_the_races'
+    'Der gelbe Christus'                  = 'gauguin_yellow_christ'
+    'Bretonisches Dorf im Schnee'         = 'gauguin_breton_sketch'
+    'Die Schaukel'                        = 'fragonard_the_swing_engraved'
+    'Gentleman-Portrait'                  = 'fragonard_gentleman_portrait'
+    'Die Lesende'                         = 'fragonard_young_girl_reading'
+    'La Maja'                             = 'goya_maja_study'
+    'Der Schlaf der Vernunft gebiert Ungeheuer' = 'goya_sleep_of_reason'
+    'Die grosse Welle vor Kanagawa'       = 'hokusai_great_wave'
+    'Roter Fuji'                          = 'hokusai_red_fuji'
+    'Skizzenbuch'                         = 'hokusai_sketchbook'
+    'Adele'                               = 'klimt_adele_study'
+    'Lebensbaum'                          = 'klimt_tree_of_life'
+    'Bar in den Folies-Bergere'           = 'manet_folies_bergere'
+    'Olympia'                             = 'manet_olympia_study'
+    'Heuhaufen'                           = 'monet_haystack'
+}
+
+# A few plates carry no "artist - title" separator at all, so Get-TitleParts
+# cannot split them. They are matched by a distinctive fragment of their file
+# name instead (normalised with Get-Key on both sides).
+$nameHintsRaw = @{
+    'Illustration zu Dantes Gottlicher Komodie' = 'botticelli_dante_comedy'
 }
 
 # Normalised once: a hashtable literal keyed with spaces does not answer
 # ContainsKey('dienachtwache'), it answers ContainsKey('die nachtwache').
 $titleAliases = @{}
 foreach ($k in $titleAliasesRaw.Keys) { $titleAliases[(Get-Key $k)] = $titleAliasesRaw[$k] }
+
+$nameHints = @{}
+foreach ($k in $nameHintsRaw.Keys) { $nameHints[(Get-Key $k)] = $nameHintsRaw[$k] }
 
 function Get-Artist([string]$name) {
     $key = Get-Key $name
@@ -201,6 +235,19 @@ function Get-TitleParts([string]$baseName) {
         Title  = ($parts[1].Trim() -replace '\s*\([^)]*\)', '').Trim()
         Year   = $year
     }
+}
+
+function Get-NameHint([string]$baseName) {
+    # Plates that name their work without the "artist - title" separator
+    # ("Sandro Botticellis „Illustration zu Dantes ...“"). The trailing year
+    # may sit inside the quotes, so drop parentheses plus surrounding quotes.
+    $bare = [regex]::Replace($baseName, '[\s\u201c\u201d"]*\([^)]*\)[\s\u201c\u201d"]*$', '')
+    $key = Get-Key $bare
+    if (-not $key) { return $null }
+    foreach ($frag in $nameHints.Keys) {
+        if ($key.Contains($frag)) { return $nameHints[$frag] }
+    }
+    return $null
 }
 
 function Get-Slug([string]$s) {
@@ -264,6 +311,11 @@ $srcBytes  = ($plates | ForEach-Object { $_.Length } | Measure-Object -Sum).Sum
 
 foreach ($f in $plates) {
     $parts = Get-TitleParts $f.BaseName
+    $hinted = $null
+    if (-not $parts) {
+        $hinted = Get-NameHint $f.BaseName
+        if ($hinted) { $parts = [pscustomobject]@{ Artist = ''; Title = ''; Year = $null } }
+    }
     if (-not $parts) {
         # Scene plates (Auktion1..5, the generated gallery wall) carry no
         # "artist - title" name: they are not artworks. They are still kept
@@ -272,7 +324,10 @@ foreach ($f in $plates) {
         continue
     }
 
-    $hit = Find-Match $parts
+    $hit = if ($hinted) {
+        $w = Get-WorkById $hinted
+        if ($w) { [pscustomobject]@{ Work = $w; Artist = $null; How = 'alias' } } else { $null }
+    } else { Find-Match $parts }
     if (-not $hit) { $unmatched += "$($f.Name) (kein passender Kuenstler im Datensatz)"; continue }
 
     # one picture per work; an exact title hit always beats an artist hit
