@@ -44,7 +44,11 @@
   var LEVELS = {
     europe: {
       id: 'europe',
-      lat0: 62, lat1: 32, cell: 10, lon0: 6,
+      lat0: 62, lat1: 30, cell: 10, lon0: 2,
+      /* the Europe plate shows 36 deg of longitude; without lonSpan the whole
+         globe is squeezed into the panel and Europe is a hairline in the middle.
+         Window chosen so all six European cities sit clear of the frame. */
+      lonSpan: 36,
       sea: ['#12405f', '#0a2b45', '#08243a'],
       land: '#e3d3ad', coast: '#6d5426',
       city: '#8a2525', trade: '#b3872c', colony: '#9e2a2b',
@@ -69,18 +73,29 @@
     return Math.log(Math.tan(Math.PI / 4 + r / 2));
   }
 
-  /* the camera for one level at one window size: canvas pixels <-> map space */
+  /* The camera for one level at one window size: canvas pixels <-> map space.
+     `mapY` runs over the whole globe (lat -90..90), so a level window has to be
+     taken from the fraction span of `lat0`..`lat1`, not from the raw value.
+     Longitude and latitude are scaled independently: a Mercator world is 2:1
+     but the panel is not, so one shared scale would either crop the globe or
+     leave a sliver of ocean. Longitude uses the level's `lonSpan` window around
+     `lon0`, latitude the mercator span of the level. */
   function camera(level, W, H) {
+    /* mapY is (lat + 90) / 180, so lat0 (the northern edge) has the LARGER
+       fraction and lat1 the smaller one. */
+    var fA = (level.lat0 + 90) / 180, fB = (level.lat1 + 90) / 180;
     var m0 = merc(level.lat0), m1 = merc(level.lat1);
     var span = m0 - m1;
-    var scale = H / span;
+    var deg = level.lonSpan || 360;
+    var mid = (level.lon0 || 0) / 360 + 0.5;
     return {
       W: W, H: H, level: level,
       fromMap: function (x, y) {
-        var lat = (1 - y) * 180 - 90;
+        var t = fB !== fA ? (y - fA) / (fB - fA) : 0;
+        var lat = (1 - t) * level.lat0 + t * level.lat1;
         return {
-          x: W / 2 + (x - 0.5) * 360 * scale,
-          y: (m0 - merc(lat)) * scale
+          x: ((x - mid) / (deg / 360) + 0.5) * W,
+          y: (m0 - merc(lat)) * (H / span)
         };
       }
     };
@@ -1279,7 +1294,14 @@
     buildRoute: buildRoute,
     pointAt: pointAt,
     isLand: isLand,
-    mount: mount
+    mount: mount,
+    /* harness hook: the real camera for a level at a given plate size */
+    testCamera: function (levelName, w, h) {
+      var lv = LEVELS[levelName];
+      if (!lv) return null;
+      var cam = camera(lv, w, h);
+      return function (x, y) { return cam.fromMap(x, y); };
+    }
   };
 
 })(window);
