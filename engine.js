@@ -31,6 +31,30 @@
     });
   })();
 
+  /* Painters and pictures of the same kind: works-extra.js declares the
+     fifteen masters the Unity export never knew (see that file), and the
+     catalogue facts for every work. Merged here for the same reason as the
+     cities - before artistById / workById and the price band are built, so an
+     extra painter is priced, stocked and auctioned like an exported one. */
+  (function () {
+    var artists = global.ART_RACE_EXTRA_ARTISTS || [];
+    var works = global.ART_RACE_EXTRA_WORKS || [];
+    var catalogue = global.ART_RACE_WORK_CATALOGUE || {};
+    function pushUnique(list, item) {
+      for (var i = 0; i < list.length; i++) { if (list[i].id === item.id) return; }
+      list.push(item);
+    }
+    artists.forEach(function (a) { pushUnique(DATA.artists, a); });
+    works.forEach(function (w) { pushUnique(DATA.works, w); });
+    /* medium / dimensions are web-only extras; never overwrite an export. */
+    DATA.works.forEach(function (w) {
+      var extra = catalogue[w.id];
+      if (!extra) return;
+      if (w.medium === undefined) w.medium = extra.medium;
+      if (w.dimensions === undefined) w.dimensions = extra.dimensions;
+    });
+  })();
+
   var CFG = DATA.economy;
   var EPOCHS = DATA.enums.epoch;
 

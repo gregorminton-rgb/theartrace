@@ -22,8 +22,7 @@ param(
     [string]$Source   = 'D:\Projekte\Ren\ArtRace3Artwork\Bilder',
     [int]   $MaxWidth = 900,
     [int]   $Quality  = 80
-)
-$ErrorActionPreference = 'Stop'
+)$ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
 if (-not (Test-Path -LiteralPath $Source)) { throw "Source folder not found: $Source" }
@@ -46,6 +45,53 @@ $json = (Get-Content -LiteralPath $dataJs -Raw) `
 $data    = $json | ConvertFrom-Json
 $artists = @($data.artists)
 $works   = @($data.works)
+
+# The web build adds painters and pictures the Unity export never knew
+# (works-extra.js). Merging them here keeps the importer and the game looking
+# at the same catalogue: a plate whose painter only exists in that overlay
+# still finds its work instead of being reported as unmapped.
+# The overlay is plain `global.NAME = [ ... ];` assignments, so a regex per
+# entry is enough - no JavaScript engine is available in this script host.
+$extraJs = Join-Path $root 'works-extra.js'
+if (Test-Path -LiteralPath $extraJs) {
+    $src = Get-Content -LiteralPath $extraJs -Raw
+    function Get-OverlayRecords([string]$text, [string]$name) {
+        $i = $text.IndexOf('global.' + $name + ' = [')
+        if ($i -lt 0) { return @() }
+        $i = $text.IndexOf('[', $i)
+        $depth = 0; $end = -1
+        for ($p = $i; $p -lt $text.Length; $p++) {
+            $ch = $text[$p]
+            if ($ch -eq '[') { $depth++ }
+            elseif ($ch -eq ']') { $depth--; if ($depth -eq 0) { $end = $p; break } }
+        }
+        if ($end -lt 0) { return @() }
+        $body = $text.Substring($i, $end - $i + 1)
+        # One object per "{" ... "}" at depth 1; the values are strings,
+        # numbers and booleans only.
+        $out = @(); $depth = 0; $start = -1
+        for ($p = 0; $p -lt $body.Length; $p++) {
+            $ch = $body[$p]
+            if ($ch -eq '{') { if ($depth -eq 0) { $start = $p }; $depth++ }
+            elseif ($ch -eq '}') {
+                $depth--
+                if ($depth -eq 0 -and $start -ge 0) {
+                    $chunk = $body.Substring($start, $p - $start + 1)
+                    $chunk = $chunk -replace '([{,]\s*)([A-Za-z_][\w]*)\s*:', '$1"$2":'
+                    $chunk = $chunk -replace "'", '"'
+                    $out += ($chunk | ConvertFrom-Json)
+                }
+            }
+        }
+        return $out
+    }
+    foreach ($a in (Get-OverlayRecords $src 'ART_RACE_EXTRA_ARTISTS')) {
+        if (-not ($artists | Where-Object { $_.id -eq $a.id })) { $artists += $a }
+    }
+    foreach ($w in (Get-OverlayRecords $src 'ART_RACE_EXTRA_WORKS')) {
+        if (-not ($works | Where-Object { $_.id -eq $w.id })) { $works += $w }
+    }
+}
 
 # Artists that are already used by a big plate; leftovers compete on rarity.
 $claimed = @{}
@@ -90,6 +136,21 @@ $titleAliasesRaw = @{
     'Las Meninas'                         = 'velazquez_meninas_bozzetto'
     'Die Fighting Temeraire'              = 'turner_temeraire'
     'Woher kommen wir Wer sind wir Wohin gehen wir' = 'gauguin_tahitian_beach'
+    'Boulevard Montmartre bei Nacht'      = 'pissarro_boulevard_montmartre'
+    'Der Wanderer uber dem Nebelmeer'     = 'friedrich_wanderer'
+    'Die Einschiffung der Konigin von Saba' = 'lorrain_queen_of_sheba'
+    'Der Schrei'                          = 'munch_the_scream'
+    'Tod und Madchen'                     = 'schiele_death_and_maiden'
+    'Nackte Manner im Wald'               = 'leger_nudes_in_the_forest'
+    'Blaues Pferd I'                      = 'marc_blue_horse'
+    'Ein Sonntagnachmittag auf der Insel La Grande Jatte' = 'seurat_grande_jatte'
+    'Der Tanz'                            = 'matisse_the_dance'
+    'Im Moulin Rouge'                     = 'toulouse_moulin_rouge'
+    'Mona Lisa'                           = 'leonardo_mona_lisa'
+    'Ich und das Dorf'                    = 'chagall_i_and_the_village'
+    'Judith und Holofernes'               = 'caravaggio_judith'
+    'Les Demoiselles dAvignon'            = 'picasso_demoiselles'
+    'Improvisation 26'                    = 'kandinsky_improvisation_26'
 }
 
 # Normalised once: a hashtable literal keyed with spaces does not answer
@@ -195,6 +256,7 @@ function Find-Match($parts) {
 $manifest  = [ordered]@{}
 $log       = @()
 $unmatched = @()
+$scenes    = @()
 $missing   = @()
 $plates    = @(Get-ChildItem -LiteralPath $Source -File |
     Where-Object { $_.Extension -in '.jpg', '.jpeg', '.png' } | Sort-Object Name)
@@ -202,7 +264,13 @@ $srcBytes  = ($plates | ForEach-Object { $_.Length } | Measure-Object -Sum).Sum
 
 foreach ($f in $plates) {
     $parts = Get-TitleParts $f.BaseName
-    if (-not $parts) { $unmatched += "$($f.Name) (kein 'Kuenstler - Titel'-Muster)"; continue }
+    if (-not $parts) {
+        # Scene plates (Auktion1..5, the generated gallery wall) carry no
+        # "artist - title" name: they are not artworks. They are still kept
+        # and shipped as background art, so nothing the user supplied is lost.
+        $scenes += $f
+        continue
+    }
 
     $hit = Find-Match $parts
     if (-not $hit) { $unmatched += "$($f.Name) (kein passender Kuenstler im Datensatz)"; continue }
@@ -251,6 +319,36 @@ foreach ($f in $plates) {
     $log += ("{0,-30} {1,-8} <- {2}" -f $hit.Work.id, $hit.How, $f.Name)
 }
 
+# --- scene plates --------------------------------------------------------
+# Auktion1..5 and the generated gallery wall are not artworks but they are
+# part of the supplied art, so they are written as web JPEGs and merged into
+# works-extra.js's ART_RACE_SCENE_PLATES list (file names are referenced from
+# that list; the sizes are only used for the report).
+$sceneDir = Join-Path $root 'images\scenes'
+$sceneLog = @()
+if ($scenes.Count) { New-Item -ItemType Directory -Force -Path $sceneDir | Out-Null }
+foreach ($f in $scenes) {
+    $destName = (Get-Slug $f.BaseName) + '.jpg'
+    $dest = Join-Path $sceneDir $destName
+    $img = [System.Drawing.Image]::FromFile($f.FullName)
+    $srcW = $img.Width
+    try {
+        $ratio = [Math]::Min(1.0, 1600.0 / [double]$srcW)
+        $w = [int][Math]::Round($srcW * $ratio)
+        $h = [int][Math]::Round($img.Height * $ratio)
+        $bmp = New-Object System.Drawing.Bitmap($w, $h)
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+        $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+        $g.DrawImage($img, 0, 0, $w, $h)
+        $g.Dispose()
+        $bmp.Save($dest, $jpegCodec, $encParams)
+        $bmp.Dispose()
+    } finally { $img.Dispose() }
+    $sceneLog += ("{0,-28} <- {1}" -f "images/scenes/$destName", $f.Name)
+}
+if ($sceneLog.Count -eq 0) { $sceneLog += '(keine Szeneplatten im Ordner)' }
+
 # works that ended up without a picture, for the report only
 $covered = @($manifest.Keys)
 $noPic   = @($works | Where-Object { $covered -notcontains $_.id } | ForEach-Object { $_.id })
@@ -277,6 +375,8 @@ $report  = @()
 $report += "artwork images : $($manifest.Count)/$($works.Count) works in images/art/"
 $report += ("total size     : {0:N1} MB (masters were {1:N1} MB)" -f ($total / 1MB), ($srcBytes / 1MB))
 $report += "not mapped     : " + ($unmatched -join '; ')
+$report += "scene plates   : " + ($scenes.Count)
+$report += $sceneLog
 $report += "works w/o image: " + (($noPic | Sort-Object) -join ', ')
 $report += ''
 $report += $log

@@ -1,20 +1,42 @@
-artwork images : 15/60 works in images/art/
-total size     : 1,7 MB (masters were 123,2 MB)
-not mapped     : Auktion1.jpg (kein 'Kuenstler - Titel'-Muster); Auktion2.jpg (kein 'Kuenstler - Titel'-Muster); Auktion3.jpg (kein 'Kuenstler - Titel'-Muster); Auktion4.jpg (kein 'Kuenstler - Titel'-Muster); Auktion5.jpg (kein 'Kuenstler - Titel'-Muster); Camille Pissarro – Boulevard Montmartre bei Nacht (1897).jpg (kein passender Kuenstler im Datensatz); Caspar David Friedrich – Der Wanderer über dem Nebelmeer (1818).jpg (kein passender Kuenstler im Datensatz); Claude Lorrain – Die Einschiffung der Königin von Saba (1648).jpg (kein passender Kuenstler im Datensatz); Edvard Munch – Der Schrei (1893).jpg (kein passender Kuenstler im Datensatz); Egon Schiele – Tod und Mädchen (1915).jpg (kein passender Kuenstler im Datensatz); Fernand Léger – Nackte Männer im Wald (1910).jpg (kein passender Kuenstler im Datensatz); Franz Marc – Blaues Pferd I (1911).jpg (kein passender Kuenstler im Datensatz); Gemini_Generated_Image_d71uabd71uabd71u.jpg (kein 'Kuenstler - Titel'-Muster); Georges Seurat – Ein Sonntagnachmittag auf der Insel La Grande Jatte (1884).jpg (kein passender Kuenstler im Datensatz); Henri de Toulouse-Lautrec – Im Moulin Rouge (1892).jpg (kein passender Kuenstler im Datensatz); Henri Matisse – Der Tanz (1910).jpg (kein passender Kuenstler im Datensatz); Leonardo da Vinci – Mona Lisa.jpg (kein passender Kuenstler im Datensatz); Marc Chagall – Ich und das Dorf (1911).jpg (kein passender Kuenstler im Datensatz); Michelangelo Merisi da Caravaggio – Judith und Holofernes.jpg (kein passender Kuenstler im Datensatz); Pablo Picasso – Les Demoiselles d’Avignon (1907).jpg (kein passender Kuenstler im Datensatz); Wassily Kandinsky – Improvisation 26 (1912).jpg (kein passender Kuenstler im Datensatz)
+artwork images : 30/75 works in images/art/
+total size     : 3,4 MB (masters were 123,2 MB)
+not mapped     : 
+scene plates   : 6
+images/scenes/auktion1.jpg   <- Auktion1.jpg
+images/scenes/auktion2.jpg   <- Auktion2.jpg
+images/scenes/auktion3.jpg   <- Auktion3.jpg
+images/scenes/auktion4.jpg   <- Auktion4.jpg
+images/scenes/auktion5.jpg   <- Auktion5.jpg
+images/scenes/gemini-generated-image-d71uabd71uabd71u.jpg <- Gemini_Generated_Image_d71uabd71uabd71u.jpg
 works w/o image: botticelli_dante_comedy, botticelli_primavera_detail, cezanne_apples_oranges, cezanne_sainte_victoire, degas_at_the_races, degas_little_dancer, durer_melencolia, durer_praying_hands, fragonard_gentleman_portrait, fragonard_the_swing_engraved, fragonard_young_girl_reading, gauguin_breton_sketch, gauguin_yellow_christ, goya_maja_study, goya_sleep_of_reason, hokusai_great_wave, hokusai_red_fuji, hokusai_sketchbook, klimt_adele_study, klimt_tree_of_life, manet_folies_bergere, manet_olympia_study, monet_haystack, monet_water_lilies, mucha_gismonda, mucha_seasons_posters, mucha_slav_epic_note, munter_boating, munter_flowers_still_life, munter_jawlensky, rembrandt_self_portrait, rembrandt_three_trees, renoir_boating_party, renoir_two_sisters, turner_rain_steam_speed, turner_venice_laguna, van_gogh_irises, van_gogh_sunflowers, velazquez_cooking_eggs, velazquez_man_in_black, vermeer_love_letter, vermeer_music_lesson_study, watteau_cythera_reduction, watteau_fete_champetre, watteau_harlequin_study
 
 durer_young_hare_after         alias    <- Albrecht Dürer – Feldhase (ca. 1502).jpg
+pissarro_boulevard_montmartre  alias    <- Camille Pissarro – Boulevard Montmartre bei Nacht (1897).jpg
+friedrich_wanderer             alias    <- Caspar David Friedrich – Der Wanderer über dem Nebelmeer (1818).jpg
+lorrain_queen_of_sheba         alias    <- Claude Lorrain – Die Einschiffung der Königin von Saba (1648).jpg
 monet_impression_variant       quote    <- Claude Monet – Impression, Sonnenaufgang (1872).jpg
 velazquez_meninas_bozzetto     alias    <- Diego Velázquez – Las Meninas (1656).jpg
 degas_the_star                 alias    <- Edgar Degas – Die Tanzklasse (1874).jpg
 manet_peonies                  alias    <- Édouard Manet – Das Frühstück im Grünen (1863).jpg
+munch_the_scream               alias    <- Edvard Munch – Der Schrei (1893).jpg
+schiele_death_and_maiden       alias    <- Egon Schiele – Tod und Mädchen (1915).jpg
+leger_nudes_in_the_forest      alias    <- Fernand Léger – Nackte Männer im Wald (1910).jpg
 goya_the_colossus              alias    <- Francisco de Goya – Der 3. Mai 1808 (1814).jpg
+marc_blue_horse                alias    <- Franz Marc – Blaues Pferd I (1911).jpg
+seurat_grande_jatte            alias    <- Georges Seurat – Ein Sonntagnachmittag auf der Insel La Grande Jatte (1884).jpg
 klimt_the_kiss_study           alias    <- Gustav Klimt – Der Kuss (190708).jpg
+toulouse_moulin_rouge          alias    <- Henri de Toulouse-Lautrec – Im Moulin Rouge (1892).jpg
+matisse_the_dance              alias    <- Henri Matisse – Der Tanz (1910).jpg
 vermeer_pearl_earring_copy     alias    <- Jan Vermeer – Das Mädchen mit dem Perlenohrring.jpg
+leonardo_mona_lisa             alias    <- Leonardo da Vinci – Mona Lisa.jpg
+chagall_i_and_the_village      alias    <- Marc Chagall – Ich und das Dorf (1911).jpg
+caravaggio_judith              alias    <- Michelangelo Merisi da Caravaggio – Judith und Holofernes.jpg
+picasso_demoiselles            alias    <- Pablo Picasso – Les Demoiselles d’Avignon (1907).jpg
 cezanne_card_players           alias    <- Paul Cézanne – Die Kartenspieler (ca. 1892).jpg
 gauguin_tahitian_beach         alias    <- Paul Gauguin – Woher kommen wir Wer sind wir Wohin gehen wir (1897).jpg
 renoir_moulin_galette          alias    <- Pierre-Auguste Renoir – Bal au moulin de la Galette (1876).jpg
 rembrandt_night_watch_sketch   alias    <- Rembrandt van Rijn – Die Nachtwache.jpg
 botticelli_venus_study         alias    <- Sandro Botticelli – Die Geburt der Venus (ca. 1485).jpg
 van_gogh_starry_night_study    alias    <- Vincent van Gogh – Die Sternennacht.jpg
+kandinsky_improvisation_26     alias    <- Wassily Kandinsky – Improvisation 26 (1912).jpg
 turner_temeraire               alias    <- William Turner – Die „Fighting Temeraire“ (1838).jpg

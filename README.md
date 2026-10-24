@@ -24,6 +24,8 @@ python -m http.server 8080
 | `index.html` | screens, HUD, dock and the `<script>` tags |
 | `styles.css` | 1920s gallery-parlour look |
 | `data.js` | **generated** Unity data - do not edit by hand |
+| `cities-extra.js` | cities the web build adds (Lissabon, Rio, San Francisco) |
+| `works-extra.js` | painters, works and catalogue facts the web build adds |
 | `images.js` | **generated** image manifest - do not edit by hand |
 | `engine.js` | pure data + maths layer: prices, markets, travel, bank, studio |
 | `app.js` | DOM, state, day loop, dialogs, city backdrops, world map |
@@ -143,6 +145,36 @@ Keep the `?v=` query on the generated manifests in `index.html` current after
 an import. The bare Python dev server sends no `Cache-Control`, so browsers
 cache `images.js` / `app.js` heuristically and otherwise keep showing the old
 picture map long after a successful import.
+
+## Artwork pictures
+
+`tools/import-artwork-images.ps1` reads the master plates in
+`D:\Projekte\Ren\ArtRace3Artwork\Bilder` (named `Artist - Title (year)`),
+writes web JPEGs into `images/art/` and emits `artwork-images.js`. Every
+catalogue record carries the facts the trade rows print next to the picture:
+`yearCreated`, the painter (via `artistId`) and `typeName`; the extra masters
+also carry `medium` and `dimensions`.
+
+Two details are worth knowing:
+
+- **The folder's painters need not exist in `data.js`.** Fifteen masters in
+  the folder belong to painters the Unity export never had (Munch, Schiele,
+  Seurat, Picasso, Leonardo, ...). They are declared in `works-extra.js`,
+  which loads after `data.js` and before `engine.js`; `engine.js` merges the
+  arrays before it builds `artistById` / `workById` and measures the price
+  band, so an extra painter is stocked, auctioned and priced like an exported
+  one. The importer parses the same file, so a new plate is mapped without
+  touching the script.
+- **Scene plates are kept, not discarded.** `Auktion1..5.jpg` and the
+  generated gallery wall are rooms, not artworks. They are written to
+  `images/scenes/` and listed in `ART_RACE_SCENE_PLATES`; `app-trade.js`
+  shows one above the auction view (`sceneStrip`).
+
+The importer also keeps `artwork-images-report.txt` current: how many of the
+works have a picture, which are still missing, and which plate went to which
+work. Titles are German on the plates and English in the data, so
+`$titleAliasesRaw` maps a German title onto a work id; add a line there when a
+new plate does not map on its own.
 
 ## World map
 

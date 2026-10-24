@@ -129,12 +129,50 @@
   function rowHead(inst) {
     var w = A.work(inst.defId);
     var a = A.artistById[w.artistId];
+    /* Catalogue facts: painter, year, kind of picture, and (for the extra
+       masters) medium and size. shopInfo falls back to the kind of picture. */
+    var facts = h(w.typeName) + (w.medium ? ' · ' + h(w.medium) : '') +
+                (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
     return '<div class="row-main">' + thumb(w) + '<div>' +
            '<span class="title">' + h(w.title) + '</span>' +
            '<span class="credit">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + ' · ' +
-           h(w.typeName) + ' · rarity ' + w.rarity + '</span>' +
+           facts + aliasTag(w) + '</span>' +
            '<span class="prov">' + h(inst.provenance) + '</span></div></div>';
   }
+
+  /* The stand-in label lives here because the manifest marks every plate that
+     stands in for a listed work ('alias'). */
+  function aliasTag(w) {
+    var pic = A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null;
+    if (!pic || pic.how !== 'alias') return '';
+    return ' · <em title="the plate shows a different original by the same painter">stand-in</em>';
+  }
+  /* ---------- scene plates ---------------------------------------------- *
+   * Auktion1..5 and the generated gallery wall are not artworks: they are
+   * rooms. works-extra.js lists them (ART_RACE_SCENE_PLATES) and the importer
+   * writes them to images/scenes, so every supplied file ends up on screen.
+   * ---------------------------------------------------------------------- */
+  var SCENES = {};
+  (window.ART_RACE_SCENE_PLATES || []).forEach(function (s) { SCENES[s.id] = s; });
+
+  function scenePlate(id) { return SCENES[id] || null; }
+
+  /* A thin, lazy-loaded plate above a view. Missing file: nothing is drawn. */
+  function sceneStrip(id) {
+    var s = scenePlate(id);
+    if (!s) return '';
+    var SCENE_ALT = {
+      auction_1: 'Auction house, morning view',
+      auction_2: 'Auction house, the hammer falls',
+      auction_3: 'Auction house, bidding from the back row',
+      auction_4: 'Auction house, catalogue on view',
+      auction_5: 'Auction house, crates leaving',
+      gallery_dream: 'Gallery wall at night'
+    };
+    return '<figure class="scene-strip"><img src="' + h(s.file) + '" alt="' +
+           h(SCENE_ALT[id] || s.title || '') + '" loading="lazy"></figure>';
+  }
+
   /* ---------- panel views ---------------------------------------------- */
   function renderPanel() {
     var c = A.city(G.cityId);
@@ -247,7 +285,8 @@
   }
 
   function viewAuction() {
-    var head = '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
+    var head = sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') +
+      '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
       'Catalogue on view') + ' · hammer on day ' + G.auctionDay + ' · buyer\u2019s premium ' +
       A.pct(CFG.auctionCommission) + ' · increment ' + A.pct(CFG.auctionIncrementRatio) + '.</p>';
     if (!auctionListUp())
