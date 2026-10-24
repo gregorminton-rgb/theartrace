@@ -727,6 +727,12 @@
     el('cal-day').textContent = d.day;
     el('cal-month').textContent = d.month;
     el('cal-year').textContent = d.year;
+    /* app-audio.js decides from this same state whether music should run.
+       Music is a nicety: if it ever throws, the screen must still draw. */
+    if (window.ArtRaceAudio) {
+      try { window.ArtRaceAudio.sync(); }
+      catch (err) { if (window.console) console.warn('audio sync failed:', err.message); }
+    }
   }
 
   /* ---------- what the other app-*.js modules borrow --------------------- */

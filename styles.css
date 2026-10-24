@@ -150,6 +150,14 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 }
 .hud-chip em { font-style: normal; opacity: .62; margin-right: .35em; text-transform: uppercase; font-size: .6rem; letter-spacing: .1em; }
 
+/* music toggle sits with the balance chips but reads as a button */
+.hud-music {
+  cursor: pointer; font-size: .9rem; line-height: 1; padding: .25em .55em;
+  background: rgba(255, 240, 210, .04); opacity: .55; transition: opacity .15s, background .15s;
+}
+.hud-music:hover { opacity: .9; }
+.hud-music.is-on { opacity: 1; background: rgba(224, 188, 99, .22); border-color: var(--gold-2); }
+
 /* ---------- main row --------------------------------------------------- */
 #main { display: grid; grid-template-columns: 8.5rem 1.3fr 1fr; gap: .7rem; flex: 1; min-height: 0; }
 #stations { display: flex; flex-direction: column; gap: .4rem; overflow-y: auto; }
