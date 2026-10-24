@@ -666,3 +666,42 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-warehouse-row { display: flex; align-items: center; gap: .5em; padding: .3em 0; border-bottom: 1px dotted var(--line); font-size: .8rem; }
 .colony-warehouse-row b { margin-left: auto; }
 .colony-warehouse-row .crop-thumb { width: 28px; height: 28px; }
+
+/* ---------- plantation field dioramas (SVG) ---------- */
+.plot--planted { padding: .25em .2em .3em; width: 80px; height: 92px; justify-content: flex-end; overflow: visible; }
+.plot-field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: 4px; }
+.plot-field .field-worker { transform-box: fill-box; transform-origin: 50% 100%; animation: fieldWalk 3.4s ease-in-out infinite; }
+.plot.ripe .plot-field .field-worker { animation-name: fieldStand; }
+@keyframes fieldWalk {
+  0%, 100% { transform: translateX(-5px) scaleY(1); }
+  35%      { transform: translateX(-1px) scaleY(.96); }
+  50%      { transform: translateX(2px) scaleY(1); }
+  85%      { transform: translateX(6px) scaleY(.97); }
+}
+@keyframes fieldStand {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50%      { transform: translateY(-1.5px) rotate(1deg); }
+}
+.plot--planted .plot-house { position: relative; z-index: 2; width: 26px; height: 26px; margin-bottom: .05em; }
+.plot--planted .plot-label,
+.plot--planted .plot-workers,
+.plot--planted .plot-status,
+.plot--planted .plot-pips { position: relative; z-index: 2; }
+.plot--planted .plot-label { background: rgba(250, 243, 228, .82); border-radius: 3px; padding: 0 .25em; }
+.plot--planted .plot-workers { background: rgba(250, 243, 228, .82); border-radius: 3px; padding: 0 .25em; }
+
+/* ---------- colony travel dialog ---------- */
+.dest-list { display: flex; flex-direction: column; gap: .3em; max-height: 52vh; overflow-y: auto; margin: .6em 0; padding-right: .2em; }
+.dest-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .2em .7em;
+  padding: .45em .6em; text-align: left; cursor: pointer;
+  background: rgba(247, 236, 214, .08); border: 1px solid var(--line); border-radius: 4px;
+  color: var(--ink); font-family: var(--serif); transition: background .15s, border-color .15s;
+}
+.dest-row:hover:not([disabled]) { background: rgba(224, 188, 99, .18); border-color: var(--gold); }
+.dest-row[disabled] { opacity: .45; cursor: not-allowed; }
+.dest-name { font-size: .95rem; font-weight: 700; }
+.dest-kind { grid-column: 2; grid-row: 1; font-family: var(--sans); font-size: .6rem; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }
+.dest-sub { grid-column: 1; font-family: var(--sans); font-size: .66rem; opacity: .8; }
+.dest-meta { grid-column: 2; grid-row: 2; font-family: var(--sans); font-size: .7rem; font-weight: 700; color: var(--gold-2); white-space: nowrap; }
+.dialog-note { font-size: .78rem; opacity: .85; line-height: 1.45; margin: .3em 0 .5em; }

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Great Art Race — web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261024-PIXI3" />
+<link rel="stylesheet" href="styles.css?v=20261024-WORK1" />
 </head>
 <body>
 <div id="app">
@@ -130,7 +130,7 @@
       </div>
       <div class="colony-bar-actions">
         <button class="btn go" type="button" data-colony="endday">End day</button>
-        <button class="btn primary" type="button" data-colony="back">Sail back</button>
+        <button class="btn primary" type="button" data-colony="travel">Travel</button>
       </div>
     </header>
     <nav class="colony-menu" aria-label="Kolonie-Menü">
@@ -161,7 +161,7 @@
       <div class="colony-view colony-view--handel" id="colony-view-handel" hidden>
         <div class="colony-simple-panel">
           <h2>Handel</h2>
-          <p class="colony-note">Trade goods will be handled at the London or New York trade desk. Use the "Sail back" button to return with your harvest.</p>
+          <p class="colony-note">Trade goods will be handled at the London or New York trade desk. Use the "Travel" button to sail on with your harvest — to any city or a neighbouring colony.</p>
         </div>
       </div>
       <!-- LAGER view -->
@@ -200,8 +200,8 @@
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261024-PIXI1"></script>
-<script src="app-crew.js?v=20261024-2610"></script>
-<script src="app-colonies.js?v=20261024-RIO1"></script>
+<script src="app-crew.js?v=20261024-WORK1"></script>
+<script src="app-colonies.js?v=20261024-WORK1"></script>
 <script src="app-core.js?v=20261024-RIO1"></script>
 <script src="app-art.js?v=20261024-2610"></script>
 <script src="app-map.js?v=20261024-SHIP5"></script>

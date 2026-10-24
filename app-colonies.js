@@ -51,6 +51,9 @@
   var beginVoyage = function () { return A.app.beginVoyage.apply(null, arguments); };
   var syncWorldMap = function () { return A.mapView && A.mapView.sync ? A.mapView.sync() : undefined; };
   var thumb = function (w) { return A.art ? A.art.thumb(w) : ''; };
+  /* app-shell.js owns the modal; read it at call time so load order is free */
+  var dialog = function () { return A.shell.dialog.apply(null, arguments); };
+  var closeDialog = function () { return A.shell.closeDialog(); };
 
   /* ---------- colonial plantations & crops -------------------------------- *
    * The colony economy: sail to a colony, lay out fields, grow a crop, then
@@ -244,6 +247,93 @@
     renderAll();
   }
 
+  /* Travel from the plantation. The old screen only offered "sail back" to
+     the port of departure; the player can also cross to a neighbouring colony
+     or any city, so the button lists every reachable place with the price and
+     the crossing time the chart distance implies. */
+  function openColonyTravel() {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony) return;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
+    var list = colonyDestinations().map(function (d) {
+      var target = d.city || COLONY_BY_ID[d.colonyId];
+      var price = A.ticketPrice(colony, target);
+      var days = A.ticketDays(colony, target);
+      var kind = d.kind === 'colony' ? 'Colony' : d.kind === 'trade' ? 'Trade desk' : 'City';
+      return { d: d, price: price, days: days, kind: kind };
+    }).sort(function (a, b) { return a.days - b.days || a.price - b.price; });
+
+    var html = '<p class="dialog-note">Leaving the plantation. The crossing is spent at sea, so the ' +
+      'days pass while you travel.</p><div class="dest-list">' +
+      list.map(function (r) {
+        var dest = r.d;
+        var disabled = r.price > G.cash ? ' disabled' : '';
+        return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(dest.slug) + '"' + disabled + '>' +
+          '<span class="dest-name">' + h(dest.label) + '<i class="dest-kind">' + r.kind + '</i></span>' +
+          '<span class="dest-sub">' + h(dest.sub || '') + '</span>' +
+          '<span class="dest-meta">' + A.money(r.price) + ' · ' + r.days + 'd</span>' +
+          '</button>';
+      }).join('') + '</div>';
+
+    dialog('Travel from ' + colony.label, html, [
+      { label: 'Stay on the plantation', ghost: true, onClick: closeDialog }
+    ], 'dest-dialog');
+  }
+
+  /* Everything the plantation can be left for: every city and every other
+     colony, with the price and duration the chart distance implies. The
+     current colony, and any art city that doubles as a colony, are excluded
+     by id so the list never offers a trip to where the player already is. */
+  function colonyDestinations() {
+    var here = G.colonyId;
+    var out = [];
+    A.cities.forEach(function (c) {
+      if (c.id === here) return;
+      out.push({ slug: c.id, label: c.name, sub: c.country + ' · ' + c.regionName,
+                 kind: TRADE_HUB_IDS[c.id] ? 'trade' : 'city', city: c, colonyId: null,
+                 mapX: c.mapX, mapY: c.mapY });
+    });
+    COLONIES.forEach(function (c) {
+      if (c.id === here) return;
+      out.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony',
+                 city: null, colonyId: c.id, mapX: c.mapX, mapY: c.mapY });
+    });
+    return out;
+  }
+
+  /* Leaves the plantation for another colony or a city. The passage is a
+     normal voyage, so the chart animates it and the days tick by exactly as
+     they do from a port; the colony screen simply closes first. */
+  function departFromColony(slug) {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony || !G.started || G.ended) return;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
+    var dest = null;
+    var list = colonyDestinations();
+    for (var i = 0; i < list.length; i++) if (list[i].slug === slug) { dest = list[i]; break; }
+    if (!dest) return;
+    var target = dest.city || COLONY_BY_ID[dest.colonyId];
+    var price = A.ticketPrice(colony, target);
+    var days = A.ticketDays(colony, target);
+    if (price > G.cash) {
+      log('The passage to ' + dest.label + ' costs ' + A.money(price) + '.');
+      renderColony();
+      return;
+    }
+    G.cash -= price;
+    /* the ship leaves from the colony, so the chart must start there */
+    G.cityId = colony.id && A.city(colony.id) ? colony.id : G.colonyReturnCityId || G.cityId;
+    G.colonyId = null;
+    G.colonyMenu = 'plantage';
+    G.selectedFieldId = null;
+    G.plantCropId = null;
+    show(el('colony'), false);
+    beginVoyage(target, days, price, 0, 0, dest.colonyId || null);
+    if (A.shell && A.shell.resumeClock) A.shell.resumeClock();
+    checkEnd();
+    renderAll();
+  }
+
   function openColony() {
     show(el('colony'), true);
     renderColony();
@@ -336,6 +426,52 @@
     return cells.join('');
   }
 
+  /* A little SVG diorama: tilled soil, crop rows that grow with progress, and
+     the assigned workers walking/picking along a row. Workers are PNG cutouts
+     placed with <image> so they scale with the tile. */
+  function fieldSVG(crop, f, pct) {
+    var grown = Math.max(0.18, Math.min(1, pct / 100));
+    var ripe = f.ripe;
+    var green = ripe ? '#5f8d43' : '#6f9a52';
+    var rows = '';
+    for (var r = 0; r < 3; r++) {
+      var y = 30 + r * 11;
+      rows += '<rect x="8" y="' + (y + 4) + '" width="84" height="2.5" rx="1" fill="#5c4326" opacity="' + (0.45 + r * 0.12).toFixed(2) + '"/>';
+      for (var c = 0; c < 7; c++) {
+        var x = 12 + c * 12;
+        var hh = (4 + grown * 9).toFixed(1);
+        var sway = ((c + r) % 2 ? 1 : -1) * 0.8;
+        rows += '<path d="M' + x + ' ' + (y + 5) + ' q' + sway + ' -' + (hh / 2) + ' 0 -' + hh +
+          '" stroke="' + green + '" stroke-width="' + (1.1 + grown * 0.9).toFixed(1) +
+          '" fill="none" stroke-linecap="round" opacity="' + (0.55 + grown * 0.45).toFixed(2) + '"/>';
+        if (grown > 0.55) {
+          rows += '<circle cx="' + (x + sway) + '" cy="' + (y + 5 - hh) + '" r="' + (0.9 + grown * 0.9).toFixed(1) +
+            '" fill="' + (ripe ? '#e0bc63' : '#8fae6a') + '"/>';
+        }
+      }
+    }
+    var seen = Math.max(0, Math.min(f.workers, 4));
+    var people = '';
+    var poses = [['stand', 'm1'], ['pick', 'f2'], ['stand', 'f3'], ['pick', 'm4']];
+    for (var w = 0; w < seen; w++) {
+      var pose = poses[w % poses.length];
+      var kind = ripe ? 'stand' : 'pick';
+      var file = 'images/sprites/worker-' + kind + '-' + pose[1] + '.png';
+      var px = 18 + w * 21;
+      var delay = (w * 0.7).toFixed(1);
+      people += '<g class="field-worker" style="animation-delay:' + delay + 's">' +
+        '<image href="' + file + '" x="' + px + '" y="20" width="18" height="36" preserveAspectRatio="xMidYMax meet"/>' +
+        '</g>';
+    }
+    return '<svg class="plot-field" viewBox="0 0 100 64" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="soil' + f.id + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#8a6b43"/><stop offset="1" stop-color="#6b5030"/></linearGradient></defs>' +
+      '<rect x="2" y="8" width="96" height="50" rx="5" fill="url(#soil' + f.id + ')"/>' +
+      '<rect x="2" y="8" width="96" height="50" rx="5" fill="none" stroke="#4a3620" stroke-width="1.2" opacity="0.7"/>' +
+      rows + people +
+      '</svg>';
+  }
+
   function colonyPlotHTML(i) {
     var colony = COLONY_BY_ID[G.colonyId];
     if (!colony || !colony.plots || i >= colony.plots.length) return '';
@@ -358,6 +494,7 @@
       return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
         ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
+        fieldSVG(crop, f, pct) +
         houseSVG +
         '<span class="plot-label">' + h(crop.label) + '</span>' +
         '<span class="plot-workers">' + f.workers + ' worker(s)</span>' +
@@ -420,6 +557,8 @@
     TRADE_HUB_IDS: TRADE_HUB_IDS, TRADE_HUB_MULT: TRADE_HUB_MULT,
     cropPrice: cropPrice, cropThumb: cropThumb, hash2: hash2,
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
+    colonyDestinations: colonyDestinations, departFromColony: departFromColony,
+    openColonyTravel: openColonyTravel,
     renderColony: renderColony
   };
 })();

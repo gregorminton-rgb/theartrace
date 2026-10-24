@@ -21,6 +21,8 @@
   function cropThumbOf(c, cls) { return T().cropThumb(c, cls); }
   var renderAll = function () { return A.app.renderAll(); };
   var renderColony = function () { return A.colonies.renderColony.apply(null, arguments); };
+  var departFromColony = function () { return A.colonies.departFromColony.apply(null, arguments); };
+  var openColonyTravel = function () { return A.colonies.openColonyTravel.apply(null, arguments); };
   var advanceDay = function () { return A.app.advanceDay.apply(null, arguments); };
   function el(id) { return document.getElementById(id); }
   function log(line) {
@@ -200,8 +202,10 @@
       upgradeField(parseInt(t.getAttribute('data-field'), 10));
     } else if (action === 'endday') {
       endColonyDay();
-    } else if (action === 'back') {
-      sailBack();
+    } else if (action === 'travel') {
+      openColonyTravel();
+    } else if (action === 'depart') {
+      departFromColony(t.getAttribute('data-dest'));
     }
   }
 
