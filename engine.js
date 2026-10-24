@@ -14,6 +14,23 @@
   var DATA = global.ART_DATA;
   if (!DATA) { throw new Error('data.js must be loaded before engine.js'); }
 
+  /* Cities the web build adds on top of the Unity export (Lisbon, Rio, San
+     Francisco). `data.js` is generated and must not be hand-edited, so the
+     extra entries are declared in app.js and merged in here, before any city
+     lookup table or per-city derived field is built. The merge is idempotent
+     so a double load cannot duplicate a city. */
+  (function () {
+    var extra = global.ART_RACE_EXTRA_CITIES || [];
+    if (!extra.length) return;
+    var have = {};
+    DATA.cities.forEach(function (c) { have[c.id] = true; });
+    extra.forEach(function (c) {
+      if (have[c.id]) return;
+      have[c.id] = true;
+      DATA.cities.push(c);
+    });
+  })();
+
   var CFG = DATA.economy;
   var EPOCHS = DATA.enums.epoch;
 
@@ -40,7 +57,25 @@
     loanOverdueRepPenalty: 1,     // reputation lost per day past the grace period
     debtCallAfterDays: 90,        // days of debt before the bank seizes crates
     debtCallSeizeArtworks: 2,     // crates taken in one debt call
-    debtCallReputationPenalty: 10 // reputation hit when a debt call runs
+    debtCallReputationPenalty: 10,// reputation hit when a debt call runs
+    /* Travel time. Unity multiplies daysPerDistance by the raw map distance,
+       which the authored coordinates (spanning 0.02..0.6) collapse onto a
+       single day for even an Atlantic crossing. The web build reads travel
+       time off a power curve instead, fitted to the two voyages that define
+       the game's scale: Berlin->London 2 days, Berlin->New York 10 days. */
+    travelDayScale: 32.395,       // A in days = A * distance^p
+    travelDayExponent: 0.8516,    // p in days = A * distance^p
+    /* Artwork price band. The exported price stack (basePrice * reputation *
+       rarity * masterpiece 2.4 * 150 years of appreciation * city wealth)
+       spans four orders of magnitude, which no starting capital can meet:
+       the median dealer ask came out at ~$690k against $12k to begin with.
+       The web build keeps that stack intact -- it still decides which work
+       is dearer than which -- but re-maps the result onto an explicit
+       tradeable band, so a mid-career work costs a realistic $40k-$200k.
+       Set priceBandLow = 0 to switch the remap off entirely. */
+    priceBandLow: 40000,
+    priceBandHigh: 200000,
+    priceBandCurve: 1.75         // < 1 lifts the cheap end, > 1 drops the expensive end
   };
 
   /* Web-only keys that are not invented numbers but arithmetic over the export.
@@ -169,6 +204,47 @@
    * ===================================================================== */
   var MAX_APPRECIATION_YEARS = 150;   // PriceEngine.MaxAppreciationYears
 
+  /* =====================================================================
+   * Price band
+   *   The exported multiplier stack orders the catalogue correctly but
+   *   inflates it far beyond playable money. Keeping the ordering and
+   *   compressing the magnitudes is what a designer does by hand -- here
+   *   it is done as a monotone, log-uniform re-map: every work keeps its
+   *   rank, the whole range lands between priceBandLow and priceBandHigh.
+   * ===================================================================== */
+  /* Anchors are measured, not authored: walk the real price stack over the
+   * catalogue and take its log range. City wealth is left out on purpose --
+   * it is applied after the band and should keep widening the spread. */
+  function measurePriceSpread() {
+    var lo = Infinity, hi = -Infinity;
+    var conditions = [CFG.brokenValueFloor, 0.6, 0.9, 1];
+    DATA.works.forEach(function (w) {
+      var worth = intrinsicValue(w, CFG.startYear || 1925);
+      conditions.forEach(function (c) {
+        var v = worth * conditionFactor(c);
+        if (v > 0) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      });
+    });
+    return { lo: lo, hi: hi };
+  }
+
+  var priceSpread = null;
+
+  function bandValue(raw) {
+    var low = CFG.priceBandLow, high = CFG.priceBandHigh;
+    if (!(low > 0) || !(high > low) || !(raw > 0)) return raw;
+    if (!priceSpread || !isFinite(priceSpread.lo) || !(priceSpread.hi > priceSpread.lo)) {
+      priceSpread = measurePriceSpread();
+    }
+    var lmn = Math.log(priceSpread.lo), lmx = Math.log(priceSpread.hi);
+    var lbandLo = Math.log(low), lbandHi = Math.log(high);
+    var t = (Math.log(raw) - lmn) / (lmx - lmn);
+    t = clamp01(t);
+    var curve = CFG.priceBandCurve;
+    var shaped = Math.pow(t, curve > 0 ? curve : 1);
+    return Math.exp(lbandLo + (lbandHi - lbandLo) * shaped);
+  }
+
   function reputationFactor(workDef) {
     var a = artistById[workDef.artistId];
     var repMult = a ? a.reputationMultiplier : 1;
@@ -220,7 +296,7 @@
     if (workDef.homeCityId && workDef.homeCityId === cityDef.id) {
       value *= 1 - CFG.homeMarketDiscount;
     }
-    return value;
+    return bandValue(value);
   }
 
   /* PriceEngine.MarketValue */
@@ -347,7 +423,19 @@
     return round(CFG.baseTicketPrice + CFG.ticketPricePerDistance * distance(from, to));
   }
   function ticketDays(from, to) {
-    return Math.max(CFG.minimumTravelDays, Math.round(CFG.daysPerDistance * distance(from, to)));
+    /* A straight multiplication by daysPerDistance made the crossing to New
+       York a single day: the authored map coordinates only span 0.02..0.6, so
+       linear scaling flattens Europe and the Atlantic onto the same scale.
+       Travel time instead follows a power curve fitted to the two reference
+       voyages of the game (Berlin->London 2 days, Berlin->New York 10 days),
+       which is what configures CFG.travelDayScale / CFG.travelDayExponent.
+       Falls back to the linear rule if the older config is still in place. */
+    var d = distance(from, to);
+    if (!CFG.travelDayScale || !CFG.travelDayExponent) {
+      return Math.max(CFG.minimumTravelDays, Math.round(CFG.daysPerDistance * d));
+    }
+    var days = CFG.travelDayScale * Math.pow(Math.max(d, 0.0001), CFG.travelDayExponent);
+    return Math.max(CFG.minimumTravelDays, Math.round(days));
   }
   /* Bank: mirrors EconomyConfig.LoanCeilingMultiplier - the multiplier runs
      from 1 at reputation 0 to maxLoanReputationMultiplier at reputationForMaxLoan
@@ -378,6 +466,7 @@
     authenticityFactor: authenticityFactor, demandMultiplier: demandMultiplier,
     unitValue: unitValue, marketValue: marketValue, dealerAsk: dealerAsk, dealerBid: dealerBid,
     estimateLow: estimateLow, estimateHigh: estimateHigh,
+    bandValue: bandValue, priceSpread: function () { return priceSpread || measurePriceSpread(); },
     createMarket: createMarket, sliceIndex: sliceIndex, dailyChange: dailyChange,
     advanceMarket: advanceMarket, expireEvents: expireEvents, rollEvent: rollEvent,
     affectsEvent: affectsEvent,

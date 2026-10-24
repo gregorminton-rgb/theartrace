@@ -109,6 +109,8 @@
     G.history = [];
     G.colonyId = null;
     G.colonyReturnCityId = null;
+    G.voyage = null;
+    G.mapPick = null;
     G.fields = [];
     G.goods = {};
     G.workers = {};
@@ -334,31 +336,93 @@
     log('Collected ' + A.work(p.defId).title + ' from the studio (+' + A.pct(gain) + ' condition).');
   }
 
+  /* ---------- journeys --------------------------------------------------- *
+   * A crossing is a state, not a jump: G.voyage holds the leg and the chart
+   * animates the hull along it while the days tick by in advanceDay(). The
+   * player is "between ports" meanwhile — G.cityId still names the port of
+   * departure until arriveIfDue() hands them over to the new one.
+   * ---------------------------------------------------------------------- */
+  var VOYAGE_SEA = 0.11;   // map widths; below this the leg is done by rail
+
+  function voyageRoute(from, to) {
+    if (window.ArtRaceMap && window.ArtRaceMap.available) {
+      var r = window.ArtRaceMap.buildRoute(from.mapX, from.mapY, to.mapX, to.mapY);
+      if (r) return r;
+    }
+    return { pts: [{ x: from.mapX, y: from.mapY }, { x: to.mapX, y: to.mapY }], glyph: 'ship' };
+  }
+
+  function beginVoyage(to, days, price, freight, crates) {
+    var from = A.city(G.cityId);
+    var route = voyageRoute(from, to);
+    /* the chart wants its own copy with an arc-length table, so the hull can
+       be placed at any point of the line, not only at a vertex */
+    var path = window.ArtRaceMap && window.ArtRaceMap.buildRoute
+      ? window.ArtRaceMap.buildRoute(from.mapX, from.mapY, to.mapX, to.mapY)
+      : null;
+    G.voyage = {
+      fromId: from.id, toId: to.id, toName: to.name, colonyId: to.colonyId || null,
+      days: days, remaining: days, startDay: G.day, label: from.name + ' → ' + to.name,
+      route: route.pts, glyph: route.glyph,
+      path: path || { pts: route.pts, glyph: route.glyph }
+    };
+    log('You set out for ' + to.name + ': ' + A.money(price) +
+        ' ticket' + (freight ? ', ' + A.money(freight) + ' freight for ' + crates + ' crate(s)' : '') +
+        ', ' + days + ' day(s) ' + (route.glyph === 'rail' ? 'by rail' : 'at sea') + '.');
+  }
+
+  /* Called once per day from advanceDay(). Arrival settles provenance, the
+     transit damage roll and the restock, so the whole leg behaves exactly as
+     the old instant jump did — only spread over real days. */
+  function arriveIfDue() {
+    var v = G.voyage;
+    if (!v) return;
+    v.remaining = Math.max(0, v.days - (G.day - v.startDay));
+    if (v.remaining > 0) return;
+    if (G.ended) { G.voyage = null; return; }
+
+    G.voyage = null;
+    G.mapPick = null;
+    if (v.colonyId) {
+      stopClock();
+      G.colonyReturnCityId = G.cityId;
+      G.colonyId = v.colonyId;
+      G.colonyMenu = 'plantage';
+      G.selectedFieldId = null;
+      G.plantCropId = null;
+      log('Arrived at ' + v.toName + ' on day ' + G.day + '.');
+      G.view = 'dealer';
+      openColony();
+      return;
+    }
+
+    var to = A.city(v.toId);
+    G.cityId = v.toId;
+    G.portfolio.forEach(function (p) {
+      if (G.rng.chance(CFG.travelConditionRiskPerDay * v.days)) {
+        p.condition = A.clamp(p.condition - G.rng.range(0.02, 0.08), 0.05, 1);
+        log(A.work(p.defId).title + ' was jolted in transit.');
+      }
+      p.provenance += ' -> ' + to.name + ' (day ' + G.day + ')';
+    });
+    log('Arrived in ' + to.name + ' on day ' + G.day + '.');
+    restockIfNeeded();
+    if (G.view === 'travel') G.view = 'dealer';
+  }
+
   /* Travel office: ticket price and duration come straight off the map distance. */
   function travelTo(cityId) {
     var from = A.city(G.cityId);
     var to = A.city(cityId);
     if (!to || cityId === G.cityId) return;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
     var price = A.ticketPrice(from, to);
     var days = A.ticketDays(from, to);
     if (price > G.cash) { log('The ticket to ' + to.name + ' costs ' + A.money(price) + '.'); return; }
     var crates = G.portfolio.length;
     var freight = crates * CFG.crateHandlingFee;
     G.cash -= price + freight;
-    G.cityId = cityId;
-    log('Travelling ' + from.name + ' → ' + to.name + ': ' + A.money(price) +
-        ' ticket' + (freight ? ', ' + A.money(freight) + ' freight for ' + crates + ' crate(s)' : '') +
-        ', ' + days + ' day(s).');
-    for (var i = 0; i < days; i++) advanceDay(true);
-    /* travelConditionRiskPerDay: crates get jostled on the road. */
-    G.portfolio.forEach(function (p) {
-      if (G.rng.chance(CFG.travelConditionRiskPerDay * days)) {
-        p.condition = A.clamp(p.condition - G.rng.range(0.02, 0.08), 0.05, 1);
-        log(A.work(p.defId).title + ' was jolted in transit.');
-      }
-      p.provenance += ' -> ' + to.name + ' (day ' + G.day + ')';
-    });
-    restockIfNeeded();
+    beginVoyage(to, days, price, freight, crates);
     checkEnd();
   }
   /* ---------- auction house -------------------------------------------- */
@@ -515,6 +579,7 @@
       log('New sale list at the ' + A.city(G.cityId).name + ' auction house.');
     }
     if (!silent && CFG.logDailyMoves) log('Day ' + G.day + ' opened.');
+    arriveIfDue();
     checkEnd();
   }
 
@@ -539,6 +604,7 @@
     renderStations();
     renderPanel();
     renderTicker();
+    syncWorldMap();
   }
 
   function renderHud() {
@@ -562,8 +628,23 @@
     Contemporary: ['#101418', '#57d1c8']
   };
   function rgb(a) { return 'rgb(' + Math.round(a[0] * 255) + ',' + Math.round(a[1] * 255) + ',' + Math.round(a[2] * 255) + ')'; }
+  /* ---------- artwork pictures ------------------------------------------ *
+   * artwork-images.js (written by tools/import-artwork-images.ps1) maps a
+   * work id to a plate the user supplied. Only some works have one, so the
+   * gradient/initial stays as the fallback everywhere.
+   * ---------------------------------------------------------------------- */
+  var ARTWORK = (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images) || {};
+
+  function artPicture(workId) { return ARTWORK[workId] || null; }
+
   function thumb(w) {
     var tint = EPOCH_TINT[A.workEpoch(w)] || EPOCH_TINT.Modern;
+    var pic = artPicture(w.id);
+    if (pic) {
+      return '<span class="thumb thumb-art" title="' + h(w.title) + '">' +
+             '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy">' +
+             '</span>';
+    }
     return '<span class="thumb" style="background:linear-gradient(135deg,' + tint[0] + ' 25%,' + tint[1] + ' 100%)">' +
            '<span class="thumb-init">' + h((A.artistById[w.artistId] || { name: '?' }).name.slice(0, 1)) + '</span></span>';
   }
@@ -586,7 +667,10 @@
     return null;
   }
   function cityPicture(city) {
-    return pictureFor(city.id);
+    /* Firenze has no master plate of its own; it borrows the Venice picture
+       the importer already produces from städte\venedig.jpg. */
+    var alias = { firenze: 'venedig' };
+    return pictureFor(alias[city.id] || city.id);
   }
 
   function renderBackdrop() {
@@ -612,8 +696,8 @@
   /* ---------- world map -------------------------------------------------- *
    * The travel office draws the imported world map (hd-08-world-map) and pins
    * every place of the trade network onto it. City pins reuse the mapX/mapY
-   * the Unity data already ships (0..1 longitude/latitude); plantations and
-   * trade ports are authored here because they only exist as artwork, not as
+   * the Unity data already ships (0..1 longitude/latitude); the trade hubs and
+   * the colonies are authored here because they only exist as artwork, not as
    * CityDefinition entries. Clicking a pin opens its imported picture.
    * ---------------------------------------------------------------------- */
   var TRADE_HUB_IDS = { london: true, newyork: true };
@@ -622,7 +706,7 @@
    * The colony economy: sail to a colony, lay out fields, grow a crop, then
    * sell the harvest at the London / New York trade desks. Colonies only exist
    * as artwork (kol1..kol6 + the commodity plates in new\), so the balance is
-   * authored here, exactly like the plantation / port map pins below.
+   * authored here.
    * ---------------------------------------------------------------------- */
   var CROPS = [
     { id: 'kakao',  label: 'Cocoa',    slug: 'kakao',  days: 12, cost: 900,  base: 2600 },
@@ -641,11 +725,104 @@
   };
 
   /* The four colonies you can actually sail to (each carries its own plate). */
+  /* Koordinaten korrigiert für realistische Mercator-Projektion (X: 0=180°W, 1=180°E; Y: 0=Süd, 1=Nord) */
   var COLONIES = [
-    { id: 'guatemala', label: 'Guatemala', sub: 'Cocoa & coffee colony', mapX: 0.249, mapY: 0.581, slug: 'kolonie1' },
-    { id: 'jamaica',   label: 'Jamaica',   sub: 'Sugar & coffee island', mapX: 0.283, mapY: 0.600, slug: 'plantage1' },
-    { id: 'trinidad',  label: 'Trinidad',  sub: 'Cocoa & coffee island', mapX: 0.331, mapY: 0.556, slug: 'plantage2' },
-    { id: 'ceylon',    label: 'Ceylon',    sub: 'Tea highlands',         mapX: 0.724, mapY: 0.544, slug: 'tee' }
+    { id: 'guatemala', label: 'Guatemala', sub: 'Cocoa & coffee colony', mapX: 0.215, mapY: 0.600, pic: 'kolonie1',
+      bg: 'linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%)',
+      plots: [
+        {x:12,y:18},{x:28,y:22},{x:45,y:19},{x:62,y:24},{x:78,y:20},
+        {x:15,y:42},{x:32,y:38},{x:48,y:45},{x:65,y:40},{x:82,y:43},
+        {x:10,y:65},{x:27,y:62},{x:50,y:68},{x:70,y:63},{x:85,y:70}
+      ]
+    },
+    { id: 'jamaica', label: 'Jamaica', sub: 'Sugar & coffee island', mapX: 0.310, mapY: 0.655, pic: 'plantage1',
+      bg: 'linear-gradient(to bottom, #7fa885 0%, #5d8363 40%, #4a6b50 100%)',
+      plots: [
+        {x:8,y:15},{x:24,y:20},{x:42,y:16},{x:58,y:22},{x:76,y:18},
+        {x:12,y:38},{x:30,y:42},{x:50,y:38},{x:68,y:44},{x:85,y:40},
+        {x:15,y:60},{x:35,y:64},{x:52,y:62},{x:72,y:66},{x:88,y:63}
+      ]
+    },
+    { id: 'trinidad', label: 'Trinidad', sub: 'Cocoa & coffee island', mapX: 0.330, mapY: 0.600, pic: 'plantage2',
+      bg: 'linear-gradient(to bottom, #9fa87c 0%, #7d8a5f 40%, #62704a 100%)',
+      plots: [
+        {x:10,y:20},{x:26,y:24},{x:44,y:18},{x:60,y:26},{x:80,y:22},
+        {x:14,y:44},{x:32,y:40},{x:52,y:46},{x:70,y:42},{x:87,y:48},
+        {x:8,y:66},{x:28,y:70},{x:48,y:65},{x:68,y:72},{x:85,y:68}
+      ]
+    },
+    { id: 'ceylon', label: 'Ceylon', sub: 'Tea highlands', mapX: 0.735, mapY: 0.700, pic: 'tee',
+      bg: 'linear-gradient(to bottom, #6b8f6e 0%, #4d6d50 40%, #3a5740 100%)',
+      plots: [
+        {x:15,y:16},{x:32,y:20},{x:48,y:15},{x:65,y:22},{x:82,y:18},
+        {x:10,y:40},{x:28,y:44},{x:50,y:40},{x:70,y:46},{x:88,y:42},
+        {x:12,y:64},{x:30,y:68},{x:52,y:65},{x:72,y:70},{x:87,y:66}
+      ]
+    },
+    { id: 'kuba', label: 'Cuba', sub: 'Sugar & tobacco island', mapX: 0.275, mapY: 0.690, pic: 'tabak',
+      bg: 'linear-gradient(to bottom, #a89a6d 0%, #87794f 40%, #6b603d 100%)',
+      plots: [
+        {x:14,y:17},{x:30,y:23},{x:46,y:16},{x:63,y:25},{x:80,y:19},
+        {x:11,y:41},{x:29,y:37},{x:51,y:44},{x:69,y:39},{x:86,y:45},
+        {x:13,y:63},{x:33,y:69},{x:50,y:64},{x:71,y:71},{x:86,y:65}
+      ]
+    },
+    { id: 'brazil', label: 'Pernambuco', sub: 'Sugar & coffee coast', mapX: 0.390, mapY: 0.400, pic: 'brasilien',
+      bg: 'linear-gradient(to bottom, #6f8f5c 0%, #547040 35%, #3f5731 100%)',
+      plots: [
+        {x:16,y:15},{x:34,y:21},{x:50,y:14},{x:67,y:23},{x:83,y:17},
+        {x:10,y:39},{x:27,y:45},{x:49,y:38},{x:68,y:46},{x:87,y:41},
+        {x:14,y:62},{x:31,y:69},{x:53,y:63},{x:70,y:70},{x:85,y:64}
+      ]
+    },
+    { id: 'bengalen', label: 'Bengal', sub: 'Jute & indigo delta', mapX: 0.825, mapY: 0.735, pic: 'stoffe',
+      bg: 'linear-gradient(to bottom, #8a8f63 0%, #6b7049 40%, #545a38 100%)',
+      plots: [
+        {x:13,y:16},{x:31,y:22},{x:49,y:15},{x:66,y:21},{x:83,y:16},
+        {x:10,y:40},{x:28,y:43},{x:50,y:38},{x:68,y:45},{x:86,y:39},
+        {x:12,y:62},{x:32,y:67},{x:51,y:61},{x:70,y:68},{x:87,y:63}
+      ]
+    },
+    { id: 'goldcoast', label: 'Gold Coast', sub: 'Cocoa hinterland', mapX: 0.470, mapY: 0.600, pic: 'kakao',
+      bg: 'linear-gradient(to bottom, #97874f 0%, #7a6c3c 40%, #615530 100%)',
+      plots: [
+        {x:15,y:18},{x:33,y:14},{x:48,y:21},{x:65,y:17},{x:82,y:22},
+        {x:11,y:43},{x:30,y:39},{x:51,y:46},{x:69,y:41},{x:87,y:44},
+        {x:14,y:64},{x:31,y:70},{x:50,y:65},{x:72,y:69},{x:85,y:62}
+      ]
+    },
+    { id: 'indien', label: 'Indien', sub: 'Cotton, indigo & tea', mapX: 0.700, mapY: 0.660, pic: 'indien',
+      bg: 'linear-gradient(to bottom, #9a8154 0%, #7b6440 40%, #5f4c31 100%)',
+      plots: [
+        {x:14,y:17},{x:32,y:23},{x:49,y:16},{x:66,y:22},{x:83,y:18},
+        {x:10,y:41},{x:29,y:45},{x:50,y:39},{x:69,y:46},{x:87,y:42},
+        {x:13,y:63},{x:31,y:69},{x:52,y:64},{x:71,y:70},{x:86,y:65}
+      ]
+    },
+    { id: 'indonesien', label: 'Niederländisch-Indien', sub: 'Spice islands & coffee', mapX: 0.790, mapY: 0.560, pic: 'indonesien',
+      bg: 'linear-gradient(to bottom, #6b9a7a 0%, #4d7a5c 40%, #3a5f46 100%)',
+      plots: [
+        {x:12,y:20},{x:29,y:15},{x:47,y:22},{x:64,y:17},{x:81,y:23},
+        {x:15,y:43},{x:33,y:39},{x:51,y:46},{x:70,y:41},{x:88,y:45},
+        {x:11,y:65},{x:30,y:70},{x:49,y:64},{x:68,y:71},{x:84,y:66}
+      ]
+    },
+    { id: 'australien', label: 'Australien', sub: 'Wool stations & vineyards', mapX: 0.845, mapY: 0.290, pic: 'australien',
+      bg: 'linear-gradient(to bottom, #b0925e 0%, #8e7449 40%, #6d5838 100%)',
+      plots: [
+        {x:16,y:16},{x:34,y:21},{x:51,y:15},{x:68,y:22},{x:84,y:18},
+        {x:10,y:40},{x:28,y:44},{x:49,y:38},{x:67,y:45},{x:86,y:41},
+        {x:14,y:62},{x:32,y:68},{x:53,y:63},{x:71,y:70},{x:85,y:64}
+      ]
+    },
+    { id: 'rio', label: 'Rio de Janeiro', sub: 'Coffee hills & sugar coast', mapX: 0.4083, mapY: 0.3450, pic: 'rio',
+      bg: 'linear-gradient(to bottom, #7a9a6a 0%, #5c7a50 40%, #45603d 100%)',
+      plots: [
+        {x:13,y:18},{x:31,y:14},{x:48,y:21},{x:66,y:17},{x:83,y:22},
+        {x:11,y:42},{x:29,y:46},{x:50,y:40},{x:68,y:45},{x:87,y:41},
+        {x:15,y:63},{x:33,y:69},{x:51,y:64},{x:70,y:70},{x:85,y:65}
+      ]
+    }
   ];
   var COLONY_BY_ID = {};
   COLONIES.forEach(function (c) { COLONY_BY_ID[c.id] = c; });
@@ -662,88 +839,194 @@
     return Math.round(crop.base * mult * wave);
   }
 
-  var PLANTATIONS = [
-    { slug: 'kaffee',      label: 'Coffee',      sub: 'East Africa',        mapX: 0.606, mapY: 0.520 },
-    { slug: 'kakao',       label: 'Cocoa',       sub: 'Gold Coast',         mapX: 0.497, mapY: 0.537 },
-    { slug: 'tabak',       label: 'Tobacco',     sub: 'Cuba',               mapX: 0.281, mapY: 0.619 },
-    { slug: 'stoffe',      label: 'Textiles',    sub: 'Bengal',             mapX: 0.751, mapY: 0.632 },
-    { slug: 'indien',      label: 'India',       sub: 'plantation district', mapX: 0.717, mapY: 0.617 },
-    { slug: 'indien2',     label: 'South India', sub: 'spice coast',        mapX: 0.719, mapY: 0.572 },
-    { slug: 'indonesien',  label: 'Java',        sub: 'Dutch East Indies',  mapX: 0.797, mapY: 0.467 },
-    { slug: 'brasilien',   label: 'Brazil',      sub: 'sugar & coffee',     mapX: 0.356, mapY: 0.444 },
-    { slug: 'australien',  label: 'Australia',   sub: 'wool & gold',        mapX: 0.872, mapY: 0.361 }
-  ];
+  /* Plantagen-Koordinaten korrigiert für realistische Weltkarte */
 
-  var TRADE_PORTS = [
-    { slug: 'lissabon',     label: 'Lisbon',         sub: 'Portugal · colonial port',     mapX: 0.475, mapY: 0.715 },
-    { slug: 'sanfrancisco', label: 'San Francisco',  sub: 'United States · Pacific port',  mapX: 0.160, mapY: 0.710 },
-    { slug: 'rio',          label: 'Rio de Janeiro', sub: 'Brazil · coffee port',          mapX: 0.380, mapY: 0.373 },
-    { slug: 'hafen',        label: 'Harbour',        sub: 'transatlantic port',            mapX: 0.495, mapY: 0.705 },
-    { slug: 'hafen2',       label: 'Harbour',        sub: 'colonial quay',                 mapX: 0.312, mapY: 0.640 }
-  ];
-
-  var PLACES = (function () {
+    var PLACES = (function () {
     var list = [];
     A.cities.forEach(function (c) {
       list.push({ slug: c.id, label: c.name, sub: c.country + ' · ' + c.regionName,
                   kind: TRADE_HUB_IDS[c.id] ? 'trade' : 'city', mapX: c.mapX, mapY: c.mapY, city: c });
     });
-    PLANTATIONS.forEach(function (p) { list.push({ slug: p.slug, label: p.label, sub: p.sub, kind: 'plantation', mapX: p.mapX, mapY: p.mapY }); });
-    COLONIES.forEach(function (c) { list.push({ slug: c.slug, label: c.label, sub: c.sub, kind: 'colony', mapX: c.mapX, mapY: c.mapY, colony: c }); });
-    TRADE_PORTS.forEach(function (p) { list.push({ slug: p.slug, label: p.label, sub: p.sub, kind: 'trade', mapX: p.mapX, mapY: p.mapY }); });
+    COLONIES.forEach(function (c) { list.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony', mapX: c.mapX, mapY: c.mapY, colony: c, colonyId: c.id }); });
     return list;
   })();
 
   var PLACE_BY_SLUG = {};
   PLACES.forEach(function (p) { PLACE_BY_SLUG[p.slug] = p; });
 
-  function placePin(place) {
-    var left = (place.mapX * 100).toFixed(2) + '%';
-    var top = ((1 - place.mapY) * 100).toFixed(2) + '%';
-    var here = place.city && place.city.id === G.cityId ? ' is-here' : '';
-    return '<button type="button" class="wm-pin wm-pin--' + place.kind + here + '"' +
-      ' style="left:' + left + ';top:' + top + '" data-place="' + place.slug + '"' +
-      ' title="' + h(place.label) + ' — ' + h(place.sub || '') + '">' +
-      '<span class="wm-pin-dot"></span><span class="wm-pin-label">' + h(place.label) + '</span></button>';
-  }
 
+  /* The travel chart. `map.js` draws the whole plate on a canvas — pins,
+     routes and the moving craft included; this only builds the empty stage
+     plus the legend, and syncWorldMap() fills the stage once the panel is in
+     the document (a canvas needs a laid-out parent to size to). */
   function renderWorldMap() {
-    var mapImg = pictureFor('hd-08-world-map') || pictureFor('weltkarte');
-    var bg = mapImg ? ' style="background-image:url(\'' + mapImg.file + '\')"' : '';
-    return '<div class="worldmap' + (mapImg ? '' : ' no-map') + '"' + bg + '>' +
+    var hasCanvas = !!(window.ArtRaceMap && window.ArtRaceMap.available);
+    return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="wm-stage">' +
       '<div class="wm-legend">' +
-      '<span class="wm-key wm-key--plantation">Plantations</span>' +
       '<span class="wm-key wm-key--colony">Colonies</span>' +
       '<span class="wm-key wm-key--city">Art-trade cities</span>' +
       '<span class="wm-key wm-key--trade">Trade cities</span>' +
-      '</div>' + PLACES.map(placePin).join('') + '</div>';
+      '</div>' + (hasCanvas ? '' : '<p class="wm-fallback">The engraved chart could not be drawn — the list below still works.</p>') + '</div>';
+  }
+
+  /* ---- the live chart ------------------------------------------------ */
+  var worldMap = null;
+
+  function mapPlaces() {
+    return PLACES.map(function (p) {
+      return {
+        slug: p.slug, label: p.label, x: p.mapX, y: p.mapY, kind: p.kind,
+        here: !!(p.city && p.city.id === G.cityId)
+      };
+    });
+  }
+
+  /* A voyage list for the chart. The player's own crossing first, then any
+     house that is also at sea, so several hulls can share the plate. */
+  function mapVoyages() {
+    var list = [];
+    if (G.voyage && (G.voyage.path || G.voyage.route)) {
+      var v = G.voyage;
+      /* progress follows the calendar: the hull sits at the departure port on
+         the day the tickets were bought and reaches the far end on arrival. */
+      var elapsed = Math.max(0, G.day - v.startDay);
+      list.push({
+        route: v.path || v.route,
+        days: Math.max(1, v.days),
+        label: v.label,
+        duration: v.duration,
+        start: v.start ? v.start : null,
+        progress: Math.max(0, Math.min(1, elapsed / Math.max(1, v.days)))
+      });
+      return list;
+    }
+    /* Nothing is drawn while the player browses: a line means a journey, and
+       a journey only exists once a start and a destination are picked. */
+    return list;
+  }
+
+  /* The one picked start -> destination link, before the tickets are bought.
+     No pick, no line. */
+  function mapPreview() {
+    if (G.voyage || !G.mapPick) return null;
+    var here = A.city(G.cityId);
+      if (!here) return null;
+      var dest = null;
+      for (var i = 0; i < PLACES.length; i++) {
+        var p = PLACES[i];
+        if (Math.abs(p.mapX - G.mapPick.x) < 1e-6 && Math.abs(p.mapY - G.mapPick.y) < 1e-6) {
+      dest = p; break;
+        }
+      }
+      if (!dest) return null;
+    var target = dest.city || dest.colony;
+    if (!target) return null;
+      if (dest.city && dest.city.id === here.id) return null;
+      var r = voyageRoute(here, target);
+      if (!r) return null;
+      return { route: r, glyph: r.glyph, lane: true };
+    }
+
+  function syncWorldMap() {
+    if (G.view !== 'travel') {
+      destroyWorldMap();
+      return;
+    }
+    var stage = el('wm-stage');
+    if (!stage) { destroyWorldMap(); return; }
+    var Map = window.ArtRaceMap;
+    if (!Map || !Map.available) return;
+
+    /* renderPanel() rewrites panel.innerHTML on every render, so the stage
+       node is a fresh element each time and any canvas mounted into the old
+       one is orphaned. Drop the stale instance whenever the node changed. */
+    if (worldMap && (worldMap.canvas.parentElement !== stage || !stage.isConnected)) {
+      destroyWorldMap();
+    }
+
+    if (!worldMap) {
+      worldMap = Map.mount(stage, {
+        getSelection: function () { return G.mapPick || null; }
+      });
+      if (!worldMap) return;
+      stage.addEventListener('click', function (ev) {
+        var c = worldMap && worldMap.canvas;
+        if (!c || ev.target !== c) return;
+        pickPlaceAt(ev, c);
+      });
+    }
+    var preview = mapPreview();
+    worldMap.setLabels(mapPlaces());
+    worldMap.setVoyages(preview ? mapVoyages().concat([preview]) : mapVoyages());
+    worldMap.refresh();
+  }
+
+  function destroyWorldMap() {
+    if (worldMap) {
+      worldMap.destroy();
+      worldMap = null;
+    }
+  }
+
+  /* Clicking the plate picks the place whose projected pin is nearest, within
+     a generous radius: a finger on a phone is not a mouse pointer. */
+  function pickPlaceAt(ev, canvas) {
+    var Map = window.ArtRaceMap;
+    var rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    var cx = (ev.clientX - rect.left) / rect.width;
+    var cy = (ev.clientY - rect.top) / rect.height;
+    var best = null, bestD = Infinity;
+    PLACES.forEach(function (p) {
+      var q = Map.project(p.mapX, p.mapY);
+      if (q.x < -0.05 || q.x > 1.05 || q.y < -0.05 || q.y > 1.05) return;
+      var d = Math.sqrt((q.x - cx) * (q.x - cx) + (q.y - cy) * (q.y - cy));
+      if (d < bestD) { bestD = d; best = p; }
+    });
+    /* 4.5% of the plate: about a fingertip at phone size */
+    if (best && bestD <= 0.045) {
+      G.mapPick = { x: best.mapX, y: best.mapY };
+      showPlace(best.slug);
+    }
   }
 
   function showPlace(slug) {
     var place = PLACE_BY_SLUG[slug];
     if (!place) return;
-    var pic = pictureFor(slug);
+    G.mapPick = { x: place.mapX, y: place.mapY };
+    /* a colony pin slug is "colony-<id>"; its plate lives under pic/slug */
+    var pic = pictureFor(place.colony ? (place.colony.pic || place.colony.slug) : slug);
     var caption = place.label + (place.sub ? ' — ' + place.sub : '') +
       (place.kind === 'trade' && TRADE_HUB_IDS[slug] ? ' · trade hub' : '') +
       (place.kind === 'colony' ? ' · colony' : '');
     var body;
     if (pic) {
-      body = '<img class="place-pic" src="' + pic.file + '" alt="' + h(place.label) + '" />' +
+      body = '<img class="place-pic" src="' + pic.file + '" alt="' + h(place.label) + '"' +
+             ' loading="eager" decoding="async"' +
+             ' onerror="this.outerHTML=\'<div class=&quot;place-pic place-pic--missing&quot;>' +
+             '<span>Picture failed to load</span></div>\'" />' +
              '<p class="place-caption">' + h(caption) + '</p>';
     } else {
       body = '<div class="place-pic place-pic--missing"><span>' + h(place.label) + '</span></div>' +
              '<p class="place-caption">' + h(caption) + ' · no picture imported yet</p>';
     }
     var buttons = [{ label: 'Back', primary: true, onClick: closeDialog }];
+    
+    /* City: Travel button */
     if (place.city && place.city.id !== G.cityId) {
       var price = A.ticketPrice(A.city(G.cityId), place.city);
       buttons.unshift({ label: 'Travel here · ' + A.money(price), onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
     }
+    
+    /* Colony: Sail button (only if not already at a colony) */
     if (place.colony && !G.colonyId) {
       var sail = A.ticketPrice(A.city(G.cityId), place.colony);
       buttons.unshift({ label: 'Sail to ' + place.colony.label + ' · ' + A.money(sail), primary: true, onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
     }
+    
+    
     dialog(place.label, body, buttons);
+    if (worldMap) syncWorldMap();
   }
 
   /* ---------- colonial plantations: travel, fields, harvest, trade --------- */
@@ -813,20 +1096,14 @@
   function sailToColony(colonyId) {
     var colony = COLONY_BY_ID[colonyId];
     if (!colony || G.colonyId || !G.started || G.ended) return;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
     var from = A.city(G.cityId);
     var price = A.ticketPrice(from, colony);
     var days = A.ticketDays(from, colony);
     if (price > G.cash) { log('The passage to ' + colony.label + ' costs ' + A.money(price) + '.'); return; }
     G.cash -= price;
-    for (var i = 0; i < days; i++) advanceDay(true);
-    if (G.ended) return;
-    stopClock();
-    G.colonyReturnCityId = G.cityId;
-    G.colonyId = colonyId;
-    G.selectedFieldId = null;
-    G.plantCropId = null;
-    log('Sailed to ' + colony.label + ' (' + A.money(price) + ', ' + days + ' day(s)).');
-    openColony();
+    beginVoyage(colony, days, price, 0, 0);
+    checkEnd();
   }
 
   function sailBack() {
@@ -839,6 +1116,7 @@
     }
     G.colonyId = null;
     G.colonyReturnCityId = null;
+    G.colonyMenu = 'plantage';
     G.selectedFieldId = null;
     G.plantCropId = null;
     show(el('colony'), false);
@@ -875,6 +1153,7 @@
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
       el('colony-grid').innerHTML = colonyGridHTML();
+      el('colony-grid').style.background = colony.bg || '';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
@@ -937,7 +1216,11 @@
   }
 
   function colonyPlotHTML(i) {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony || !colony.plots || i >= colony.plots.length) return '';
+    var pos = colony.plots[i];
     var f = plotField(i);
+    
     if (f) {
       var crop = CROP_BY_ID[f.cropId];
       var pct = fieldProgressPct(f);
@@ -952,6 +1235,7 @@
         '<rect x="19" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '</svg>';
       return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
+        ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
         houseSVG +
         '<span class="plot-label">' + h(crop.label) + '</span>' +
@@ -961,8 +1245,10 @@
         '<span class="plot-pips">' + pips + '</span>' +
         '</button>';
     }
+    
     var armed = G.plantCropId ? ' can-plant' : '';
     return '<button type="button" class="plot plot--empty' + armed + '"' +
+      ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
       ' data-colony="plant-at" data-plot="' + i + '" data-empty="1">' +
       '<span class="plot-empty-plus">+</span>' +
       '<span class="plot-empty-label">' + (G.plantCropId ? 'plant ' + CROP_BY_ID[G.plantCropId].label : 'empty plot') + '</span>' +
@@ -1392,6 +1678,13 @@
   }
   function viewTravel() {
     var from = A.city(G.cityId);
+    var away = !!G.voyage;
+    var banner = away ? '<div class="voyage-banner">' +
+      '<span class="voyage-dest">' + h(G.voyage.label) + '</span>' +
+      '<span class="voyage-eta">' + G.voyage.remaining + ' day(s) still to run · ' +
+      (G.voyage.glyph === 'rail' ? 'by rail' : 'at sea') + '</span>' +
+      '<span class="voyage-tip">Advance the calendar — the chart moves as the days do.</span>' +
+      '</div>' : '';
     var rows = A.cities.filter(function (c) { return c.id !== G.cityId; }).map(function (c) {
       var price = A.ticketPrice(from, c);
       var days = A.ticketDays(from, c);
@@ -1401,19 +1694,20 @@
       if (c.hasRestorationStudio) goods.push('Studio');
       if (c.hasExpertOffice) goods.push('Expert');
       var hot = A.EPOCHS.filter(function (e) { return c.favouriteEpochs.indexOf(e) >= 0; }).join(', ');
-      return '<div class="row' + (price > G.cash ? ' dim' : '') + '">' +
+      var blocked = away || price > G.cash;
+      return '<div class="row' + (blocked ? ' dim' : '') + '">' +
         '<div class="row-main"><div><span class="title">' + h(c.name) + '</span>' +
-        '<span class="credit">' + h(c.country) + ' · ' + h(c.regionName) + ' · wealth ' + c.wealthBand + '/10 · ' +
+        '<span class="credit">' + h(c.country) + ' · ' + h(c.regionName) + ' · wealth ' + c.wealth + '/10 · ' +
         h(goods.join(' + ')) + '</span>' +
         '<span class="prov">collects ' + h(hot || 'no particular school') + (c.bohemianEpochs.length ? ' · bohemian: ' + h(c.bohemianEpochs.join(', ')) : '') + '</span></div></div>' +
         '<div class="row-num"><span class="ask">' + A.money(price) + '</span>' +
-        '<span class="est">' + days + ' day(s) · ' + A.distance(from, c).toFixed(2) + ' units</span></div>' +
-        '<button class="btn go" data-action="travel" data-city="' + c.id + '"' + (price > G.cash ? ' disabled' : '') + '>Travel</button></div>';
+        '<span class="est">' + days + ' day(s) ' + (days <= 4 ? 'by rail' : 'at sea') + ' · ' + A.distance(from, c).toFixed(2) + ' units</span></div>' +
+        '<button class="btn go" data-action="travel" data-city="' + c.id + '"' + (blocked ? ' disabled' : '') + '>Travel</button></div>';
     }).join('');
-    return renderWorldMap() +
+    return renderWorldMap() + banner +
       '<p class="note">Tickets cost ' + A.money(CFG.baseTicketPrice) + ' + ' +
       A.money(CFG.ticketPricePerDistance) + ' per map unit · ' + CFG.crateHandlingFee +
-      ' freight per crate · a long ride can knock a painting about. Click a pin for its picture.</p>' + rows;
+      ' freight per crate · a long ride can knock a painting about. Click a pin or a city on the chart for its picture.</p>' + rows;
   }
 
   function viewReport() {
@@ -1452,7 +1746,16 @@
     show(el('overlay'), true);
   }
   var dialogHandlers = [];
-  function closeDialog() { show(el('overlay'), false); dialogHandlers = []; }
+  function closeDialog() {
+    show(el('overlay'), false);
+    dialogHandlers = [];
+    /* closing the place card drops the destination again: the plate must not
+       keep a line for a journey nobody is going to take */
+    if (G.mapPick && !G.voyage) {
+      G.mapPick = null;
+      if (worldMap) syncWorldMap();
+    }
+  }
   /* =====================================================================
    * SCREENS
    * ===================================================================== */

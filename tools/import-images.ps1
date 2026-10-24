@@ -1,4 +1,4 @@
-# ---------------------------------------------------------------------------
+﻿# ---------------------------------------------------------------------------
 # ArtRace image importer
 #
 # Reads the master pictures, writes web-sized JPEG derivatives into images/
@@ -11,8 +11,12 @@
 # orgGameImages\berlin.jpg can never collide with the illustration Berlin.jpg:
 #
 #   new\           city + trade illustrations   ->  <slug>.jpg        (role city)
+#   städte\        extra city plates            ->  <slug>.jpg        (role city)
 #   hdArtwork\     upscaled, text-free plates   ->  hd-<slug>.jpg     (role scene)
 #   orgGameImages\ raw game screenshots         ->  orig-<slug>.jpg   (role reference)
+#
+# städte\ must come after new\: Get-Slug lowercases and folds umlauts, so
+# "münchen.jpg" and "Muenchen.jpg" would otherwise collide.
 #
 # Usage:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-images.ps1
@@ -21,6 +25,7 @@
 # ---------------------------------------------------------------------------
 param(
     [string]$Source       = 'D:\Projekte\Ren\ArtRace3Artwork\new',
+    [string]$ExtraSource  = 'D:\Projekte\Ren\ArtRace3Artwork\städte',
     [string]$SceneSource  = 'D:\Projekte\Ren\ArtRace3Artwork\hdArtwork',
     [string]$OriginSource = 'D:\Projekte\Ren\ArtRace3Artwork\orgGameImages',
     [switch]$IncludeOriginals,
@@ -36,14 +41,19 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $sources = @(
     @{ Path = $Source;      Prefix = '';      Role = 'city'  },
+    @{ Path = $ExtraSource; Prefix = '';      Role = 'city'  },
     @{ Path = $SceneSource; Prefix = 'hd-';   Role = 'scene' }
 )
 if ($IncludeOriginals) {
     $sources += @{ Path = $OriginSource; Prefix = 'orig-'; Role = 'reference' }
 }
 foreach ($s in $sources) {
-    if (-not (Test-Path -LiteralPath $s.Path)) { throw "Source folder not found: $($s.Path)" }
+    if (-not (Test-Path -LiteralPath $s.Path)) {
+        if ($s.Path -eq $ExtraSource) { continue }   # optional folder
+        throw "Source folder not found: $($s.Path)"
+    }
 }
+$sources = @($sources | Where-Object { Test-Path -LiteralPath $_.Path })
 
 # Everything we intend to convert, resolved up front so the report can state
 # the true size of the masters before a single byte is written.
@@ -66,8 +76,14 @@ $encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
     [System.Drawing.Imaging.Encoder]::Quality, [int64]$Quality)
 
 # "Gemini_Generated_Image (1).jpg" -> "gemini-generated-image-1"
+# "münchen.jpg" -> "muenchen", "zürich.jpg" -> "zuerich": ids in data.js
+# transliterate umlauts, so the long form is the only one that can match.
 function Get-Slug([string]$name) {
     $s = $name.ToLowerInvariant()
+    $s = $s.Replace('ä','ae').Replace('ö','oe').Replace('ü','ue').Replace('ß','ss')
+    # anything else accented (é, à, ñ ...) loses its diacritic instead
+    $s = $s.Normalize([System.Text.NormalizationForm]::FormD)
+    $s = [regex]::Replace($s, '\p{Mn}', '')
     $s = [regex]::Replace($s, '[()\s_]+', '-')
     $s = [regex]::Replace($s, '[^a-z0-9-]', '')
     $s = [regex]::Replace($s, '-{2,}', '-')
@@ -125,6 +141,27 @@ foreach ($plate in $plates) {
     }
 
     $bytes  = (Get-Item -LiteralPath $dest).Length
+
+    # A master whose filename is a short form of a data.js id ("Rom.jpg" for
+    # roma, "Firenze" for florence) still has to reach that city, so fold the
+    # known spellings onto the id the game actually uses.
+    $cityAlias = @{
+        'rom'      = 'roma'
+        'rome'     = 'roma'
+        'florence' = 'firenze'
+        'firenz'   = 'firenze'
+        'munich'   = 'muenchen'
+        'munchen'  = 'muenchen'
+        'zurich'   = 'zuerich'
+        'vienna'   = 'wien'
+        'prague'   = 'prag'
+        'tokyo'    = 'tokio'
+        'milan'    = 'milano'
+    }
+    if ($cityAlias.ContainsKey($slug) -and ($cityIds -contains $cityAlias[$slug])) {
+        $slug = $cityAlias[$slug]
+    }
+
     $idHits = @()
     if ($cityIds   -contains $slug) { $idHits += 'city'   }
     if ($artistIds -contains $slug) { $idHits += 'artist' }

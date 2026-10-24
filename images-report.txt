@@ -1,12 +1,12 @@
-images written : 38 -> images/
-  city      :  29 files  <- D:\Projekte\Ren\ArtRace3Artwork\new
+images written : 46 -> images/
+  city      :  37 files  <- D:\Projekte\Ren\ArtRace3Artwork\new, D:\Projekte\Ren\ArtRace3Artwork\städte
   scene     :   9 files  <- D:\Projekte\Ren\ArtRace3Artwork\hdArtwork
-total size     : 15,3 MB (masters were 133,7 MB, saved 89%)
-matched to ids : amsterdam (city), berlin (city), london (city), newyork (city), paris (city)
-not in data.js : aktion, australien, brasilien, gemini-generated-image-jizxzkjizxzkjizx-1, hafen, hafen2, hd-01-city-square-1918, hd-02-colonial-town, hd-03-harbour-city, hd-04-plantation-savanna, hd-05-plantation-jungle, hd-06-hotel-room, hd-07-warehouse-interior, hd-08-world-map, hd-09-studio-easel-painting, hotel1, indien, indien2, indonesien, kaffee, kakao, kolonie1, lissabon, plantage1, plantage2, rio, sanfrancisco, stoffe, tabak, tee, unbekannt, unbekannt2, weltkarte
+total size     : 19,4 MB (masters were 165,1 MB, saved 88%)
+matched to ids : amsterdam (city), berlin (city), london (city), madrid (city), muenchen (city), newyork (city), paris (city), prag (city), roma (city), tokio (city), wien (city), zuerich (city)
+not in data.js : aktion, australien, brasilien, gemini-generated-image-jizxzkjizxzkjizx-1, hafen, hafen2, hd-01-city-square-1918, hd-02-colonial-town, hd-03-harbour-city, hd-04-plantation-savanna, hd-05-plantation-jungle, hd-06-hotel-room, hd-07-warehouse-interior, hd-08-world-map, hd-09-studio-easel-painting, hotel1, indien, indien2, indonesien, kaffee, kakao, kolonie1, lissabon, plantage1, plantage2, rio, sanfrancisco, stoffe, tabak, tee, unbekannt, unbekannt2, venedig, weltkarte
 
-cities with a picture    (5/13) : amsterdam, berlin, london, newyork, paris
-cities without a picture (8/13) : firenze, madrid, muenchen, prag, roma, tokio, wien, zuerich
+cities with a picture    (12/13) : amsterdam, berlin, london, madrid, muenchen, newyork, paris, prag, roma, tokio, wien, zuerich
+cities without a picture (1/13) : firenze
 
 aktion                                     2752x1536  3.429KB -> 1600x893     322KB  city   -
 amsterdam                                  2400x1792  3.666KB -> 1600x1195    483KB  city   id-match: city
@@ -37,6 +37,14 @@ tee                                        2400x1792  3.822KB -> 1600x1195    46
 unbekannt                                  2400x1792  3.503KB -> 1600x1195    461KB  city   -
 unbekannt2                                 2400x1792  3.693KB -> 1600x1195    469KB  city   -
 weltkarte                                  2400x1792  4.036KB -> 1600x1195    420KB  city   -
+madrid                                     2400x1792  3.869KB -> 1600x1195    528KB  city   id-match: city
+muenchen                                   2400x1792  3.904KB -> 1600x1195    528KB  city   id-match: city
+prag                                       2400x1792  3.739KB -> 1600x1195    497KB  city   id-match: city
+roma                                       2400x1792  4.590KB -> 1600x1195    573KB  city   id-match: city
+tokio                                      2400x1792  4.389KB -> 1600x1195    518KB  city   id-match: city
+venedig                                    2400x1792  3.786KB -> 1600x1195    514KB  city   -
+wien                                       2400x1792  4.065KB -> 1600x1195    566KB  city   id-match: city
+zuerich                                    2400x1792  3.760KB -> 1600x1195    517KB  city   id-match: city
 hd-01-city-square-1918                     1920x1465  4.551KB -> 1600x1221    443KB  scene  -
 hd-02-colonial-town                        1920x1443  3.739KB -> 1600x1202    376KB  scene  -
 hd-03-harbour-city                         1920x1443  4.123KB -> 1600x1202    442KB  scene  -
