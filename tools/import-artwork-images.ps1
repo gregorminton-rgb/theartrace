@@ -360,7 +360,7 @@ $payload = [ordered]@{
         quality   = $Quality
         count     = $manifest.Count
         folder    = $Source
-        note      = 'Auction/scene plates in the folder are not artworks and are skipped.'
+        note      = 'Auction/scene plates in the folder are exported to images/scenes and shown as UI art.'
     }
     images = $manifest
 }
