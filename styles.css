@@ -1,5 +1,5 @@
 /* =========================================================================
- * styles.css — the prototype's "period print shop" look.
+ * styles.css Ã¢â‚¬â€ the prototype's "period print shop" look.
  * Everything is drawn with CSS (no bitmaps in the project to borrow).
  * ========================================================================= */
 :root {
@@ -448,8 +448,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .wm-level.is-on { background: var(--gold-2, #c9a548); color: #1a1208; border-color: transparent; }
 
 /* ---- the live canvas chart ---------------------------------------------- *
- * map.js draws the whole plate — sea, land, pins, routes and the moving
- * craft — into one canvas. Because every position is a fraction of the same
+ * map.js draws the whole plate Ã¢â‚¬â€ sea, land, pins, routes and the moving
+ * craft Ã¢â‚¬â€ into one canvas. Because every position is a fraction of the same
  * surface, pins stay glued to their harbours at any resolution or zoom.
  * ------------------------------------------------------------------------ */
 .worldmap--canvas {
@@ -511,7 +511,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .field-progress i { display: block; height: 100%; background: linear-gradient(90deg, #3c6b46, #6aa373); }
 
 /* =========================================================================
- * Colony screen — full-window plantation desk with drag & drop field layout.
+ * Colony screen Ã¢â‚¬â€ full-window plantation desk with drag & drop field layout.
  * ========================================================================= */
 #colony {
   position: fixed; inset: 0; z-index: 40;
@@ -718,8 +718,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 #colony-dest-list .dest-meta { grid-column: 2; grid-row: 2; }
 
 /* ---------- large artwork view ---------- */
-.dialog--av-dialog { width: min(1180px, 96vw); max-width: min(1180px, 96vw); }
-.dialog--av-dialog .dialog-body { padding: 0; }
+.dialog.av-dialog { width: min(1180px, 96vw); max-width: min(1180px, 96vw); }
+.dialog.av-dialog .dialog-body { padding: 0; }
 .av { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: 0; }
 .av-left { padding: 1.1em 1.2em; background: linear-gradient(180deg, #efe4cd, #e2d2b2); border-right: 1px solid var(--line); }
 .av-right { padding: 1.1em 1.3em 1.4em; background: linear-gradient(180deg, #f4e6c8, #e9d9bb); max-height: 76vh; overflow-y: auto; }
@@ -754,3 +754,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .av-right { max-height: none; }
   .av-plate img { max-height: 44vh; }
 }
+/* ---------- destination hover preview ---------- */
+#colony-dest-list .dest-row.is-hover { border-color: var(--gold); background: linear-gradient(180deg, #fbf0d4, #f0dfb8); box-shadow: inset 3px 0 0 var(--gold), 0 2px 8px rgba(60,40,10,.18); }
+#colony-dest-list .dest-row.is-hover .dest-name { color: var(--oxblood); }
+.dest-leg { display: none; grid-column: 1 / -1; margin-top: .34em; padding-top: .3em; border-top: 1px dashed rgba(139,111,71,.55); font-family: var(--sans); font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; color: var(--oxblood); }
+#colony-dest-list .dest-row.is-hover .dest-leg { display: block; }
+
+/* ---------- holiday: the "are you sure" leg summary ---------- */
+.dialog.confirm-dialog { width: min(34em, 94vw); max-width: min(34em, 94vw); }
+.confirm-head { margin: 0 0 .7em; font-family: var(--serif); font-size: 1rem; }
+.confirm-grid { display: grid; gap: .3em; margin-bottom: .7em; }
+.confirm-grid > div { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; padding: .34em .6em; background: rgba(255,250,238,.6); border: 1px solid var(--line); border-radius: 3px; }
+.confirm-grid span { font-family: var(--sans); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: #6b5030; }
+.confirm-grid b { font-family: var(--serif); font-size: .98rem; color: var(--oxblood); }
+.confirm-note { margin: 0; font-size: .8rem; line-height: 1.55; color: #4a3620; }
+
+/* ---------- destination dialog leg ---------- */
+.place-leg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3em .6em; margin: .7em 0 0; }
+.place-leg > div { display: flex; justify-content: space-between; gap: .6em; padding: .3em .55em; background: rgba(255,250,238,.55); border: 1px solid var(--line); border-radius: 3px; }
+.place-leg span { font-family: var(--sans); font-size: .64rem; letter-spacing: .05em; text-transform: uppercase; color: #6b5030; }
+.place-leg b { font-family: var(--serif); font-size: .88rem; color: var(--oxblood); }
+.place-warn { margin: .55em 0 0; padding: .45em .6em; background: rgba(141,34,34,.1); border-left: 3px solid #8d2222; font-size: .8rem; }

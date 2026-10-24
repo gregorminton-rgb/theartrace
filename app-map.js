@@ -128,6 +128,10 @@
                     hit-test needs a real canvas rect, tests and the city list
                     do not have one. */
                  pick: function (slug) { showPlace(slug); syncWorldMap(); return G.mapPick; },
+                 /* Hover preview from the city list: the same standing lane
+                    the chart draws for a pick, without opening the dialog. */
+                 preview: function (slug) { previewPlace(slug); },
+                 clear: function () { clearPreview(); },
                  places: function () { return PLACES.map(function (p) { return p.slug; }); } };
 
   function mapPlaces() {
@@ -166,7 +170,9 @@
   /* The one picked start -> destination link, before the tickets are bought.
      No pick, no line. */
   function mapPreview() {
-    if (G.voyage || !G.mapPick) return null;
+    if (G.voyage) return null;
+    if (G.mapHover) return mapHoverPreview();
+    if (!G.mapPick) return null;
     var here = A.city(G.cityId);
       if (!here) return null;
       var dest = null;
@@ -184,6 +190,68 @@
       if (!r) return null;
       return { route: r, glyph: r.glyph, lane: true };
     }
+
+  /* Where the traveller stands right now, in chart coordinates: a plantation
+     when ashore, otherwise the port the player is in. */
+  function herePoint() {
+    if (G.colonyId) {
+      var p = PLACE_BY_SLUG['colony-' + G.colonyId];
+      if (p) return p;
+    }
+    var c = A.city(G.cityId);
+    return c ? { mapX: c.mapX, mapY: c.mapY, city: c } : null;
+  }
+
+  function placeBySlug(slug) {
+    var p = PLACE_BY_SLUG[slug];
+    if (p) return p;
+    /* the list may pass a bare colony id */
+    return PLACE_BY_SLUG['colony-' + slug] || null;
+  }
+
+  /* The hover preview: here -> the row under the pointer, with the fare and
+     the passage on the label. It never opens the ticket dialog. */
+  function mapHoverPreview() {
+    if (G.voyage) return null;
+    var from = herePoint();
+    var to = placeBySlug(G.mapHover);
+    if (!from || !to) return null;
+    if (to.city && G.cityId && to.city.id === G.cityId) return null;
+    if (to.colony && G.colonyId && to.colony.id === G.colonyId) return null;
+    var target = to.city || to.colony;
+    if (!target) return null;
+    var r = voyageRoute(from.city || from.colony, target);
+    if (!r) return null;
+    return { route: r, glyph: r.glyph, lane: true, preview: true };
+  }
+
+  /* Hovering a list row paints the standing lane and, when the destination is
+     off the current plate, brings the plate that carries it into view. Nothing
+     is committed: leaving the row restores the previous plate. */
+  function previewPlace(slug) {
+    var place = placeBySlug(slug);
+    if (!place) { clearPreview(); return; }
+    if (!G.mapHoverBase) G.mapHoverBase = { level: G.mapLevel || 'world' };
+    G.mapHover = place.slug;
+    var want = levelForPlace(place);
+    if (want && want !== (G.mapLevel || 'world')) {
+      G.mapLevel = want;
+      if (worldMap) worldMap.setLevel(want);
+    }
+    syncWorldMap();
+  }
+
+  function clearPreview() {
+    if (!G.mapHover) return;
+    G.mapHover = null;
+    var base = G.mapHoverBase;
+    G.mapHoverBase = null;
+    if (base && base.level !== (G.mapLevel || 'world')) {
+      G.mapLevel = base.level;
+      if (worldMap) worldMap.setLevel(base.level);
+    }
+    syncWorldMap();
+  }
 
   function syncWorldMap() {
     if (G.view !== 'travel' && !G.colonyTravel) {
@@ -208,7 +276,7 @@
     if (!worldMap) {
       worldMap = Map.mount(stage, {
         level: G.mapLevel || 'world',
-        getSelection: function () { return G.mapPick || null; }
+        getSelection: function () { return G.mapHover ? null : (G.mapPick || null); }
       });
       if (!worldMap) {
         /* no Pixi (or no geo data): fall back to a plain notice, the list
@@ -228,6 +296,9 @@
       });
     }
     if (worldMap.level !== (G.mapLevel || 'world')) worldMap.setLevel(G.mapLevel || 'world');
+    /* the traveller's own position, so the hover lane has a visible start */
+    var here = herePoint();
+    if (here && worldMap.setAnchor) worldMap.setAnchor({ x: here.mapX, y: here.mapY });
     var preview = mapPreview();
     worldMap.setLabels(mapPlaces());
     worldMap.setVoyages(preview ? mapVoyages().concat([preview]) : mapVoyages());
@@ -270,9 +341,26 @@
     }
   }
 
+  /* The fare and the passage from wherever the traveller stands to `place`,
+     or null when the two ends are the same. */
+  function legTo(place) {
+    var from = herePoint();
+    if (!from) return null;
+    if (place.city && G.cityId && place.city.id === G.cityId) return null;
+    if (place.colony && G.colonyId && place.colony.id === G.colonyId) return null;
+    var target = place.city || place.colony;
+    var origin = from.city || from.colony;
+    if (!target || !origin) return null;
+    try {
+      return { price: A.ticketPrice(origin, target), days: A.ticketDays(origin, target) };
+    } catch (e) { return null; }
+  }
+
   function showPlace(slug) {
     var place = PLACE_BY_SLUG[slug];
     if (!place) return;
+    G.mapHover = null;
+    G.mapHoverBase = null;
     G.mapPick = { x: place.mapX, y: place.mapY };
     /* a place off the current plate is not on screen: switch to the plate
        that carries it, so the start -> destination line is visible */
@@ -286,6 +374,7 @@
     var caption = place.label + (place.sub ? ' — ' + place.sub : '') +
       (place.kind === 'trade' && TRADE_HUB_IDS[slug] ? ' · trade hub' : '') +
       (place.kind === 'colony' ? ' · colony' : '');
+    var leg = legTo(place);
     var body;
     if (pic) {
       body = '<img class="place-pic" src="' + pic.file + '" alt="' + h(place.label) + '"' +
@@ -297,8 +386,20 @@
       body = '<div class="place-pic place-pic--missing"><span>' + h(place.label) + '</span></div>' +
              '<p class="place-caption">' + h(caption) + ' · no picture imported yet</p>';
     }
-    var buttons = [{ label: 'Back', primary: true, onClick: closeDialog }];
-    
+    /* the question the player actually has: what does it cost, how long */
+    if (leg) {
+      body += '<div class="place-leg">' +
+        '<div><span>Von hier</span><b>' + h(G.colonyId ? (COLONY_BY_ID[G.colonyId] || {}).label || '' : (A.city(G.cityId) || {}).name || '') + '</b></div>' +
+        '<div><span>Passage</span><b>' + leg.days + ' Tage</b></div>' +
+        '<div><span>Fahrpreis</span><b>' + A.money(leg.price) + '</b></div>' +
+        '<div><span>Danach</span><b>' + A.money(G.cash - leg.price) + '</b></div>' +
+        '</div>';
+      if (leg.price > G.cash) {
+        body += '<p class="place-warn">Der Fahrpreis liegt über deinem Bargeld — diese Überfahrt ist nicht buchbar.</p>';
+      }
+    }
+    var buttons = [{ label: 'Abbrechen', onClick: function () { G.mapPick = null; closeDialog(); if (worldMap) syncWorldMap(); } }];
+
     /* Ashore on a plantation the voyage starts from the colony, not the city
        the player left behind: hand the departure to the colony module. */
     var ashore = !!G.colonyId && A.colonies && A.colonies.departFromColony;
@@ -306,31 +407,33 @@
     /* City: Travel button */
     if (place.city && place.city.id !== G.cityId) {
       if (ashore) {
-        buttons.unshift({ label: 'Travel here', primary: true, onClick: function () {
+        buttons.unshift({ label: 'Ja, nach ' + place.label + ' reisen', primary: true, onClick: function () {
           closeDialog(); renderAll();
           A.colonies.departFromColony(place.slug);
         } });
       } else {
-        var price = A.ticketPrice(A.city(G.cityId), place.city);
-        buttons.unshift({ label: 'Travel here · ' + A.money(price), onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
+        buttons.unshift({ label: 'Ja, nach ' + place.label + ' reisen' + (leg ? ' · ' + A.money(leg.price) : ''),
+          primary: true,
+          onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
       }
     }
-    
+
     /* Colony: Sail button */
     if (place.colony && place.colony.id !== G.colonyId) {
       if (ashore) {
-        buttons.unshift({ label: 'Sail to ' + place.colony.label, primary: true, onClick: function () {
+        buttons.unshift({ label: 'Ja, nach ' + place.colony.label + ' segeln' + (leg ? ' · ' + A.money(leg.price) : ''),
+          primary: true, onClick: function () {
           closeDialog(); renderAll();
           A.colonies.departFromColony('colony-' + place.colony.id);
         } });
       } else if (!G.colonyId) {
-        var sail = A.ticketPrice(A.city(G.cityId), place.colony);
-        buttons.unshift({ label: 'Sail to ' + place.colony.label + ' · ' + A.money(sail), primary: true, onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
+        buttons.unshift({ label: 'Ja, nach ' + place.colony.label + ' segeln' + (leg ? ' · ' + A.money(leg.price) : ''),
+          primary: true,
+          onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
       }
     }
-    
-    
-    dialog(place.label, body, buttons);
+
+    dialog(place.label + (leg ? ' · ' + leg.days + ' Tage · ' + A.money(leg.price) : ''), body, buttons);
     if (worldMap) syncWorldMap();
   }
 

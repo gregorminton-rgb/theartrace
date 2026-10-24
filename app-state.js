@@ -46,6 +46,8 @@
     mapPick: null,             // { x, y } of the place picked on the travel chart
     mapLevel: 'world',         // travel chart zoom level: 'europe' | 'world'
     colonyTravel: false,       // the colony screen is showing the travel chart
+    mapHover: null,            // destination slug under the pointer, for the preview lane
+    mapHoverBase: null,        // chart level to restore when the pointer leaves
     colonyReturnCityId: null,  // city to sail back to on leaving
     colonyMenu: 'plantage',    // current colony menu tab (plantage, handel, lager, arbeiter)
     fields: [],                // laid-out plots: { id, colonyId, plotIndex, cropId, plantedDay, progress, ripe, workers, level }

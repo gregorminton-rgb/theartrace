@@ -282,13 +282,46 @@
       var days = d.days;
       var kind = d.kind === 'colony' ? 'Kolonie' : d.kind === 'trade' ? 'Handel' : 'Stadt';
       var disabled = price > G.cash ? ' disabled' : '';
-      return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(d.slug) + '"' + disabled + '>' +
+      return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(d.slug) + '"' +
+        ' data-price="' + price + '" data-days="' + days + '"' + disabled + '>' +
         '<span class="dest-name">' + h(d.label) + '</span>' +
         '<span class="dest-kind">' + kind + '</span>' +
         '<span class="dest-sub">' + h(d.sub || '') + '</span>' +
         '<span class="dest-meta">' + A.money(price) + ' · ' + days + 'd</span>' +
+        '<span class="dest-leg" aria-hidden="true">' + days + 'd · ' + A.money(price) + '</span>' +
         '</button>';
     }).join('');
+  }
+
+  /* Hovering (or pressing on) a destination row draws the passage on the
+     chart and shows the fare beside the name. Nothing is booked here: the row
+     only asks for confirmation once it is clicked. */
+  function bindDestHover(list) {
+    if (!list || list.__hoverBound) return;
+    list.__hoverBound = true;
+    function rowOf(ev) {
+      var t = ev.target;
+      while (t && t !== list && !(t.classList && t.classList.contains('dest-row'))) t = t.parentNode;
+      return t && t !== list ? t : null;
+    }
+    function enter(ev) {
+      var row = rowOf(ev);
+      if (!row) return;
+      list.querySelectorAll('.dest-row.is-hover').forEach(function (r) {
+        if (r !== row) r.classList.remove('is-hover');
+      });
+      row.classList.add('is-hover');
+      if (A.mapView && A.mapView.preview) A.mapView.preview(row.getAttribute('data-dest'));
+    }
+    function leave(ev) {
+      var row = rowOf(ev);
+      if (row) row.classList.remove('is-hover');
+      if (A.mapView && A.mapView.clear) A.mapView.clear();
+    }
+    list.addEventListener('mouseover', enter);
+    list.addEventListener('mouseout', leave);
+    /* touch has no hover: a tap shows the preview, the same tap's click asks */
+    list.addEventListener('touchstart', enter, { passive: true });
   }
 
   /* Everything the plantation can be left for: every city and every other
@@ -331,6 +364,43 @@
       renderColony();
       return;
     }
+    /* A row click only asks: the voyage is booked from the confirmation. */
+    confirmDeparture(dest, colony, target, price, days);
+  }
+
+  /* The one question before the money is spent: destination, price, days. */
+  function confirmDeparture(dest, colony, target, price, days) {
+    A.shell.dialog(
+      'Nach ' + dest.label + ' reisen?',
+      '<div class="confirm-leg">' +
+        '<p class="confirm-head">Von <b>' + h(colony.label) + '</b> nach <b>' + h(dest.label) + '</b></p>' +
+        '<div class="confirm-grid">' +
+          '<div><span>Reisedauer</span><b>' + days + ' Tage</b></div>' +
+          '<div><span>Fahrpreis</span><b>' + A.money(price) + '</b></div>' +
+          '<div><span>Bargeld danach</span><b>' + A.money(G.cash - price) + '</b></div>' +
+        '</div>' +
+        '<p class="confirm-note">Die Plantage bleibt bewirtschaftet zurück. Ankunft an Tag ' +
+          (G.day + days) + '.</p>' +
+      '</div>',
+      [
+        { label: 'Abbrechen', onClick: function () {
+            A.shell.closeDialog();
+            if (A.mapView && A.mapView.clear) A.mapView.clear();
+          } },
+        { label: 'Ja, ablegen', primary: true, onClick: function () {
+            A.shell.closeDialog();
+            bookPassage(dest, colony, target, price, days);
+          } }
+      ],
+      'confirm-dialog'
+    );
+    if (A.mapView && A.mapView.preview) A.mapView.preview(dest.slug);
+  }
+
+  function bookPassage(dest, colony, target, price, days) {
+    if (!colony || !G.started || G.ended) return;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
+    if (price > G.cash) return;
     G.cash -= price;
     /* the ship leaves from the colony, so the chart must start there */
     G.cityId = colony.id && A.city(colony.id) ? colony.id : G.colonyReturnCityId || G.cityId;
@@ -376,10 +446,14 @@
        renderer measures it. */
     if (G.colonyMenu === 'reise') {
       var dl = el('colony-dest-list');
-      if (dl) dl.innerHTML = colonyTravelRowsHTML();
+      if (dl) {
+        dl.innerHTML = colonyTravelRowsHTML();
+        bindDestHover(dl);
+      }
       if (A.mapView && A.mapView.sync) A.mapView.sync();
     } else {
       G.colonyTravel = false;
+      if (A.mapView && A.mapView.clear) A.mapView.clear();
     }
     
     /* Render plantage view (only when visible) */
@@ -582,6 +656,7 @@
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
     colonyDestinations: colonyDestinations, departFromColony: departFromColony,
     colonyTravelRowsHTML: colonyTravelRowsHTML, openColonyTravel: openColonyTravel,
+    bindDestHover: bindDestHover,
     renderColony: renderColony
   };
 })();

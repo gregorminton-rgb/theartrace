@@ -917,7 +917,9 @@
       voyages: [],
       labels: [],
       level: opts.level && LEVELS[opts.level] ? opts.level : 'world',
+      anchor: null,
       setVoyages: setVoyages,
+      setAnchor: setAnchor,
       setLabels: setLabels,
       setLevel: setLevel,
       refresh: refresh,
@@ -942,6 +944,17 @@
     function setVoyages(list) {
       api.voyages = list || [];
       drawRoutes();
+    }
+
+    /* Where the traveller stands right now, as {x, y} in map space — a port,
+       or a plantation ashore. The hover preview of the city list needs it to
+       draw a line from here to the place under the pointer. */
+    function setAnchor(pt) {
+      var nx = pt && typeof pt.x === 'number' ? pt.x : null;
+      var ny = pt && typeof pt.y === 'number' ? pt.y : null;
+      if (api.anchor && nx === api.anchor.x && ny === api.anchor.y) return;
+      api.anchor = nx === null || ny === null ? null : { x: nx, y: ny };
+      drawAnchor();
     }
 
     function setLabels(list) {
@@ -1259,6 +1272,25 @@
       labelLayer.addChildAt(g, 0);
     }
 
+    /* The traveller's own position: a small sea-chevron so the hover preview
+       has an obvious starting point, even when no port pin is nearby. */
+    function drawAnchor() {
+      var existing = labelLayer.getChildByName('here-anchor');
+      if (existing) labelLayer.removeChild(existing);
+      if (!api.anchor || !cam) return;
+      var p = cam.fromMap(api.anchor.x, api.anchor.y);
+      var g = new PIXI.Graphics();
+      g.name = 'here-anchor';
+      g.lineStyle(1.6, 0xffe9a8, 0.9);
+      g.beginFill(0x1a1206, 0.75);
+      g.drawCircle(p.x, p.y, 7.5);
+      g.endFill();
+      g.lineStyle(1.2, 0xffe9a8, 0.55);
+      g.moveTo(p.x, p.y - 12); g.lineTo(p.x + 4, p.y - 5); g.lineTo(p.x - 4, p.y - 5);
+      g.closePath();
+      labelLayer.addChild(g);
+    }
+
     /* ---- animation --------------------------------------------------- */
     var tickerFn = function () {
       if (dead || !cam) return;
@@ -1286,12 +1318,14 @@
       drawRoutes();
       drawPinsAndLabels();
       drawSelection();
+      drawAnchor();
     }
 
     function refresh() {
       if (dead) return;
       resize();
       drawSelection();
+      drawAnchor();
     }
 
     var ro = null;
