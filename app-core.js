@@ -493,7 +493,10 @@
   function syncAuction() {
     var city = A.city(G.cityId);
     var hasRoom = !!(city && city.hasAuctionHouse);
-    if (!hasRoom) { G.auctionCityId = null; G.lots = []; return; }
+    /* Away from an auction house the calendar is kept, not wiped: the player
+       should still know when the hammer falls where they last stood. The
+       city check in auctionListUp() already hides a foreign sale list. */
+    if (!hasRoom) return;
     if (G.auctionCityId !== city.id) {
       /* a different room: its own calendar starts a couple of days out */
       G.auctionCityId = city.id;
@@ -550,6 +553,10 @@
   }
 
   function passLot(index) {
+    if (!auctionOpenHere()) {
+      log('The room is not taking bids to-day.');
+      return;
+    }
     var lot = G.lots[index];
     if (!lot || lot.closed) return;
     lot.closed = true;
