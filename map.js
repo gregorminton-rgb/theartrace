@@ -524,7 +524,7 @@
   /* Pixi has no line dash, so a dashed line is emitted segment by segment */
   function dashedCurve(g, pts, on, off) {
     if (pts.length < 2) return g;
-    var acc = 0, drawing = true;
+    var acc = 0, drawing = true, penAt = pts[0];
     g.moveTo(pts[0].x, pts[0].y);
     for (var i = 1; i < pts.length; i++) {
       var a = pts[i - 1], b = pts[i];
@@ -538,9 +538,24 @@
         acc += step;
         var f = t / seg;
         var px = a.x + (b.x - a.x) * f, py = a.y + (b.y - a.y) * f;
-        if (drawing) g.lineTo(px, py); else g.moveTo(px, py);
-        if (acc >= limit - 1e-6) { drawing = !drawing; acc = 0; }
+        if (drawing) {
+          /* a dash may resume mid-segment, but the pen was lifted: start the
+             stroke at the segment point, not by chording back to where the
+             previous dash ended, which reads as a second line */
+          if (penAt !== a) g.moveTo(a.x, a.y);
+          g.lineTo(px, py);
+          penAt = null;
+        } else {
+          g.moveTo(px, py);
+        }
+        if (acc >= limit - 1e-6) {
+          drawing = !drawing;
+          acc = 0;
+          if (!drawing) penAt = null;
+        }
       }
+      if (!drawing) penAt = null;
+      if (drawing) penAt = b;
     }
     return g;
   }
@@ -794,6 +809,32 @@
    * 5. Vessels
    * =================================================================== */
 
+  /* Eight painted plates of the same vintage sailing ship, one per compass
+     point. The sprite points east at rest, so the sheet is indexed clockwise
+     from E and the holder must never be rotated (see placeVessels). */
+  var SHIP_DIRS = ['e', 'se', 's', 'sw', 'w', 'nw', 'n', 'ne'];
+  var shipTextures = null;
+  /* the vessels on the live plate, for the harness hook below */
+  var liveVessels = null;
+
+  function shipTexture(dir) {
+    if (!shipTextures) {
+      shipTextures = {};
+      for (var i = 0; i < SHIP_DIRS.length; i++) {
+        var name = SHIP_DIRS[i];
+        var tex = PIXI.Texture.from('images/sprites/ship-' + name + '.png');
+        shipTextures[name] = tex;
+      }
+    }
+    return shipTextures[dir] || shipTextures.e;
+  }
+
+  function shipDirFor(angle) {
+    var a = angle == null || !isFinite(angle) ? 0 : angle;
+    var oct = Math.round(((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) / (Math.PI / 4)) % 8;
+    return SHIP_DIRS[oct];
+  }
+
   function makeShip() {
     var root = new PIXI.Container();
     var wake = new PIXI.Graphics();
@@ -802,43 +843,13 @@
     wake.quadraticCurveTo(-5, 1.2, -1.5, 0);
     root.addChild(wake);
 
-    var hull = new PIXI.Graphics();
-    hull.beginFill(0x3a2a17, 1);
-    hull.lineStyle(0.7, 0x140c04, 0.8);
-    hull.moveTo(-10, 0);
-    hull.quadraticCurveTo(-4, 4.6, 8, 2.4);
-    hull.lineTo(11, -1.6);
-    hull.quadraticCurveTo(2, -3.4, -10, -2.2);
-    hull.closePath();
-    hull.endFill();
+    var sprite = new PIXI.Sprite(shipTexture('e'));
+    sprite.anchor.set(0.5, 0.5);
+    /* 128px plate -> roughly a 26px vessel on a 700px-wide chart */
+    sprite.scale.set(0.24);
+    root.addChild(sprite);
 
-    hull.lineStyle(0.9, 0x281c0e, 0.9);
-    hull.moveTo(-2, -2); hull.lineTo(-2, -12);
-    hull.moveTo(5, -1.6); hull.lineTo(5, -9);
-
-    hull.beginFill(0xfcf8ec, 0.96);
-    hull.lineStyle(0.55, 0x5a4628, 0.65);
-    hull.moveTo(-2.4, -11.6);
-    hull.quadraticCurveTo(2.6, -8.6, -2.4, -4.2);
-    hull.closePath();
-    hull.endFill();
-
-    hull.beginFill(0xfcf8ec, 0.96);
-    hull.lineStyle(0.55, 0x5a4628, 0.65);
-    hull.moveTo(4.6, -8.7);
-    hull.quadraticCurveTo(8.8, -6.4, 4.6, -3.2);
-    hull.closePath();
-    hull.endFill();
-
-    hull.beginFill(0xfaf4e4, 0.9);
-    hull.lineStyle(0.5, 0x5a4628, 0.6);
-    hull.moveTo(9.4, -2);
-    hull.quadraticCurveTo(14, -3.4, 11.6, 0);
-    hull.closePath();
-    hull.endFill();
-
-    root.addChild(hull);
-    return { root: root, wake: wake };
+    return { root: root, wake: wake, sprite: sprite };
   }
 
   function makeTrain() {
@@ -979,6 +990,7 @@
     /* ---- routes ------------------------------------------------------ */
     var runs = [];
     var vessels = [];
+    liveVessels = vessels;
 
     function drawRoutes() {
       clear(routeLayer);
@@ -1008,18 +1020,15 @@
     }
 
     /* A standing lane from the current port to a reachable one. It shows the
-       shape of the voyage without pretending anybody is sailing it. */
+       shape of the voyage without pretending anybody is sailing it.
+       One stroke only: a base line plus a dashed overlay reads as two routes. */
     function laneGraphic(route, px) {
       var isRail = route.glyph === 'rail';
       var c = new PIXI.Container();
       var base = new PIXI.Graphics();
-      base.lineStyle(2.4, isRail ? 0xc64a36 : 0x5cc4fc, 0.92);
-      traceCurve(base, px);
+      base.lineStyle(1.6, isRail ? 0xc64a36 : 0x5cc4fc, 0.55);
+      dashedCurve(base, px, isRail ? 5 : 4, isRail ? 5 : 6);
       c.addChild(base);
-      var dashes = new PIXI.Graphics();
-      dashes.lineStyle(1.2, 0xf0f8ff, 0.5);
-      dashedCurve(dashes, px, isRail ? 6 : 3, isRail ? 6 : 7);
-      c.addChild(dashes);
       return c;
     }
 
@@ -1027,21 +1036,29 @@
       var isRail = route.glyph === 'rail';
       var active = progress < 1;
       var g = new PIXI.Graphics();
-      g.lineStyle(active ? 2.2 : 1.5,
-        isRail ? 0xc84836 : 0x56b6f0,
-        active ? 0.72 : 0.38);
-      dashedCurve(g, px, isRail ? 4 : 2, isRail ? 5 : 5);
-
+      /* the part not yet sailed, then the part already covered drawn solid on
+         top of it. The dashed remainder must not run underneath the solid one,
+         or the eye reads two parallel lines wherever they nearly coincide. */
+      var head = null, upto = 0, seg = null;
       if (progress > 0 && progress < 1) {
-        var head = pointAt(route, progress);
-        var hp = cam.fromMap(head.x, head.y);
-        var upto = Math.max(1, Math.round(progress * px.length));
-        var seg = px.slice(0, upto);
-        seg.push({ x: hp.x, y: hp.y });
+        var hp0 = pointAt(route, progress);
+        head = cam.fromMap(hp0.x, hp0.y);
+        upto = Math.max(1, Math.round(progress * px.length));
+        seg = px.slice(0, upto);
+        seg.push({ x: head.x, y: head.y });
+        var rest = [{ x: head.x, y: head.y }].concat(px.slice(upto));
+        if (rest.length >= 2) {
+          g.lineStyle(active ? 2.2 : 1.5, isRail ? 0xc84836 : 0x56b6f0, 0.72);
+          dashedCurve(g, rest, isRail ? 4 : 2, isRail ? 5 : 5);
+        }
         g.lineStyle(5, isRail ? 0x1e140a : 0x041a2c, 0.30);
         traceCurve(g, seg);
         g.lineStyle(3, isRail ? 0xffd98a : 0xd8f1ff, 1);
         traceCurve(g, seg);
+      } else {
+        g.lineStyle(active ? 2.2 : 1.5, isRail ? 0xc84836 : 0x56b6f0,
+                    active ? 0.72 : 0.38);
+        dashedCurve(g, px, isRail ? 4 : 2, isRail ? 5 : 5);
       }
       return g;
     }
@@ -1096,14 +1113,29 @@
 
         var bob = item.isRail ? 0 : Math.sin(t * 2.2 + item.phase) * 1.1;
         item.holder.position.set(sp.x, sp.y + bob);
-        item.holder.rotation = ang;
+        /* The painted ship carries its heading in the picture, so the vessel
+           is never rotated: rotate flags the wake, the frame is the heading. */
+        item.holder.rotation = 0;
+        if (!item.isRail && item.craft.sprite) {
+          var dir = shipDirFor(ang);
+          var tex = shipTexture(dir);
+          if (item.craft.sprite.texture !== tex) {
+            item.craft.sprite.texture = tex;
+            item.craft.sprite.shipDir = dir;
+          }
+          item.craft.sprite.rotation = 0;
+        }
         item.holder.visible = true;
 
         item.craft.wake && (function (wk) {
           wk.clear();
-          wk.lineStyle(1.6, 0xffffff, 0.34 + 0.2 * Math.sin(t * 3 + item.phase));
-          wk.moveTo(-9, 0);
-          wk.quadraticCurveTo(-5, 1.6 * Math.sin(t * 2 + item.phase), -1.5, 0);
+          /* the wake trails opposite the painted heading */
+          var bx = -Math.cos(ang) * 9, by = -Math.sin(ang) * 9;
+          var nx = -Math.sin(ang) * 3, ny = Math.cos(ang) * 3;
+          var sway = Math.sin(t * 2 + item.phase) * 1.6;
+          wk.lineStyle(1.5, 0xffffff, 0.3 + 0.18 * Math.sin(t * 3 + item.phase));
+          wk.moveTo(bx, by);
+          wk.quadraticCurveTo(bx * 0.55 + nx + sway, by * 0.55 + ny, -Math.cos(ang) * 1.5, -Math.sin(ang) * 1.5);
         })(item.craft.wake);
 
         item.craft.steam && (function (st) {
@@ -1295,6 +1327,25 @@
     pointAt: pointAt,
     isLand: isLand,
     mount: mount,
+    /* harness hook: what the plate is currently drawing, so a headless probe
+       can assert that a ship carries a directional sprite */
+    testVessels: function () {
+      var out = [];
+      var vessels = liveVessels || [];
+      for (var i = 0; i < vessels.length; i++) {
+        var it = vessels[i];
+        out.push({
+          rail: !!it.isRail,
+          visible: !!(it.holder && it.holder.visible),
+          rotation: it.holder ? it.holder.rotation : null,
+          sprite: it.craft && it.craft.sprite ? it.craft.sprite.texture.valid : null,
+          frame: it.craft && it.craft.sprite ? (it.craft.sprite.shipDir || 'e')
+            : null,
+          label: it.label ? it.label.text : null
+        });
+      }
+      return out;
+    },
     /* harness hook: the real camera for a level at a given plate size */
     testCamera: function (levelName, w, h) {
       var lv = LEVELS[levelName];
