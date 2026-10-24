@@ -56,18 +56,79 @@
    * ---------------------------------------------------------------------- */
   function renderWorldMap() {
     var hasCanvas = !!(window.ArtRaceMap && window.ArtRaceMap.available);
+    var lv = G.mapLevel || 'world';
     return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="wm-stage">' +
       '<div class="wm-legend">' +
       '<span class="wm-key wm-key--colony">Colonies</span>' +
       '<span class="wm-key wm-key--city">Art-trade cities</span>' +
       '<span class="wm-key wm-key--trade">Trade cities</span>' +
+      '<span class="wm-levels">' +
+      '<button type="button" class="wm-level' + (lv === 'europe' ? ' is-on' : '') +
+      '" data-map-level="europe">Europa</button>' +
+      '<button type="button" class="wm-level' + (lv === 'world' ? ' is-on' : '') +
+      '" data-map-level="world">Welt</button>' +
+      '</span>' +
       '</div>' + (hasCanvas ? '' : '<p class="wm-fallback">The engraved chart could not be drawn — the list below still works.</p>') + '</div>';
+  }
+
+  /* Two zoom levels share one camera. Europe is where the art trade is played;
+     the world carries the colonies, so a sail to a colony switches the plate
+     on its own. */
+  function setMapLevel(id) {
+    if (id !== 'europe' && id !== 'world') return;
+    if (G.mapLevel === id) return;
+    G.mapLevel = id;
+    if (worldMap) worldMap.setLevel(id);
+    renderAll();
+  }
+
+  function levelForPlace(place) {
+    /* The Europa plate only carries European ground: every place outside it
+       (colonies and the overseas art cities) has to be shown on the world. */
+    if (!place) return null;
+    if (place.kind === 'colony') return 'world';
+    return onEurope(place.mapX, place.mapY) ? 'europe' : 'world';
+  }
+
+  /* The Europa plate only carries European ground: every place outside its
+     Mercator window (the colonies and the overseas art cities) has to be
+     shown on the world. The window is derived from the places themselves, so
+     adding a city cannot silently put its pin off the plate. */
+  var EUROPE_X = (function () {
+    var ids = { lissabon: 1, london: 1, amsterdam: 1, berlin: 1, paris: 1, muenchen: 1,
+                zuerich: 1, wien: 1, roma: 1, firenze: 1, madrid: 1, prag: 1 };
+    var minX = 1, maxX = 0, minY = 1, maxY = 0;
+    PLACES.forEach(function (p) {
+      if (!ids[p.slug]) return;
+      if (p.mapX < minX) minX = p.mapX;
+      if (p.mapX > maxX) maxX = p.mapX;
+      if (p.mapY < minY) minY = p.mapY;
+      if (p.mapY > maxY) maxY = p.mapY;
+    });
+    if (minX > maxX || minY > maxY) return null;
+    /* a margin so a place on the edge of Europe still counts as European */
+    var pad = 0.06;
+    return { x0: minX - pad, x1: maxX + pad, y0: minY - pad, y1: maxY + pad };
+  })();
+
+  function levelForPlace(place) {
+    if (!place) return null;
+    if (place.kind === 'colony') return 'world';
+    if (!EUROPE_X) return 'europe';
+    var e = EUROPE_X;
+    return (place.mapX >= e.x0 && place.mapX <= e.x1 &&
+            place.mapY >= e.y0 && place.mapY <= e.y1) ? 'europe' : 'world';
   }
 
   /* ---- the live chart ------------------------------------------------ */
   var worldMap = null;
   A.mapView = { get: function () { return worldMap; }, render: renderWorldMap,
-                 sync: syncWorldMap };
+                 sync: syncWorldMap, setLevel: setMapLevel,
+                 /* pick a place by id instead of by pixel: the chart's own
+                    hit-test needs a real canvas rect, tests and the city list
+                    do not have one. */
+                 pick: function (slug) { showPlace(slug); syncWorldMap(); return G.mapPick; },
+                 places: function () { return PLACES.map(function (p) { return p.slug; }); } };
 
   function mapPlaces() {
     return PLACES.map(function (p) {
@@ -143,15 +204,27 @@
 
     if (!worldMap) {
       worldMap = Map.mount(stage, {
+        level: G.mapLevel || 'world',
         getSelection: function () { return G.mapPick || null; }
       });
-      if (!worldMap) return;
+      if (!worldMap) {
+        /* no Pixi (or no geo data): fall back to a plain notice, the list
+           below the plate still carries every place */
+        var note = document.createElement('p');
+        note.className = 'wm-fallback';
+        note.textContent = 'The engraved chart could not be drawn — the list below still works.';
+        stage.appendChild(note);
+        return;
+      }
       stage.addEventListener('click', function (ev) {
+        var lvBtn = ev.target.closest('[data-map-level]');
+        if (lvBtn) { setMapLevel(lvBtn.getAttribute('data-map-level')); return; }
         var c = worldMap && worldMap.canvas;
         if (!c || ev.target !== c) return;
         pickPlaceAt(ev, c);
       });
     }
+    if (worldMap.level !== (G.mapLevel || 'world')) worldMap.setLevel(G.mapLevel || 'world');
     var preview = mapPreview();
     worldMap.setLabels(mapPlaces());
     worldMap.setVoyages(preview ? mapVoyages().concat([preview]) : mapVoyages());
@@ -183,6 +256,13 @@
     /* 4.5% of the plate: about a fingertip at phone size */
     if (best && bestD <= 0.045) {
       G.mapPick = { x: best.mapX, y: best.mapY };
+      /* a colony is off the Europe plate: show the world so the new line is
+         actually on screen */
+      var want = levelForPlace(best);
+      if (want && want !== (G.mapLevel || 'world')) {
+        G.mapLevel = want;
+        if (worldMap) worldMap.setLevel(want);
+      }
       showPlace(best.slug);
     }
   }
@@ -191,6 +271,13 @@
     var place = PLACE_BY_SLUG[slug];
     if (!place) return;
     G.mapPick = { x: place.mapX, y: place.mapY };
+    /* a place off the current plate is not on screen: switch to the plate
+       that carries it, so the start -> destination line is visible */
+    var want = levelForPlace(place);
+    if (want && want !== (G.mapLevel || 'world')) {
+      G.mapLevel = want;
+      if (worldMap) worldMap.setLevel(want);
+    }
     /* a colony pin slug is "colony-<id>"; its plate lives under pic/slug */
     var pic = pictureFor(place.colony ? (place.colony.pic || place.colony.slug) : slug);
     var caption = place.label + (place.sub ? ' — ' + place.sub : '') +

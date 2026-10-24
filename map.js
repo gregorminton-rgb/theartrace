@@ -1,9 +1,10 @@
 /* ==========================================================================
- * map.js — the 1920s travel chart.
+ * map.js — the 1920s travel chart, drawn with PixiJS.
  *
  * The travel screen used to be a JPG with absolutely positioned HTML pins, so
- * nothing could move and nothing could be drawn between two cities. This module
- * draws the chart on a real <canvas> and drives the voyages across it.
+ * nothing could move and nothing could be drawn between two cities. The chart
+ * is now a Pixi scene: land and lettering are vector graphics, the hulls and
+ * the locomotives are animated display objects that ride the route curves.
  *
  * Three things make the drawing trustworthy rather than decorative:
  *
@@ -13,10 +14,11 @@
  *     A place pin and its patch of coast are therefore in one system and cannot
  *     drift apart.
  *
- *  2. PROJECTION is a radial lens centred on Europe that enlarges the area the
- *     game is played in ~3x and fades to identity outside it. Because the fade
- *     reaches exactly 1.0 at the lens edge, the world's bounding box stays at
- *     0..1 and no coastline can be pushed off the plate.
+ *  2. TWO ZOOM LEVELS share one Mercator camera: EUROPE, where the Art Race is
+ *     actually played, and the WORLD, which carries the colonies. Both are
+ *     plain Mercator, so a pin, its coast and its route line all move together
+ *     at any window size — the old radial lens enlarged Europe but bent the
+ *     geography around it.
  *
  *  3. SEA ROUTES are found by an A* search over a land/water mask built from the
  *     same coastline data, then smoothed, so a ship instinctively rounds Cape
@@ -30,68 +32,59 @@
   'use strict';
 
   var GEO = window.ArtRaceGeo;
+  var FONT = '"Playfair Display", Georgia, "Iowan Old Style", serif';
 
   /* ---------------------------------------------------------------------
-   * Plate geometry. The window is the slice of map space the plate shows:
-   * the southern tip of Patagonia and the north of Greenland fall outside,
-   * which is both invisible and how a period plate would be trimmed.
+   * Plate geometry. Every level is a Mercator window onto map space:
+   * lon = mapX * 360 - 180, lat = mapY * 180 - 90, merc = ln(tan(pi/4 + lat/2)).
+   * `lat0`/`lat1` are the north and south edges of the plate; lon 0 sits at the
+   * horizontal middle, which puts Spain in the left third of the Europe plate
+   * and the Atlantic in the middle of the world plate.
    * ------------------------------------------------------------------- */
-  var WIN = { x0: 0.0, y0: 0.28, x1: 1.0, y1: 1.0 };
-  var WIN_W = WIN.x1 - WIN.x0;
-  var WIN_H = WIN.y1 - WIN.y0;
-  var ASPECT = WIN_W / WIN_H;          /* width / height, for CSS */
-
-  /* Lens: centre sits on Europe, the plateau radius covers Europe plus the
-   * near Atlantic, and the taper brings the scale back to 1 before the lens
-   * ends so the rest of the world is untouched. 3.4 is the largest plateau
-   * that keeps the radial map monotonic (g'(d) stays positive), i.e. no fold. */
-  var LENS = { cx: 0.517, cy: 0.757, scale: 3.4, radius: 0.40 };
-
-  function project(x, y) {
-    var dx = x - LENS.cx;
-    var dy = y - LENS.cy;
-    var d = Math.sqrt(dx * dx + dy * dy);
-    var px, py;
-    if (d < 1e-9) {
-      px = LENS.cx; py = LENS.cy;
-    } else {
-      var u = d / LENS.radius;
-      if (u >= 1) { px = x; py = y; }
-      else {
-        var w = (1 - u) * (1 - u);
-        var k = 1 + (LENS.scale - 1) * w;
-        px = LENS.cx + dx * k;
-        py = LENS.cy + dy * k;
-      }
+  var LEVELS = {
+    europe: {
+      id: 'europe',
+      lat0: 62, lat1: 32, cell: 10, lon0: 6,
+      sea: ['#12405f', '#0a2b45', '#08243a'],
+      land: '#e3d3ad', coast: '#6d5426',
+      city: '#8a2525', trade: '#b3872c', colony: '#9e2a2b',
+      ocean: [['ATLANTIC  OCEAN', -18, 42], ['MEDITERRANEAN', 16, 37],
+              ['BLACK  SEA', 34, 43]],
+      cartouche: ['CARTA D\u2019EUROPA', 'the art trade \u00b7 MCMXX']
+    },
+    world: {
+      id: 'world',
+      lat0: 76, lat1: -56, cell: 20, lon0: 0,
+      sea: ['#17465c', '#0e3049', '#0a2437'],
+      land: '#dabc98', coast: '#6b4c2c',
+      city: '#1a2b3c', trade: '#b3872c', colony: '#9e2a2b',
+      ocean: [['ATLANTIC  OCEAN', -32, 8], ['PACIFIC  OCEAN', -140, 0],
+              ['INDIAN  OCEAN', 78, -22]],
+      cartouche: ['MAPPEMONDE', 'territories & settlements \u00b7 MCMXX']
     }
-    return {
-      x: (px - WIN.x0) / WIN_W,
-      y: (WIN.y1 - py) / WIN_H        /* canvas y grows downward */
-    };
-  }
-
-  /* ---------------------------------------------------------------------
-   * Palette. Everything is mixed from a handful of period inks so the plate
-   * reads as one printed object.
-   * ------------------------------------------------------------------- */
-  var C = {
-    seaTop: '#12405f',
-    seaBottom: '#0a2b45',
-    seaDeep: '#08243a',
-    land: '#e3d3ad',
-    landHigh: '#eee0c0',
-    coast: '#6d5426',
-    ink: '#3b2c17',
-    inkSoft: 'rgba(59,44,23,.55)',
-    inkFaint: 'rgba(59,44,23,.28)',
-    route: '#c0392b',
-    routeSea: '#2f8fd0',
-    gold: '#c9a548',
-    paper: '#f4ecd8',
-    here: '#d4452f'
   };
 
-  var SERIF = 'Georgia, "Iowan Old Style", "Palatino Linotype", serif';
+  function merc(lat) {
+    var r = Math.max(-1.48, Math.min(1.48, lat * Math.PI / 180));
+    return Math.log(Math.tan(Math.PI / 4 + r / 2));
+  }
+
+  /* the camera for one level at one window size: canvas pixels <-> map space */
+  function camera(level, W, H) {
+    var m0 = merc(level.lat0), m1 = merc(level.lat1);
+    var span = m0 - m1;
+    var scale = H / span;
+    return {
+      W: W, H: H, level: level,
+      fromMap: function (x, y) {
+        var lat = (1 - y) * 180 - 90;
+        return {
+          x: W / 2 + (x - 0.5) * 360 * scale,
+          y: (m0 - merc(lat)) * scale
+        };
+      }
+    };
+  }
 
   /* =====================================================================
    * 1. Geometry decoding
@@ -118,7 +111,7 @@
   var LAKES = decode(GEO && GEO.lakes);
 
   /* =====================================================================
-   * 2. Land mask + sea routing
+   * 2. Land mask + sea routing (all in map space, level-independent)
    * =================================================================== */
 
   var GW = 480, GH = 240;              /* mask resolution */
@@ -244,19 +237,17 @@
     var N = GW * GH;
     var g = new Float32Array(N);
     var came = new Int32Array(N);
-    var seen = new Uint8Array(N);
     var closed = new Uint8Array(N);
     for (var i = 0; i < N; i++) { g[i] = Infinity; came[i] = -1; }
 
-    function h(c, r) {
+    function hd(c, r) {
       var dx = Math.abs(c - tc), dy = Math.abs(r - tr) * 1.44;
       return (dx > dy ? dx + dy * 0.44 : dy + dx * 0.44);
     }
 
     var open = new Heap();
     g[start] = 0;
-    open.push(start, h(sc, sr));
-    seen[start] = 1;
+    open.push(start, hd(sc, sr));
     var guard = 0;
 
     while (open.size()) {
@@ -278,8 +269,7 @@
         if (ng < g[nb]) {
           g[nb] = ng;
           came[nb] = cur;
-          open.push(nb, ng + h(nx, ny) * 1.05);
-          seen[nb] = 1;
+          open.push(nb, ng + hd(nx, ny) * 1.05);
         }
       }
     }
@@ -380,52 +370,56 @@
   }
 
   /* The link between two ports as the plate draws it: one gentle bow off the
-   * straight line, the way the period map drew its routes. The bow is taken
-   * in *screen* space (a canvas row is wider than it is tall, so a map-space
-   * arc would look flat) and its sign is chosen so the bent line keeps clear
-   * of land whenever the straight one does not. */
+   * straight line. The bow lives in map space, and its sign is chosen so the
+   * bent line keeps clear of land whenever the straight one does not. */
   var BOW = 0.06;
   var ARC_STEPS = 32;
 
-  function screenArc(ax, ay, bx, by, bow) {
-    var p = project(ax, ay), q = project(bx, by);
-    var dx = q.x - p.x, dy = q.y - p.y;
+  function mapArc(ax, ay, bx, by, bow) {
+    var dx = bx - ax, dy = by - ay;
     var len = Math.sqrt(dx * dx + dy * dy) || 1e-9;
     var nx = -dy / len, ny = dx / len;
-    var cx = (p.x + q.x) / 2 + nx * bow;
-    var cy = (p.y + q.y) / 2 + ny * bow;
+    var cx = (ax + bx) / 2 + nx * bow;
+    var cy = (ay + by) / 2 + ny * bow;
     var pts = [];
     for (var i = 0; i <= ARC_STEPS; i++) {
       var t = i / ARC_STEPS, u = 1 - t;
-      var sx = u * u * p.x + 2 * u * t * cx + t * t * q.x;
-      var sy = u * u * p.y + 2 * u * t * cy + t * t * q.y;
       pts.push({
-        x: WIN.x0 + sx * WIN_W,
-        y: WIN.y1 - sy * WIN_H
+        x: u * u * ax + 2 * u * t * cx + t * t * bx,
+        y: u * u * ay + 2 * u * t * cy + t * t * by
       });
     }
     return pts;
   }
 
   function link(ax, ay, bx, by) {
-    var straight = screenArc(ax, ay, bx, by, 0);
+    /* a crossing that leaves the continent gets a real sea path around the
+       headlands; a short hop gets the express arc below */
+    if (Math.hypot(bx - ax, by - ay) > 0.11) {
+      var sea = seaPath(ax, ay, bx, by);
+      if (sea && sea.length > 2) {
+        var smooth = chaikin(rdp(sea, 0.0016), 2);
+        smooth[0] = { x: ax, y: ay };
+        smooth[smooth.length - 1] = { x: bx, y: by };
+        return smooth;
+      }
+    }
+    var straight = mapArc(ax, ay, bx, by, 0);
     var straightWet = waterFraction(straight);
     var bow = BOW;
-    var pts = screenArc(ax, ay, bx, by, bow);
+    var pts = mapArc(ax, ay, bx, by, bow);
     if (straightWet >= 0.80) return pts;
-    /* the straight run crosses a coast: bend further, and bend the other way
-       if that does not help */
     var wet = waterFraction(pts);
-    var alt = screenArc(ax, ay, bx, by, -bow);
+    var alt = mapArc(ax, ay, bx, by, -bow);
     var wetAlt = waterFraction(alt);
     if (wetAlt > wet + 0.05) return alt;
     if (wet >= 0.72) return pts;
     for (var i = 0; i < 3; i++) {
       bow *= 1.6;
-      var more = screenArc(ax, ay, bx, by, bow);
+      var more = mapArc(ax, ay, bx, by, bow);
       var mw = waterFraction(more);
       if (mw > wet) { pts = more; wet = mw; }
-      var less = screenArc(ax, ay, bx, by, -bow);
+      var less = mapArc(ax, ay, bx, by, -bow);
       var lw = waterFraction(less);
       if (lw > wet) { pts = less; wet = lw; }
       if (wet >= 0.88) break;
@@ -439,11 +433,11 @@
     var key = ax.toFixed(3) + ',' + ay.toFixed(3) + '>' + bx.toFixed(3) + ',' + by.toFixed(3);
     if (ROUTE_CACHE[key]) return ROUTE_CACHE[key];
 
-    var pts = link(ax, ay, bx, by);
     /* rail only over a short Continental hop; anything that leaves Europe or
        that spends real time on water — the Channel included — is sailed */
-    var far = Math.hypot(bx - ax, by - ay) > 0.11;
-    var glyph = (far || waterFraction(pts) > 0.30) ? 'ship' : 'rail';
+    var direct = Math.hypot(bx - ax, by - ay) < 0.11;
+    var pts = direct ? railArc(ax, ay, bx, by) : link(ax, ay, bx, by);
+    var glyph = (direct ? waterFraction(pts) <= 0.30 : false) ? 'rail' : 'ship';
 
     /* arc-length table so a ship moves at constant speed along the curve */
     var cum = [0];
@@ -454,9 +448,6 @@
     ROUTE_CACHE[key] = route;
     return route;
   }
-
-  /* Only the picked start -> destination link is ever shown as a standing
-     line. Everything else is drawn by the active voyage itself. */
 
   function pointAt(route, t) {
     var target = Math.max(0, Math.min(1, t)) * route.total;
@@ -477,789 +468,813 @@
   }
 
   /* =====================================================================
-   * 3. The plate
+   * 3. Colours and drawing helpers
+   * =================================================================== */
+  var PAPER = '#f4ecd8';
+
+  function hex(c) {
+    if (typeof c === 'number') return c;
+    return parseInt(c.replace('#', ''), 16);
+  }
+
+  function mixHex(a, b, t) {
+    var A = hex(a), B = hex(b);
+    var ar = (A >> 16) & 255, ag = (A >> 8) & 255, ab = A & 255;
+    var br = (B >> 16) & 255, bg = (B >> 8) & 255, bb = B & 255;
+    var r = Math.round(ar + (br - ar) * t);
+    var g = Math.round(ag + (bg - ag) * t);
+    var bl = Math.round(ab + (bb - ab) * t);
+    return (r << 16) | (g << 8) | bl;
+  }
+
+  /* through the midpoints with the vertices as control points: a polyline
+     would show its corners, a game board should read as smooth lines */
+  function traceCurve(g, pts) {
+    if (!pts.length) return g;
+    g.moveTo(pts[0].x, pts[0].y);
+    if (pts.length < 3) {
+      for (var a = 1; a < pts.length; a++) g.lineTo(pts[a].x, pts[a].y);
+      return g;
+    }
+    for (var i = 1; i < pts.length - 1; i++) {
+      var mx = (pts[i].x + pts[i + 1].x) / 2;
+      var my = (pts[i].y + pts[i + 1].y) / 2;
+      g.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+    }
+    g.quadraticCurveTo(pts[pts.length - 2].x, pts[pts.length - 2].y,
+                       pts[pts.length - 1].x, pts[pts.length - 1].y);
+    return g;
+  }
+
+  /* Pixi has no line dash, so a dashed line is emitted segment by segment */
+  function dashedCurve(g, pts, on, off) {
+    if (pts.length < 2) return g;
+    var acc = 0, drawing = true;
+    g.moveTo(pts[0].x, pts[0].y);
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b = pts[i];
+      var seg = Math.hypot(b.x - a.x, b.y - a.y);
+      if (seg < 1e-6) continue;
+      var t = 0;
+      while (t < seg - 1e-6) {
+        var limit = drawing ? on : off;
+        var step = Math.min(limit - acc, seg - t);
+        t += step;
+        acc += step;
+        var f = t / seg;
+        var px = a.x + (b.x - a.x) * f, py = a.y + (b.y - a.y) * f;
+        if (drawing) g.lineTo(px, py); else g.moveTo(px, py);
+        if (acc >= limit - 1e-6) { drawing = !drawing; acc = 0; }
+      }
+    }
+    return g;
+  }
+
+  function toPixels(cam, pts) {
+    var out = new Array(pts.length);
+    for (var i = 0; i < pts.length; i++) out[i] = cam.fromMap(pts[i].x, pts[i].y);
+    return out;
+  }
+
+  function flatten(pts) {
+    var out = [];
+    for (var i = 0; i < pts.length; i++) { out.push(pts[i].x, pts[i].y); }
+    return out;
+  }
+
+  function spaced(text) {
+    var out = '';
+    for (var i = 0; i < text.length; i++) {
+      out += text.charAt(i) + (text.charAt(i) === ' ' ? ' ' : ' ');
+    }
+    return out;
+  }
+
+  /* =====================================================================
+   * 4. Static plate parts
    * =================================================================== */
 
+  function drawSea(lv, cam) {
+    var g = new PIXI.Graphics();
+    var W = cam.W, H = cam.H, bands = 64;
+    for (var i = 0; i < bands; i++) {
+      var t = i / (bands - 1);
+      var col = mixHex(lv.sea[0], lv.sea[2], t * t * 0.6 + Math.sin(t * Math.PI) * 0.16);
+      g.beginFill(col, 1);
+      g.drawRect(-1, Math.floor(i * H / bands) - 1, W + 2, Math.ceil(H / bands) + 3);
+      g.endFill();
+    }
+    return g;
+  }
+
+  function drawGraticule(lv, cam) {
+    var g = new PIXI.Graphics();
+    var lon, lat, i, p;
+    g.lineStyle(1, 0xc8e1f5, 0.13);
+    for (lon = -180; lon <= 180; lon += lv.cell) {
+      var x = (lon + 180) / 360;
+      var first = true;
+      for (i = 0; i <= 24; i++) {
+        p = cam.fromMap(x, i / 24);
+        if (first) { g.moveTo(p.x, p.y); first = false; } else g.lineTo(p.x, p.y);
+      }
+    }
+    for (lat = -80; lat <= 80; lat += lv.cell) {
+      var y = (lat + 90) / 180;
+      var a = cam.fromMap(0, y), b = cam.fromMap(1, y);
+      g.moveTo(a.x, a.y);
+      g.lineTo(b.x, b.y);
+    }
+    /* equator + tropics get the classic emphasis */
+    g.lineStyle(1, 0xc8e1f5, 0.26);
+    [0, 23.43, -23.43].forEach(function (deg) {
+      var yy = (deg + 90) / 180;
+      var aa = cam.fromMap(0, yy), bb = cam.fromMap(1, yy);
+      var x = aa.x;
+      while (x < bb.x) {
+        g.moveTo(x, aa.y);
+        g.lineTo(Math.min(bb.x, x + 5), aa.y);
+        x += 9;
+      }
+    });
+    return g;
+  }
+
+  function drawRhumb(cam) {
+    var g = new PIXI.Graphics();
+    g.lineStyle(1, 0xc8e1f5, 0.08);
+    var cx = cam.W * 0.16, cy = cam.H * 0.42, R = Math.max(cam.W, cam.H) * 1.6;
+    for (var i = 0; i < 16; i++) {
+      var a = i * Math.PI / 8;
+      g.moveTo(cx, cy);
+      g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    }
+    return g;
+  }
+
+  function visibleRing(cam, ring) {
+    var W = cam.W, H = cam.H;
+    var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    for (var i = 0; i < ring.length; i++) {
+      var q = cam.fromMap(ring[i].x, ring[i].y);
+      if (q.x < minX) minX = q.x;
+      if (q.x > maxX) maxX = q.x;
+      if (q.y < minY) minY = q.y;
+      if (q.y > maxY) maxY = q.y;
+    }
+    return !(maxX < -90 || minX > W + 90 || maxY < -90 || minY > H + 90);
+  }
+
+  function drawLand(lv, cam) {
+    var g = new PIXI.Graphics();
+    var r, i, pts;
+    var land = hex(lv.land), coast = hex(lv.coast);
+
+    /* the shallow shelf: a wide, soft edge under every coast */
+    for (r = 0; r < RINGS.length; r++) {
+      if (!visibleRing(cam, RINGS[r])) continue;
+      pts = toPixels(cam, RINGS[r]);
+      g.beginFill(0x5a4628, 0.30);
+      g.lineStyle(10, 0x5a4628, 0.20);
+      g.drawPolygon(flatten(pts));
+      g.endFill();
+    }
+
+    /* the landmass itself: pale parchment, one ink line on the coast */
+    for (r = 0; r < RINGS.length; r++) {
+      if (!visibleRing(cam, RINGS[r])) continue;
+      pts = toPixels(cam, RINGS[r]);
+      g.beginFill(land, 1);
+      g.lineStyle(1.4, coast, 0.92);
+      g.drawPolygon(flatten(pts));
+      g.endFill();
+      g.lineStyle(0.6, 0xfffae6, 0.30);
+      g.drawPolygon(flatten(pts));
+    }
+
+    for (i = 0; i < LAKES.length; i++) {
+      if (!visibleRing(cam, LAKES[i])) continue;
+      pts = toPixels(cam, LAKES[i]);
+      g.beginFill(0xa0afaa, 0.85);
+      g.lineStyle(0.6, 0x4a3823, 0.42);
+      g.drawPolygon(flatten(pts));
+      g.endFill();
+    }
+    return g;
+  }
+
+  function drawFrame(cam) {
+    var g = new PIXI.Graphics();
+    var W = cam.W, H = cam.H;
+    g.lineStyle(2, 0x4a3823, 0.72);
+    g.drawRect(7, 7, W - 14, H - 14);
+    g.lineStyle(0.8, 0x4a3823, 0.72);
+    g.drawRect(12.5, 12.5, W - 25, H - 25);
+    var L = 16;
+    g.lineStyle(1.4, 0x4a3823, 0.85);
+    [[13, 13, 1, 1], [W - 13, 13, -1, 1], [13, H - 13, 1, -1], [W - 13, H - 13, -1, -1]]
+      .forEach(function (c) {
+        g.moveTo(c[0] + c[2] * L, c[1]);
+        g.lineTo(c[0], c[1]);
+        g.lineTo(c[0], c[1] + c[3] * L);
+      });
+    return g;
+  }
+
+  function drawCompassRose(cam) {
+    var c = new PIXI.Container();
+    var sc = Math.max(0.62, Math.min(1.2, cam.W / 1100));
+    var r = 30 * sc;
+    var cx = cam.W - 62 * sc, cy = cam.H - 62 * sc;
+    var g = new PIXI.Graphics();
+    g.lineStyle(1, 0x4a3823, 0.55);
+    g.drawCircle(cx, cy, r * 0.94);
+    g.drawCircle(cx, cy, r * 0.62);
+    for (var i = 0; i < 8; i++) {
+      var a = i * Math.PI / 4 - Math.PI / 2;
+      var len = i % 2 === 0 ? r : r * 0.66;
+      var ux = Math.cos(a), uy = Math.sin(a);
+      var nx = -uy, ny = ux;
+      g.beginFill(0x4a3823, i % 2 === 0 ? 0.72 : 0.22);
+      g.lineStyle(0.8, 0x4a3823, 0.6);
+      g.drawPolygon([
+        cx + ux * len, cy + uy * len,
+        cx + nx * r * 0.155, cy + ny * r * 0.155,
+        cx - ux * len * 0.12, cy - uy * len * 0.12
+      ]);
+      g.endFill();
+    }
+    c.addChild(g);
+    var t = new PIXI.Text('N', {
+      fontFamily: FONT, fontSize: Math.max(9, Math.round(r * 0.36)), fontWeight: '700', fill: 0x4a3823
+    });
+    t.alpha = 0.8;
+    t.anchor.set(0.5);
+    t.position.set(cx, cy - r * 1.18);
+    c.addChild(t);
+    return c;
+  }
+
+  function drawScaleBar(cam) {
+    var c = new PIXI.Container();
+    var x = 24, y = cam.H - 34, seg = 15;
+    var g = new PIXI.Graphics();
+    for (var i = 0; i < 4; i++) {
+      g.beginFill(i % 2 ? 0x4a3823 : 0xf4ecd8, i % 2 ? 0.75 : 0.85);
+      g.lineStyle(0.8, 0x4a3823, 0.75);
+      g.drawRect(x + i * seg, y, seg, 4);
+      g.endFill();
+    }
+    c.addChild(g);
+    var t = new PIXI.Text('2000 nautical miles', { fontFamily: FONT, fontSize: 9, fill: 0x4a3823 });
+    t.alpha = 0.75;
+    t.position.set(x, y - 14);
+    c.addChild(t);
+    return c;
+  }
+
+  function drawCartouche(lv, cam) {
+    var c = new PIXI.Container();
+    var sc = Math.max(0.62, Math.min(1.2, cam.W / 1100));
+    var w = 200 * sc, h = 48 * sc, x = 24, y = 20;
+    var g = new PIXI.Graphics();
+    g.beginFill(hex(PAPER), 0.84);
+    g.lineStyle(1.2, 0x4a3823, 0.68);
+    g.drawRect(x, y, w, h);
+    g.endFill();
+    g.lineStyle(0.6, 0x4a3823, 0.68);
+    g.drawRect(x + 4, y + 4, w - 8, h - 8);
+    c.addChild(g);
+
+    var t1 = new PIXI.Text(lv.cartouche[0], {
+      fontFamily: FONT, fontSize: Math.max(9, Math.round(14 * sc)), fontWeight: '700',
+      fill: 0x4a3823, letterSpacing: 0.6
+    });
+    t1.anchor.set(0.5);
+    t1.position.set(x + w / 2, y + h * 0.38);
+    c.addChild(t1);
+
+    var t2 = new PIXI.Text(lv.cartouche[1], {
+      fontFamily: FONT, fontSize: Math.max(7, Math.round(9.5 * sc)), fontStyle: 'italic',
+      fill: 0x6a5540
+    });
+    t2.anchor.set(0.5);
+    t2.position.set(x + w / 2, y + h * 0.70);
+    c.addChild(t2);
+    return c;
+  }
+
+  function seaLabel(cam, text, lon, lat) {
+    var p = cam.fromMap((lon + 180) / 360, (lat + 90) / 180);
+    var t = new PIXI.Text(spaced(text), {
+      fontFamily: FONT, fontSize: cam.W < 620 ? 10 : 13, fontStyle: 'italic', fill: 0x4a3823
+    });
+    t.alpha = 0.42;
+    t.anchor.set(0.5);
+    t.position.set(p.x, p.y);
+    return t;
+  }
+
+  /* =====================================================================
+   * 5. Vessels
+   * =================================================================== */
+
+  function makeShip() {
+    var root = new PIXI.Container();
+    var wake = new PIXI.Graphics();
+    wake.lineStyle(1.6, 0xffffff, 0.5);
+    wake.moveTo(-9, 0);
+    wake.quadraticCurveTo(-5, 1.2, -1.5, 0);
+    root.addChild(wake);
+
+    var hull = new PIXI.Graphics();
+    hull.beginFill(0x3a2a17, 1);
+    hull.lineStyle(0.7, 0x140c04, 0.8);
+    hull.moveTo(-10, 0);
+    hull.quadraticCurveTo(-4, 4.6, 8, 2.4);
+    hull.lineTo(11, -1.6);
+    hull.quadraticCurveTo(2, -3.4, -10, -2.2);
+    hull.closePath();
+    hull.endFill();
+
+    hull.lineStyle(0.9, 0x281c0e, 0.9);
+    hull.moveTo(-2, -2); hull.lineTo(-2, -12);
+    hull.moveTo(5, -1.6); hull.lineTo(5, -9);
+
+    hull.beginFill(0xfcf8ec, 0.96);
+    hull.lineStyle(0.55, 0x5a4628, 0.65);
+    hull.moveTo(-2.4, -11.6);
+    hull.quadraticCurveTo(2.6, -8.6, -2.4, -4.2);
+    hull.closePath();
+    hull.endFill();
+
+    hull.beginFill(0xfcf8ec, 0.96);
+    hull.lineStyle(0.55, 0x5a4628, 0.65);
+    hull.moveTo(4.6, -8.7);
+    hull.quadraticCurveTo(8.8, -6.4, 4.6, -3.2);
+    hull.closePath();
+    hull.endFill();
+
+    hull.beginFill(0xfaf4e4, 0.9);
+    hull.lineStyle(0.5, 0x5a4628, 0.6);
+    hull.moveTo(9.4, -2);
+    hull.quadraticCurveTo(14, -3.4, 11.6, 0);
+    hull.closePath();
+    hull.endFill();
+
+    root.addChild(hull);
+    return { root: root, wake: wake };
+  }
+
+  function makeTrain() {
+    var root = new PIXI.Container();
+    var steam = new PIXI.Graphics();
+    root.addChild(steam);
+
+    var body = new PIXI.Graphics();
+    body.beginFill(0x4a2a22, 1);
+    body.lineStyle(0.9, 0x140c04, 0.85);
+    body.drawRect(-8, -5, 17, 7);
+    body.endFill();
+    body.beginFill(0x2f1c14, 1);
+    body.drawRect(5, -9, 2.6, 4);
+    body.endFill();
+    body.beginFill(0x21160c, 1);
+    body.drawCircle(-4, 3, 1.9);
+    body.drawCircle(5, 3, 1.9);
+    body.endFill();
+    root.addChild(body);
+    return { root: root, steam: steam };
+  }
+
+  /* =====================================================================
+   * 6. The plate
+   * =================================================================== */
+
+  /* the camera of the plate currently on screen, so project() can answer for
+     the level the player is looking at; shared by all mounts (there is one) */
+  var liveCam = null;
+
+  function nominalCamera() {
+    return { cam: camera(LEVELS.world, 1000, 620) };
+  }
+
+  function project(x, y) {
+    var cam = liveCam || nominalCamera().cam;
+    var p = cam.fromMap(x, y);
+    return { x: p.x / cam.W, y: p.y / cam.H };
+  }
+
   function mount(host, opts) {
-    if (!GEO || !RINGS.length) return null;
+    if (!GEO || !RINGS.length || !window.PIXI) return null;
     opts = opts || {};
     if (!MASK) MASK = buildMask();
 
-    var canvas = document.createElement('canvas');
-    canvas.className = 'wm-canvas';
-    host.appendChild(canvas);
+    var app;
+    try {
+      app = new PIXI.Application({
+        backgroundAlpha: 0,
+        antialias: true,
+        resolution: Math.min(2.5, window.devicePixelRatio || 1),
+        autoDensity: true,
+        powerPreference: 'low-power'
+      });
+    } catch (err) {
+      return null;
+    }
+    var view = app.view;
+    view.className = 'wm-canvas';
+    host.appendChild(view);
 
-    var ctx = canvas.getContext('2d');
     var api = {
-      canvas: canvas,
+      canvas: view,
       voyages: [],
       labels: [],
+      level: opts.level && LEVELS[opts.level] ? opts.level : 'world',
       setVoyages: setVoyages,
       setLabels: setLabels,
+      setLevel: setLevel,
       refresh: refresh,
       destroy: destroy
     };
 
-    var W = 0, H = 0, DPR = 1;
-    var base = null;            /* cached static plate */
-    var rafId = 0;
-    var startTime = 0;
+    var W = 0, H = 0;
     var dead = false;
+    var cam = null;
+
+    var seaLayer = new PIXI.Container();
+    var gridLayer = new PIXI.Container();
+    var landLayer = new PIXI.Container();
+    var decoLayer = new PIXI.Container();
+    var routeLayer = new PIXI.Container();
+    var vesselLayer = new PIXI.Container();
+    var pinLayer = new PIXI.Container();
+    var labelLayer = new PIXI.Container();
+    app.stage.addChild(seaLayer, gridLayer, landLayer, decoLayer,
+                       routeLayer, vesselLayer, pinLayer, labelLayer);
 
     function setVoyages(list) {
       api.voyages = list || [];
-      kick();
+      drawRoutes();
     }
+
     function setLabels(list) {
       api.labels = list || [];
-      refresh();
+      drawPinsAndLabels();
+      drawSelection();
     }
 
-    /* ---- static plate, drawn once per size ---------------------------- */
-    function buildBase() {
-      base = document.createElement('canvas');
-      base.width = W; base.height = H;
-      var b = base.getContext('2d');
-      b.setTransform(DPR, 0, 0, DPR, 0, 0);
-
-      /* sea */
-      var grad = b.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, C.seaTop);
-      grad.addColorStop(0.55, C.seaBottom);
-      grad.addColorStop(1, C.seaDeep);
-      b.fillStyle = grad;
-      b.fillRect(0, 0, W, H);
-
-      drawGraticule(b);
-      drawRhumb(b);
-      drawLand(b);
-      drawGrain(b);
-      drawFrame(b);
-      drawOrnaments(b);
+    function setLevel(id) {
+      if (!LEVELS[id] || api.level === id) return;
+      api.level = id;
+      if (!W || !H) return;
+      buildStatic();
+      drawRoutes();
+      drawPinsAndLabels();
+      drawSelection();
     }
 
-    function px(p) { return p.x * W; }
-    function py(p) { return p.y * H; }
+    function clear(c) {
+      while (c.children.length) {
+        c.removeChildAt(c.children.length - 1);
+      }
+    }
 
-    function drawGraticule(b) {
-      b.save();
-      b.lineWidth = 1;
-      b.strokeStyle = 'rgba(200,225,245,.13)';
-      var lon, lat, p, q;
-      for (lon = -180; lon <= 180; lon += 15) {
-        p = project((lon + 180) / 360, 0);
-        q = project((lon + 180) / 360, 1);
-        b.beginPath();
-        for (var i = 0; i <= 40; i++) {
-          var t = i / 40;
-          var s = project((lon + 180) / 360, t);
-          if (i === 0) b.moveTo(px(s), py(s)); else b.lineTo(px(s), py(s));
-        }
-        b.stroke();
-      }
-      for (lat = -75; lat <= 75; lat += 15) {
-        var y = (lat + 90) / 180;
-        b.beginPath();
-        for (var j = 0; j <= 60; j++) {
-          var s2 = project(j / 60, y);
-          if (j === 0) b.moveTo(px(s2), py(s2)); else b.lineTo(px(s2), py(s2));
-        }
-        b.stroke();
-      }
-      /* equator + tropics get the classic emphasis */
-      b.setLineDash([5, 4]);
-      b.strokeStyle = 'rgba(200,225,245,.26)';
-      [0.5, (23.43 + 90) / 180, (-23.43 + 90) / 180].forEach(function (yy) {
-        b.beginPath();
-        for (var j2 = 0; j2 <= 60; j2++) {
-          var s3 = project(j2 / 60, yy);
-          if (j2 === 0) b.moveTo(px(s3), py(s3)); else b.lineTo(px(s3), py(s3));
-        }
-        b.stroke();
+    /* ---- the static plate, rebuilt on resize or level change ---------- */
+    function buildStatic() {
+      var lv = LEVELS[api.level] || LEVELS.world;
+      cam = camera(lv, W, H);
+      liveCam = cam;
+
+      clear(seaLayer); clear(gridLayer); clear(landLayer); clear(decoLayer);
+
+      seaLayer.addChild(drawSea(lv, cam));
+      gridLayer.addChild(drawGraticule(lv, cam));
+      gridLayer.addChild(drawRhumb(cam));
+      landLayer.addChild(drawLand(lv, cam));
+      decoLayer.addChild(drawFrame(cam));
+      decoLayer.addChild(drawCompassRose(cam));
+      decoLayer.addChild(drawScaleBar(cam));
+      decoLayer.addChild(drawCartouche(lv, cam));
+      (lv.ocean || []).forEach(function (o) {
+        decoLayer.addChild(seaLabel(cam, o[0], o[1], o[2]));
       });
-      b.restore();
     }
 
-    function drawRhumb(b) {
-      var rose = project(0.145, 0.44);
-      var cx = px(rose), cy = py(rose);
-      b.save();
-      b.strokeStyle = 'rgba(200,225,245,.09)';
-      b.lineWidth = 1;
-      for (var i = 0; i < 16; i++) {
-        var a = i * Math.PI / 8;
-        b.beginPath();
-        b.moveTo(cx, cy);
-        b.lineTo(cx + Math.cos(a) * W * 1.6, cy + Math.sin(a) * W * 1.6);
-        b.stroke();
-      }
-      b.restore();
-    }
+    /* ---- routes ------------------------------------------------------ */
+    var runs = [];
+    var vessels = [];
 
-    function traceRings(b, rings, close) {
-      b.beginPath();
-      for (var r = 0; r < rings.length; r++) {
-        var ring = rings[r];
-        for (var i = 0; i < ring.length; i++) {
-          var p = project(ring[i].x, ring[i].y);
-          if (i === 0) b.moveTo(px(p), py(p)); else b.lineTo(px(p), py(p));
+    function drawRoutes() {
+      clear(routeLayer);
+      runs.length = 0;
+      if (!cam) return;
+      var vs = api.voyages;
+      /* the running voyage first, then the standing board under it */
+      var order = vs.slice().sort(function (a, c) {
+        return (a.lane ? 1 : 0) - (c.lane ? 1 : 0);
+      });
+      for (var i = 0; i < order.length; i++) {
+        var v = order[i];
+        var route = v.route;
+        if (!route || !route.pts || route.pts.length < 2) continue;
+        var px = toPixels(cam, route.pts);
+        var first = px[0], last = px[px.length - 1];
+        if (v.lane) {
+          if (Math.hypot(last.x - first.x, last.y - first.y) < 18) continue;
+          routeLayer.addChild(laneGraphic(route, px));
+          continue;
         }
-        if (close !== false) b.closePath();
+        var progress = typeof v.progress === 'number' ? v.progress : 0;
+        routeLayer.addChild(routeGraphic(route, px, progress));
+        runs.push({ v: v, route: route, progress: progress });
       }
-    }
-
-    function drawLand(b) {
-      b.save();
-      /* a wide soft halo reads as the shallow coastal shelf */
-      b.save();
-      b.shadowColor = 'rgba(90,70,40,.45)';
-      b.shadowBlur = 7;
-      b.fillStyle = C.land;
-      traceRings(b, RINGS);
-      b.fill();
-      b.restore();
-
-      /* inner texture: a lighter wash offset upwards, like an engraved wash */
-      b.save();
-      b.clip();
-      var wash = b.createLinearGradient(0, 0, 0, H);
-      wash.addColorStop(0, 'rgba(255,255,245,.30)');
-      wash.addColorStop(0.55, 'rgba(255,255,245,.04)');
-      wash.addColorStop(1, 'rgba(70,50,22,.20)');
-      b.fillStyle = wash;
-      b.fillRect(0, 0, W, H);
-      b.restore();
-
-      b.lineJoin = 'round';
-      b.strokeStyle = C.coast;
-      b.lineWidth = 1.5;
-      traceRings(b, RINGS);
-      b.stroke();
-
-      b.strokeStyle = 'rgba(255,250,230,.55)';
-      b.lineWidth = 0.6;
-      traceRings(b, RINGS);
-      b.stroke();
-
-      if (LAKES.length) {
-        b.fillStyle = 'rgba(160,175,170,.85)';
-        traceRings(b, LAKES);
-        b.fill();
-        b.strokeStyle = 'rgba(74,56,35,.42)';
-        b.lineWidth = 0.6;
-        traceRings(b, LAKES);
-        b.stroke();
-      }
-      b.restore();
-    }
-
-    /* deterministic speckle so the plate looks printed, not airbrushed */
-    function drawGrain(b) {
-      var g = document.createElement('canvas');
-      g.width = 260; g.height = Math.max(60, Math.round(260 * H / W));
-      var gc = g.getContext('2d');
-      var seed = 20261024;
-      function rnd() {
-        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-        return seed / 0x7fffffff;
-      }
-      for (var i = 0; i < 5200; i++) {
-        var a = rnd() * 0.09;
-        gc.fillStyle = rnd() > 0.5 ? 'rgba(60,44,24,' + a + ')' : 'rgba(255,252,240,' + a + ')';
-        gc.fillRect(rnd() * g.width, rnd() * g.height, 1, 1);
-      }
-      b.save();
-      b.globalAlpha = 0.55;
-      b.imageSmoothingEnabled = false;
-      b.drawImage(g, 0, 0, W, H);
-      b.restore();
-
-      /* edge vignette: old plates darken toward the fold */
-      var v = b.createRadialGradient(W * 0.5, H * 0.5, Math.min(W, H) * 0.35,
-                                     W * 0.5, H * 0.5, Math.max(W, H) * 0.78);
-      v.addColorStop(0, 'rgba(60,42,20,0)');
-      v.addColorStop(1, 'rgba(60,42,20,.3)');
-      b.fillStyle = v;
-      b.fillRect(0, 0, W, H);
-    }
-
-    function drawFrame(b) {
-      b.save();
-      b.strokeStyle = 'rgba(74,56,35,.72)';
-      b.lineWidth = 2;
-      b.strokeRect(7, 7, W - 14, H - 14);
-      b.lineWidth = 0.8;
-      b.strokeRect(12.5, 12.5, W - 25, H - 25);
-      /* corner ticks */
-      var L = 16;
-      b.strokeStyle = 'rgba(74,56,35,.85)';
-      b.lineWidth = 1.4;
-      [[13, 13, 1, 1], [W - 13, 13, -1, 1], [13, H - 13, 1, -1], [W - 13, H - 13, -1, -1]]
-        .forEach(function (c) {
-          b.beginPath();
-          b.moveTo(c[0] + c[2] * L, c[1]);
-          b.lineTo(c[0], c[1]);
-          b.lineTo(c[0], c[1] + c[3] * L);
-          b.stroke();
-        });
-      b.restore();
-    }
-
-    function drawOrnaments(b) {
-      var sc = Math.max(0.7, Math.min(1.25, W / 1100));
-      drawCompassRose(b, W - 62 * sc, H - 62 * sc, 30 * sc);
-      drawScaleBar(b, 24, H - 34);
-      drawCartouche(b, 24, 20, sc);
-      drawSeaLabel(b, 0.40, 0.49, 'ATLANTIC  OCEAN');
-      drawSeaLabel(b, 0.775, 0.42, 'INDIAN  OCEAN');
-      drawSeaLabel(b, 0.10, 0.60, 'PACIFIC  OCEAN');
-    }
-
-    function drawCompassRose(b, cx, cy, r) {
-      b.save();
-      b.translate(cx, cy);
-      b.strokeStyle = 'rgba(74,56,35,.55)';
-      b.lineWidth = 1;
-      b.beginPath(); b.arc(0, 0, r * 0.94, 0, Math.PI * 2); b.stroke();
-      b.beginPath(); b.arc(0, 0, r * 0.62, 0, Math.PI * 2); b.stroke();
-      for (var i = 0; i < 8; i++) {
-        var a = i * Math.PI / 4;
-        var len = i % 2 === 0 ? r : r * 0.66;
-        b.save();
-        b.rotate(a);
-        b.beginPath();
-        b.moveTo(0, -len);
-        b.lineTo(r * 0.155, 0);
-        b.lineTo(0, len * 0.12);
-        b.closePath();
-        b.fillStyle = i % 2 === 0 ? 'rgba(74,56,35,.72)' : 'rgba(74,56,35,.2)';
-        b.fill();
-        b.strokeStyle = 'rgba(74,56,35,.6)';
-        b.stroke();
-        b.restore();
-      }
-      b.fillStyle = 'rgba(74,56,35,.8)';
-      b.font = '700 ' + (r * 0.34).toFixed(1) + 'px ' + SERIF;
-      b.textAlign = 'center'; b.textBaseline = 'middle';
-      b.fillText('N', 0, -r * 1.16);
-      b.restore();
-    }
-
-    function drawScaleBar(b, x, y) {
-      b.save();
-      b.fillStyle = 'rgba(74,56,35,.7)';
-      b.font = '9px ' + SERIF;
-      b.textAlign = 'left'; b.textBaseline = 'alphabetic';
-      b.fillText('2000 nautical miles', x, y - 6);
-      var seg = 15;
-      for (var i = 0; i < 4; i++) {
-        b.fillStyle = i % 2 ? 'rgba(74,56,35,.75)' : 'rgba(244,236,216,.85)';
-        b.fillRect(x + i * seg, y, seg, 4);
-      }
-      b.strokeStyle = 'rgba(74,56,35,.75)';
-      b.lineWidth = 0.8;
-      b.strokeRect(x, y, seg * 4, 4);
-      b.restore();
-    }
-
-    function drawCartouche(b, x, y, sc) {
-      var w = 186 * sc, h = 44 * sc;
-      b.save();
-      b.fillStyle = 'rgba(244,236,216,.82)';
-      b.strokeStyle = 'rgba(74,56,35,.68)';
-      b.lineWidth = 1.2;
-      b.beginPath();
-      b.rect(x, y, w, h);
-      b.fill(); b.stroke();
-      b.lineWidth = 0.6;
-      b.strokeRect(x + 4, y + 4, w - 8, h - 8);
-      b.fillStyle = 'rgba(74,56,35,.92)';
-      b.textAlign = 'center'; b.textBaseline = 'middle';
-      b.font = '700 ' + (15 * sc).toFixed(1) + 'px ' + SERIF;
-      b.fillText('THE GREAT ART RACE', x + w / 2, y + h * 0.38);
-      b.font = 'italic ' + (9.5 * sc).toFixed(1) + 'px ' + SERIF;
-      b.fillStyle = 'rgba(74,56,35,.66)';
-      b.fillText('chart of the art trade · MCMXX', x + w / 2, y + h * 0.68);
-      b.restore();
-    }
-
-    function drawSeaLabel(b, mx, my, text) {
-      var p = project(mx, my);
-      b.save();
-      b.translate(px(p), py(p));
-      b.fillStyle = 'rgba(74,56,35,.4)';
-      b.font = 'italic ' + (W < 620 ? 10 : 13) + 'px ' + SERIF;
-      b.textAlign = 'center'; b.textBaseline = 'middle';
-      var letters = text.split('');
-      /* spaced-out italic, the way lettering sits on an engraved sea */
-      var span = 0, i;
-      var widths = [];
-      for (i = 0; i < letters.length; i++) {
-        var wv = b.measureText(letters[i]).width;
-        widths.push(wv);
-        span += wv + 1.6;
-      }
-      var x = -span / 2;
-      for (i = 0; i < letters.length; i++) {
-        b.fillText(letters[i], x + widths[i] / 2, 0);
-        x += widths[i] + 1.6;
-      }
-      b.restore();
-    }
-
-    /* ---- per-frame overlay ------------------------------------------- */
-    function drawPlaceLabels(b, t) {
-      var list = api.labels;
-      if (!list.length) return;
-      b.save();
-      b.font = '600 10px ' + SERIF;
-      b.textBaseline = 'middle';
-      var boxes = [];
-      for (var i = 0; i < list.length; i++) {
-        var L = list[i];
-        var p = project(L.x, L.y);
-        var cxp = px(p), cyp = py(p);
-        if (cxp < 8 || cxp > W - 8 || cyp < 8 || cyp > H - 8) continue;
-
-        var text = L.label;
-        var tw = b.measureText(text).width;
-        var isHere = L.here;
-        var isCity = L.kind === 'city' || L.kind === 'trade';
-
-        /* candidates in reading order; the first that clears every box wins */
-        var cands = isCity
-          ? [[6, -11, 'left'], [-6, -11, 'right'], [0, -15, 'center'], [0, 13, 'center'], [6, 8, 'left']]
-          : [[6, 0, 'left'], [-6, 0, 'right'], [0, -12, 'center'], [0, 12, 'center']];
-
-        var placed = null;
-        for (var c = 0; c < cands.length && !placed; c++) {
-          var ox = cands[c][0], oy = cands[c][1], align = cands[c][2];
-          var left = align === 'left' ? cxp + ox : align === 'right' ? cxp + ox - tw : cxp + ox - tw / 2;
-          var box = [left - 2, cyp + oy - 7, tw + 4, 14];
-          var clash = false;
-          for (var k = 0; k < boxes.length; k++) {
-            var o = boxes[k];
-            if (box[0] < o[0] + o[2] && box[0] + box[2] > o[0] &&
-                box[1] < o[1] + o[3] && box[1] + box[3] > o[1]) { clash = true; break; }
-          }
-          if (!clash) placed = { box: box, left: left, align: align, oy: oy };
-        }
-        /* a city whose label cannot fit still deserves one: force it above */
-        if (!placed) {
-          placed = { box: [cxp - tw / 2, cyp - 22, tw, 14], left: cxp, align: 'center', oy: -15 };
-        }
-        boxes.push(placed.box);
-
-        b.textAlign = placed.align;
-        var tx = placed.align === 'left' ? placed.left : placed.align === 'right' ? placed.left : cxp;
-        var ty = cyp + placed.oy;
-
-        /* halo keeps lettering legible over both sea and land: dark halo for
-           pale land lettering, pale halo over the deep-blue ocean */
-        var onSea = !isLand(L.x, L.y);
-        b.lineWidth = 3;
-        b.strokeStyle = onSea ? 'rgba(8,34,54,.92)' : 'rgba(246,238,220,.9)';
-        b.strokeText(text, tx, ty);
-        b.fillStyle = isHere ? (onSea ? '#ff8b6e' : C.here)
-          : onSea ? 'rgba(232,240,247,.96)'
-          : 'rgba(46,34,18,.94)';
-        b.fillText(text, tx, ty);
-      }
-      b.restore();
-    }
-
-    function drawPins(b) {
-      var list = api.labels;
-      b.save();
-      for (var i = 0; i < list.length; i++) {
-        var L = list[i];
-        var p = project(L.x, L.y);
-        var x = px(p), y = py(p);
-        var here = !!L.here;
-        var kind = L.kind;
-        var r = here ? 4.6 : (kind === 'city' || kind === 'trade') ? 3.4 : 2.9;
-        var fill = here ? C.here
-          : kind === 'trade' ? '#b3872c'
-          : kind === 'city' ? '#2f5f8a'
-          : kind === 'colony' ? '#6b5a1f' : '#3f7d44';
-
-        if (here) {
-          var pulse = 0.5 + 0.5 * Math.sin((Date.now() - startTime) / 520);
-          b.beginPath();
-          b.arc(x, y, r + 4 + pulse * 3, 0, Math.PI * 2);
-          b.fillStyle = 'rgba(141,34,34,' + (0.16 + 0.12 * (1 - pulse)) + ')';
-          b.fill();
-        }
-        b.beginPath();
-        b.arc(x, y, r, 0, Math.PI * 2);
-        b.fillStyle = fill;
-        b.fill();
-        b.lineWidth = 1.5;
-        b.strokeStyle = 'rgba(248,240,220,.95)';
-        b.stroke();
-        b.lineWidth = 0.7;
-        b.strokeStyle = 'rgba(50,36,18,.65)';
-        b.beginPath();
-        b.arc(x, y, r + 1, 0, Math.PI * 2);
-        b.stroke();
-      }
-      b.restore();
-    }
-
-    function routePixels(route) {
-      var out = new Array(route.pts.length);
-      for (var i = 0; i < route.pts.length; i++) {
-        var p = project(route.pts[i].x, route.pts[i].y);
-        out[i] = { x: px(p), y: py(p) };
-      }
-      return out;
-    }
-
-    function strokePath(b, pts) {
-      /* through the midpoints with the vertices as control points: a polyline
-         would show its corners, a game board should read as smooth lines */
-      b.beginPath();
-      b.moveTo(pts[0].x, pts[0].y);
-      if (pts.length < 3) {
-        for (var a = 1; a < pts.length; a++) b.lineTo(pts[a].x, pts[a].y);
-        return;
-      }
-      for (var i = 1; i < pts.length - 1; i++) {
-        var mx = (pts[i].x + pts[i + 1].x) / 2;
-        var my = (pts[i].y + pts[i + 1].y) / 2;
-        b.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
-      }
-      b.quadraticCurveTo(pts[pts.length - 2].x, pts[pts.length - 2].y,
-                         pts[pts.length - 1].x, pts[pts.length - 1].y);
+      rebuildVessels();
     }
 
     /* A standing lane from the current port to a reachable one. It shows the
        shape of the voyage without pretending anybody is sailing it. */
-    function drawLane(b, route, pixels) {
+    function laneGraphic(route, px) {
       var isRail = route.glyph === 'rail';
-      b.save();
-      b.lineJoin = 'round';
-      b.lineCap = 'round';
-      strokePath(b, pixels);
-      b.lineWidth = 2.4;
-      b.strokeStyle = isRail ? 'rgba(198,74,54,.92)' : 'rgba(92,196,252,.94)';
-      b.stroke();
-      strokePath(b, pixels);
-      b.setLineDash(isRail ? [6, 6] : [3, 7]);
-      b.lineWidth = 1.2;
-      b.strokeStyle = 'rgba(240,248,255,.5)';
-      b.stroke();
-      b.setLineDash([]);
-      b.restore();
+      var c = new PIXI.Container();
+      var base = new PIXI.Graphics();
+      base.lineStyle(2.4, isRail ? 0xc64a36 : 0x5cc4fc, 0.92);
+      traceCurve(base, px);
+      c.addChild(base);
+      var dashes = new PIXI.Graphics();
+      dashes.lineStyle(1.2, 0xf0f8ff, 0.5);
+      dashedCurve(dashes, px, isRail ? 6 : 3, isRail ? 6 : 7);
+      c.addChild(dashes);
+      return c;
     }
 
-    function drawRoute(b, route, pixels, progress, active) {
+    function routeGraphic(route, px, progress) {
       var isRail = route.glyph === 'rail';
-      var col = isRail ? C.route : C.routeSea;
-      b.save();
-      /* the whole lane, faint */
-      strokePath(b, pixels);
-      b.lineCap = 'round';
-      b.setLineDash(isRail ? [4, 5] : [2, 5]);
-      b.lineWidth = active ? 2.2 : 1.5;
-      b.strokeStyle = 'rgba(' + (isRail ? '200,72,54' : '86,182,240') + ',' + (active ? '.72)' : '.38)');
-      b.stroke();
-      b.setLineDash([]);
+      var active = progress < 1;
+      var g = new PIXI.Graphics();
+      g.lineStyle(active ? 2.2 : 1.5,
+        isRail ? 0xc84836 : 0x56b6f0,
+        active ? 0.72 : 0.38);
+      dashedCurve(g, px, isRail ? 4 : 2, isRail ? 5 : 5);
 
-      if (active && progress > 0 && progress < 1) {
-        /* the stretch already sailed, drawn solid over the faint remainder */
-        var upto = Math.max(1, Math.round(progress * pixels.length));
+      if (progress > 0 && progress < 1) {
         var head = pointAt(route, progress);
-        var hp = project(head.x, head.y);
-        var done = pixels.slice(0, upto);
-        done.push({ x: px(hp), y: py(hp) });
-        b.lineJoin = 'round';
-        strokePath(b, done);
-        b.lineWidth = 5;
-        b.strokeStyle = isRail ? 'rgba(30,20,10,.30)' : 'rgba(4,26,44,.32)';
-        b.stroke();
-        strokePath(b, done);
-        b.lineWidth = 3;
-        b.strokeStyle = isRail ? '#ffd98a' : '#d8f1ff';
-        b.shadowColor = col;
-        b.shadowBlur = 7;
-        b.stroke();
-        b.shadowBlur = 0;
+        var hp = cam.fromMap(head.x, head.y);
+        var upto = Math.max(1, Math.round(progress * px.length));
+        var seg = px.slice(0, upto);
+        seg.push({ x: hp.x, y: hp.y });
+        g.lineStyle(5, isRail ? 0x1e140a : 0x041a2c, 0.30);
+        traceCurve(g, seg);
+        g.lineStyle(3, isRail ? 0xffd98a : 0xd8f1ff, 1);
+        traceCurve(g, seg);
       }
-      b.restore();
+      return g;
     }
 
-    function drawShip(b, x, y, angle, s, t, phase) {
-      b.save();
-      b.translate(x, y);
-      /* wake behind the hull */
-      b.save();
-      b.rotate(angle);
-      var wg = b.createLinearGradient(-s * 4.5, 0, 0, 0);
-      wg.addColorStop(0, 'rgba(255,255,255,0)');
-      wg.addColorStop(1, 'rgba(255,255,255,.55)');
-      b.strokeStyle = wg;
-      b.lineWidth = Math.max(1, s * 0.22);
-      b.lineCap = 'round';
-      b.beginPath();
-      b.moveTo(-s * 4.5, 0);
-      b.quadraticCurveTo(-s * 2, Math.sin(t * 3 + phase) * s * 0.35, -s * 0.5, 0);
-      b.stroke();
-      b.restore();
+    /* ---- vessels ----------------------------------------------------- */
+    function rebuildVessels() {
+      clear(vesselLayer);
+      vessels.length = 0;
+      if (!cam) return;
+      var size = Math.max(0.95, Math.min(1.7, cam.W / 700));
+      for (var i = 0; i < runs.length; i++) {
+        var run = runs[i];
+        if (run.progress >= 1) continue;
+        var isRail = run.route.glyph === 'rail';
+        var craft = isRail ? makeTrain() : makeShip();
+        var holder = new PIXI.Container();
+        holder.addChild(craft.root);
+        holder.scale.set(size);
+        vesselLayer.addChild(holder);
 
-      var bob = Math.sin(t * 2.2 + phase) * s * 0.1;
-      b.translate(0, bob);
-      b.rotate(angle);
-      b.scale(s / 12, s / 12);
-
-      /* hull */
-      b.beginPath();
-      b.moveTo(-10, 0);
-      b.quadraticCurveTo(-4, 4.6, 8, 2.4);
-      b.lineTo(11, -1.6);
-      b.quadraticCurveTo(2, -3.4, -10, -2.2);
-      b.closePath();
-      b.fillStyle = '#3a2a17';
-      b.fill();
-      b.strokeStyle = 'rgba(20,12,4,.8)';
-      b.lineWidth = 0.7;
-      b.stroke();
-
-      /* masts + sails */
-      b.strokeStyle = 'rgba(40,28,14,.9)';
-      b.lineWidth = 0.9;
-      b.beginPath(); b.moveTo(-2, -2); b.lineTo(-2, -12); b.stroke();
-      b.beginPath(); b.moveTo(5, -1.6); b.lineTo(5, -9); b.stroke();
-
-      b.fillStyle = 'rgba(252,248,236,.96)';
-      b.beginPath();
-      b.moveTo(-2.4, -11.6);
-      b.quadraticCurveTo(2.6, -8.6, -2.4, -4.2);
-      b.closePath();
-      b.fill();
-      b.strokeStyle = 'rgba(90,70,44,.65)';
-      b.lineWidth = 0.55;
-      b.stroke();
-
-      b.beginPath();
-      b.moveTo(4.6, -8.7);
-      b.quadraticCurveTo(8.8, -6.4, 4.6, -3.2);
-      b.closePath();
-      b.fill();
-      b.stroke();
-
-      /* bowsprit sail */
-      b.fillStyle = 'rgba(250,244,228,.9)';
-      b.beginPath();
-      b.moveTo(9.4, -2);
-      b.quadraticCurveTo(14, -3.4, 11.6, 0);
-      b.closePath();
-      b.fill();
-      b.restore();
-    }
-
-    function drawTrain(b, x, y, angle, s, t, phase) {
-      b.save();
-      b.translate(x, y);
-      b.rotate(angle);
-      b.scale(s / 12, s / 12);
-      /* carriage */
-      b.fillStyle = '#4a2a22';
-      b.strokeStyle = 'rgba(20,12,4,.85)';
-      b.lineWidth = 0.9;
-      b.beginPath();
-      b.rect(-8, -5, 17, 7);
-      b.fill(); b.stroke();
-      /* chimney + steam */
-      b.fillStyle = '#2f1c14';
-      b.fillRect(5, -9, 2.6, 4);
-      b.fillStyle = 'rgba(250,246,236,.85)';
-      for (var i = 0; i < 3; i++) {
-        var d = (t * 2 + phase + i * 0.7) % 2.1;
-        b.beginPath();
-        b.arc(7 + d * 7, -10 - d * 4, 1.1 + d * 1.5, 0, Math.PI * 2);
-        b.fillStyle = 'rgba(252,248,238,' + (0.5 * (1 - d / 2.1)) + ')';
-        b.fill();
+        var label = new PIXI.Text('', {
+          fontFamily: FONT, fontSize: 9.5, fontWeight: '600', fill: 0xf6eedc,
+          stroke: 0x1c140a, strokeThickness: 2.5
+        });
+        vesselLayer.addChild(label);
+        vessels.push({ craft: craft, holder: holder, label: label, run: run,
+                       phase: i * 1.7, isRail: isRail });
       }
-      /* wheels */
-      b.fillStyle = '#21160c';
-      b.beginPath(); b.arc(-4, 3, 1.9, 0, Math.PI * 2); b.fill();
-      b.beginPath(); b.arc(5, 3, 1.9, 0, Math.PI * 2); b.fill();
-      b.restore();
+      placeVessels(performance.now(), true);
     }
 
-    function drawVoyages(b, now) {
-      var vs = api.voyages;
-      var t = now / 1000;
-      if (!vs.length) return;
-      /* the voyage first, then the route board under it: whatever the player
-         is travelling on must not be buried under the network */
-      var order = vs.slice().sort(function (a, c) {
-        return (a.lane ? 1 : 0) - (c.lane ? 1 : 0);
-      });
+    function placeVessels(nowMs, instant) {
+      if (!cam) return;
+      var t = (nowMs || 0) / 1000;
+      for (var i = 0; i < vessels.length; i++) {
+        var item = vessels[i];
+        var run = item.run;
+        var p = run.progress;
+        if (p >= 1) { item.holder.visible = false; item.label.visible = false; continue; }
 
-      for (var i = 0; i < order.length; i++) {
-        var v = order[i];
-        var route = v.route;
-        if (!route) continue;
-        var pixels = routePixels(route);
-        /* a lane whose two ends coincide is not a lane: the projected window
-           clips the far side of the globe, so such links are dropped */
-        var first = pixels[0], last = pixels[pixels.length - 1];
-        var spanPx = Math.hypot(last.x - first.x, last.y - first.y);
-        if (v.lane && spanPx < 18) continue;
-        if (v.lane) {
-          /* a standing link of the route board: drawn, never sailed */
-          drawLane(b, route, pixels);
-          continue;
+        /* The hull sits on the day mark the game owns, then creeps a little
+           until the next day passes so the plate is never frozen. */
+        var days = Math.max(1, run.v.days || 1);
+        var drift = instant ? 0 : (0.35 / days) * ((t * 0.6 + item.phase) % 1);
+        var at = Math.min(0.9995, p + Math.max(0, drift));
+        var head = pointAt(run.route, at);
+        var sp = cam.fromMap(head.x, head.y);
+        var ahead = pointAt(run.route, Math.min(1, at + 0.005));
+        var ap = cam.fromMap(ahead.x, ahead.y);
+        var ang = Math.atan2(ap.y - sp.y, ap.x - sp.x);
+        if (!isFinite(ang)) ang = 0;
+
+        var bob = item.isRail ? 0 : Math.sin(t * 2.2 + item.phase) * 1.1;
+        item.holder.position.set(sp.x, sp.y + bob);
+        item.holder.rotation = ang;
+        item.holder.visible = true;
+
+        item.craft.wake && (function (wk) {
+          wk.clear();
+          wk.lineStyle(1.6, 0xffffff, 0.34 + 0.2 * Math.sin(t * 3 + item.phase));
+          wk.moveTo(-9, 0);
+          wk.quadraticCurveTo(-5, 1.6 * Math.sin(t * 2 + item.phase), -1.5, 0);
+        })(item.craft.wake);
+
+        item.craft.steam && (function (st) {
+          st.clear();
+          for (var k = 0; k < 3; k++) {
+            var d = (t * 0.9 + item.phase + k * 0.7) % 2.1;
+            st.beginFill(0xfcf8ee, 0.5 * (1 - d / 2.1));
+            st.drawCircle(7 + d * 7, -10 - d * 4, 1.1 + d * 1.5);
+            st.endFill();
+          }
+        })(item.craft.steam);
+
+        var dayNow = Math.min(days, Math.floor(p * days) + 1);
+        item.label.text = (run.v.label || '') + '  ' + dayNow + '/' + days;
+        var lx = sp.x + 16, ly = sp.y - 22;
+        if (lx + item.label.width > W - 12) lx = Math.max(12, sp.x - 16 - item.label.width);
+        if (ly < 24) ly = sp.y + 14;
+        item.label.position.set(lx, ly);
+        item.label.visible = true;
+      }
+    }
+
+    /* ---- pins and place labels --------------------------------------- */
+    function drawPinsAndLabels() {
+      clear(pinLayer);
+      clear(labelLayer);
+      if (!cam) return;
+      var lv = LEVELS[api.level] || LEVELS.world;
+      var list = api.labels;
+      var boxes = [];
+      var pins = [];
+      var i;
+
+      for (i = 0; i < list.length; i++) {
+        var L = list[i];
+        var p = cam.fromMap(L.x, L.y);
+        if (p.x < -40 || p.x > W + 40 || p.y < -40 || p.y > H + 40) continue;
+        pins.push({ L: L, x: p.x, y: p.y });
+      }
+
+      for (i = 0; i < pins.length; i++) {
+        var q = pins[i];
+        var here = !!q.L.here;
+        var kind = q.L.kind;
+        var r = here ? 4.6 : (kind === 'city' || kind === 'trade') ? 3.4 : 2.9;
+        var col = here ? 0xd4452f
+          : kind === 'trade' ? hex(lv.trade)
+          : kind === 'city' ? hex(lv.city)
+          : kind === 'colony' ? hex(lv.colony) : 0x3f7d44;
+
+        if (here) {
+          var ring = new PIXI.Graphics();
+          ring.beginFill(0x8d2222, 0.20);
+          ring.drawCircle(0, 0, r + 6);
+          ring.endFill();
+          ring.position.set(q.x, q.y);
+          ring.isPulse = true;
+          pinLayer.addChild(ring);
         }
-        var p = v.progress;
-        drawRoute(b, route, pixels, p, p < 1);
-        if (p >= 1) continue;
+        var g = new PIXI.Graphics();
+        g.beginFill(col, 1);
+        g.lineStyle(1.5, 0xf8f0dc, 0.95);
+        g.drawCircle(0, 0, r);
+        g.endFill();
+        g.lineStyle(0.7, 0x32240f, 0.65);
+        g.drawCircle(0, 0, r + 1);
+        g.position.set(q.x, q.y);
+        pinLayer.addChild(g);
+        boxes.push([q.x - r - 2, q.y - r - 2, (r + 2) * 2, (r + 2) * 2]);
+      }
 
-        var head = pointAt(route, p);
-        var hp = project(head.x, head.y);
-        var size = Math.max(11, Math.min(19, W / 78));
-        if (route.glyph === 'rail') {
-          drawTrain(b, px(hp), py(hp), Math.atan2(
-            Math.sin(head.angle) * WIN_H, Math.cos(head.angle) * WIN_W), size, t, i * 1.7);
-        } else {
-          /* angle must be corrected for the plate aspect or ships sail at a
-           * visibly wrong heading on a non-square canvas */
-          var ang = Math.atan2(Math.sin(head.angle) * WIN_H, Math.cos(head.angle) * WIN_W);
-          drawShip(b, px(hp), py(hp), ang, size, t, i * 1.7);
+      for (i = 0; i < pins.length; i++) {
+        var o = pins[i];
+        var onLand = isLand(o.L.x, o.L.y);
+        var isCity = o.L.kind === 'city' || o.L.kind === 'trade';
+        var text = new PIXI.Text(o.L.label, {
+          fontFamily: FONT, fontSize: o.L.kind === 'colony' ? 9.5 : 10, fontWeight: '600',
+          fill: o.L.here ? 0xff8b6e : (onLand ? 0x2e2212 : 0xe8f0f7),
+          stroke: onLand ? 0xf6eedc : 0x082236,
+          strokeThickness: 3
+        });
+        var tw = text.width, th = text.height;
+        var cands = isCity
+          ? [[7, -6 - th], [-7 - tw, -6 - th], [-tw / 2, -th - 11], [-tw / 2, 8], [7, -th / 2]]
+          : [[7, -th / 2], [-7 - tw, -th / 2], [-tw / 2, -th - 7], [-tw / 2, 7]];
+        var placed = null;
+        for (var c = 0; c < cands.length && !placed; c++) {
+          var bx = o.x + cands[c][0], by = o.y + cands[c][1];
+          var box = [bx - 2, by - 1, tw + 4, th + 2];
+          var clash = false;
+          for (var b = 0; b < boxes.length; b++) {
+            var ob = boxes[b];
+            if (box[0] < ob[0] + ob[2] && box[0] + box[2] > ob[0] &&
+                box[1] < ob[1] + ob[3] && box[1] + box[3] > ob[1]) { clash = true; break; }
+          }
+          if (!clash) placed = { x: bx, y: by, box: box };
         }
-
-        /* day counter riding beside the craft */
-        var dayNow = Math.min(v.days, Math.floor(p * v.days) + 1);
-        var label = v.label + '  ' + dayNow + '/' + v.days;
-        b.save();
-        b.font = '600 9.5px ' + SERIF;
-        var tw = b.measureText(label).width;
-        var lx = px(hp) + 13, ly = py(hp) - 15;
-        if (lx + tw + 10 > W - 10) lx = px(hp) - 13 - tw - 10;
-        if (ly < 14) ly = py(hp) + 14;
-        b.fillStyle = 'rgba(28,20,10,.82)';
-        b.beginPath();
-        var bw = tw + 10, bh = 15, r = 2.5;
-        b.moveTo(lx + r, ly);
-        b.arcTo(lx + bw, ly, lx + bw, ly + bh, r);
-        b.arcTo(lx + bw, ly + bh, lx, ly + bh, r);
-        b.arcTo(lx, ly + bh, lx, ly, r);
-        b.arcTo(lx, ly, lx + bw, ly, r);
-        b.closePath();
-        b.fill();
-        b.fillStyle = 'rgba(246,238,220,.96)';
-        b.textAlign = 'left';
-        b.textBaseline = 'middle';
-        b.fillText(label, lx + 5, ly + bh / 2 + 0.5);
-        b.restore();
+        if (!placed) {
+          placed = { x: o.x - tw / 2, y: o.y - th - 12,
+                     box: [o.x - tw / 2 - 2, o.y - th - 13, tw + 4, th + 2] };
+        }
+        boxes.push(placed.box);
+        text.position.set(placed.x, placed.y);
+        labelLayer.addChild(text);
       }
     }
 
-    function drawStaticSelection(b) {
+    /* a dashed ring around the picked place, before the tickets are bought */
+    function drawSelection() {
+      var existing = labelLayer.getChildByName('pick-ring');
+      if (existing) labelLayer.removeChild(existing);
       var sel = opts.getSelection ? opts.getSelection() : null;
-      if (!sel) return;
-      var p = project(sel.x, sel.y);
-      b.save();
-      b.strokeStyle = 'rgba(141,34,34,.75)';
-      b.lineWidth = 1.4;
-      b.setLineDash([4, 3]);
-      b.beginPath();
-      b.arc(px(p), py(p), 13, 0, Math.PI * 2);
-      b.stroke();
-      b.restore();
-    }
-
-    /* ---- the loop ---------------------------------------------------- */
-    function frame() {
-      if (dead) return;
-      var now = Date.now();
-      /* Progress is owned by the caller: it advances with the calendar in
-         app.js, one day at a time. The frame loop must not overwrite it, so
-         the hull only ever moves when a day actually passes. */
-      ctx.clearRect(0, 0, W, H);
-      if (base) ctx.drawImage(base, 0, 0, W, H);
-      drawStaticSelection(ctx);
-      drawPlaceLabels(ctx, now / 1000);
-      drawVoyages(ctx, now);
-      drawPins(ctx);
-
-      if (hasPulse()) {
-        rafId = window.requestAnimationFrame(frame);
-      } else {
-        rafId = 0;
+      if (!sel || !cam) return;
+      var p = cam.fromMap(sel.x, sel.y);
+      var g = new PIXI.Graphics();
+      g.name = 'pick-ring';
+      g.lineStyle(1.4, 0x8d2222, 0.75);
+      for (var a = 0; a < Math.PI * 2; a += 0.75) {
+        g.arc(p.x, p.y, 13, a, Math.min(Math.PI * 2, a + 0.42));
       }
+      labelLayer.addChildAt(g, 0);
     }
 
-    function hasPulse() {
-      /* every setVoyages() kicks one frame, so the standing lanes need no
-         loop of their own; only the "you are here" pulse does. */
-      if (!api.labels.length || document.hidden) return false;
-      for (var i = 0; i < api.labels.length; i++) if (api.labels[i].here) return true;
-      return false;
-    }
-
-    function kick() {
-      if (rafId) return;
-      /* a single paint, plus a short chase while an image or layout settles */
-      var chain = 0;
-      var step = function () {
-        rafId = 0;
-        frame();
-        if (rafId) return;            /* the pulse loop took over */
-        if (++chain < 3) rafId = window.requestAnimationFrame(step);
-      };
-      rafId = window.requestAnimationFrame(step);
-    }
+    /* ---- animation --------------------------------------------------- */
+    var tickerFn = function () {
+      if (dead || !cam) return;
+      var now = performance.now();
+      placeVessels(now, false);
+      for (var i = 0; i < pinLayer.children.length; i++) {
+        var c = pinLayer.children[i];
+        if (c.isPulse) {
+          c.scale.set(1 + 0.30 * (0.5 + 0.5 * Math.sin(now / 520)));
+          c.alpha = 0.9;
+        }
+      }
+    };
+    app.ticker.add(tickerFn);
 
     /* ---- sizing ------------------------------------------------------ */
     function resize() {
       var rect = host.getBoundingClientRect();
-      var cssW = Math.max(200, Math.round(rect.width));
-      var cssH = Math.max(120, Math.round(rect.height || cssW / ASPECT));
-      var dpr = Math.min(2.5, window.devicePixelRatio || 1);
-      if (cssW === W && cssH === H && dpr === DPR && base) return;
-      W = cssW; H = cssH; DPR = dpr;
-      canvas.width = Math.round(W * DPR);
-      canvas.height = Math.round(H * DPR);
-      canvas.style.width = W + 'px';
-      canvas.style.height = H + 'px';
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      buildBase();
-      kick();
+      var cssW = Math.max(220, Math.round(rect.width));
+      var cssH = Math.max(150, Math.round(rect.height || cssW * 0.60));
+      if (cssW === W && cssH === H) return;
+      W = cssW; H = cssH;
+      app.renderer.resize(W, H);
+      buildStatic();
+      drawRoutes();
+      drawPinsAndLabels();
+      drawSelection();
     }
 
     function refresh() {
+      if (dead) return;
       resize();
-      kick();
-    }
-
-    function destroy() {
-      dead = true;
-      if (rafId) window.cancelAnimationFrame(rafId);
-      rafId = 0;
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      drawSelection();
     }
 
     var ro = null;
     if (window.ResizeObserver) {
-      ro = new window.ResizeObserver(function () { refresh(); });
+      ro = new window.ResizeObserver(function () { if (!dead) refresh(); });
       ro.observe(host);
     }
     window.addEventListener('resize', refresh);
 
+    function destroy() {
+      if (dead) return;
+      dead = true;
+      if (ro) { ro.disconnect(); ro = null; }
+      window.removeEventListener('resize', refresh);
+      if (liveCam === cam) liveCam = null;
+      try { app.destroy(false, { children: true }); } catch (e) { /* already gone */ }
+      if (view.parentNode) view.parentNode.removeChild(view);
+    }
+
     resize();
-    kick();
     return api;
   }
 
   /* =====================================================================
-   * 4. Public surface
+   * 7. Public surface
    * =================================================================== */
   window.ArtRaceMap = {
-    available: !!(GEO && RINGS.length),
-    aspect: ASPECT,
+    available: !!(GEO && RINGS && RINGS.length && window.PIXI),
+    aspect: 1.65,
+    levels: ['europe', 'world'],
     project: project,
     buildRoute: buildRoute,
     pointAt: pointAt,

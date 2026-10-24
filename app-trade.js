@@ -376,7 +376,9 @@
   }
   function viewTravel() {
     var from = A.city(G.cityId);
-    var away = !!G.voyage;
+    /* the colony screen replaces this panel entirely, so a colony passage
+       never shows a banner here — and the day clock keeps running. */
+    var away = !!G.voyage && !G.voyage.colonyId;
     var banner = away ? '<div class="voyage-banner">' +
       '<span class="voyage-dest">' + h(G.voyage.label) + '</span>' +
       '<span class="voyage-eta">' + G.voyage.remaining + ' day(s) still to run · ' +

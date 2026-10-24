@@ -434,6 +434,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .wm-key--plantation::before { background: #3f7d44; }
 .wm-key--city::before { background: #2f5f8a; }
 .wm-key--trade::before { background: #b3872c; }
+.wm-levels {
+  margin-left: auto; display: inline-flex; gap: .25em;
+  border-left: 1px solid rgba(224, 188, 99, .35); padding-left: .55em;
+}
+.wm-level {
+  font-family: var(--sans); font-size: .6rem; letter-spacing: .09em; text-transform: uppercase;
+  padding: .18em .5em; border-radius: 2px; cursor: pointer;
+  color: #cfd9e0; background: rgba(10, 30, 46, .6);
+  border: 1px solid rgba(224, 188, 99, .35);
+}
+.wm-level:hover { border-color: rgba(224, 188, 99, .8); color: #fff; }
+.wm-level.is-on { background: var(--gold-2, #c9a548); color: #1a1208; border-color: transparent; }
 
 /* ---- the live canvas chart ---------------------------------------------- *
  * map.js draws the whole plate — sea, land, pins, routes and the moving
@@ -441,7 +453,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  * surface, pins stay glued to their harbours at any resolution or zoom.
  * ------------------------------------------------------------------------ */
 .worldmap--canvas {
-  aspect-ratio: 25 / 18; min-height: 0; background: #0a2b45;
+  /* #panel is a scrolling flex child, so aspect-ratio has no definite height
+     to resolve against and the canvas would collapse to its 220x150 floor.
+     An explicit clamped height keeps the plate large but scrollable. */
+  height: clamp(240px, 46vh, 520px); min-height: 240px;
+  position: relative; background: #0a2b45;
   overflow: hidden; touch-action: manipulation;
   border: 1px solid #050d16; border-radius: 3px;
   box-shadow: inset 0 0 0 1px rgba(201, 165, 72, .45), 0 8px 22px rgba(4, 12, 22, .45);

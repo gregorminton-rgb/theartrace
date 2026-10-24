@@ -41,7 +41,10 @@
     stats: { buys: 0, sells: 0, hammer: 0, bestProfit: 0, worstProfit: 0, forgery: 0 },
     view: 'dealer',
     clockTimer: null,
+    clockWanted: false,         // the player wants the calendar running (paused ashore)
     colonyId: null,            // colony id while the colony screen is open
+    mapPick: null,             // { x, y } of the place picked on the travel chart
+    mapLevel: 'world',         // travel chart zoom level: 'europe' | 'world'
     colonyReturnCityId: null,  // city to sail back to on leaving
     colonyMenu: 'plantage',    // current colony menu tab (plantage, handel, lager, arbeiter)
     fields: [],                // laid-out plots: { id, colonyId, plotIndex, cropId, plantedDay, progress, ripe, workers, level }

@@ -69,6 +69,31 @@
     if (G.clockTimer) { clearInterval(G.clockTimer); G.clockTimer = null; }
     el('cal-auto').checked = false;
     el('cal-timer').classList.remove('running');
+    G.clockWanted = false;
+  }
+
+  /* Arriving at a colony pauses the calendar; leaving the colony screen
+     resumes it if the player had it running. */
+  function resumeClockIfWanted() {
+    if (!G.clockWanted || G.clockTimer || G.ended) return;
+    el('cal-auto').checked = true;
+    el('cal-timer').classList.add('running');
+    G.clockTimer = setInterval(tickClock, 1600);
+  }
+
+  function tickClock() {
+    if (G.ended) { stopClock(); return; }
+    /* While the player is ashore the colony screen drives its own day, so the
+       global clock waits instead of ticking a hidden portrait city. */
+    if (G.colonyId) return;
+    try {
+      advanceDay(false);
+      renderAll();
+    } catch (err) {
+      stopClock();
+      log('The clock stopped on day ' + G.day + ': ' + err.message);
+      renderAll();
+    }
   }
 
   function endGame(won) {
@@ -325,12 +350,9 @@
   document.addEventListener('change', function (ev) {
     if (ev.target.id === 'cal-auto') {
       if (ev.target.checked && G.started && !G.ended) {
+        G.clockWanted = true;
         el('cal-timer').classList.add('running');
-        G.clockTimer = setInterval(function () {
-          if (G.ended) { stopClock(); return; }
-          advanceDay(false);
-          renderAll();
-        }, 1600);
+        G.clockTimer = setInterval(tickClock, 1600);
       } else {
         stopClock();
       }
@@ -354,7 +376,7 @@
   }
   boot();
 
-  A.shell = { stopClock: stopClock, endGame: endGame,
+  A.shell = { stopClock: stopClock, resumeClock: resumeClockIfWanted, endGame: endGame,
               dialog: dialog, closeDialog: closeDialog };
   window.ArtRaceApp = { G: G, app: A.app, shared: A.shared, game: A };
 })();
