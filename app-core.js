@@ -102,7 +102,8 @@
     G.stock = {};
     G.restockDay = {};
     G.lots = [];
-    G.auctionDay = 1;
+    G.auctionDay = 0;
+    G.auctionCityId = null;
     G.nextUid = 1;
     G.log = [];
     G.history = [];
@@ -121,7 +122,7 @@
     G.started = true;
 
     A.cities.forEach(function (c) { stockCity(c.id); });
-    buildAuction();
+    syncAuction();
 
     log('Career begins in ' + A.city(G.cityId).name + ' with ' + A.money(G.cash) +
         ' and ' + G.careerDays + ' days to make ' + A.money(G.targetWorth) + '.');
@@ -406,6 +407,7 @@
     });
     log('Arrived in ' + to.name + ' on day ' + G.day + '.');
     restockIfNeeded();
+    syncAuction();
     if (G.view === 'travel') G.view = 'dealer';
   }
 
@@ -432,7 +434,32 @@
 
   /* Every lot has a hidden ceiling per rival paddles; the player wins once the
    * bid passes the richest rival. Reserve and increment are the authored ratios. */
-  function buildAuction() {
+  /* A sale list belongs to exactly one city and to one sale day. It is posted
+   * `auctionLeadDays` ahead of the hammer so the player can read the catalogue,
+   * and bids are taken only on the sale day, only in that room. */
+  function saleLeadDays() { return Math.max(1, CFG.auctionLeadDays || 3); }
+
+  /* The catalogue is on display: right city, list drawn, sale not yet hammered. */
+  function auctionListUp() {
+    var city = A.city(G.cityId);
+    if (!city || !city.hasAuctionHouse) return false;
+    if (G.auctionCityId !== city.id || !G.lots.length) return false;
+    return G.day >= G.auctionDay - saleLeadDays() && G.day <= G.auctionDay;
+  }
+
+  /* Bidding is possible only on the sale day itself. */
+  function auctionOpenHere() {
+    return auctionListUp() && G.day === G.auctionDay;
+  }
+
+  /* Days until the hammer falls in this room; 0 means it falls today. */
+  function daysToAuction() {
+    var city = A.city(G.cityId);
+    if (!city || !city.hasAuctionHouse) return -1;
+    return Math.max(0, G.auctionDay - G.day);
+  }
+
+  function drawAuction() {
     var city = A.city(G.cityId);
     var lots = [];
     for (var i = 0; i < CFG.auctionLotCount; i++) {
@@ -458,15 +485,38 @@
       });
     }
     G.lots = lots;
-    G.auctionDay = G.day + CFG.auctionIntervalDays;
+    G.auctionCityId = city.id;
+  }
+
+  /* Keeps the sale calendar honest: draw the catalogue when its window opens,
+   * drop it when the hammer has fallen, and schedule the next sale. */
+  function syncAuction() {
+    var city = A.city(G.cityId);
+    var hasRoom = !!(city && city.hasAuctionHouse);
+    if (!hasRoom) { G.auctionCityId = null; G.lots = []; return; }
+    if (G.auctionCityId !== city.id) {
+      /* a different room: its own calendar starts a couple of days out */
+      G.auctionCityId = city.id;
+      G.lots = [];
+      G.auctionDay = Math.max(G.auctionDay, G.day + (CFG.auctionPreDays || 2));
+    }
+    if (G.day > G.auctionDay) {
+      G.auctionDay = G.day + CFG.auctionIntervalDays;
+      G.lots = [];
+    }
+    if (!G.lots.length && G.day >= G.auctionDay - saleLeadDays()) drawAuction();
+  }
+
+  function buildAuction() {
+    G.auctionCityId = null;
+    syncAuction();
   }
 
   function bidLot(index) {
-    /* the room must be open: right city, right day. */
-    var c0 = A.city(G.cityId);
-    if (!c0 || !c0.hasAuctionHouse) { log('There is no auction house in ' + (c0 ? c0.name : 'this city') + '.'); return; }
-    if (G.day >= G.auctionDay) { log('The sale is over \u2014 the next list is due soon.'); return; }
-    if (!G.lots.length) { log('No sale list is open.'); return; }
+    if (!auctionOpenHere()) {
+      log('The hammer is still \u2014 bids are only taken on the sale day, in the room.');
+      return;
+    }
     var lot = G.lots[index];
     if (!lot || lot.closed) return;
     if (G.portfolio.length >= G.capacity) { log('No crate space left for a auction win.'); return; }
@@ -578,10 +628,7 @@
     }
 
     restockIfNeeded();
-    if (G.day >= G.auctionDay && A.city(G.cityId).hasAuctionHouse) {
-      buildAuction();
-      log('New sale list at the ' + A.city(G.cityId).name + ' auction house.');
-    }
+    syncAuction();
     if (!silent && CFG.logDailyMoves) log('Day ' + G.day + ' opened.');
     arriveIfDue();
     checkEnd();
@@ -639,7 +686,13 @@
       /* the rest of the shared vocabulary the later modules call by name */
       askOf: askOf, valueOf: valueOf, idxOf: idxOf, rivalCount: rivalCount,
       findOwned: findOwned, checkEnd: checkEnd,
-      beginVoyage: beginVoyage, voyageRoute: voyageRoute
+      beginVoyage: beginVoyage, voyageRoute: voyageRoute,
+      /* player actions — app-shell.js wires these to the buttons */
+      bidLot: bidLot, passLot: passLot, buySlot: buySlot,
+      collect: collect, examine: examine, repay: repay,
+      /* auction calendar — app-trade.js reads these instead of guessing */
+      auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
+      daysToAuction: daysToAuction, saleLeadDays: saleLeadDays
     }
   };
   A.shared = window.ArtRaceGame.shared;

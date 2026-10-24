@@ -141,7 +141,8 @@ window.ART_DATA = {
                     "reputationPerPurchase":  1,
                     "auctionReserveRatio":  0.75,
                     "auctionIncrementRatio":  0.07,
-                    "auctionLeadDays":  2
+                    "auctionLeadDays":  2,
+                "auctionPreDays":   4
                 },
     "artists":  [
                     {

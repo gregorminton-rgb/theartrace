@@ -100,10 +100,9 @@
     Array.prototype.forEach.call(nav.querySelectorAll('.station'), function (b) {
       var v = b.getAttribute('data-view');
       var ok = true;
-      /* An auction is only real when the room is in this city *and* a sale is
-         actually hanging on this day — the list is drawn up on the day itself
-         and lapses when the next one is due. */
-      if (v === 'auction') ok = c.hasAuctionHouse && auctionOpenHere();
+      /* An auction is only real when the room is in this city *and* a catalogue
+         is hanging — the list goes up a few days early, bids only on sale day. */
+      if (v === 'auction') ok = c.hasAuctionHouse && auctionListUp();
       if (v === 'bank') ok = c.hasBank;
       if (v === 'studio') ok = c.hasRestorationStudio;
       if (v === 'trade') ok = !!TRADE_HUB_IDS[c.id];
@@ -140,7 +139,7 @@
   function renderPanel() {
     var c = A.city(G.cityId);
     var view = G.view;
-    if (view === 'auction' && !(c.hasAuctionHouse && auctionOpenHere())) view = 'dealer';
+    if (view === 'auction' && !auctionListUp()) view = 'dealer';
     if (view === 'bank' && !c.hasBank) view = 'dealer';
     if (view === 'studio' && !c.hasRestorationStudio) view = 'dealer';
     if (view === 'trade' && !TRADE_HUB_IDS[c.id]) view = 'dealer';
@@ -223,13 +222,10 @@
       ' · condition slips ' + A.pct(CFG.dailyConditionDecay) + ' every day.</p>' + rows;
   }
   /* Is the auction room open for business right now, for this player? */
-  function auctionOpenHere() {
-    var c = A.city(G.cityId);
-    if (!c || !c.hasAuctionHouse) return false;
-    if (!G.lots.length) return false;
-    /* the list is posted on its sale day and stays up until the next one is due */
-    return G.day >= G.auctionDay - CFG.auctionIntervalDays && G.day < G.auctionDay;
-  }
+  var auctionOpenHere = function () { return !!A.app.auctionOpenHere(); };
+  var auctionListUp = function () { return !!A.app.auctionListUp(); };
+  var daysToAuction = function () { return A.app.daysToAuction(); };
+  var saleLeadDays = function () { return A.app.saleLeadDays(); };
   function nextAuctionCity() {
     var names = A.cities.filter(function (x) { return x.hasAuctionHouse; })
                         .map(function (x) { return x.name; });
@@ -240,13 +236,25 @@
     if (!c.hasAuctionHouse)
       return '<p class="empty">No auction house in ' + h(c.name) +
              '. The rooms are in ' + h(nextAuctionCity()) + '.</p>';
-    return '<p class="empty">The hammer is still: no sale is running in ' + h(c.name) +
-           ' today. The next list is due on day ' + G.auctionDay + '.</p>';
+    var days = daysToAuction();
+    if (days > 0)
+      return '<p class="empty">The room is dark: the hammer falls in ' + days + ' day(s), on day ' +
+             G.auctionDay + '. Travel on and come back then — bids are only taken on the sale day.</p>';
+    if (days === 0)
+      return '<p class="empty">To-day is the sale: the catalogue is being hung. Come back in a moment.</p>';
+    return '<p class="empty">The hammer has fallen. The next sale in ' + h(c.name) + ' is on day ' +
+           G.auctionDay + '.</p>';
   }
 
   function viewAuction() {
-    if (!auctionOpenHere()) return auctionClosedNote();
-    if (!G.lots.length) return '<p class="empty">The sale list is being drawn up — come back tomorrow.</p>';
+    var head = '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
+      'Catalogue on view') + ' · hammer on day ' + G.auctionDay + ' · buyer\u2019s premium ' +
+      A.pct(CFG.auctionCommission) + ' · increment ' + A.pct(CFG.auctionIncrementRatio) + '.</p>';
+    if (!auctionListUp())
+      return auctionClosedNote();
+    if (!G.lots.length)
+      return '<p class="empty">The sale list is being drawn up — come back tomorrow.</p>';
+    var live = auctionOpenHere();
     var rows = G.lots.map(function (lot, i) {
       var cls = lot.closed ? (lot.leader === 'you' ? ' won' : ' gone') : '';
       var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
@@ -259,12 +267,13 @@
           : rivalCount() + ' bidders in the room') + '</span></div>' +
         '<div class="row-btns">' +
         (lot.closed ? '' :
-          '<button class="btn bid" data-action="bid" data-lot="' + i + '">Bid + ' + A.money(step) + '</button>' +
-          '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>') +
+          (live
+            ? '<button class="btn bid" data-action="bid" data-lot="' + i + '">Bid + ' + A.money(step) + '</button>' +
+              '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>'
+            : '<span class="tag">bids open on day ' + G.auctionDay + '</span>')) +
         '</div></div>';
     }).join('');
-    return '<p class="note">Next sale list on day ' + G.auctionDay + ' · buyer’s premium ' +
-      A.pct(CFG.auctionCommission) + ' · increment ' + A.pct(CFG.auctionIncrementRatio) + '.</p>' + rows;
+    return head + rows;
   }
 
   function viewBank() {
