@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Great Art Race — web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261024-WORK1" />
+<link rel="stylesheet" href="styles.css?v=20261024-ARTVIEW1" />
 </head>
 <body>
 <div id="app">
@@ -139,6 +139,7 @@
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><b>Handel</b><small>Ernte verkaufen</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager"><b>Lager</b><small>Vorrat &amp; Kisten</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter"><b>Arbeiter</b><small>Einstellen &amp; zuteilen</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="reise"><b>Reise</b><small>Weltkarte</small></button>
     </nav>
     <div class="colony-content" id="colony-content">
       <!-- PLANTAGE view -->
@@ -178,6 +179,14 @@
           <div id="colony-arbeiter-content"></div>
         </div>
       </div>
+      <!-- REISE view: the same chart the travel panel draws -->
+      <div class="colony-view colony-view--reise" id="colony-view-reise" hidden>
+        <div class="colony-travel-wrap">
+          <div id="colony-wm-stage"></div>
+          <p class="colony-note" id="colony-travel-note">Pick a port on the chart — a city or another colony — and sail on from here.</p>
+          <div class="dest-list" id="colony-dest-list"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -201,12 +210,14 @@
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261024-PIXI1"></script>
 <script src="app-crew.js?v=20261024-WORK1"></script>
-<script src="app-colonies.js?v=20261024-WORK1"></script>
+<script src="app-colonies.js?v=20261024-ARTVIEW1"></script>
 <script src="app-core.js?v=20261024-RIO1"></script>
-<script src="app-art.js?v=20261024-2610"></script>
-<script src="app-map.js?v=20261024-SHIP5"></script>
-<script src="app-trade.js?v=20261024-2940"></script>
-<script src="app-shell.js?v=20261024-2940"></script>
+<script src="art-notes.js?v=20261024-ARTVIEW1"></script>
+<script src="app-art.js?v=20261024-ARTVIEW1"></script>
+<script src="app-artview.js?v=20261024-ARTVIEW1"></script>
+<script src="app-map.js?v=20261024-ARTVIEW1"></script>
+<script src="app-trade.js?v=20261024-ARTVIEW1"></script>
+<script src="app-shell.js?v=20261024-ARTVIEW1"></script>
 </body>
 </html>
 

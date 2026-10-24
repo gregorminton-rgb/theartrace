@@ -251,33 +251,44 @@
      the port of departure; the player can also cross to a neighbouring colony
      or any city, so the button lists every reachable place with the price and
      the crossing time the chart distance implies. */
+  /* Travel from the plantation shows the chart, not a list: the player should
+     see where the colony lies before choosing a port. The list under the chart
+     stays as the fallback for a touch screen and for naming prices exactly. */
   function openColonyTravel() {
     var colony = COLONY_BY_ID[G.colonyId];
     if (!colony) return;
     if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
-    var list = colonyDestinations().map(function (d) {
+    G.colonyTravel = true;
+    G.colonyMenu = 'reise';
+    renderColony();
+    if (A.mapView && A.mapView.sync) A.mapView.sync();
+  }
+
+  /* The rows under the colony chart — the same destinations, in days order. */
+  function colonyTravelRowsHTML() {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony) return '';
+    var rows = colonyDestinations().map(function (d) {
       var target = d.city || COLONY_BY_ID[d.colonyId];
       var price = A.ticketPrice(colony, target);
       var days = A.ticketDays(colony, target);
-      var kind = d.kind === 'colony' ? 'Colony' : d.kind === 'trade' ? 'Trade desk' : 'City';
-      return { d: d, price: price, days: days, kind: kind };
-    }).sort(function (a, b) { return a.days - b.days || a.price - b.price; });
-
-    var html = '<p class="dialog-note">Leaving the plantation. The crossing is spent at sea, so the ' +
-      'days pass while you travel.</p><div class="dest-list">' +
-      list.map(function (r) {
-        var dest = r.d;
-        var disabled = r.price > G.cash ? ' disabled' : '';
-        return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(dest.slug) + '"' + disabled + '>' +
-          '<span class="dest-name">' + h(dest.label) + '<i class="dest-kind">' + r.kind + '</i></span>' +
-          '<span class="dest-sub">' + h(dest.sub || '') + '</span>' +
-          '<span class="dest-meta">' + A.money(r.price) + ' · ' + r.days + 'd</span>' +
-          '</button>';
-      }).join('') + '</div>';
-
-    dialog('Travel from ' + colony.label, html, [
-      { label: 'Stay on the plantation', ghost: true, onClick: closeDialog }
-    ], 'dest-dialog');
+      d.price = price;
+      d.days = days;
+      return d;
+    });
+    rows.sort(function (a, b) { return a.days - b.days || a.price - b.price; });
+    return rows.map(function (d) {
+      var price = d.price;
+      var days = d.days;
+      var kind = d.kind === 'colony' ? 'Kolonie' : d.kind === 'trade' ? 'Handel' : 'Stadt';
+      var disabled = price > G.cash ? ' disabled' : '';
+      return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(d.slug) + '"' + disabled + '>' +
+        '<span class="dest-name">' + h(d.label) + '</span>' +
+        '<span class="dest-kind">' + kind + '</span>' +
+        '<span class="dest-sub">' + h(d.sub || '') + '</span>' +
+        '<span class="dest-meta">' + A.money(price) + ' · ' + days + 'd</span>' +
+        '</button>';
+    }).join('');
   }
 
   /* Everything the plantation can be left for: every city and every other
@@ -325,6 +336,7 @@
     G.cityId = colony.id && A.city(colony.id) ? colony.id : G.colonyReturnCityId || G.cityId;
     G.colonyId = null;
     G.colonyMenu = 'plantage';
+    G.colonyTravel = false;
     G.selectedFieldId = null;
     G.plantCropId = null;
     show(el('colony'), false);
@@ -358,6 +370,17 @@
     show(el('colony-view-handel'), G.colonyMenu === 'handel');
     show(el('colony-view-lager'), G.colonyMenu === 'lager');
     show(el('colony-view-arbeiter'), G.colonyMenu === 'arbeiter');
+    show(el('colony-view-reise'), G.colonyMenu === 'reise');
+    
+    /* The chart is mounted on demand: the stage has to be visible before the
+       renderer measures it. */
+    if (G.colonyMenu === 'reise') {
+      var dl = el('colony-dest-list');
+      if (dl) dl.innerHTML = colonyTravelRowsHTML();
+      if (A.mapView && A.mapView.sync) A.mapView.sync();
+    } else {
+      G.colonyTravel = false;
+    }
     
     /* Render plantage view (only when visible) */
     if (G.colonyMenu === 'plantage') {
@@ -558,7 +581,7 @@
     cropPrice: cropPrice, cropThumb: cropThumb, hash2: hash2,
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
     colonyDestinations: colonyDestinations, departFromColony: departFromColony,
-    openColonyTravel: openColonyTravel,
+    colonyTravelRowsHTML: colonyTravelRowsHTML, openColonyTravel: openColonyTravel,
     renderColony: renderColony
   };
 })();

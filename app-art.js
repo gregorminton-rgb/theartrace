@@ -31,15 +31,21 @@
 
   function artPicture(workId) { return ARTWORK[workId] || null; }
 
-  function thumb(w) {
+  /* The thumbnail carries the click-to-enlarge action: the row's own buttons
+     stay free for Buy / Sell / Bid. */
+  function thumb(w, uid) {
     var tint = EPOCH_TINT[A.workEpoch(w)] || EPOCH_TINT.Modern;
     var pic = artPicture(w.id);
+    var attr = ' data-action="art" data-work="' + h(w.id) + '"' +
+      (uid != null ? ' data-uid="' + h(uid) + '"' : '') +
+      ' title="' + h(w.title) + ' — click for the full picture"';
     if (pic) {
-      return '<span class="thumb thumb-art" title="' + h(w.title) + '">' +
+      return '<span class="thumb thumb-art thumb-btn" role="button" tabindex="0"' + attr + '>' +
              '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy">' +
              '</span>';
     }
-    return '<span class="thumb" style="background:linear-gradient(135deg,' + tint[0] + ' 25%,' + tint[1] + ' 100%)">' +
+    return '<span class="thumb thumb-btn" role="button" tabindex="0"' + attr +
+           ' style="background:linear-gradient(135deg,' + tint[0] + ' 25%,' + tint[1] + ' 100%)">' +
            '<span class="thumb-init">' + h((A.artistById[w.artistId] || { name: '?' }).name.slice(0, 1)) + '</span></span>';
   }
 

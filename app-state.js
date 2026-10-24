@@ -45,6 +45,7 @@
     colonyId: null,            // colony id while the colony screen is open
     mapPick: null,             // { x, y } of the place picked on the travel chart
     mapLevel: 'world',         // travel chart zoom level: 'europe' | 'world'
+    colonyTravel: false,       // the colony screen is showing the travel chart
     colonyReturnCityId: null,  // city to sail back to on leaving
     colonyMenu: 'plantage',    // current colony menu tab (plantage, handel, lager, arbeiter)
     fields: [],                // laid-out plots: { id, colonyId, plotIndex, cropId, plantedDay, progress, ripe, workers, level }

@@ -186,11 +186,14 @@
     }
 
   function syncWorldMap() {
-    if (G.view !== 'travel') {
+    if (G.view !== 'travel' && !G.colonyTravel) {
       destroyWorldMap();
       return;
     }
-    var stage = el('wm-stage');
+    /* The chart mounts in the travel panel, or — when the player is ashore —
+       in the colony's own travel view. Both carry a stage with #wm-stage-plus
+       only one of them is on screen at a time. */
+    var stage = el(G.colonyTravel ? 'colony-wm-stage' : 'wm-stage');
     if (!stage) { destroyWorldMap(); return; }
     var Map = window.ArtRaceMap;
     if (!Map || !Map.available) return;
@@ -296,16 +299,34 @@
     }
     var buttons = [{ label: 'Back', primary: true, onClick: closeDialog }];
     
+    /* Ashore on a plantation the voyage starts from the colony, not the city
+       the player left behind: hand the departure to the colony module. */
+    var ashore = !!G.colonyId && A.colonies && A.colonies.departFromColony;
+
     /* City: Travel button */
     if (place.city && place.city.id !== G.cityId) {
-      var price = A.ticketPrice(A.city(G.cityId), place.city);
-      buttons.unshift({ label: 'Travel here · ' + A.money(price), onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
+      if (ashore) {
+        buttons.unshift({ label: 'Travel here', primary: true, onClick: function () {
+          closeDialog(); renderAll();
+          A.colonies.departFromColony(place.slug);
+        } });
+      } else {
+        var price = A.ticketPrice(A.city(G.cityId), place.city);
+        buttons.unshift({ label: 'Travel here · ' + A.money(price), onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
+      }
     }
     
-    /* Colony: Sail button (only if not already at a colony) */
-    if (place.colony && !G.colonyId) {
-      var sail = A.ticketPrice(A.city(G.cityId), place.colony);
-      buttons.unshift({ label: 'Sail to ' + place.colony.label + ' · ' + A.money(sail), primary: true, onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
+    /* Colony: Sail button */
+    if (place.colony && place.colony.id !== G.colonyId) {
+      if (ashore) {
+        buttons.unshift({ label: 'Sail to ' + place.colony.label, primary: true, onClick: function () {
+          closeDialog(); renderAll();
+          A.colonies.departFromColony('colony-' + place.colony.id);
+        } });
+      } else if (!G.colonyId) {
+        var sail = A.ticketPrice(A.city(G.cityId), place.colony);
+        buttons.unshift({ label: 'Sail to ' + place.colony.label + ' · ' + A.money(sail), primary: true, onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
+      }
     }
     
     

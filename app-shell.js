@@ -291,6 +291,10 @@
     var action = t.getAttribute('data-action');
 
     if (action === 'close-dialog') { closeDialog(); return; }
+    if (action === 'art') {
+      if (A.artView) A.artView.open(t.getAttribute('data-work'), uid >= 0 ? uid : null);
+      return;
+    }
     if (action === 'buy') act(buyOffer)(uid);
     else if (action === 'sell') act(sellOwned)(uid);
     else if (action === 'examine') act(examine)(uid);

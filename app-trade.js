@@ -133,7 +133,7 @@
        masters) medium and size. shopInfo falls back to the kind of picture. */
     var facts = h(w.typeName) + (w.medium ? ' · ' + h(w.medium) : '') +
                 (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
-    return '<div class="row-main">' + thumb(w) + '<div>' +
+    return '<div class="row-main">' + thumb(w, inst.uid) + '<div>' +
            '<span class="title">' + h(w.title) + '</span>' +
            '<span class="credit">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + ' · ' +
            facts + aliasTag(w) + '</span>' +
