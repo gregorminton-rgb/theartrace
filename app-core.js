@@ -462,6 +462,11 @@
   }
 
   function bidLot(index) {
+    /* the room must be open: right city, right day. */
+    var c0 = A.city(G.cityId);
+    if (!c0 || !c0.hasAuctionHouse) { log('There is no auction house in ' + (c0 ? c0.name : 'this city') + '.'); return; }
+    if (G.day >= G.auctionDay) { log('The sale is over \u2014 the next list is due soon.'); return; }
+    if (!G.lots.length) { log('No sale list is open.'); return; }
     var lot = G.lots[index];
     if (!lot || lot.closed) return;
     if (G.portfolio.length >= G.capacity) { log('No crate space left for a auction win.'); return; }
@@ -624,7 +629,8 @@
     G: window.ArtRaceGame.G,
     shared: {
       CFG: CFG, el: el, h: h, show: show,
-      MONTHS: MONTHS, dateOf: dateOf, log: log, rep: rep
+      MONTHS: MONTHS, dateOf: dateOf, log: log, rep: rep,
+      VIEW_TITLES: VIEW_TITLES
     },
     api: {
       G: window.ArtRaceGame.G, newGame: newGame, renderAll: renderAll,

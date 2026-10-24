@@ -100,7 +100,10 @@
     Array.prototype.forEach.call(nav.querySelectorAll('.station'), function (b) {
       var v = b.getAttribute('data-view');
       var ok = true;
-      if (v === 'auction') ok = c.hasAuctionHouse;
+      /* An auction is only real when the room is in this city *and* a sale is
+         actually hanging on this day — the list is drawn up on the day itself
+         and lapses when the next one is due. */
+      if (v === 'auction') ok = c.hasAuctionHouse && auctionOpenHere();
       if (v === 'bank') ok = c.hasBank;
       if (v === 'studio') ok = c.hasRestorationStudio;
       if (v === 'trade') ok = !!TRADE_HUB_IDS[c.id];
@@ -137,7 +140,7 @@
   function renderPanel() {
     var c = A.city(G.cityId);
     var view = G.view;
-    if (view === 'auction' && !c.hasAuctionHouse) view = 'dealer';
+    if (view === 'auction' && !(c.hasAuctionHouse && auctionOpenHere())) view = 'dealer';
     if (view === 'bank' && !c.hasBank) view = 'dealer';
     if (view === 'studio' && !c.hasRestorationStudio) view = 'dealer';
     if (view === 'trade' && !TRADE_HUB_IDS[c.id]) view = 'dealer';
@@ -219,8 +222,31 @@
     return '<p class="note">Warehouse value at today’s indices: ' + A.money(total) +
       ' · condition slips ' + A.pct(CFG.dailyConditionDecay) + ' every day.</p>' + rows;
   }
+  /* Is the auction room open for business right now, for this player? */
+  function auctionOpenHere() {
+    var c = A.city(G.cityId);
+    if (!c || !c.hasAuctionHouse) return false;
+    if (!G.lots.length) return false;
+    /* the list is posted on its sale day and stays up until the next one is due */
+    return G.day >= G.auctionDay - CFG.auctionIntervalDays && G.day < G.auctionDay;
+  }
+  function nextAuctionCity() {
+    var names = A.cities.filter(function (x) { return x.hasAuctionHouse; })
+                        .map(function (x) { return x.name; });
+    return names.join(', ');
+  }
+  function auctionClosedNote() {
+    var c = A.city(G.cityId);
+    if (!c.hasAuctionHouse)
+      return '<p class="empty">No auction house in ' + h(c.name) +
+             '. The rooms are in ' + h(nextAuctionCity()) + '.</p>';
+    return '<p class="empty">The hammer is still: no sale is running in ' + h(c.name) +
+           ' today. The next list is due on day ' + G.auctionDay + '.</p>';
+  }
+
   function viewAuction() {
-    if (!G.lots.length) return '<p class="empty">No open sale list.</p>';
+    if (!auctionOpenHere()) return auctionClosedNote();
+    if (!G.lots.length) return '<p class="empty">The sale list is being drawn up — come back tomorrow.</p>';
     var rows = G.lots.map(function (lot, i) {
       var cls = lot.closed ? (lot.leader === 'you' ? ' won' : ' gone') : '';
       var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
