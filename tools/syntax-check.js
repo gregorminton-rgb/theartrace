@@ -7,7 +7,8 @@ var fso = new ActiveXObject("Scripting.FileSystemObject");
    relocatable - nothing here is tied to an absolute path. */
 var root = fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName)) + "\\";
 function read(p) { var f = fso.OpenTextFile(p, 1); var s = f.ReadAll(); f.Close(); return s; }
-var files = ["data.js", "cities-extra.js", "engine.js", "images.js", "artwork-images.js", "world-geo.js", "map.js", "app.js"];
+var files = ["data.js", "cities-extra.js", "engine.js", "images.js", "artwork-images.js", "world-geo.js", "map.js",
+             "app-state.js", "app-crew.js", "app-colonies.js", "app-core.js", "app-art.js", "app-map.js", "app-trade.js", "app-shell.js"];
 var failed = 0;
 for (var i = 0; i < files.length; i++) {
   var path = root + files[i];

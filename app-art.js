@@ -1,0 +1,91 @@
+/* =========================================================================
+ * app-art.js — pictures and backdrops.
+ * Split out of the former single-file app.js. The load order in
+ * index.html is fixed: app-core.js first, because it owns G.
+ * ========================================================================= */
+(function () {
+  'use strict';
+
+  var A = window.ArtRace;
+  var G = window.ArtRaceGame.G;
+  var CFG = A.shared.CFG;
+  var el = A.shared.el, h = A.shared.h, show = A.shared.show;
+  var MONTHS = A.shared.MONTHS, dateOf = A.shared.dateOf;
+  var log = A.shared.log, rep = A.shared.rep;
+  /* shared vocabulary published by app-core.js */
+  var h = function (v) { return A.shared.h(v); };
+
+  var EPOCH_TINT = {
+    Renaissance: ['#5a4326', '#c9a227'], Baroque: ['#2f2016', '#b08d57'],
+    Rococo: ['#5b4a63', '#e0c3d0'], Romanticism: ['#1f3340', '#8fb6c9'],
+    Impressionism: ['#25404f', '#a9d3c4'], Modern: ['#2a2a2e', '#e05a35'],
+    Contemporary: ['#101418', '#57d1c8']
+  };
+  function rgb(a) { return 'rgb(' + Math.round(a[0] * 255) + ',' + Math.round(a[1] * 255) + ',' + Math.round(a[2] * 255) + ')'; }
+  /* ---------- artwork pictures ------------------------------------------ *
+   * artwork-images.js (written by tools/import-artwork-images.ps1) maps a
+   * work id to a plate the user supplied. Only some works have one, so the
+   * gradient/initial stays as the fallback everywhere.
+   * ---------------------------------------------------------------------- */
+  var ARTWORK = (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images) || {};
+
+  function artPicture(workId) { return ARTWORK[workId] || null; }
+
+  function thumb(w) {
+    var tint = EPOCH_TINT[A.workEpoch(w)] || EPOCH_TINT.Modern;
+    var pic = artPicture(w.id);
+    if (pic) {
+      return '<span class="thumb thumb-art" title="' + h(w.title) + '">' +
+             '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy">' +
+             '</span>';
+    }
+    return '<span class="thumb" style="background:linear-gradient(135deg,' + tint[0] + ' 25%,' + tint[1] + ' 100%)">' +
+           '<span class="thumb-init">' + h((A.artistById[w.artistId] || { name: '?' }).name.slice(0, 1)) + '</span></span>';
+  }
+
+  /* ---------- city backdrops -------------------------------------------- *
+   * images.js (written by tools/import-images.ps1) maps a slug to a picture.
+   * Only some cities have a master file so far, and a missing one falls back
+   * to the generated town palette instead of leaving a hole in the frame.
+   * ---------------------------------------------------------------------- */
+  var IMAGES = (window.ART_IMAGES && window.ART_IMAGES.images) || {};
+
+  function bareSlug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+
+  function pictureFor(slug) {
+    if (!slug) return null;
+    if (IMAGES[slug]) return IMAGES[slug];
+    /* tolerate a master called "NewYork.jpg" for the id "newyork" */
+    var want = bareSlug(slug);
+    for (var key in IMAGES) { if (bareSlug(key) === want) return IMAGES[key]; }
+    return null;
+  }
+  function cityPicture(city) {
+    /* Firenze has no master plate of its own; it borrows the Venice picture
+       the importer already produces from städte\venedig.jpg. */
+    var alias = { firenze: 'venedig' };
+    return pictureFor(alias[city.id] || city.id);
+  }
+
+  function renderBackdrop() {
+    var c = A.city(G.cityId);
+    var bd = el('backdrop');
+    var pic = cityPicture(c);
+    /* background-image/-color are set separately on purpose: the `background`
+       shorthand would wipe the background-size/position from styles.css. */
+    if (pic) {
+      bd.classList.add('has-image');
+      bd.style.backgroundColor = rgb(c.theme);
+      bd.style.backgroundImage = 'url("' + pic.file + '")';
+      el('backdrop-caption').textContent = c.name + ' — ' + c.description;
+    } else {
+      bd.classList.remove('has-image');
+      bd.style.backgroundColor = 'transparent';
+      bd.style.backgroundImage = 'linear-gradient(160deg,' + rgb(c.accent) + ' 0%,' +
+        rgb(c.theme) + ' 45%,' + rgb(c.ground) + ' 120%)';
+      el('backdrop-caption').textContent = c.name + ' — ' + c.description + ' · no picture imported yet';
+    }
+  }
+  A.art = { thumb: thumb, pictureFor: pictureFor, cityPicture: cityPicture,
+            renderBackdrop: renderBackdrop, IMAGES: IMAGES };
+})();
