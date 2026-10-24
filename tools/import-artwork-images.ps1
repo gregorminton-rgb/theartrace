@@ -89,6 +89,7 @@ $titleAliasesRaw = @{
     'Bal au moulin de la Galette'         = 'renoir_moulin_galette'
     'Las Meninas'                         = 'velazquez_meninas_bozzetto'
     'Die Fighting Temeraire'              = 'turner_temeraire'
+    'Woher kommen wir Wer sind wir Wohin gehen wir' = 'gauguin_tahitian_beach'
 }
 
 # Normalised once: a hashtable literal keyed with spaces does not answer
