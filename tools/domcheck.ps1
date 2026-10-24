@@ -17,7 +17,9 @@ $root = Split-Path $PSScriptRoot -Parent
 function ReadUtf8([string]$p) { [System.IO.File]::ReadAllText((Join-Path $root $p)) }
 
 $html = ReadUtf8 'index.html'
-$app  = ReadUtf8 'app.js'
+$appFiles = @(Get-ChildItem -Path $root -Filter 'app-*.js' | Sort-Object Name |
+    ForEach-Object { $_.Name }) + @('map.js')
+$app  = (($appFiles | ForEach-Object { ReadUtf8 $_ }) -join "`n")
 $css  = ReadUtf8 'styles.css'
 
 $htmlIds = @([regex]::Matches($html, '\bid\s*=\s*"([^"]+)"') |

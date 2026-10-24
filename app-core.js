@@ -352,8 +352,15 @@
     return { pts: [{ x: from.mapX, y: from.mapY }, { x: to.mapX, y: to.mapY }], glyph: 'ship' };
   }
 
-  function beginVoyage(to, days, price, freight, crates) {
+  function beginVoyage(to, days, price, freight, crates, forceColonyId) {
     var from = A.city(G.cityId);
+    /* Rio and San Francisco are art cities *and* colony ids. A voyage started
+       from a city must always end in a city unless the caller explicitly asked
+       for the plantation, so the colony twin only counts on request. */
+    var colonyId = forceColonyId || to.colonyId
+      || (COLONY_BY_ID[to.id] && !A.city(to.id) ? to.id : null);
+    var toName = to.name || to.label || to.id;
+    if (colonyId) toName = COLONY_BY_ID[colonyId].label;
     var route = voyageRoute(from, to);
     /* the chart wants its own copy with an arc-length table, so the hull can
        be placed at any point of the line, not only at a vertex */
@@ -361,12 +368,12 @@
       ? window.ArtRaceMap.buildRoute(from.mapX, from.mapY, to.mapX, to.mapY)
       : null;
     G.voyage = {
-      fromId: from.id, toId: to.id, toName: to.name, colonyId: to.colonyId || null,
-      days: days, remaining: days, startDay: G.day, label: from.name + ' → ' + to.name,
+      fromId: from.id, toId: to.id, toName: toName, colonyId: colonyId,
+      days: days, remaining: days, startDay: G.day, label: from.name + ' → ' + toName,
       route: route.pts, glyph: route.glyph,
       path: path || { pts: route.pts, glyph: route.glyph }
     };
-    log('You set out for ' + to.name + ': ' + A.money(price) +
+    log('You set out for ' + toName + ': ' + A.money(price) +
         ' ticket' + (freight ? ', ' + A.money(freight) + ' freight for ' + crates + ' crate(s)' : '') +
         ', ' + days + ' day(s) ' + (route.glyph === 'rail' ? 'by rail' : 'at sea') + '.');
   }
@@ -377,13 +384,22 @@
   function arriveIfDue() {
     var v = G.voyage;
     if (!v) return;
-    v.remaining = Math.max(0, v.days - (G.day - v.startDay));
+    /* A leg of N days leaves on day D and lands after day D+N-1, so it is due
+       the moment the day counter reaches startDay + days. */
+    v.remaining = Math.max(0, (v.startDay + v.days) - G.day);
     if (v.remaining > 0) return;
     if (G.ended) { G.voyage = null; return; }
+
+    /* Resolve the port before clearing the voyage, so a bad id can never throw
+       out of advanceDay() and leave the calendar frozen. */
+    var to = v.colonyId ? null : A.city(v.toId);
 
     G.voyage = null;
     G.mapPick = null;
     if (v.colonyId) {
+      /* The colony screen has its own clock (sailBack), so the global one is
+         paused. Never fall through to the city arrival below: that would
+         close a colony the player has not even seen. */
       stopClock();
       G.colonyReturnCityId = G.cityId;
       G.colonyId = v.colonyId;
@@ -392,11 +408,21 @@
       G.plantCropId = null;
       log('Arrived at ' + v.toName + ' on day ' + G.day + '.');
       G.view = 'dealer';
-      openColony();
+      try {
+        openColony();
+      } catch (err) {
+        /* A broken colony screen must not swallow the arrival. */
+        log('WARNING: the colony screen failed to open (' + err.message + '). You stay in ' + v.toName + '.');
+      }
       return;
     }
 
-    var to = A.city(v.toId);
+    if (!to) {
+      log('The crossing to ' + v.toName + ' fell through — you are still in ' +
+          A.city(G.cityId).name + '.');
+      return;
+    }
+
     G.cityId = v.toId;
     G.portfolio.forEach(function (p) {
       if (G.rng.chance(CFG.travelConditionRiskPerDay * v.days)) {
@@ -412,7 +438,7 @@
   }
 
   /* Travel office: ticket price and duration come straight off the map distance. */
-  function travelTo(cityId) {
+  function cityTravel(cityId) {
     var from = A.city(G.cityId);
     var to = A.city(cityId);
     if (!to || cityId === G.cityId) return;
@@ -426,6 +452,19 @@
     beginVoyage(to, days, price, freight, crates);
     checkEnd();
   }
+
+  /* A colony id may also name an art city (Rio, San Francisco). There the
+     colony passage starts a voyage whose arrival needs a city address, so the
+     art city wins; every other id opens the plantation screen. */
+  function travelTo(cityId) {
+    if (G.colonyId) {
+      log('You are ashore on the plantation — sail back to port first.');
+      return;
+    }
+    if (COLONY_BY_ID[cityId] && !A.city(cityId)) { sailToColony(cityId); return; }
+    cityTravel(cityId);
+  }
+
   /* ---------- auction house -------------------------------------------- */
   function rivalCount() {
     var base = CFG.rivalBidderCount + A.DIFFICULTY[G.difficulty].rivals;
@@ -688,6 +727,8 @@
     },
     api: {
       G: window.ArtRaceGame.G, newGame: newGame, renderAll: renderAll,
+      /* app-shell.js reassigns window.ArtRaceGame when it loads; these stay
+         here so the clock is reachable from app-core as well. */
       advanceDay: advanceDay, netWorth: netWorth, buyOffer: buyOffer,
       sellOwned: sellOwned, travelTo: travelTo,
       /* the rest of the shared vocabulary the later modules call by name */

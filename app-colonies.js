@@ -47,6 +47,7 @@
   /* app-core.js publishes these; call them at click time */
   var renderAll = function () { return A.app.renderAll(); };
   var checkEnd = function () { return A.app.checkEnd(); };
+  var advanceDay = function (silent) { return A.app.advanceDay(silent); };
   var beginVoyage = function () { return A.app.beginVoyage.apply(null, arguments); };
   var syncWorldMap = function () { return A.mapView && A.mapView.sync ? A.mapView.sync() : undefined; };
   var thumb = function (w) { return A.art ? A.art.thumb(w) : ''; };
@@ -221,7 +222,7 @@
     var days = A.ticketDays(from, colony);
     if (price > G.cash) { log('The passage to ' + colony.label + ' costs ' + A.money(price) + '.'); return; }
     G.cash -= price;
-    beginVoyage(colony, days, price, 0, 0);
+    beginVoyage(colony, days, price, 0, 0, colony.id);
     checkEnd();
   }
 
@@ -239,6 +240,7 @@
     G.selectedFieldId = null;
     G.plantCropId = null;
     show(el('colony'), false);
+    if (A.shell && A.shell.resumeClock) A.shell.resumeClock();
     renderAll();
   }
 
@@ -413,7 +415,7 @@
   }
 
   /* ---------- borrowed by the other app-*.js modules ---------------------- */
-  A.colonies = {
+  A.colonies = window.ArtRaceColonies = {
     CROPS: CROPS, CROP_BY_ID: CROP_BY_ID, COLONIES: COLONIES, COLONY_BY_ID: COLONY_BY_ID,
     TRADE_HUB_IDS: TRADE_HUB_IDS, TRADE_HUB_MULT: TRADE_HUB_MULT,
     cropPrice: cropPrice, cropThumb: cropThumb, hash2: hash2,

@@ -21,7 +21,9 @@ foreach ($blockName in 'WEB_ONLY_DEFAULTS', 'WEB_ONLY_DERIVED') {
 }
 $webOnly = @($webOnly | Sort-Object -Unique)
 
-$refs = Select-String -Path 'engine.js', 'app.js' -Pattern 'CFG\.([A-Za-z0-9_]+)' -AllMatches
+$srcFiles = @('engine.js') + @(Get-ChildItem -Path . -Filter 'app-*.js' |
+  Where-Object { $_.Name -ne 'app.js' } | ForEach-Object { $_.Name })
+$refs = Select-String -Path $srcFiles -Pattern 'CFG\.([A-Za-z0-9_]+)' -AllMatches
 $keys = @()
 foreach ($m in $refs) { foreach ($g in $m.Matches) { $keys += $g.Groups[1].Value } }
 $keys = $keys | Sort-Object -Unique
