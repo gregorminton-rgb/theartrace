@@ -662,6 +662,12 @@
       }
     });
 
+    /* A plantation with a standing order runs itself: the overseer harvests,
+       re-sows and pays hands even while the player is in Europe. Crates that
+       were loaded onto a ship reach their exchange on the same clock. */
+    if (crew.runOverseers) crew.runOverseers();
+    if (crew.runShipping) crew.runShipping();
+
     A.advanceMarket(G.market, G.rng);
     A.expireEvents(G.market, G.day);
 

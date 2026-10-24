@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Great Art Race — web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261024-HOVER1" />
+<link rel="stylesheet" href="styles.css?v=20261024-MOBILE1" />
 </head>
 <body>
 <div id="app">
@@ -129,6 +129,7 @@
         <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
       </div>
       <div class="colony-bar-actions">
+        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Verwalter: sät, erntet und teilt Arbeiter ein">Automatik</button>
         <button class="btn go" type="button" data-colony="endday">End day</button>
         <button class="btn primary" type="button" data-colony="travel">Travel</button>
       </div>
@@ -136,7 +137,7 @@
     <nav class="colony-menu" aria-label="Kolonie-Menü">
       <span class="colony-menu-label">Kolonie-Menü</span>
       <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage"><b>Anbau</b><small>Felder bestellen</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><b>Handel</b><small>Ernte verkaufen</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><b>Handel</b><small>Ernte verschiffen</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager"><b>Lager</b><small>Vorrat &amp; Kisten</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter"><b>Arbeiter</b><small>Einstellen &amp; zuteilen</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="reise"><b>Reise</b><small>Weltkarte</small></button>
@@ -160,10 +161,7 @@
       </div>
       <!-- HANDEL view -->
       <div class="colony-view colony-view--handel" id="colony-view-handel" hidden>
-        <div class="colony-simple-panel">
-          <h2>Handel</h2>
-          <p class="colony-note">Trade goods will be handled at the London or New York trade desk. Use the "Travel" button to sail on with your harvest — to any city or a neighbouring colony.</p>
-        </div>
+        <div class="colony-trade-panel" id="colony-handel-content"></div>
       </div>
       <!-- LAGER view -->
       <div class="colony-view colony-view--lager" id="colony-view-lager" hidden>
@@ -208,16 +206,16 @@
 <script src="map.js?v=20261024-SHIP5"></script>
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
-<script src="app-state.js?v=20261024-PIXI1"></script>
-<script src="app-crew.js?v=20261024-WORK1"></script>
-<script src="app-colonies.js?v=20261024-HOVER1"></script>
-<script src="app-core.js?v=20261024-RIO1"></script>
-<script src="art-notes.js?v=20261024-HOVER1"></script>
-<script src="app-art.js?v=20261024-HOVER1"></script>
-<script src="app-artview.js?v=20261024-HOVER1"></script>
-<script src="app-map.js?v=20261024-HOVER1"></script>
-<script src="app-trade.js?v=20261024-HOVER1"></script>
-<script src="app-shell.js?v=20261024-HOVER1"></script>
+<script src="app-state.js?v=20261024-MOBILE1"></script>
+<script src="app-crew.js?v=20261024-MOBILE1"></script>
+<script src="app-colonies.js?v=20261024-MOBILE1"></script>
+<script src="app-core.js?v=20261024-MOBILE1"></script>
+<script src="art-notes.js?v=20261024-MOBILE1"></script>
+<script src="app-art.js?v=20261024-MOBILE1"></script>
+<script src="app-artview.js?v=20261024-MOBILE1"></script>
+<script src="app-map.js?v=20261024-MOBILE1"></script>
+<script src="app-trade.js?v=20261024-MOBILE1"></script>
+<script src="app-shell.js?v=20261024-MOBILE1"></script>
 </body>
 </html>
 

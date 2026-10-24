@@ -29,23 +29,65 @@
 
   function viewTrade() {
     var hub = G.cityId;
-    if (!TRADE_HUB_IDS[hub]) return '<p class="empty">No trade desk here — sell colonial produce in London or New York.</p>';
+    if (!TRADE_HUB_IDS[hub]) {
+      return '<p class="empty">No trade desk here — sell colonial produce in London, New York or Tokio.</p>';
+    }
+    var cityName = A.city(hub).name;
+    var landed = (G.portGoods && G.portGoods[hub]) || {};
+    var landedIds = CROPS.map(function (c) { return c.id; }).filter(function (k) { return (landed[k] || 0) > 0; });
+    var landedHTML = '';
+    if (landedIds.length) {
+      landedHTML = '<p class="note">Crates your plantations shipped here are waiting on the dock — sell them at today\u2019s price.</p>' +
+        landedIds.map(function (k) {
+          var crop = CROP_BY_ID[k], units = landed[k], price = cropPrice(crop, hub);
+          return '<div class="row"><div class="row-main">' + cropThumb(crop) + '<div>' +
+            '<span class="title">' + h(crop.label) + '</span>' +
+            '<span class="credit">' + units + ' crate(s) on the dock · ' + cityName + ' pays ' + A.money(price) + ' each</span></div></div>' +
+            '<div class="row-num"><span class="ask">' + A.money(price * units) + '</span>' +
+            '<span class="est">' + A.money(price) + ' × ' + units + '</span></div>' +
+            '<div class="row-btns">' +
+            '<button class="btn sell" data-action="sell-port" data-crop="' + k + '" data-units="' + units + '">Sell all</button>' +
+            '<button class="btn" data-action="sell-port" data-crop="' + k + '" data-units="1">Sell 1</button></div></div>';
+        }).join('');
+    }
     var ids = CROPS.map(function (c) { return c.id; }).filter(function (k) { return (G.goods[k] || 0) > 0; });
-    if (!ids.length) return '<p class="note">The ' + A.city(hub).name + ' trade desk buys colonial produce. You have nothing in the warehouse yet — sail to a colony, plant and harvest, then come back.</p>';
+    if (!ids.length) {
+      var empty = '<p class="note">The ' + cityName + ' trade desk buys colonial produce. You have nothing here yet — ' +
+        'set a standing order on a plantation, or use the <b>Ernte verschiffen</b> tab on a colony to load a ship.</p>';
+      return landedHTML || empty;
+    }
     var rows = ids.map(function (k) {
       var crop = CROP_BY_ID[k];
       var units = G.goods[k] || 0;
       var price = cropPrice(crop, hub);
       return '<div class="row"><div class="row-main">' + cropThumb(crop) + '<div>' +
         '<span class="title">' + h(crop.label) + '</span>' +
-        '<span class="credit">' + units + ' unit(s) · ' + A.city(hub).name + ' pays ' + A.money(price) + ' each</span></div></div>' +
+        '<span class="credit">' + units + ' unit(s) · ' + cityName + ' pays ' + A.money(price) + ' each</span></div></div>' +
         '<div class="row-num"><span class="ask">' + A.money(price * units) + '</span>' +
         '<span class="est">' + A.money(price) + ' × ' + units + '</span></div>' +
         '<div class="row-btns">' +
         '<button class="btn sell" data-action="sell-goods" data-crop="' + k + '" data-units="' + units + '">Sell all</button>' +
         '<button class="btn" data-action="sell-goods" data-crop="' + k + '" data-units="1">Sell 1</button></div></div>';
     }).join('');
-    return '<p class="note">Produce prices drift with the calendar; London and New York pay different rates.</p>' + rows;
+    return landedHTML + '<p class="note">Produce prices drift with the calendar; London, New York and Tokio pay different rates.</p>' + rows;
+  }
+
+  /* Crates that already landed in this port, sold straight off the dock. */
+  function sellPortGoods(cropId, units) {
+    var hub = G.cityId, crop = CROP_BY_ID[cropId];
+    var ledger = (G.portGoods && G.portGoods[hub]) || {};
+    var have = ledger[cropId] || 0;
+    units = Math.min(units | 0, have);
+    if (!crop || units <= 0) return;
+    var price = cropPrice(crop, hub);
+    var total = price * units;
+    ledger[cropId] = have - units;
+    G.goods[cropId] = Math.max(0, (G.goods[cropId] || 0) - units);
+    G.cash += total;
+    G.colonyStats.sold += units;
+    G.colonyStats.revenue += total;
+    log('Sold ' + units + ' ' + crop.label + ' at the ' + A.city(hub).name + ' dock for ' + A.money(total) + '.');
+    checkEnd();
   }
 
   function sellGoods(cropId, units) {
@@ -438,6 +480,7 @@
     renderTicker: renderTicker, renderPanel: renderPanel,
     viewTrade: viewTrade, viewDealer: viewDealer, viewPortfolio: viewPortfolio,
     viewAuction: viewAuction, viewBank: viewBank, viewStudio: viewStudio,
-    viewTravel: viewTravel, viewReport: viewReport
+    viewTravel: viewTravel, viewReport: viewReport,
+    sellGoods: sellGoods, sellPortGoods: sellPortGoods
   };
 })();

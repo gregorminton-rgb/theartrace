@@ -62,8 +62,8 @@
    * authored here.
    * ---------------------------------------------------------------------- */
 
-  /* the trade desks that pay a premium for a colonial crop */
-  var TRADE_HUB_IDS = { london: true, newyork: true };
+  /* the trade exchanges that pay a premium for a colonial crop */
+  var TRADE_HUB_IDS = { london: true, newyork: true, tokio: true };
   var CROPS = [
     { id: 'kakao',  label: 'Cocoa',    slug: 'kakao',  days: 12, cost: 900,  base: 2600 },
     { id: 'tee',    label: 'Tea',      slug: 'tee',    days: 10, cost: 750,  base: 2200 },
@@ -77,7 +77,9 @@
   /* Each trade hub pays its own premium by commodity. */
   var TRADE_HUB_MULT = {
     london:  { kakao: 1.00, tee: 1.18, kaffee: 1.02, tabak: 1.12, stoffe: 1.06 },
-    newyork: { kakao: 1.06, tee: 1.02, kaffee: 1.18, tabak: 1.00, stoffe: 1.14 }
+    newyork: { kakao: 1.06, tee: 1.02, kaffee: 1.18, tabak: 1.00, stoffe: 1.14 },
+    /* Tokio pays for what the archipelago does not grow: tobacco, textiles, cocoa */
+    tokio:   { kakao: 1.22, tee: 0.96, kaffee: 1.08, tabak: 1.26, stoffe: 1.18 }
   };
 
   /* The four colonies you can actually sail to (each carries its own plate). */
@@ -85,101 +87,74 @@
   var COLONIES = [
     { id: 'guatemala', label: 'Guatemala', sub: 'Cocoa & coffee colony', mapX: 0.215, mapY: 0.600, pic: 'kolonie1',
       bg: 'linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%)',
-      plots: [
-        {x:12,y:18},{x:28,y:22},{x:45,y:19},{x:62,y:24},{x:78,y:20},
-        {x:15,y:42},{x:32,y:38},{x:48,y:45},{x:65,y:40},{x:82,y:43},
-        {x:10,y:65},{x:27,y:62},{x:50,y:68},{x:70,y:63},{x:85,y:70}
-      ]
+      plots: null
     },
     { id: 'jamaica', label: 'Jamaica', sub: 'Sugar & coffee island', mapX: 0.310, mapY: 0.655, pic: 'plantage1',
       bg: 'linear-gradient(to bottom, #7fa885 0%, #5d8363 40%, #4a6b50 100%)',
-      plots: [
-        {x:8,y:15},{x:24,y:20},{x:42,y:16},{x:58,y:22},{x:76,y:18},
-        {x:12,y:38},{x:30,y:42},{x:50,y:38},{x:68,y:44},{x:85,y:40},
-        {x:15,y:60},{x:35,y:64},{x:52,y:62},{x:72,y:66},{x:88,y:63}
-      ]
+      plots: null
     },
     { id: 'trinidad', label: 'Trinidad', sub: 'Cocoa & coffee island', mapX: 0.330, mapY: 0.600, pic: 'plantage2',
       bg: 'linear-gradient(to bottom, #9fa87c 0%, #7d8a5f 40%, #62704a 100%)',
-      plots: [
-        {x:10,y:20},{x:26,y:24},{x:44,y:18},{x:60,y:26},{x:80,y:22},
-        {x:14,y:44},{x:32,y:40},{x:52,y:46},{x:70,y:42},{x:87,y:48},
-        {x:8,y:66},{x:28,y:70},{x:48,y:65},{x:68,y:72},{x:85,y:68}
-      ]
+      plots: null
     },
     { id: 'ceylon', label: 'Ceylon', sub: 'Tea highlands', mapX: 0.735, mapY: 0.700, pic: 'tee',
       bg: 'linear-gradient(to bottom, #6b8f6e 0%, #4d6d50 40%, #3a5740 100%)',
-      plots: [
-        {x:15,y:16},{x:32,y:20},{x:48,y:15},{x:65,y:22},{x:82,y:18},
-        {x:10,y:40},{x:28,y:44},{x:50,y:40},{x:70,y:46},{x:88,y:42},
-        {x:12,y:64},{x:30,y:68},{x:52,y:65},{x:72,y:70},{x:87,y:66}
-      ]
+      plots: null
     },
     { id: 'kuba', label: 'Cuba', sub: 'Sugar & tobacco island', mapX: 0.275, mapY: 0.690, pic: 'tabak',
       bg: 'linear-gradient(to bottom, #a89a6d 0%, #87794f 40%, #6b603d 100%)',
-      plots: [
-        {x:14,y:17},{x:30,y:23},{x:46,y:16},{x:63,y:25},{x:80,y:19},
-        {x:11,y:41},{x:29,y:37},{x:51,y:44},{x:69,y:39},{x:86,y:45},
-        {x:13,y:63},{x:33,y:69},{x:50,y:64},{x:71,y:71},{x:86,y:65}
-      ]
+      plots: null
     },
     { id: 'brazil', label: 'Pernambuco', sub: 'Sugar & coffee coast', mapX: 0.390, mapY: 0.400, pic: 'brasilien',
       bg: 'linear-gradient(to bottom, #6f8f5c 0%, #547040 35%, #3f5731 100%)',
-      plots: [
-        {x:16,y:15},{x:34,y:21},{x:50,y:14},{x:67,y:23},{x:83,y:17},
-        {x:10,y:39},{x:27,y:45},{x:49,y:38},{x:68,y:46},{x:87,y:41},
-        {x:14,y:62},{x:31,y:69},{x:53,y:63},{x:70,y:70},{x:85,y:64}
-      ]
+      plots: null
     },
     { id: 'bengalen', label: 'Bengal', sub: 'Jute & indigo delta', mapX: 0.825, mapY: 0.735, pic: 'stoffe',
       bg: 'linear-gradient(to bottom, #8a8f63 0%, #6b7049 40%, #545a38 100%)',
-      plots: [
-        {x:13,y:16},{x:31,y:22},{x:49,y:15},{x:66,y:21},{x:83,y:16},
-        {x:10,y:40},{x:28,y:43},{x:50,y:38},{x:68,y:45},{x:86,y:39},
-        {x:12,y:62},{x:32,y:67},{x:51,y:61},{x:70,y:68},{x:87,y:63}
-      ]
+      plots: null
     },
     { id: 'goldcoast', label: 'Gold Coast', sub: 'Cocoa hinterland', mapX: 0.470, mapY: 0.600, pic: 'kakao',
       bg: 'linear-gradient(to bottom, #97874f 0%, #7a6c3c 40%, #615530 100%)',
-      plots: [
-        {x:15,y:18},{x:33,y:14},{x:48,y:21},{x:65,y:17},{x:82,y:22},
-        {x:11,y:43},{x:30,y:39},{x:51,y:46},{x:69,y:41},{x:87,y:44},
-        {x:14,y:64},{x:31,y:70},{x:50,y:65},{x:72,y:69},{x:85,y:62}
-      ]
+      plots: null
     },
     { id: 'indien', label: 'Indien', sub: 'Cotton, indigo & tea', mapX: 0.700, mapY: 0.660, pic: 'indien',
       bg: 'linear-gradient(to bottom, #9a8154 0%, #7b6440 40%, #5f4c31 100%)',
-      plots: [
-        {x:14,y:17},{x:32,y:23},{x:49,y:16},{x:66,y:22},{x:83,y:18},
-        {x:10,y:41},{x:29,y:45},{x:50,y:39},{x:69,y:46},{x:87,y:42},
-        {x:13,y:63},{x:31,y:69},{x:52,y:64},{x:71,y:70},{x:86,y:65}
-      ]
+      plots: null
     },
     { id: 'indonesien', label: 'Niederländisch-Indien', sub: 'Spice islands & coffee', mapX: 0.790, mapY: 0.560, pic: 'indonesien',
       bg: 'linear-gradient(to bottom, #6b9a7a 0%, #4d7a5c 40%, #3a5f46 100%)',
-      plots: [
-        {x:12,y:20},{x:29,y:15},{x:47,y:22},{x:64,y:17},{x:81,y:23},
-        {x:15,y:43},{x:33,y:39},{x:51,y:46},{x:70,y:41},{x:88,y:45},
-        {x:11,y:65},{x:30,y:70},{x:49,y:64},{x:68,y:71},{x:84,y:66}
-      ]
+      plots: null
     },
     { id: 'australien', label: 'Australien', sub: 'Wool stations & vineyards', mapX: 0.845, mapY: 0.290, pic: 'australien',
       bg: 'linear-gradient(to bottom, #b0925e 0%, #8e7449 40%, #6d5838 100%)',
-      plots: [
-        {x:16,y:16},{x:34,y:21},{x:51,y:15},{x:68,y:22},{x:84,y:18},
-        {x:10,y:40},{x:28,y:44},{x:49,y:38},{x:67,y:45},{x:86,y:41},
-        {x:14,y:62},{x:32,y:68},{x:53,y:63},{x:71,y:70},{x:85,y:64}
-      ]
+      plots: null
     },
     { id: 'rio', label: 'Rio de Janeiro', sub: 'Coffee hills & sugar coast', mapX: 0.4083, mapY: 0.3450, pic: 'rio',
       bg: 'linear-gradient(to bottom, #7a9a6a 0%, #5c7a50 40%, #45603d 100%)',
-      plots: [
-        {x:13,y:18},{x:31,y:14},{x:48,y:21},{x:66,y:17},{x:83,y:22},
-        {x:11,y:42},{x:29,y:46},{x:50,y:40},{x:68,y:45},{x:87,y:41},
-        {x:15,y:63},{x:33,y:69},{x:51,y:64},{x:70,y:70},{x:85,y:65}
-      ]
+      plots: null
     }
   ];
+  /* The fifteen plots sit on a 5 × 3 lattice that fills the board edge to
+     edge: the tiles are large, so any gap left inside a cell shows up as a
+     hole between the fields. Each cell carries a small positional offset —
+     fixed per plot, so a plot never moves between renders — enough to keep
+     the plantation from looking like a spreadsheet. */
+  var PLOT_COLS = 5, PLOT_ROWS = 3;
+  function plotLattice() {
+    var out = [];
+    for (var i = 0; i < PLOT_COLS * PLOT_ROWS; i++) {
+      var col = i % PLOT_COLS, row = Math.floor(i / PLOT_COLS);
+      var x = (col + 0.5) * 100 / PLOT_COLS;
+      var y = (row + 0.5) * 100 / PLOT_ROWS;
+      var jx = ((hash2('jx' + i) % 7) - 3) * 0.5;   /* ±1.5 % of the board */
+      var jy = ((hash2('jy' + i) % 7) - 3) * 0.5;
+      out.push({ x: +(x + jx).toFixed(2), y: +(y + jy).toFixed(2) });
+    }
+    return out;
+  }
+  var PLOTS = plotLattice();
+  COLONIES.forEach(function (c) { if (!c.plots) c.plots = PLOTS; });
+
   var COLONY_BY_ID = {};
   COLONIES.forEach(function (c) { COLONY_BY_ID[c.id] = c; });
 
@@ -427,7 +402,13 @@
     el('colony-title').textContent = colony.label;
     el('colony-sub').textContent = colony.sub;
     el('colony-cash').textContent = 'Cash ' + A.money(G.cash) + ' · day ' + G.day + ' · ' + colonyFields().length + ' field(s)';
-    el('colony-warehouse').textContent = 'Warehouse ' + colonyHeldUnits() + ' unit(s)';
+    el('colony-warehouse').textContent = 'An Land ' + crew.colonyUnits() + ' Kiste(n)';
+    var autoBtn = el('colony-autopilot');
+    if (autoBtn) {
+      var ap = crew.autoOf(colony.id);
+      autoBtn.classList.toggle('active', !!(ap && ap.on));
+      autoBtn.textContent = ap && ap.on ? '✓ Automatik läuft' : 'Automatik';
+    }
     
     /* Update menu buttons */
     Array.prototype.forEach.call(document.querySelectorAll('.colony-menu-btn'), function (btn) {
@@ -443,8 +424,11 @@
     show(el('colony-view-reise'), G.colonyMenu === 'reise');
     
     /* The chart is mounted on demand: the stage has to be visible before the
-       renderer measures it. */
+       renderer measures it, and syncWorldMap() picks the colony stage only
+       while G.colonyTravel is set — opening the tab directly (the menu button,
+       not openColonyTravel) has to arm that flag itself. */
     if (G.colonyMenu === 'reise') {
+      G.colonyTravel = true;
       var dl = el('colony-dest-list');
       if (dl) {
         dl.innerHTML = colonyTravelRowsHTML();
@@ -462,10 +446,16 @@
       el('colony-workers').innerHTML = colonyWorkersHTML();
       el('colony-grid').innerHTML = colonyGridHTML();
       el('colony-grid').style.background = colony.bg || '';
+      fitPlotScale();
       el('colony-inspector').innerHTML = colonyInspectorHTML();
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
         : 'Drag a crop plate onto a free plot, or click a plate then a plot.';
+    }
+
+    /* Render handel view */
+    if (G.colonyMenu === 'handel') {
+      el('colony-handel-content').innerHTML = colonyTradeHTML();
     }
     
     /* Render lager view */
@@ -497,7 +487,34 @@
         '</div>';
     }).join('');
     return '<h3 class="colony-panel-title">Crops</h3>' +
-      '<p class="colony-note">Drag a plate onto a plot to lay out a field.</p>' + cards;
+      '<p class="colony-note">Drag a plate onto a plot to lay out a field.</p>' + cards +
+      colonyAutoHTML();
+  }
+
+  /* The overseer: sowing, hiring, assigning and harvesting without the player
+     standing on the plantation. Buying land still needs the visit. */
+  function colonyAutoHTML() {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony) return '';
+    var o = crew.autoOf(colony.id) || { on: false, cropId: CROPS[0].id, hire: true, assign: true, harvest: true, plant: true };
+    var crops = CROPS.map(function (c) {
+      return '<option value="' + c.id + '"' + (o.cropId === c.id ? ' selected' : '') + '>' + h(c.label) + '</option>';
+    }).join('');
+    var bits = [['hire', 'Arbeiter einstellen'], ['assign', 'Arbeiter zuteilen'],
+                ['harvest', 'Ernten'], ['plant', 'Nachpflanzen']].map(function (b) {
+      return '<label class="auto-check"><input type="checkbox" data-colony="auto" data-auto="' + b[0] + '"' +
+        (o[b[0]] ? ' checked' : '') + ' /> ' + b[1] + '</label>';
+    }).join('');
+    return '<div class="colony-auto' + (o.on ? ' on' : '') + '">' +
+      '<h3 class="colony-panel-title">Automatik</h3>' +
+      '<button class="btn ' + (o.on ? 'primary' : 'go') + ' auto-toggle" type="button" data-colony="auto">' +
+        (o.on ? '✓ Läuft weiter, auch wenn du reist' : 'Automatik einschalten') + '</button>' +
+      '<label class="auto-crop">Anbauen: <select data-colony="auto" data-auto="crop">' + crops + '</select></label>' +
+      '<div class="auto-checks">' + bits + '</div>' +
+      '<p class="colony-note">' + (o.on
+        ? 'Der Verwalter sät, erntet und teilt die Arbeiter ein. Land dazukaufen musst du selbst vorbeikommen.'
+        : 'Ohne Automatik bleiben Ernte und freie Felder liegen, während du unterwegs bist.') + '</p>' +
+      '</div>';
   }
 
   function colonyWorkersHTML() {
@@ -522,6 +539,38 @@
     for (var i = 0; i < PLOTS_PER_COLONY; i++) cells.push(colonyPlotHTML(i));
     return cells.join('');
   }
+
+  /* The tiles are 200% of their old size, so a board that is narrower than
+     the lattice would push the outer fields out of sight. Measure the board
+     and scale the whole grid down to fit — never up: at full width the
+     fields stay at their natural size. */
+  function fitPlotScale() {
+    var board = el('colony-grid');
+    if (!board || !board.clientWidth) return;
+    var tileW = 144, tileH = 170;
+    var fit = Math.min(board.clientWidth / (tileW * PLOT_COLS),
+                       board.clientHeight / (tileH * PLOT_ROWS));
+    /* a hair of slack: a plot hovering under the pointer grows 5%.
+       The floor is low enough that a 5 × 3 board still fits a phone. */
+    var scale = Math.max(0.26, Math.min(1, fit / 1.06));
+    board.style.setProperty('--plot-scale', scale.toFixed(3));
+  }
+  window.addEventListener('resize', function () {
+    if (G.colonyId && G.colonyMenu === 'plantage') fitPlotScale();
+  });
+
+  /* The board gets its final size only after the browser has laid the colony
+     out, so a one-shot fit right after render can measure a stale box (the
+     fields then keep their unscaled 144 × 170 size and spill over the edge).
+     Re-fit whenever the board itself changes size. */
+  (function observeBoard() {
+    var board = el('colony-grid');
+    if (!board || typeof ResizeObserver === 'undefined') return;
+    var ro = new ResizeObserver(function () {
+      if (G.colonyMenu === 'plantage') fitPlotScale();
+    });
+    ro.observe(board);
+  })();
 
   /* A little SVG diorama: tilled soil, crop rows that grow with progress, and
      the assigned workers walking/picking along a row. Workers are PNG cutouts
@@ -638,6 +687,78 @@
     return html + colonyWarehouseHTML();
   }
 
+  /* ---------- handel: consign the harvest -------------------------------- *
+   * Three exchanges buy colonial produce — London, New York and Tokio — and
+   * each pays a different rate per crop. A shipment leaves the quay here and
+   * arrives a crossing later; the standing order ("automatisch verschiffen")
+   * keeps sending whatever the fields deliver, so a plantation earns while
+   * the player is hunting pictures in Europe.
+   * ---------------------------------------------------------------------- */
+  function colonyTradeHTML() {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony) return '';
+    var stock = crew.colonyStock();
+    var order = crew.shipOf(colony.id) || { on: false, hubId: 'london', autoSell: true };
+    var hub = TRADE_HUB_IDS[order.hubId] ? order.hubId : 'london';
+    var days = crew.shipDays(colony.id, hub);
+    var onQuay = crew.colonyUnits();
+
+    var hubBtns = crew.hubIds().map(function (id) {
+      return '<button type="button" class="hub-btn' + (id === hub ? ' is-active' : '') + '"' +
+        ' data-colony="ship-hub" data-hub="' + id + '">' + h(hubName(id)) + '</button>';
+    }).join('');
+
+    var rows = CROPS.map(function (c) {
+      var units = stock[c.id] || 0;
+      var price = cropPrice(c, hub);
+      var soon = (G.shipments || []).filter(function (s) {
+        return s.colonyId === colony.id && s.cropId === c.id;
+      }).reduce(function (n, s) { return n + s.units; }, 0);
+      var can = units > 0;
+      return '<div class="trade-row' + (can ? '' : ' is-empty') + '">' +
+        '<div class="trade-goods">' + cropThumb(c) +
+          '<span><b>' + h(c.label) + '</b> <span class="trade-stock">' +
+          (soon ? soon + ' unterwegs' : 'an Land') + '</span></span></div>' +
+        '<span class="trade-price">' + units + ' → ' + A.money(price) + '</span>' +
+        '<span class="trade-btns">' +
+          '<button class="btn" type="button" data-colony="ship" data-crop="' + c.id + '"' +
+            ' data-hub="' + hub + '" data-units="1"' + (can ? '' : ' disabled') + '>1</button>' +
+          '<button class="btn buy" type="button" data-colony="ship" data-crop="' + c.id + '"' +
+            ' data-hub="' + hub + '" data-units="' + units + '"' + (can ? '' : ' disabled') + '>Alle</button>' +
+        '</span></div>';
+    }).join('');
+
+    var ships = (G.shipments || []).filter(function (s) { return s.colonyId === colony.id; });
+    var shipLines = ships.length ? ships.map(function (s) {
+      var c = CROP_BY_ID[s.cropId];
+      return '<div class="ship-row"><b>' + s.units + '× ' + h(c ? c.label : s.cropId) + '</b> → ' +
+        h(hubName(s.hubId)) + ' · ' + (s.autoSell ? 'Verkauf bei Ankunft' : 'Einlagerung') +
+        '<small>Tag ' + s.dueDay + ' (' + Math.max(0, s.dueDay - G.day) + 'd)</small>' +
+        '<button class="link-btn" type="button" data-colony="ship-clear" data-crop="' + s.cropId + '">stornieren</button></div>';
+    }).join('') : '<div class="ship-row is-empty">Kein Schiff unterwegs.</div>';
+
+    return '<h3 class="colony-warehouse-title">Ernte verschiffen</h3>' +
+      '<div class="trade-head">' +
+        '<span class="trade-head-meta">An Land: <b>' + onQuay + '</b> Kiste(n) · Fracht ' +
+          A.money(crew.SHIP_FEE_PER_CRATE) + '/Kiste · Überfahrt ' + days + ' Tage nach ' +
+          h(hubName(hub)) + '</span>' +
+      '</div>' +
+      '<div class="trade-hubs">' + hubBtns + '</div>' +
+      '<div class="trade-table">' +
+        '<div class="trade-row trade-row--head"><span>Ware · An Land · Börse zahlt</span>' +
+          '<span>Verladung</span></div>' +
+        rows + '</div>' +
+      '<div class="trade-auto">' +
+        '<button class="btn ' + (order.on ? 'is-on' : '') + '" type="button" data-colony="ship-auto">' +
+          (order.on ? '✓ Automatischer Versand läuft' : 'Automatisch verschiffen') + '</button>' +
+        '<span class="colony-note">' + (order.on
+          ? 'Jede Ernte geht automatisch nach ' + h(hubName(hub)) + ' und wird dort verkauft.'
+          : 'Ernte bleibt am Kai liegen, bis du sie verschiffst.') + '</span>' +
+      '</div>' +
+      '<h4 class="colony-warehouse-title">Unterwegs</h4>' +
+      '<div class="ship-list">' + shipLines + '</div>';
+  }
+
   function colonyWarehouseHTML() {
     var ids = CROPS.map(function (c) { return c.id; }).filter(function (k) { return (G.goods[k] || 0) > 0; });
     var head = '<h4 class="colony-warehouse-title">Colonial warehouse</h4>';
@@ -657,6 +778,27 @@
     colonyDestinations: colonyDestinations, departFromColony: departFromColony,
     colonyTravelRowsHTML: colonyTravelRowsHTML, openColonyTravel: openColonyTravel,
     bindDestHover: bindDestHover,
+    /* the colony's own quay and standing orders (owned by app-crew.js, which
+       loads first; these are the live functions, read at call time) */
+    colonyStock: function () { return crew.colonyStock(); },
+    colonyUnits: function () { return crew.colonyUnits(); },
+    shipOf: function (id) { return crew.shipOf(id); },
+    autoOf: function (id) { return crew.autoOf(id); },
+    hubName: hubName, hubIds: hubIds, shipDays: shipDays,
     renderColony: renderColony
   };
+
+  function hubIds() { return Object.keys(TRADE_HUB_IDS); }
+  function hubName(id) {
+    var city = null;
+    A.cities.forEach(function (c) { if (c.id === id) city = c; });
+    return city ? city.name : (id === 'tokio' ? 'Tokio' : id);
+  }
+  function shipDays(colonyId, hubId) {
+    var from = COLONY_BY_ID[colonyId];
+    var to = null;
+    A.cities.forEach(function (c) { if (c.id === hubId) to = c; });
+    if (!from || !to) return 4;
+    try { return Math.max(4, Math.round(A.ticketDays(from, to))); } catch (e) { return 4; }
+  }
 })();

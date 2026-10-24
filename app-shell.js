@@ -29,6 +29,7 @@
   var plotField = function () { return crewRef('plotField').apply(null, arguments); };
   var sellOwned = function () { return A.app.sellOwned.apply(null, arguments); };
   var sellGoods = function () { return A.trade ? A.trade.sellGoods.apply(null, arguments) : undefined; };
+  var sellPortGoods = function () { return A.trade ? A.trade.sellPortGoods.apply(null, arguments) : undefined; };
   var newGame = function () { return A.app.newGame.apply(null, arguments); };
   var travelTo = function () { return A.app.travelTo.apply(null, arguments); };
   var bidLot = function () { return A.app.bidLot.apply(null, arguments); };
@@ -307,6 +308,7 @@
     else if (action === 'slot') act(buySlot)();
     else if (action === 'travel') act(travelTo)(t.getAttribute('data-city'));
     else if (action === 'sell-goods') act(sellGoods)(t.getAttribute('data-crop'), parseInt(t.getAttribute('data-units'), 10));
+    else if (action === 'sell-port') act(sellPortGoods)(t.getAttribute('data-crop'), parseInt(t.getAttribute('data-units'), 10));
     else if (action === 'next-day') act(endDay)();
   });
 
@@ -360,6 +362,12 @@
       } else {
         stopClock();
       }
+      return;
+    }
+    /* the plantation's overseer: checkboxes and the crop picker */
+    if (ev.target.hasAttribute && ev.target.hasAttribute('data-colony') &&
+        ev.target.getAttribute('data-colony') === 'auto' && G.started && !G.ended) {
+      colonyAction('auto', ev.target);
     }
   });
 

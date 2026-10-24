@@ -611,7 +611,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .crop-tile:hover { border-color: var(--gold); }
 .crop-tile.selected { border-color: var(--oxblood); box-shadow: inset 0 0 0 2px var(--gold-2); }
 .crop-tile.dragging { opacity: .4; }
-.crop-tile .crop-thumb { width: 52px; height: 52px; }
+.crop-tile .crop-thumb { width: 64px; height: 64px; }
 .crop-tile-label { font-weight: 600; font-size: .92rem; }
 .crop-tile-meta { font-family: var(--sans); font-size: .66rem; color: var(--ink-soft); }
 .crop-tile-prov { font-family: var(--sans); font-size: .62rem; color: var(--blue); font-style: italic; }
@@ -625,12 +625,21 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 .colony-grid {
   flex: 1; position: relative; overflow: hidden;
+  /* 15 plots are laid out on this lattice (see colonyGridHTML), so the board
+     needs the same 5 × 3 cells: the tiles fit edge to edge without gaps. */
+  --plot-cols: 5;
+  --plot-rows: 3;
+  --plot-scale: 1;
   background: linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%);
   border-radius: 4px; box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
 }
 .plot {
   position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: .15em; padding: .4em .3em; width: 72px; height: 85px; cursor: pointer;
+  gap: .15em; padding: .4em .3em;
+  /* The fields carry the whole plantation, so they are sized generously:
+     200% of the old 72×85 tile, with the worker figures scaled to match. */
+  width: calc(144px * var(--plot-scale)); height: calc(170px * var(--plot-scale));
+  cursor: pointer;
   transform: translate(-50%, -50%);
   background: transparent; border: 2px dashed rgba(140, 110, 70, .6);
   border-radius: 6px; color: var(--ink); transition: all .2s;
@@ -644,13 +653,13 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .plot:hover { transform: translate(-50%, -50%) scale(1.05); }
 .plot-house { width: 36px; height: 36px; margin-bottom: .1em; filter: drop-shadow(0 2px 5px rgba(20, 10, 0, .5)); }
 .plot-crop { width: 44px; height: 44px; }
-.plot-label { font-size: .65rem; font-weight: 700; line-height: 1; text-align: center; color: #2a1f12; text-shadow: 0 1px 2px rgba(255,255,255,.6); }
-.plot-workers { font-family: var(--sans); font-size: .52rem; color: #3a2818; font-weight: 600; }
-.plot-status { font-family: var(--sans); font-size: .56rem; color: var(--oxblood); font-weight: 700; text-shadow: 0 1px 1px rgba(255,255,255,.4); }
-.plot-empty-plus { font-size: 1.6rem; color: rgba(168, 147, 112, .7); line-height: 1; }
-.plot-empty-label { font-family: var(--sans); font-size: .56rem; color: rgba(75, 58, 41, .8); text-transform: uppercase; letter-spacing: .05em; text-align: center; font-weight: 600; }
-.plot-pips { display: flex; gap: 2px; justify-content: center; }
-.plot-pip { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.plot-label { font-size: .78rem; font-weight: 700; line-height: 1.1; text-align: center; color: #2a1f12; text-shadow: 0 1px 2px rgba(255,255,255,.6); }
+.plot-workers { font-family: var(--sans); font-size: .64rem; color: #3a2818; font-weight: 600; }
+.plot-status { font-family: var(--sans); font-size: .68rem; color: var(--oxblood); font-weight: 700; text-shadow: 0 1px 1px rgba(255,255,255,.4); }
+.plot-empty-plus { font-size: 2.4rem; color: rgba(168, 147, 112, .7); line-height: 1; }
+.plot-empty-label { font-family: var(--sans); font-size: .68rem; color: rgba(75, 58, 41, .8); text-transform: uppercase; letter-spacing: .05em; text-align: center; font-weight: 600; }
+.plot-pips { display: flex; gap: 3px; justify-content: center; }
+.plot-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
 .plot .field-progress { width: 90%; margin-top: .2em; }
 
 .colony-hint { margin: 0; font-family: var(--sans); font-size: .72rem; color: var(--ink-soft); font-style: italic; text-align: center; }
@@ -667,8 +676,58 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-warehouse-row b { margin-left: auto; }
 .colony-warehouse-row .crop-thumb { width: 28px; height: 28px; }
 
+/* ---------- colony trade desk (Ernte verschiffen) ---------- */
+.colony-trade-panel { display: flex; flex-direction: column; gap: .7em; padding: 1em 1.1em 1.4em; max-width: 760px; margin: 0 auto; width: 100%; }
+.trade-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em .9em; padding-bottom: .5em; border-bottom: 1px solid var(--line); }
+.trade-head h3 { margin: 0; font-size: 1.05rem; }
+.trade-head-meta { font-family: var(--sans); font-size: .68rem; color: var(--ink-soft); }
+.trade-head-meta b { color: var(--ink); }
+
+.trade-hubs { display: flex; flex-wrap: wrap; gap: .4em; }
+.hub-btn {
+  padding: .35em .8em; border-radius: 4px; cursor: pointer;
+  border: 1px solid var(--line); background: #f3e6c8;
+  color: var(--ink); font-family: var(--serif); font-size: .82rem; font-weight: 600;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.hub-btn:hover { background: #f7ecd6; border-color: var(--gold); }
+.hub-btn.is-active { background: var(--oxblood); border-color: var(--oxblood); color: #f7ecd6; }
+
+.trade-table { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.trade-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: .6em; padding: .45em .7em; background: #fbf3e1; }
+.trade-row--head { background: #f0e2c4; font-family: var(--sans); font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); grid-template-columns: minmax(0, 1fr) auto; }
+.trade-row.is-empty { opacity: .55; }
+.trade-goods { display: flex; align-items: center; gap: .5em; font-size: .85rem; }
+.trade-goods .crop-thumb { width: 30px; height: 30px; }
+.trade-stock { font-family: var(--sans); font-size: .68rem; color: var(--ink-soft); }
+.trade-price { font-family: var(--sans); font-size: .74rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+.trade-btns { display: flex; gap: .3em; }
+.trade-btns .btn { font-size: .68rem; padding: .25em .55em; }
+
+.trade-auto { display: flex; align-items: center; gap: .6em; font-family: var(--sans); font-size: .72rem; color: var(--ink-soft); }
+.trade-auto b { color: var(--ink); }
+
+.ship-list { display: flex; flex-direction: column; gap: .3em; font-family: var(--sans); font-size: .72rem; }
+.ship-row { display: flex; align-items: center; gap: .5em; padding: .3em .55em; border: 1px dashed var(--line); border-radius: 4px; background: rgba(250, 243, 228, .6); }
+.ship-row small { margin-left: auto; opacity: .8; }
+.link-btn { border: 0; background: none; padding: 0 .2em; cursor: pointer; color: var(--oxblood); font-family: var(--sans); font-size: .7rem; text-decoration: underline; }
+
+/* ---------- colony overseer (standing order) ---------- */
+.colony-auto { display: flex; flex-direction: column; gap: .5em; margin-top: .9em; padding: .7em .8em; border: 1px solid var(--line); border-radius: 5px; background: rgba(250, 243, 228, .55); }
+.colony-auto-title { font-family: var(--sans); font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--oxblood); font-weight: 700; }
+.colony-auto-note { font-family: var(--sans); font-size: .66rem; color: var(--ink-soft); line-height: 1.35; margin: 0; }
+.auto-crop { display: flex; align-items: center; gap: .5em; font-family: var(--sans); font-size: .74rem; }
+.auto-crop select { font-family: var(--serif); font-size: .8rem; padding: .2em .4em; border: 1px solid var(--line); border-radius: 4px; background: #fffaf0; }
+.auto-flags { display: flex; flex-wrap: wrap; gap: .3em .9em; }
+.auto-check { display: flex; align-items: center; gap: .35em; font-family: var(--sans); font-size: .72rem; cursor: pointer; }
+.auto-check input { accent-color: var(--oxblood); }
+.btn.is-on { background: var(--oxblood); border-color: var(--oxblood); color: #f7ecd6; }
+
 /* ---------- plantation field dioramas (SVG) ---------- */
-.plot--planted { padding: .25em .2em .3em; width: 80px; height: 92px; justify-content: flex-end; overflow: visible; }
+.plot--planted { padding: .25em .2em .3em; justify-content: flex-end; overflow: visible; }
+/* the planted tile holds a house, a label and a progress bar; it must keep the
+   lattice size instead of growing with its content */
+.plot { box-sizing: border-box; flex: 0 0 auto; min-width: 0; min-height: 0; }
 .plot-field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: 4px; }
 .plot-field .field-worker { transform-box: fill-box; transform-origin: 50% 100%; animation: fieldWalk 3.4s ease-in-out infinite; }
 .plot.ripe .plot-field .field-worker { animation-name: fieldStand; }
@@ -682,7 +741,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   0%, 100% { transform: translateY(0) rotate(-1deg); }
   50%      { transform: translateY(-1.5px) rotate(1deg); }
 }
-.plot--planted .plot-house { position: relative; z-index: 2; width: 26px; height: 26px; margin-bottom: .05em; }
+.plot--planted .plot-house { position: relative; z-index: 2; width: 56px; height: 56px; margin-bottom: .05em; }
 .plot--planted .plot-label,
 .plot--planted .plot-workers,
 .plot--planted .plot-status,
@@ -775,3 +834,183 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .place-leg span { font-family: var(--sans); font-size: .64rem; letter-spacing: .05em; text-transform: uppercase; color: #6b5030; }
 .place-leg b { font-family: var(--serif); font-size: .88rem; color: var(--oxblood); }
 .place-warn { margin: .55em 0 0; padding: .45em .6em; background: rgba(141,34,34,.1); border-left: 3px solid #8d2222; font-size: .8rem; }
+/* =========================================================================
+ * Phone layout.
+ *
+ * The desktop screens are fixed grids (the shell is 8.5rem + content +
+ * market column, the colony is 240px + board + 260px). On a phone those
+ * columns squeeze the content to nothing — the plot board collapsed to a
+ * 25px strip and the travel chart could not be measured at all. Everything
+ * below stacks the columns instead, keeps the plots on screen, and gives the
+ * charts a height that is actually tappable in portrait.
+ * ========================================================================= */
+
+/* Notched phones: keep the bars out of the cutout. */
+#screen-game, .colony-screen {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+@media (max-width: 760px) {
+  /* ---------- game shell ---------- */
+  #screen-game { height: 100vh; height: 100dvh; gap: .45rem; padding: .45rem; }
+  #hud { gap: .3em .7em; padding: .5em .7em; }
+  #hud .hud-brand strong { font-size: .95rem; }
+  #hud .hud-name { display: none; }
+  #hud-city { font-size: .92rem; }
+  #hud-sub, #hud-goal { font-size: .62rem; }
+  #hud-balance { width: 100%; gap: .3em; }
+  .hud-chip { font-size: .66rem; padding: .25em .5em; }
+
+  #main { display: flex; flex-direction: column; gap: .45rem; overflow-y: auto; }
+  /* the station rail becomes a scroll strip of icons along the top */
+  #stations {
+    flex-direction: row; gap: .3rem; overflow-x: auto; overflow-y: hidden;
+    flex: none; padding-bottom: .15em; -webkit-overflow-scrolling: touch;
+  }
+  .station { flex: 0 0 auto; min-width: 4.1rem; padding: .5em .45em; font-size: .68rem; text-align: center; }
+  .station .st-ico { font-size: 1.15rem; margin-bottom: .15em; }
+  #stage { overflow: visible; gap: .5rem; }
+  .stage-frame { aspect-ratio: 16 / 6; min-height: 6rem; max-height: 22vh; }
+  #panel-wrap { max-height: none; }
+
+  /* ---------- footer dock ---------- */
+  #dock { flex-wrap: wrap; gap: .4rem; }
+  #calendar { flex: 1 1 auto; gap: .5em; padding: .3em .6em; }
+  #cal-date { font-size: .82rem; }
+  #end-day { flex: 0 0 auto; padding: .7em 1.1em; }
+  #ticker { order: 3; flex: 1 0 100%; font-size: .7rem; padding: .4em .6em; }
+
+  /* ---------- dialogs: full width, scrollable, thumb-sized ---------- */
+  .dialog {
+    width: calc(100vw - 1rem) !important; max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1rem);
+  }
+  .dialog-head h2 { font-size: .95rem; }
+  .dialog-body { max-height: 66dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .dialog-actions { flex-wrap: wrap; }
+  .dialog-actions .btn { flex: 1 1 auto; }
+  .btn, .hub-btn, .link-btn { min-height: 2.4em; }
+  .dest-list { grid-template-columns: 1fr; max-height: none; }
+  .dest-row { min-height: 3em; padding: .5em .6em; }
+  .dest-name { font-size: .88rem; }
+  .place-leg { grid-template-columns: 1fr; }
+
+  /* ---------- colony bar + menu ---------- */
+  .colony-screen { height: 100%; }
+  .colony-bar {
+    flex-wrap: wrap; gap: .4em .6em; padding: .5em .7em;
+    padding-top: max(.5em, env(safe-area-inset-top));
+  }
+  .colony-bar-brand strong { font-size: 1rem; }
+  .colony-bar-brand span { font-size: .6rem; }
+  .colony-bar-stats { order: 3; width: 100%; gap: .35em; }
+  .colony-chip { font-size: .64rem; padding: .25em .5em; }
+  .colony-bar-actions { gap: .3em; }
+  .colony-bar-actions .btn { padding: .55em .7em; font-size: .72rem; min-height: 2.4em; }
+
+  /* the five menu tabs scroll sideways instead of wrapping into the board */
+  .colony-menu { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .colony-menu-label { display: none; }
+  .colony-menu-btn {
+    flex: 0 0 auto; padding: .5em .8em; font-size: .74rem;
+    border-bottom: 3px solid transparent;
+  }
+  .colony-menu-btn small { display: none; }
+  .colony-menu-btn.active { border-bottom-color: var(--gold); }
+
+  /* ---------- plantation: one column, board first ---------- */
+  .colony-content { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .colony-view--plantage { height: auto; }
+  .colony-layout {
+    display: flex; flex-direction: column; gap: .5em;
+    padding: .5em; height: auto; min-height: 0;
+  }
+  /* the board must be tall enough for a 5 × 3 lattice. Its height cannot use
+     --plot-scale: fitPlotScale() derives the scale FROM this height, so the
+     reference would be circular and resolve to the unset value. The board
+     just gets a share of the screen; the plots scale themselves to fit. */
+  .colony-main { order: 1; flex: none; width: 100%; }
+  .colony-grid {
+    flex: none; overflow: visible;
+    height: clamp(230px, 46dvh, 430px);
+    min-height: 0;
+  }
+  .colony-side { order: 2; overflow: visible; gap: .5em; }
+  .colony-side:last-child { order: 3; }
+  .colony-panel { padding: .6em; }
+  /* crops become a horizontal strip of tiles */
+  #colony-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: .35em; }
+  #colony-palette .colony-panel-title, #colony-palette .colony-note { grid-column: 1 / -1; }
+  .crop-tile { padding: .35em; }
+  .crop-tile-label { font-size: .72rem; }
+  .crop-tile-meta, .crop-tile-prov { font-size: .58rem; }
+  .colony-hint { font-size: .64rem; padding: .3em .2em; }
+
+  /* ---------- colony travel chart ---------- */
+  .colony-travel-wrap { padding: .45em .5em 1em; gap: .45em; }
+  /* a 16:9 plate on a portrait phone is a 200px sliver — use the available
+     height instead so the ports are big enough to hit with a fingertip */
+  #colony-wm-stage {
+    aspect-ratio: auto;
+    height: clamp(220px, 52dvh, 460px);
+    min-height: 0;
+  }
+  #colony-dest-list {
+    grid-template-columns: 1fr;
+    max-height: none;
+    overflow-y: visible;
+  }
+  #colony-dest-list .dest-row { min-height: 3.2em; padding: .45em .6em; }
+  #colony-dest-list .dest-name { font-size: .9rem; }
+  #colony-dest-list .dest-sub, #colony-dest-list .dest-meta { font-size: .68rem; }
+  /* the hover lane is a desktop affordance; on a phone the tap is the preview */
+  #colony-dest-list .dest-row.is-hover { border-color: var(--line); background: none; box-shadow: none; }
+  #colony-dest-list .dest-row.is-hover .dest-leg { display: none; }
+
+  /* ---------- colony trade desk ---------- */
+  .colony-trade-panel { padding: .6em .55em 1.4em; gap: .55em; }
+  .trade-head h3 { font-size: .95rem; }
+  .trade-head-meta { font-size: .62rem; }
+  .trade-hubs { gap: .3em; }
+  .hub-btn { font-size: .76rem; padding: .4em .65em; }
+  /* the two-value rows reflow: goods on one line, numbers and buttons under it */
+  .trade-row {
+    grid-template-columns: 1fr auto;
+    gap: .3em .5em; padding: .45em .55em;
+  }
+  .trade-row--head { display: none; }
+  .trade-goods { grid-column: 1; }
+  .trade-stock { grid-column: 2; justify-self: end; }
+  .trade-price { grid-column: 1; font-size: .72rem; }
+  .trade-btns { grid-column: 2; justify-self: end; }
+  .trade-btns .btn { padding: .35em .6em; font-size: .7rem; }
+  .trade-auto { font-size: .66rem; }
+  .ship-row { flex-wrap: wrap; gap: .3em; }
+  .colony-simple-panel { margin: .5em; padding: .9em; }
+
+  /* ---------- artwork detail ---------- */
+  .av { grid-template-columns: 1fr; }
+  .av-left { padding: .6em; border-right: 0; border-bottom: 1px solid var(--line); }
+  .av-right { padding: .8em .9em 1.2em; max-height: none; }
+  .av-plate img { max-height: 40dvh; }
+  .av-title { font-size: 1.15rem; }
+  .av-facts, .av-owned-grid { grid-template-columns: minmax(76px, 42%) 1fr; }
+}
+
+/* Very narrow phones: the numbers under a trade row would still collide. */
+@media (max-width: 380px) {
+  .station { min-width: 3.6rem; font-size: .62rem; }
+  #colony-palette { grid-template-columns: repeat(auto-fill, minmax(4.8rem, 1fr)); }
+  .colony-bar-actions .btn { padding: .5em .55em; font-size: .66rem; }
+  .trade-row { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+/* Short landscape phones (and any wide-but-short window): the chart keeps a
+   usable height without pushing the destination list off screen. */
+@media (max-height: 520px) and (min-width: 560px) {
+  #colony-wm-stage { aspect-ratio: auto; height: calc(100dvh - 190px); min-height: 200px; }
+  #colony-dest-list { max-height: 30dvh; }
+  .colony-layout { grid-template-columns: 190px 1fr 210px; }
+  #hud .hud-brand { display: none; }
+}

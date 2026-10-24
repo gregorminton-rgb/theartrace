@@ -116,10 +116,15 @@
     var f = G.fields[idx];
     if (!f.ripe) { log('That field is still growing.'); return; }
     var yieldUnits = fieldYield(f);
+    var owner = f.colonyId;
     G.fields.splice(idx, 1);
+    /* the harvest lands on that colony's quay, ready for its handel tab */
+    if (!G.colonyStock) G.colonyStock = {};
+    if (!G.colonyStock[owner]) G.colonyStock[owner] = {};
+    G.colonyStock[owner][f.cropId] = (G.colonyStock[owner][f.cropId] || 0) + yieldUnits;
     G.goods[f.cropId] = (G.goods[f.cropId] || 0) + yieldUnits;
     G.colonyStats.harvested += yieldUnits;
-    log('Harvested ' + yieldUnits + ' ' + T().CROP_BY_ID[f.cropId].label + ' unit(s) into the warehouse.');
+    log('Harvested ' + yieldUnits + ' ' + T().CROP_BY_ID[f.cropId].label + ' unit(s) onto the quay.');
     if (G.selectedFieldId === fid) G.selectedFieldId = null;
     renderColony();
   }
@@ -168,6 +173,130 @@
     renderColony();
   }
 
+  /* ---------- the overseer: the plantation runs while you are away -------- *
+   * Only buying land needs the player on the spot; planting, hiring,
+   * assigning hands and harvesting can be left to an overseer, exactly like
+   * the trade orders. One order stands per colony and survives the crossing.
+   * ---------------------------------------------------------------------- */
+  var AUTO_REPLANT = true;   /* a harvested plot is sown again straight away */
+
+  function autoOf(colonyId) {
+    return (G.auto && G.auto[colonyId]) || null;
+  }
+  function autoOn(colonyId) { return !!(autoOf(colonyId) && autoOf(colonyId).on); }
+  function autoCrops() { return T().CROPS || []; }
+
+  function setAuto(patch) {
+    var id = G.colonyId;
+    if (!id) return;
+    var first = autoCrops()[0];
+    var cur = G.auto[id] || { on: false, cropId: first ? first.id : 'kakao', hire: true, assign: true, harvest: true, plant: true };
+    for (var k in patch) if (patch.hasOwnProperty(k)) cur[k] = patch[k];
+    G.auto[id] = cur;
+    renderColony();
+  }
+
+  /* The overseer's day: harvest what is ripe, sow what is free, keep the hands
+     working. It spends the colony's cash like the player would, so it never
+     overdraws. Returns the log lines it wrote (only the loud ones). */
+  function runOverseer(colonyId, quiet) {
+    var o = autoOf(colonyId);
+    if (!o || !o.on || !T().CROP_BY_ID) return 0;
+    var crop = T().CROP_BY_ID[o.cropId] || autoCrops()[0];
+    var plots = (T().COLONY_BY_ID[colonyId] || {}).plots || [];
+    var banked = 0;
+    var i, f;
+    function fieldsOf() {
+      return G.fields.filter(function (x) { return x.colonyId === colonyId; });
+    }
+    function plotOf(index) {
+      var found = null;
+      fieldsOf().forEach(function (x) { if (x.plotIndex === index) found = x; });
+      return found;
+    }
+    function hired() { return G.workers[colonyId] || 0; }
+    function assigned() {
+      var n = 0;
+      fieldsOf().forEach(function (x) { n += x.workers || 0; });
+      return n;
+    }
+
+    /* 1. harvest */
+    if (o.harvest) {
+      var ripe = fieldsOf().filter(function (x) { return x.ripe; });
+      for (i = 0; i < ripe.length; i++) {
+        f = ripe[i];
+        var units = fieldYield(f);
+        var at = G.fields.indexOf(f);
+        G.fields.splice(at, 1);
+        if (!G.colonyStock) G.colonyStock = {};
+        if (!G.colonyStock[colonyId]) G.colonyStock[colonyId] = {};
+        G.colonyStock[colonyId][f.cropId] = (G.colonyStock[colonyId][f.cropId] || 0) + units;
+        G.goods[f.cropId] = (G.goods[f.cropId] || 0) + units;
+        G.colonyStats.harvested += units;
+        banked += units;
+        if (!quiet) log('Overseer harvested ' + units + ' ' + T().CROP_BY_ID[f.cropId].label +
+                        ' unit(s) at the ' + T().COLONY_BY_ID[colonyId].label + ' colony.');
+      }
+    }
+
+    /* 2. hire up to two hands per field, as far as the purse allows */
+    if (o.hire) {
+      var want = Math.min(MAX_COLONY_WORKERS, fieldsOf().length * 2);
+      while (hired() < want && G.cash >= WORKER_HIRE_COST) {
+        G.cash -= WORKER_HIRE_COST;
+        G.workers[colonyId] = hired() + 1;
+        if (!quiet) log('Overseer hired a worker at the ' + T().COLONY_BY_ID[colonyId].label + ' colony.');
+      }
+    }
+
+    /* 3. every field keeps a hand if there is one to spare */
+    if (o.assign) {
+      var idle = hired() - assigned();
+      var hands = fieldsOf().sort(function (a, b) { return a.workers - b.workers; });
+      for (i = 0; i < hands.length && idle > 0; i++) {
+        if (hands[i].workers >= MAX_FIELD_WORKERS) continue;
+        hands[i].workers += 1;
+        idle -= 1;
+      }
+    }
+
+    /* 4. sow every free plot with the standing crop */
+    if (o.plant !== false) {
+      for (i = 0; i < plots.length; i++) {
+        if (plotOf(i)) continue;
+        if (G.cash < crop.cost) break;
+        G.cash -= crop.cost;
+        G.fields.push({ id: G.nextFieldId++, colonyId: colonyId, plotIndex: i, cropId: crop.id,
+                        plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
+        G.colonyStats.planted += 1;
+        if (!quiet) log('Overseer laid out a ' + crop.label + ' field on plot ' + (i + 1) + '.');
+      }
+    }
+    /* 5. load whatever is lying on the quay, if the shipping order is on */
+    var order = shipOf(colonyId);
+    if (order && order.on) {
+      var shelf = (G.colonyStock || {})[colonyId] || {};
+      var hub = order.hubId || 'london';
+      for (var k in shelf) {
+        if (!shelf.hasOwnProperty(k) || !shelf[k]) continue;
+        if (G.cash < shelf[k] * SHIP_FEE_PER_CRATE) break;
+        loadShipment(colonyId, k, hub, shelf[k], !quiet);
+      }
+    }
+    return banked;
+  }
+
+  /* Called once a day from the clock, for every colony with a standing order. */
+  function runOverseers() {
+    if (!G.auto) return;
+    for (var id in G.auto) {
+      if (!G.auto.hasOwnProperty(id) || !G.auto[id].on) continue;
+      try { runOverseer(id, !!(G.colonyId && id === G.colonyId)); }
+      catch (e) { /* a colony never breaks the clock */ }
+    }
+  }
+
   function endColonyDay() {
     if (G.ended) return;
     A.expireEvents(G.market, G.day);
@@ -206,10 +335,180 @@
       openColonyTravel();
     } else if (action === 'depart') {
       departFromColony(t.getAttribute('data-dest'));
+    } else if (action === 'auto') {
+      /* data-auto="" toggles the whole order, data-auto="crop" sets the crop */
+      var key = t.getAttribute('data-auto');
+      if (key === 'crop') setAuto({ cropId: t.getAttribute('data-crop') });
+      else if (key === 'hire') setAuto({ hire: !(autoOf(G.colonyId) || {}).hire });
+      else if (key === 'assign') setAuto({ assign: !(autoOf(G.colonyId) || {}).assign });
+      else if (key === 'harvest') setAuto({ harvest: !(autoOf(G.colonyId) || {}).harvest });
+      else if (key === 'plant') setAuto({ plant: !(autoOf(G.colonyId) || {}).plant });
+      else setAuto({ on: !(autoOf(G.colonyId) || {}).on });
+    } else if (action === 'ship') {
+      shipOrder(t.getAttribute('data-crop'), t.getAttribute('data-hub'),
+                parseInt(t.getAttribute('data-units'), 10));
+    } else if (action === 'ship-clear') {
+      cancelShipping(t.getAttribute('data-crop'));
+    } else if (action === 'ship-auto') {
+      var cur = (G.shipping && G.shipping[G.colonyId]) || { on: false, hubId: 'london', autoSell: true };
+      setShipping({ on: !cur.on });
+    } else if (action === 'ship-hub') {
+      setShipping({ hubId: t.getAttribute('data-hub') });
     }
   }
 
-  /* Trade desk (London / New York): sell the colonial harvest. */
+  /* ---------- shipping: the colony's handel tab ------------------------- *
+   * A crop is loaded onto a ship bound for one of the three trade exchanges.
+   * The voyage takes the crossing the chart implies (a minimum of a few days);
+   * on arrival the crates are dropped into that port's ledger and — if the
+   * standing order says so — sold at the day's price. The order can be
+   * switched on and left alone, so a plantation earns while the player hunts
+   * pictures in Europe.
+   * ---------------------------------------------------------------------- */
+  var SHIP_FEE_PER_CRATE = 40;   /* freight is charged on loading */
+  var SHIP_MIN_DAYS = 4;
+
+  /* Human-readable exchange name; the module's own hubs table is not exported. */
+  function cityLabel(id) {
+    var found = id;
+    try { found = A.city(id).name; } catch (e) { /* unknown id */ }
+    return found;
+  }
+
+  function hubIds() {
+    var ids = Object.keys(T().TRADE_HUB_IDS || {});
+    return ids.length ? ids : ['london', 'newyork', 'tokio'];
+  }
+  function hubCityObject(id) {
+    var city = null;
+    A.cities.forEach(function (c) { if (c.id === id) city = c; });
+    return city;
+  }
+  function shipDays(colonyId, hubId) {
+    var from = T().COLONY_BY_ID[colonyId];
+    var to = hubCityObject(hubId);
+    if (!from || !to) return SHIP_MIN_DAYS;
+    try { return Math.max(SHIP_MIN_DAYS, Math.round(A.ticketDays(from, to))); }
+    catch (e) { return SHIP_MIN_DAYS; }
+  }
+  function colonyStock() {
+    var out = {};
+    (T().CROPS || []).forEach(function (c) { out[c.id] = ((G.colonyStock || {})[G.colonyId] || {})[c.id] || 0; });
+    return out;
+  }
+  function colonyUnits() {
+    var s = colonyStock(), n = 0;
+    for (var k in s) if (s.hasOwnProperty(k)) n += s[k];
+    return n;
+  }
+  function addColonyStock(cropId, units) {
+    if (!G.colonyStock) G.colonyStock = {};
+    if (!G.colonyStock[G.colonyId]) G.colonyStock[G.colonyId] = {};
+    var shelf = G.colonyStock[G.colonyId];
+    shelf[cropId] = Math.max(0, (shelf[cropId] || 0) + units);
+  }
+  function shipOf(colonyId) {
+    if (!G.shipping) G.shipping = {};
+    return G.shipping[colonyId] || null;
+  }
+  function setShipping(patch) {
+    var id = G.colonyId;
+    if (!id) return;
+    if (!G.shipping) G.shipping = {};
+    var cur = G.shipping[id];
+    if (!cur) cur = G.shipping[id] = { on: false, hubId: 'london', autoSell: true };
+    for (var k in patch) if (patch.hasOwnProperty(k)) cur[k] = patch[k];
+    renderColony();
+  }
+  function sellAtHub(cropId, hubId, units) {
+    var crop = T().CROP_BY_ID[cropId];
+    if (!crop || units <= 0) return 0;
+    var price = T().cropPrice(crop, hubId);
+    var total = price * units;
+    G.cash += total;
+    G.colonyStats.sold += units;
+    G.colonyStats.revenue += total;
+    log('Sold ' + units + ' ' + crop.label + ' at the ' + cityLabel(hubId) +
+        ' trade desk for ' + A.money(total) + '.');
+    return total;
+  }
+
+  /* Load a shipment. The crates leave the colony shelf, the freight is paid
+     from the purse, and the hull is on its way for shipDays(). */
+  function loadShipment(colonyId, cropId, hubId, units, quiet) {
+    var colony = T().COLONY_BY_ID[colonyId];
+    var crop = T().CROP_BY_ID[cropId];
+    if (!colony || !crop) return null;
+    hubId = hubId || 'london';
+    if (!T().TRADE_HUB_IDS[hubId]) return null;
+    var shelf = (G.colonyStock || {})[colonyId] || {};
+    units = Math.min(units | 0, shelf[cropId] || 0);
+    if (units <= 0) return null;
+    var fee = units * SHIP_FEE_PER_CRATE;
+    if (G.cash < fee) {
+      if (!quiet) log('The freight for ' + units + ' crate(s) costs ' + A.money(fee) + '.');
+      return null;
+    }
+    G.cash -= fee;
+    shelf[cropId] = Math.max(0, (shelf[cropId] || 0) - units);
+    if (!G.shipments) G.shipments = [];
+    G.nextShipmentId = (G.nextShipmentId || 0) + 1;
+    var days = shipDays(colony.id, hubId);
+    var rec = {
+      id: G.nextShipmentId, colonyId: colony.id, cropId: cropId, hubId: hubId, units: units,
+      sentDay: G.day, dueDay: G.day + days, fee: fee,
+      autoSell: !!(shipOf(colony.id) || {}).autoSell
+    };
+    G.shipments.push(rec);
+    log(units + ' crate(s) of ' + crop.label + ' left the ' + colony.label + ' quay for ' +
+        cityLabel(hubId) + ', due day ' + (G.day + days) + '.');
+    return rec;
+  }
+
+  function shipOrder(cropId, hubId, units) {
+    if (!G.colonyId) return;
+    var rec = loadShipment(G.colonyId, cropId, hubId, units, false);
+    if (!rec) {
+      if ((colonyStock()[cropId] || 0) <= 0) {
+        log('Nothing of the ' + ((T().CROP_BY_ID[cropId] || {}).label || cropId) + ' harvest is on the quay.');
+      }
+    }
+    renderColony();
+  }
+  function cancelShipping(cropId) {
+    if (!G.shipments) return;
+    var before = G.shipments.length;
+    G.shipments = G.shipments.filter(function (s) {
+      return !(s.colonyId === G.colonyId && s.cropId === cropId && s.dueDay > s.sentDay);
+    });
+    var back = before - G.shipments.length;
+    if (back) log(back + ' shipment(s) recalled to the quay.');
+    renderColony();
+  }
+
+  /* Arrivals: called once a day. A crate that lands is added to the port's
+     ledger (G.portGoods) and sold there if the order says so. */
+  function runShipping() {
+    if (!G.shipments || !G.shipments.length) return;
+    var left = [];
+    G.shipments.forEach(function (s) {
+      if (s.dueDay > G.day) { left.push(s); return; }
+      if (!G.portGoods) G.portGoods = {};
+      if (!G.portGoods[s.hubId]) G.portGoods[s.hubId] = {};
+      if (s.autoSell) {
+        sellAtHub(s.cropId, s.hubId, s.units);
+      } else {
+        var ledger = G.portGoods[s.hubId];
+        ledger[s.cropId] = (ledger[s.cropId] || 0) + s.units;
+        var c2 = T().CROP_BY_ID[s.cropId];
+        if (c2) log(s.units + ' crate(s) of ' + c2.label + ' waiting at the ' +
+                   cityLabel(s.hubId) + ' trade desk.');
+      }
+    });
+    G.shipments = left;
+  }
+
+  /* Trade desk (London / New York / Tokio): sell the colonial harvest. */
 
   window.ArtRaceCrew = {
     PLOTS_PER_COLONY: PLOTS_PER_COLONY,
@@ -240,6 +539,24 @@
     upgradeField: upgradeField,
     selectField: selectField,
     endColonyDay: endColonyDay,
-    colonyAction: colonyAction
+    colonyAction: colonyAction,
+    autoOf: autoOf,
+    autoOn: autoOn,
+    setAuto: setAuto,
+    runOverseer: runOverseer,
+    runOverseers: runOverseers,
+    hubIds: hubIds,
+    shipDays: shipDays,
+    colonyStock: colonyStock,
+    colonyUnits: colonyUnits,
+    addColonyStock: addColonyStock,
+    SHIP_FEE_PER_CRATE: SHIP_FEE_PER_CRATE,
+    shipOrder: shipOrder,
+    loadShipment: loadShipment,
+    cancelShipping: cancelShipping,
+    setShipping: setShipping,
+    shipOf: shipOf,
+    sellAtHub: sellAtHub,
+    runShipping: runShipping
   };
 })();
