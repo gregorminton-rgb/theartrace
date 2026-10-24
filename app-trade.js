@@ -107,6 +107,9 @@
 
   function renderMarket() {
     var c = A.city(G.cityId);
+    /* Ashore there is no city market to quote: the table keeps the last port's
+       figures rather than blanking out or throwing. */
+    if (!c) return;
     var rows = A.EPOCHS.map(function (e) {
       var i = A.sliceIndex(G.market, c, e);
       var ch = A.dailyChange(G.market, c, e);
@@ -137,20 +140,27 @@
   }
 
   function renderStations() {
-    var c = A.city(G.cityId);
+    /* Standing on a plantation means G.colonyId is set; the city in G.cityId is
+       only the port the player last left, so its rooms are not reached from
+       here. Every station is hidden out there — a plantation has its own
+       quay and trading instead. */
+    var c = G.colonyId ? null : A.city(G.cityId);
     var nav = el('stations');
     Array.prototype.forEach.call(nav.querySelectorAll('.station'), function (b) {
       var v = b.getAttribute('data-view');
-      var ok = true;
-      /* An auction is only real when the room is in this city *and* a catalogue
-         is hanging — the list goes up a few days early, bids only on sale day. */
-      if (v === 'auction') ok = c.hasAuctionHouse && auctionListUp();
-      if (v === 'bank') ok = c.hasBank;
-      if (v === 'studio') ok = c.hasRestorationStudio;
-      if (v === 'trade') ok = !!TRADE_HUB_IDS[c.id];
+      var ok = !!c;
+      /* Rooms that exist only in some cities are hidden, not greyed out: a
+         locked door with no explanation reads like a bug. The auction is the
+         clearest case — the room is only there while a catalogue is hanging. */
+      if (v === 'auction') ok = !!c && c.hasAuctionHouse && auctionListUp();
+      if (v === 'bank') ok = !!c && !!c.hasBank;
+      if (v === 'studio') ok = !!c && !!c.hasRestorationStudio;
+      if (v === 'trade') ok = !!c && !!TRADE_HUB_IDS[c.id];
+      b.hidden = !ok;
       b.disabled = !ok;
-      b.classList.toggle('active', G.view === v);
+      b.classList.toggle('active', ok && G.view === v);
     });
+    nav.classList.toggle('is-empty', !nav.querySelector('.station:not([hidden])'));
   }
 
   function renderTicker() {
@@ -217,8 +227,21 @@
 
   /* ---------- panel views ---------------------------------------------- */
   function renderPanel() {
-    var c = A.city(G.cityId);
+    /* On a plantation G.cityId is a colony id, which is not a city: there is
+       no dealer, bank or auction behind the colony screen, so the gallery
+       panel keeps showing the port the player sailed from. */
+    var here = A.city(G.cityId);
+    var c = here || A.city(G.colonyReturnCityId) || A.city(G.colonyId);
     var view = G.view;
+    if (!here) {
+      G.view = 'portfolio';
+      el('panel').innerHTML = '<div class="panel-head"><h2>' + h(VIEW_TITLES.portfolio) + '</h2>' +
+        '<span class="panel-sub">at sea · ' + A.money(G.cash) + ' in hand · ' +
+        G.portfolio.length + '/' + G.capacity + ' crates</span></div>' + viewPortfolio();
+      el('panel-hint').textContent = 'Trade and travel open again once you are back in a port.';
+      if (A.mapView && A.mapView.sync) A.mapView.sync();
+      return;
+    }
     if (view === 'auction' && !auctionListUp()) view = 'dealer';
     if (view === 'bank' && !c.hasBank) view = 'dealer';
     if (view === 'studio' && !c.hasRestorationStudio) view = 'dealer';

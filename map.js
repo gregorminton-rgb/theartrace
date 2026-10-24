@@ -407,15 +407,62 @@
     return pts;
   }
 
+  /* Chaikin rounds every corner, and a corner it rounds may be two points that
+     sit a fraction of the line's own width apart. The smoothed curve then
+     arrives, turns and comes back almost on itself — on the plate that reads
+     as two parallel lines, which is the one thing a route must never look
+     like. Drop near-duplicate vertices first so there is no corner to curl. */
+  function dedupe(pts, minStep) {
+    if (!pts || pts.length < 2) return pts;
+    var out = [pts[0]];
+    for (var i = 1; i < pts.length; i++) {
+      var prev = out[out.length - 1], p = pts[i];
+      if (Math.hypot(p.x - prev.x, p.y - prev.y) >= minStep) out.push(p);
+    }
+    var last = pts[pts.length - 1], tail = out[out.length - 1];
+    if (out.length > 1 &&
+        Math.hypot(last.x - tail.x, last.y - tail.y) < minStep) {
+      out.pop();
+    }
+    out.push(last);
+    return out;
+  }
+
+  /* An arrival that doubles back on itself is the same defect seen from the
+     other side: the path's last stretch runs back along the previous one. Trim
+     the tail back to the last point that still moves *towards* the harbour. */
+  function uncurl(pts) {
+    if (!pts || pts.length < 4) return pts;
+    var end = pts[pts.length - 1];
+    var keep = pts.length - 1;
+    /* walk backwards until the step direction agrees with the approach */
+    while (keep > 1) {
+      var a = pts[keep - 1], b = pts[keep];
+      var inx = end.x - a.x, iny = end.y - a.y;
+      var sx = b.x - a.x, sy = b.y - a.y;
+      var sl = Math.hypot(sx, sy), il = Math.hypot(inx, iny);
+      if (sl < 1e-9 || il < 1e-9) { keep--; continue; }
+      var dot = (sx * inx + sy * iny) / (sl * il);
+      if (dot > 0.25) break;
+      keep--;
+    }
+    return pts.slice(0, keep + 1);
+  }
+
   function link(ax, ay, bx, by) {
     /* a crossing that leaves the continent gets a real sea path around the
        headlands; a short hop gets the express arc below */
     if (Math.hypot(bx - ax, by - ay) > 0.11) {
       var sea = seaPath(ax, ay, bx, by);
       if (sea && sea.length > 2) {
-        var smooth = chaikin(rdp(sea, 0.0016), 2);
+        /* 0.004 map units is roughly five pixels at the zoom the plate is
+           read at — below that two vertices are one vertex for the eye. */
+        var cleaned = dedupe(sea, 0.004);
+        var smooth = chaikin(rdp(cleaned, 0.0016), 2);
+        smooth = uncurl(dedupe(smooth, 0.004));
         smooth[0] = { x: ax, y: ay };
-        smooth[smooth.length - 1] = { x: bx, y: by };
+        if (smooth.length > 2) smooth[smooth.length - 1] = { x: bx, y: by };
+        else smooth.push({ x: bx, y: by });
         return smooth;
       }
     }
@@ -1309,6 +1356,10 @@
     /* ---- sizing ------------------------------------------------------ */
     function resize() {
       var rect = host.getBoundingClientRect();
+      /* A host inside a hidden panel reports 0x0. Building at the 220x150
+         floor would leave a mis-sized plate that never gets corrected, so
+         wait for a real layout box instead. */
+      if (!rect.width || !rect.height) return;
       var cssW = Math.max(220, Math.round(rect.width));
       var cssH = Math.max(150, Math.round(rect.height || cssW * 0.60));
       if (cssW === W && cssH === H) return;
@@ -1321,11 +1372,27 @@
       drawAnchor();
     }
 
+    var retryQueued = false;
+
     function refresh() {
       if (dead) return;
       resize();
+      /* No layout box yet (hidden panel, mid-open): nothing has been built, so
+         ask for another frame until the browser gives the host a size. */
+      if (!W) {
+        if (!retryQueued && window.requestAnimationFrame) {
+          retryQueued = true;
+          window.requestAnimationFrame(function () { retryQueued = false; refresh(); });
+        }
+        return;
+      }
       drawSelection();
       drawAnchor();
+      /* Force the frame instead of waiting for the ticker: the chart is
+         mounted in panels that open and close, and a throttled or paused
+         ticker would otherwise leave the plate blank until something else
+         happens to trigger a draw. */
+      try { app.renderer.render(app.stage); } catch (e) { /* gone mid-frame */ }
     }
 
     var ro = null;
@@ -1345,7 +1412,18 @@
       if (view.parentNode) view.parentNode.removeChild(view);
     }
 
-    resize();
+    /* First paint. resize() only rebuilds when the size actually changed, and
+       buildStatic() does not render by itself, so the plate would stay blank
+       until the ticker happened to tick — which it does not while the panel
+       that hosts the chart is still hidden or off-screen. The canvas has no
+       layout box yet at this point (it was just appended), so do the first
+       paint once the browser has laid it out. */
+    refresh();
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function () { if (!dead) refresh(); });
+    } else {
+      window.setTimeout(function () { if (!dead) refresh(); }, 16);
+    }
     return api;
   }
 

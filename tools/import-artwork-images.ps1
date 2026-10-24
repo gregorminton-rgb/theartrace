@@ -121,6 +121,10 @@ function Get-Key([string]$s) {
 # Plate titles are German, data.js titles are English. Each entry maps the
 # German title of the photographed original to the work it stands in for here.
 # Marked 'alias' in the manifest so the UI can label them as stand-ins.
+# The plate spells one work's subtitle with an en dash; [char]0x2013 keeps this
+# file pure ASCII, which Windows PowerShell needs to read a BOM-less .ps1.
+$turnerRainSteamTitle = 'Regen, Dampf und Geschwindigkeit ' + [char]0x2013 + ' Die Great Western Railway'
+
 $titleAliasesRaw = @{
     'Die Geburt der Venus'                = 'botticelli_venus_study'
     'Die Kartenspieler'                   = 'cezanne_card_players'
@@ -175,6 +179,21 @@ $titleAliasesRaw = @{
     'Bar in den Folies-Bergere'           = 'manet_folies_bergere'
     'Olympia'                             = 'manet_olympia_study'
     'Heuhaufen'                           = 'monet_haystack'
+
+    # Delivery of 24.10.2026 (late)
+    'Seerosen'                            = 'monet_water_lilies'
+    'Die Jahreszeiten'                    = 'mucha_seasons_posters'
+    'Slawisches Epos Die Apotheose der Slawen' = 'mucha_slav_epic_note'
+    'Kahnfahrt'                           = 'munter_boating'
+    'Blumen'                              = 'munter_flowers_still_life'
+    'Jawlensky und Erbsloh'               = 'munter_jawlensky'
+    'Selbstbildnis'                       = 'rembrandt_self_portrait'
+    'Die drei Baume'                      = 'rembrandt_three_trees'
+    'Das Fruhstuck der Ruderer'           = 'renoir_boating_party'
+    'Zwei Schwestern'                     = 'renoir_two_sisters'
+    'Venedig von der Lagune aus'          = 'turner_venice_laguna'
+    'Schwertlilien'                       = 'van_gogh_irises'
+    'Sonnenblumen'                        = 'van_gogh_sunflowers'
 }
 
 # A few plates carry no "artist - title" separator at all, so Get-TitleParts
@@ -188,6 +207,7 @@ $nameHintsRaw = @{
 # ContainsKey('dienachtwache'), it answers ContainsKey('die nachtwache').
 $titleAliases = @{}
 foreach ($k in $titleAliasesRaw.Keys) { $titleAliases[(Get-Key $k)] = $titleAliasesRaw[$k] }
+$titleAliases[(Get-Key $turnerRainSteamTitle)] = 'turner_rain_steam_speed'
 
 $nameHints = @{}
 foreach ($k in $nameHintsRaw.Keys) { $nameHints[(Get-Key $k)] = $nameHintsRaw[$k] }
@@ -205,6 +225,14 @@ function Get-Artist([string]$name) {
     foreach ($a in $artists) {
         if ((Get-Surname $a.name) -eq $surname) { return $a }
     }
+    # "Rembrandt" vs "Rembrandt van Rijn": the plate uses the mononym, the
+    # catalogue the full name (whose surname resolves to the particle "rijn").
+    # Fall back to the first given name of both sides.
+    $first = Get-Key (($name -split '[\s\-]+')[0])
+    if ($first.Length -lt 4) { return $null }
+    foreach ($a in $artists) {
+        if ((Get-Key (($a.name -split '[\s\-]+')[0])) -eq $first) { return $a }
+    }
     return $null
 }
 
@@ -214,7 +242,8 @@ function Get-Surname([string]$name) {
     foreach ($t in ($name -split '[\s\-]+')) {
         if ($t -and ($stop -notcontains $t.ToLowerInvariant())) { $w += $t }
     }
-    if ($w.Count -lt 2) { return $null }
+    # A one-word name is itself the surname ("Rembrandt", "Caravaggio").
+    if ($w.Count -lt 1) { return $null }
     $s = Get-Key $w[$w.Count - 1]
     if ($s.Length -lt 4) { return $null }
     return $s

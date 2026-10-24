@@ -163,6 +163,11 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 .station:hover { filter: brightness(1.04); }
 .station.active { background: linear-gradient(180deg, #f6e9c6, #e0bc63); border-color: var(--gold); font-weight: 600; }
 .station:disabled { opacity: .32; cursor: not-allowed; }
+/* No room is open here (a plantation, or a city with no bank/auction): the
+   bar takes no space at all rather than leaving a greyed-out column. */
+#stations.is-empty { display: none; }
+/* `#stations .station { display: … }` would otherwise beat the hidden attribute. */
+.station[hidden] { display: none !important; }
 
 /* ---------- stage ------------------------------------------------------ */
 #stage { display: flex; flex-direction: column; gap: .7rem; min-height: 0; overflow-y: auto; padding-right: .15em; }

@@ -76,6 +76,9 @@
   function renderBackdrop() {
     var c = A.city(G.cityId);
     var bd = el('backdrop');
+    /* Ashore the current place is a plantation, not a city: there is no
+       city plate to show, so the last port's backdrop stays put. */
+    if (!c) return;
     var pic = cityPicture(c);
     /* background-image/-color are set separately on purpose: the `background`
        shorthand would wipe the background-size/position from styles.css. */

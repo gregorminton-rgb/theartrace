@@ -296,6 +296,25 @@
       });
     }
     if (worldMap.level !== (G.mapLevel || 'world')) worldMap.setLevel(G.mapLevel || 'world');
+    /* The colony tab is switched on in the same tick that mounts the chart, so
+       the stage has no layout box yet and the plate comes out empty. Redraw
+       once the browser has actually laid the panel out — and keep retrying for
+       a few frames, because a hidden-then-shown panel can need more than one. */
+    if (!stage.__wmDeferred) {
+      stage.__wmDeferred = true;
+      var tries = 0;
+      var again = function () {
+        if (!worldMap || !worldMap.canvas || worldMap.canvas.parentElement !== stage) return;
+        var r = stage.getBoundingClientRect();
+        worldMap.refresh();
+        if ((!r.width || !r.height) && ++tries < 12) {
+          if (window.requestAnimationFrame) window.requestAnimationFrame(again);
+          else setTimeout(again, 32);
+        }
+      };
+      if (window.requestAnimationFrame) window.requestAnimationFrame(again);
+      else setTimeout(again, 32);
+    }
     /* the traveller's own position, so the hover lane has a visible start */
     var here = herePoint();
     if (here && worldMap.setAnchor) worldMap.setAnchor({ x: here.mapX, y: here.mapY });

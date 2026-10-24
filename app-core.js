@@ -711,9 +711,15 @@
   }
 
   function renderHud() {
+    /* A plantation id is not in the city table, so A.city() is null out there;
+       the HUD then names the colony instead of a gallery. */
     var c = A.city(G.cityId);
-    el('hud-city').textContent = 'Gallery in ' + c.name;
-    el('hud-sub').textContent = c.country + ' · ' + c.regionName + ' · day ' + G.day + '/' + G.careerDays;
+    var colony = G.colonyId ? COLONY_BY_ID[G.colonyId] : null;
+    el('hud-city').textContent = colony ? colony.label + ' plantation'
+      : (c ? 'Gallery in ' + c.name : 'At sea');
+    el('hud-sub').textContent = colony
+      ? 'Colony' + (colony.sub ? ' · ' + colony.sub : '') + ' · day ' + G.day + '/' + G.careerDays
+      : (c ? c.country + ' · ' + c.regionName : 'Under way') + ' · day ' + G.day + '/' + G.careerDays;
     el('hud-cash').textContent = 'Cash ' + A.money(G.cash);
     el('hud-rep').textContent = 'Reputation ' + Math.round(G.reputation) + ' · debt ' + A.money(G.loan);
     el('hud-goal').textContent = 'Net ' + A.money(netWorth()) + ' / goal ' + A.money(G.targetWorth);
