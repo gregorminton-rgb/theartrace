@@ -154,7 +154,7 @@
   }
 
   function updateToggle() {
-    var btn = document.getElementById('music-toggle');
+    var btn = document.getElementById('hud-music');
     if (!btn) return;
     var on = shouldSound();
     btn.classList.toggle('is-on', on);
@@ -204,6 +204,6 @@
     }
   };
 
-  var btn = document.getElementById('music-toggle');
+  var btn = document.getElementById('hud-music');
   if (btn) btn.addEventListener('click', toggle);
 })();

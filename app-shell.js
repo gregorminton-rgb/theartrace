@@ -66,27 +66,78 @@
   /* =====================================================================
    * SCREENS
    * ===================================================================== */
+  /* Two copies of the same little control exist: one in the game HUD, one in
+     the colony bar (that screen is a fixed layer, so it covers the HUD). They
+     are kept in sync by id pairs — `<prefix>cal-auto` and so on. */
+  var CLOCK_UI = [
+    { auto: 'cal-auto', timer: 'cal-timer', speed: 'cal-speed',
+      day: 'cal-day', month: 'cal-month', year: 'cal-year' },
+    { auto: 'colony-cal-auto', timer: 'colony-cal-timer', speed: 'colony-cal-speed',
+      day: 'colony-cal-day', month: 'colony-cal-month', year: 'colony-cal-year' }
+  ];
+
+  function eachClockUi(fn) {
+    CLOCK_UI.forEach(function (ui) {
+      var auto = el(ui.auto);
+      if (auto) fn(ui, auto);
+    });
+  }
+
+  function paintClockUi() {
+    var speed = G.clockSpeed || 1600;
+    eachClockUi(function (ui, auto) {
+      auto.checked = !!G.clockWanted;
+      var timer = el(ui.timer);
+      if (timer) {
+        timer.classList.toggle('running', !!G.clockWanted);
+        /* the bar's animation has to run at the chosen speed or it lies */
+        timer.style.setProperty('--day-ms', speed + 'ms');
+      }
+      var speedEl = el(ui.speed);
+      if (speedEl) speedEl.value = String(speed);
+    });
+  }
+
+  /* One place that starts the interval, so the speed can never disagree with
+     the two places that used to hard-code 1600 ms. */
+  function startClock() {
+    if (G.clockTimer) { clearInterval(G.clockTimer); G.clockTimer = null; }
+    if (!G.clockWanted || G.ended) { paintClockUi(); return; }
+    paintClockUi();
+    G.clockTimer = setInterval(tickClock, G.clockSpeed || 1600);
+  }
+
   function stopClock() {
     if (G.clockTimer) { clearInterval(G.clockTimer); G.clockTimer = null; }
-    el('cal-auto').checked = false;
-    el('cal-timer').classList.remove('running');
     G.clockWanted = false;
+    paintClockUi();
   }
 
   /* Arriving at a colony pauses the calendar; leaving the colony screen
      resumes it if the player had it running. */
   function resumeClockIfWanted() {
     if (!G.clockWanted || G.clockTimer || G.ended) return;
-    el('cal-auto').checked = true;
-    el('cal-timer').classList.add('running');
-    G.clockTimer = setInterval(tickClock, 1600);
+    startClock();
+  }
+
+  function setClockSpeed(ms) {
+    var v = parseInt(ms, 10);
+    if (!v || v < 300) return;
+    G.clockSpeed = v;
+    /* a running clock picks the new pace up immediately */
+    if (G.clockTimer) startClock();
+    else paintClockUi();
   }
 
   function tickClock() {
     if (G.ended) { stopClock(); return; }
-    /* While the player is ashore the colony screen drives its own day, so the
-       global clock waits instead of ticking a hidden portrait city. */
-    if (G.colonyId) return;
+    /* Ashore the colony screen drives the day (its fields and workers), so the
+       same interval steps that screen instead of a hidden portrait city. */
+    if (G.colonyId) {
+      try { crewRef('endColonyDay')(); }
+      catch (err) { stopClock(); log('The clock stopped on day ' + G.day + ': ' + err.message); }
+      return;
+    }
     try {
       advanceDay(false);
       renderAll();
@@ -354,14 +405,18 @@
   }
 
   document.addEventListener('change', function (ev) {
-    if (ev.target.id === 'cal-auto') {
+    var id = ev.target.id;
+    if (id === 'cal-auto' || id === 'colony-cal-auto') {
       if (ev.target.checked && G.started && !G.ended) {
         G.clockWanted = true;
-        el('cal-timer').classList.add('running');
-        G.clockTimer = setInterval(tickClock, 1600);
+        startClock();
       } else {
         stopClock();
       }
+      return;
+    }
+    if (id === 'cal-speed' || id === 'colony-cal-speed') {
+      setClockSpeed(ev.target.value);
       return;
     }
     /* the plantation's overseer: checkboxes and the crop picker */
@@ -389,6 +444,7 @@
   boot();
 
   A.shell = { stopClock: stopClock, resumeClock: resumeClockIfWanted, endGame: endGame,
+              startClock: startClock, setSpeed: setClockSpeed, paintClock: paintClockUi,
               dialog: dialog, closeDialog: closeDialog };
   window.ArtRaceApp = { G: G, app: A.app, shared: A.shared, game: A };
 })();

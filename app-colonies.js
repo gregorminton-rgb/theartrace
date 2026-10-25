@@ -401,8 +401,11 @@
     if (!colony) return;
     el('colony-title').textContent = colony.label;
     el('colony-sub').textContent = colony.sub;
-    el('colony-cash').textContent = 'Cash ' + A.money(G.cash) + ' · day ' + G.day + ' · ' + colonyFields().length + ' field(s)';
+    /* the date lives in the top-right calendar of this bar, not in the cash chip */
+    el('colony-cash').textContent = 'Cash ' + A.money(G.cash) + ' · ' + colonyFields().length + ' field(s)';
     el('colony-warehouse').textContent = 'An Land ' + crew.colonyUnits() + ' Kiste(n)';
+    /* the day clock has a copy on this screen; keep it in step with the state */
+    if (A.shell && A.shell.paintClock) A.shell.paintClock();
     var autoBtn = el('colony-autopilot');
     if (autoBtn) {
       var ap = crew.autoOf(colony.id);

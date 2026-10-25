@@ -717,22 +717,32 @@
     var colony = G.colonyId ? COLONY_BY_ID[G.colonyId] : null;
     el('hud-city').textContent = colony ? colony.label + ' plantation'
       : (c ? 'Gallery in ' + c.name : 'At sea');
+    /* No day counter here: the calendar right next to it already shows the
+       date, and two day numbers in one corner only cost space. */
     el('hud-sub').textContent = colony
-      ? 'Colony' + (colony.sub ? ' · ' + colony.sub : '') + ' · day ' + G.day + '/' + G.careerDays
-      : (c ? c.country + ' · ' + c.regionName : 'Under way') + ' · day ' + G.day + '/' + G.careerDays;
+      ? 'Colony' + (colony.sub ? ' · ' + colony.sub : '')
+      : (c ? c.country + ' · ' + c.regionName : 'Under way');
     el('hud-cash').textContent = 'Cash ' + A.money(G.cash);
     el('hud-rep').textContent = 'Reputation ' + Math.round(G.reputation) + ' · debt ' + A.money(G.loan);
     el('hud-goal').textContent = 'Net ' + A.money(netWorth()) + ' / goal ' + A.money(G.targetWorth);
+    /* The calendar exists twice (HUD and colony bar); both copies show the
+       same date, because the colony bar covers the HUD while ashore. */
     var d = dateOf(G.day);
-    el('cal-day').textContent = d.day;
-    el('cal-month').textContent = d.month;
-    el('cal-year').textContent = d.year;
+    paintDate('cal', d);
+    paintDate('colony-cal', d);
     /* app-audio.js decides from this same state whether music should run.
        Music is a nicety: if it ever throws, the screen must still draw. */
     if (window.ArtRaceAudio) {
       try { window.ArtRaceAudio.sync(); }
       catch (err) { if (window.console) console.warn('audio sync failed:', err.message); }
     }
+  }
+
+  function paintDate(prefix, d) {
+    var day = el(prefix + '-day'), month = el(prefix + '-month'), year = el(prefix + '-year');
+    if (day) day.textContent = d.day;
+    if (month) month.textContent = d.month;
+    if (year) year.textContent = d.year;
   }
 
   /* ---------- what the other app-*.js modules borrow --------------------- */

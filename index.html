@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>The Great Art Race — web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261024-MUSIC1" />
+<title>The Great Art Race â€” web prototype</title>
+<link rel="stylesheet" href="styles.css?v=20261025-TOPDOCK4" />
 </head>
 <body>
 <div id="app">
@@ -21,7 +21,7 @@
       <div class="title-placard">
         <h1 class="title-frame"><span class="the">The</span><span class="race">Great Art Race</span></h1>
         <p class="title-tag">Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.</p>
-        <p class="title-foot">Prototype build · every number is exported from the Unity project</p>
+        <p class="title-foot">Prototype build Â· every number is exported from the Unity project</p>
       </div>
     </div>
     <footer class="title-actions">
@@ -39,16 +39,36 @@
         <strong>The Great Art Race</strong>
         <span class="hud-name" id="player-name">Henry</span>
       </div>
-      <div class="hud-stead">
-        <span id="hud-city">Gallery in Amsterdam</span>
-        <span id="hud-sub">Netherlands · Europe</span>
-      </div>
       <div id="hud-balance">
-        <button class="hud-chip hud-music" id="music-toggle" type="button"
+        <button class="hud-chip hud-music" id="hud-music" type="button"
                 aria-label="Music" aria-pressed="false" title="Music">&#9834;</button>
         <span class="hud-chip" id="hud-cash">Cash $12,000</span>
         <span class="hud-chip" id="hud-rep">Reputation 25</span>
         <span class="hud-chip" id="hud-goal">Goal $400,000</span>
+      </div>
+      <div id="ticker"><span id="ticker-text"></span></div>
+      <!-- Top-right cluster: the place name on top, the calendar and the day
+           controls underneath it. The same block sits in the colony bar. -->
+      <div class="chrono">
+        <div class="hud-stead">
+          <span id="hud-city">Gallery in Amsterdam</span>
+          <span id="hud-sub">Netherlands Â· Europe</span>
+        </div>
+        <div class="chrono-row">
+          <div class="chrono-cal" id="calendar">
+            <div class="chrono-date">
+              <b id="cal-day">1</b><span id="cal-month">January</span><span id="cal-year">1925</span>
+            </div>
+            <div class="chrono-timer" id="cal-timer"><i></i></div>
+            <label class="chrono-auto" title="Tage automatisch verstreichen lassen"><input type="checkbox" id="cal-auto" /> auto</label>
+            <select class="chrono-speed" id="cal-speed" title="Geschwindigkeit" aria-label="Day speed">
+              <option value="2600">langsam</option>
+              <option value="1600" selected>normal</option>
+              <option value="900">schnell</option>
+            </select>
+          </div>
+          <button class="btn go" type="button" id="end-day" data-action="next-day">End day</button>
+        </div>
       </div>
     </header>
 
@@ -88,20 +108,6 @@
       </aside>
     </div>
 
-    <footer id="dock">
-      <div id="calendar">
-        <div id="cal-date">
-          <span id="cal-day">1</span>
-          <span class="cal-sep">·</span>
-          <span id="cal-month">January</span>
-          <span id="cal-year">1925</span>
-        </div>
-        <div id="cal-timer"><i></i></div>
-        <label class="cal-auto"><input type="checkbox" id="cal-auto" /> auto</label>
-      </div>
-      <button class="btn go" type="button" id="end-day" data-action="next-day">End day</button>
-      <div id="ticker"><span id="ticker-text"></span></div>
-    </footer>
   </section>
 
 </div>
@@ -111,7 +117,7 @@
   <div class="dialog">
     <div class="dialog-head">
       <h2 id="dialog-title">Title</h2>
-      <button class="dialog-close" type="button" data-action="close-dialog" aria-label="Close">✕</button>
+      <button class="dialog-close" type="button" data-action="close-dialog" aria-label="Close">âœ•</button>
     </div>
     <div class="dialog-body" id="dialog-body"></div>
     <div class="dialog-actions" id="dialog-actions"></div>
@@ -129,19 +135,33 @@
       <div class="colony-bar-stats">
         <span class="colony-chip" id="colony-cash">Cash $0</span>
         <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
+        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Verwalter: sÃ¤t, erntet und teilt Arbeiter ein">Automatik</button>
       </div>
-      <div class="colony-bar-actions">
-        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Verwalter: sät, erntet und teilt Arbeiter ein">Automatik</button>
-        <button class="btn go" type="button" data-colony="endday">End day</button>
+      <div class="chrono">
+        <div class="chrono-row">
+          <div class="chrono-cal">
+            <div class="chrono-date">
+              <b id="colony-cal-day">1</b><span id="colony-cal-month">January</span><span id="colony-cal-year">1925</span>
+            </div>
+            <div class="chrono-timer" id="colony-cal-timer"><i></i></div>
+            <label class="chrono-auto" title="Tage automatisch verstreichen lassen"><input type="checkbox" id="colony-cal-auto" /> auto</label>
+            <select class="chrono-speed" id="colony-cal-speed" title="Geschwindigkeit" aria-label="Day speed">
+              <option value="2600">langsam</option>
+              <option value="1600" selected>normal</option>
+              <option value="900">schnell</option>
+            </select>
+          </div>
+          <button class="btn go" type="button" data-colony="endday">End day</button>
+        </div>
       </div>
     </header>
-    <nav class="colony-menu" aria-label="Kolonie-Menü">
-      <span class="colony-menu-label">Kolonie-Menü</span>
-      <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage"><b>Anbau</b><small>Felder bestellen</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><b>Handel</b><small>Ernte verschiffen</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager"><b>Lager</b><small>Vorrat &amp; Kisten</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter"><b>Arbeiter</b><small>Einstellen &amp; zuteilen</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="reise"><b>Reise</b><small>Weltkarte</small></button>
+    <nav class="colony-menu" aria-label="Kolonie-MenÃ¼">
+      <span class="colony-menu-label">Kolonie-MenÃ¼</span>
+      <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage"><span class="colony-menu-ico">&#127793;</span><b>Anbau</b><small>Felder bestellen</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><span class="colony-menu-ico">&#128176;</span><b>Handel</b><small>Ernte verschiffen</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager"><span class="colony-menu-ico">&#128230;</span><b>Lager</b><small>Vorrat &amp; Kisten</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter"><span class="colony-menu-ico">&#128119;</span><b>Arbeiter</b><small>Einstellen &amp; zuteilen</small></button>
+      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="reise"><span class="colony-menu-ico">&#128646;</span><b>Reise</b><small>Weltkarte</small></button>
     </nav>
     <div class="colony-content" id="colony-content">
       <!-- PLANTAGE view -->
@@ -182,7 +202,7 @@
       <div class="colony-view colony-view--reise" id="colony-view-reise" hidden>
         <div class="colony-travel-wrap">
           <div id="colony-wm-stage"></div>
-          <p class="colony-note" id="colony-travel-note">Pick a port on the chart — a city or another colony — and sail on from here.</p>
+          <p class="colony-note" id="colony-travel-note">Pick a port on the chart â€” a city or another colony â€” and sail on from here.</p>
           <div class="dest-list" id="colony-dest-list"></div>
         </div>
       </div>
@@ -207,17 +227,17 @@
 <script src="map.js?v=20261024-LAYOUT2"></script>
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
-<script src="app-state.js?v=20261024-COLONY1"></script>
+<script src="app-state.js?v=20261025-TOPDOCK1"></script>
 <script src="app-crew.js?v=20261024-COLONY1"></script>
-<script src="app-colonies.js?v=20261024-COLONY1"></script>
-<script src="app-core.js?v=20261024-MUSIC1"></script>
+<script src="app-colonies.js?v=20261025-TOPDOCK1"></script>
+<script src="app-core.js?v=20261025-TOPDOCK1"></script>
 <script src="art-notes.js?v=20261024-ART75"></script>
 <script src="app-art.js?v=20261024-COLONY1"></script>
 <script src="app-artview.js?v=20261024-COLONY1"></script>
 <script src="app-map.js?v=20261024-LAYOUT1"></script>
 <script src="app-trade.js?v=20261024-COLONY1"></script>
-<script src="app-shell.js?v=20261024-COLONY1"></script>
-<script src="app-audio.js?v=20261024-MUSIC2"></script>
+<script src="app-shell.js?v=20261025-TOPDOCK1"></script>
+<script src="app-audio.js?v=20261025-TOPDOCK1"></script>
 </body>
 </html>
 

@@ -131,19 +131,24 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 /* ---------- game shell ------------------------------------------------- */
 #screen-game { display: flex; flex-direction: column; height: 100vh; gap: .7rem; padding: .7rem; }
 
+/* The bar is one row: brand, the money chips, the ticker and the place name
+   with the calendar and the day controls in the top right corner. Nothing
+   stacks, so the header stays as flat as its tallest part (the calendar). */
 #hud {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 1.2em;
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: "brand balance ticker chrono";
+  align-items: start; gap: .3em .8em;
   background: linear-gradient(180deg, #2a1d13, #14100c);
-  color: var(--paper); padding: .7em 1.1em; border: 1px solid #000;
+  color: var(--paper); padding: .45em .7em; border: 1px solid #000;
   box-shadow: var(--shadow); border-radius: 3px;
 }
-#hud .hud-brand { display: flex; flex-direction: column; margin-right: auto; }
-#hud .hud-brand strong { font-size: 1.12rem; letter-spacing: .05em; color: var(--gold-2); }
-#hud .hud-name { font-family: var(--sans); font-size: .66rem; text-transform: uppercase; letter-spacing: .16em; opacity: .8; }
+#hud .hud-brand { grid-area: brand; display: flex; flex-direction: column; }
+#hud .hud-brand strong { font-size: 1.02rem; letter-spacing: .05em; color: var(--gold-2); }
+#hud .hud-name { font-family: var(--sans); font-size: .62rem; text-transform: uppercase; letter-spacing: .16em; opacity: .8; }
 #hud .hud-stead { display: flex; flex-direction: column; }
-#hud-city { font-size: 1.15rem; }
-#hud-sub, #hud-goal { font-family: var(--sans); font-size: .7rem; letter-spacing: .06em; opacity: .85; }
-#hud-balance { display: flex; gap: .5em; align-items: center; }
+#hud-city { font-size: 1rem; line-height: 1.2; }
+#hud-sub, #hud-goal { font-family: var(--sans); font-size: .66rem; letter-spacing: .06em; opacity: .85; }
+#hud-balance { grid-area: balance; display: flex; gap: .4em; align-items: center; align-self: start; }
 .hud-chip {
   font-family: var(--sans); font-size: .74rem; background: rgba(255, 240, 210, .1);
   border: 1px solid rgba(224, 188, 99, .5); color: var(--gold-2); padding: .3em .6em; border-radius: 2px;
@@ -295,32 +300,65 @@ li.news.live b { color: var(--oxblood); }
 ul.journal { margin: 0; padding: 0 0 0 1em; font-size: .8rem; line-height: 1.55; }
 ul.journal li { margin-bottom: .15em; }
 ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-soft); font-style: normal; margin-right: .4em; }
-/* ---------- footer dock ------------------------------------------------ */
-#dock { display: flex; align-items: center; gap: .7rem; }
+/* ---------- top-right chrono cluster ---------------------------------- *
+ * The place name, the calendar and the day controls are one right-aligned
+ * block. `#hud` and the colony bar both carry it, so it is always in the
+ * same corner and the date is never printed twice. */
+.chrono {
+  display: flex; flex-direction: column; align-items: flex-end; gap: .15em;
+  grid-area: chrono; min-width: 0;
+}
+.chrono .hud-stead { align-items: flex-end; text-align: right; }
+.chrono-row { display: flex; flex-direction: column; align-items: flex-end; gap: .2em; }
+/* End Day sits directly under the date box, in the same narrow column, so the
+   two never split into a wide row of their own. */
+.chrono-row > .btn { align-self: stretch; text-align: center; }
+.chrono-cal {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .15em .45em; min-width: 0;
+  background: var(--card); border: 1px solid var(--line); border-radius: 3px;
+  padding: .1em .5em; color: var(--ink);
+  box-shadow: 0 3px 10px rgba(20, 10, 0, .16);
+}
+.chrono-date { display: flex; align-items: baseline; gap: .25em; white-space: nowrap; }
+.chrono-date b {
+  font-size: 1.2rem; font-weight: 700; color: var(--oxblood);
+  font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.chrono-date span { font-size: .8rem; }
+.chrono-date .cal-sep { color: var(--ink-soft); font-size: .7rem; }
+.chrono-date span:last-child { font-family: var(--sans); font-size: .64rem; color: var(--ink-soft); }
+.chrono-timer {
+  flex: none; width: 2.4em; height: 4px; background: var(--paper-2, #ddc9a3);
+  border: 1px solid var(--line);
+}
+.chrono-timer i { display: block; height: 100%; width: 0; background: var(--gold); }
+.chrono-timer.running i { animation: day-pass var(--day-ms, 1600ms) linear infinite; }
+@keyframes day-pass { from { width: 0; } to { width: 100%; } }
+.chrono-auto {
+  display: flex; align-items: center; gap: .2em; cursor: pointer;
+  font-family: var(--sans); font-size: .58rem; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--ink-soft);
+}
+.chrono-auto input { margin: 0; }
+.chrono-speed {
+  font-family: var(--sans); font-size: .64rem; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line); border-radius: 2px;
+  padding: .05em .1em; max-width: 5.2em;
+}
+#end-day { flex: none; padding: .28em .7em; font-size: .66rem; }
+
+/* the message ticker is one slim line that rides at the top of the bar, next
+   to the place name, so it never adds a row of its own */
 #ticker {
-  flex: 1; overflow: hidden; white-space: nowrap; min-width: 0;
-  background: linear-gradient(180deg, #14100c, #2a1d13); color: var(--gold-2);
-  border: 1px solid #000; border-radius: 3px; padding: .55em .9em; font-family: var(--sans); font-size: .78rem;
+  flex: 1 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  min-width: 0; align-self: start;
+  background: linear-gradient(180deg, #14100c, #2a1d13);
+  color: var(--gold-2); border: 1px solid #000; border-radius: 3px;
+  padding: .16em .6em; line-height: 1.25;
+  font-family: var(--sans); font-size: .68rem;
 }
 #ticker-text { display: inline-block; animation: ticker-in .5s ease-out; }
 @keyframes ticker-in { from { transform: translateY(70%); opacity: 0; } to { transform: none; opacity: 1; } }
-
-#calendar {
-  display: flex; align-items: center; gap: .9em; flex: none;
-  background: var(--card); border: 1px solid var(--line); border-radius: 3px; padding: .4em .8em;
-  box-shadow: 0 3px 10px rgba(20, 10, 0, .16);
-}
-#cal-date { display: flex; align-items: baseline; gap: .3em; font-size: .95rem; }
-#cal-day { font-size: 1.6rem; font-weight: 700; color: var(--oxblood); font-variant-numeric: tabular-nums; }
-.cal-sep { color: var(--ink-soft); }
-#cal-month { font-size: 1.05rem; }
-#cal-year { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); }
-#cal-timer { flex: 1; height: 4px; background: var(--paper-2, #ddc9a3); border: 1px solid var(--line); min-width: 3em; }
-#cal-timer i { display: block; height: 100%; width: 0; background: var(--gold); }
-#cal-timer.running i { animation: day-pass 1.6s linear infinite; }
-@keyframes day-pass { from { width: 0; } to { width: 100%; } }
-.cal-auto { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); display: flex; align-items: center; gap: .3em; }
-#end-day { flex: none; }
 
 /* ---------- overlay ---------------------------------------------------- */
 #overlay {
@@ -375,7 +413,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   #stations { flex-direction: row; overflow-x: auto; }
   .station { flex: 1 0 auto; min-width: 6.5em; }
   .station.ghost { display: none; }
-  #dock { flex-wrap: wrap; }
   #panel-wrap { max-height: 60vh; }
 }
 
@@ -544,12 +581,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-bar-brand { display: flex; flex-direction: column; }
 .colony-bar-brand strong { font-size: 1.2rem; letter-spacing: .08em; color: #fff4dc; }
 .colony-bar-brand span { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--gold-2); }
-.colony-bar-stats { display: flex; gap: .6em; }
+.colony-bar-stats { display: flex; align-items: center; gap: .6em; }
 .colony-chip {
   font-family: var(--sans); font-size: .74rem; background: #2f2010; color: #f2e5c6;
   border: 1px solid #0e0802; padding: .35em .7em; border-radius: 2px;
 }
-.colony-bar-actions { display: flex; gap: .5em; }
 
 .colony-menu {
   display: flex; flex-wrap: wrap; align-items: stretch; gap: 0;
@@ -573,6 +609,9 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   transition: background .2s, color .2s;
 }
 .colony-menu-btn b { font-size: .98em; }
+/* the icon only appears in the phone layout, where the tabs become a docked
+   icon-over-label bar exactly like the city station rail */
+.colony-menu-ico { display: none; }
 .colony-menu-btn small {
   font-size: .8em; font-weight: 400; letter-spacing: .02em;
   text-transform: none; color: #9c8a6c; white-space: nowrap;
@@ -865,34 +904,114 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 @media (max-width: 760px) {
-  /* ---------- game shell ---------- */
-  #screen-game { height: 100vh; height: 100dvh; gap: .45rem; padding: .45rem; }
-  #hud { gap: .3em .7em; padding: .5em .7em; }
-  #hud .hud-brand strong { font-size: .95rem; }
-  #hud .hud-name { display: none; }
-  #hud-city { font-size: .92rem; }
-  #hud-sub, #hud-goal { font-size: .62rem; }
-  #hud-balance { width: 100%; gap: .3em; }
-  .hud-chip { font-size: .66rem; padding: .25em .5em; }
-
-  #main { display: flex; flex-direction: column; gap: .45rem; overflow-y: auto; }
-  /* the station rail becomes a scroll strip of icons along the top */
-  #stations {
-    flex-direction: row; gap: .3rem; overflow-x: auto; overflow-y: hidden;
-    flex: none; padding-bottom: .15em; -webkit-overflow-scrolling: touch;
+  /* ---------- game shell ---------- *
+   * A phone gets one rigid viewport: nothing scrolls the page itself. The
+   * station rail is docked to the bottom edge (it keeps scrolling sideways),
+   * the calendar dock sits directly above it, and the panel in between is
+   * always tall enough to show a chart or a dealer list. */
+  /* one shared height for the bottom menu bar: the city station rail and the
+     colony tabs are the same dock, so the value lives on :root */
+  :root { --station-bar-h: 3rem; }
+  #screen-game {
+    height: 100vh; height: 100dvh; gap: .4rem; overflow: hidden;
+    /* the docked rail is out of flow, so the shell reserves its height */
+    padding: .4rem .4rem calc(var(--station-bar-h) + .4rem);
   }
-  .station { flex: 0 0 auto; min-width: 4.1rem; padding: .5em .45em; font-size: .68rem; text-align: center; }
-  .station .st-ico { font-size: 1.15rem; margin-bottom: .15em; }
-  #stage { overflow: visible; gap: .5rem; }
-  .stage-frame { aspect-ratio: 16 / 6; min-height: 6rem; max-height: 22vh; }
-  #panel-wrap { max-height: none; }
+  /* the HUD is rebuilt as a two-column grid further down (top-right cluster) */
 
-  /* ---------- footer dock ---------- */
-  #dock { flex-wrap: wrap; gap: .4rem; }
-  #calendar { flex: 1 1 auto; gap: .5em; padding: .3em .6em; }
-  #cal-date { font-size: .82rem; }
-  #end-day { flex: 0 0 auto; padding: .7em 1.1em; }
-  #ticker { order: 3; flex: 1 0 100%; font-size: .7rem; padding: .4em .6em; }
+  #main {
+    display: flex; flex-direction: column; gap: .4rem;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  #stage { flex: 1 1 auto; min-height: 0; overflow: hidden; gap: .4rem; }
+  .stage-frame { aspect-ratio: auto; height: 4.5rem; min-height: 0; max-height: none; flex: none; }
+  #backdrop-caption { padding: 1.4em .6em .3em; font-size: .72rem; }
+  /* the panel takes every pixel the stage has left, so the chart and the
+     dealer list are always fully on screen — only their inner body scrolls */
+  #panel-wrap { flex: 1 1 auto; min-height: min(16rem, 46dvh); max-height: none; height: auto; }
+  /* the chart must never need a page scroll, so the market column (indices +
+     news) steps aside on a phone — the ticker above still carries the news */
+  #market-col { display: none; }
+  /* inside a definite-height panel the map must leave room for the list */
+  .worldmap--canvas { height: clamp(190px, 36dvh, 330px); min-height: 190px; }
+  /* ---------- docked station rail (was a strip along the top) ---------- */
+  #stations {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    flex-direction: row; align-items: stretch; gap: .2rem;
+    height: calc(var(--station-bar-h) + env(safe-area-inset-bottom));
+    padding: .2rem .3rem calc(.2rem + env(safe-area-inset-bottom));
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    background: linear-gradient(180deg, #2a1d13, #14100c);
+    border-top: 1px solid #000; box-shadow: 0 -6px 18px rgba(8, 4, 0, .55);
+    -webkit-overflow-scrolling: touch;
+  }
+  #stations::-webkit-scrollbar { display: none; }
+  /* nothing is open here (a plantation uses its own screen): don't keep the
+     reserved strip of dead space at the bottom edge */
+  #screen-game:has(#stations.is-empty) { padding-bottom: .4rem; }
+  .station {
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: .05em; min-width: 3.9rem; padding: .1em .45em;
+    font-size: .58rem; line-height: 1.1; letter-spacing: .02em; text-align: center;
+    background: linear-gradient(180deg, #efe0c1, #d9c49c); box-shadow: none;
+  }
+  .station .st-ico { font-size: 1.05rem; margin: 0; }
+  .station.active { background: linear-gradient(180deg, #f6e9c6, #e0bc63); }
+
+  /* ---------- top-right chrono cluster on a phone ---------- *
+   * One compact block: the message line sits at the very top of the bar, the
+   * money chips under it, and the place name with the calendar in the top right
+   * corner with End Day right under the date. Nothing adds a row of its own, so
+   * the bar costs ~85px instead of 110. */
+  #hud {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "ticker chrono" "balance chrono";
+    align-items: start; gap: .1em .45em; padding: .2em .45em;
+  }
+  #hud .hud-brand { display: none; }
+  #hud-balance {
+    grid-area: balance; align-self: start; width: auto;
+    flex-wrap: wrap; gap: .18em; margin-top: 0;
+  }
+  #hud .chrono { grid-area: 1 / 2 / 3 / 3; margin-left: 0; gap: .1em; }
+  #ticker { grid-area: ticker; align-self: start; min-width: 0; margin-top: 0; }
+  .hud-chip { font-size: .58rem; padding: .16em .38em; }
+  #hud-music { font-size: .8rem; padding: .18em .4em; }
+  #hud-goal { display: none; }
+  #hud-city { font-size: .78rem; line-height: 1.15; }
+  #hud-sub { font-size: .54rem; line-height: 1.1; }
+  .chrono-cal { gap: .26em; padding: .02em .32em; }
+  .chrono-date { gap: .18em; }
+  .chrono-date b { font-size: .94rem; }
+  .chrono-date span { font-size: .62rem; }
+  .chrono-date span:last-child { font-size: .54rem; }
+  .chrono-timer { width: 1.3em; height: 3px; }
+  .chrono-auto { font-size: .5rem; }
+  .chrono-speed { font-size: .56rem; max-width: 4.2em; }
+  .chrono-row { gap: .16em; }
+  #end-day { padding: .2em .5em; font-size: .58rem; }
+  #ticker { font-size: .56rem; padding: .15em .45em; }
+
+  /* ---------- artwork rows: nothing squeezed into a ribbon ---------- *
+   * The three-column grid left the title/credit column about 100px wide on a
+   * phone, so every description wrapped into a tall strip. The row now
+   * stacks: plate and text first, tags and price under it, actions last. */
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "main main" "tags num" "btns btns";
+    align-items: start; gap: .35em .55em; padding: .55em 0;
+  }
+  .row > .row-main { grid-area: main; }
+  .row > .row-tags { grid-area: tags; flex-direction: row; flex-wrap: wrap; gap: .25em; }
+  .row > .row-num { grid-area: num; min-width: 0; }
+  .row > .row-btns { grid-area: btns; flex-direction: row; }
+  .row > .btn { grid-area: btns; width: 100%; }
+  .row .title { font-size: .92rem; }
+  .row .credit, .row .prov { font-size: .66rem; line-height: 1.35; }
+  .row-num .ask { font-size: .92rem; }
+  .row-num .est { font-size: .6rem; }
+  .thumb { width: 40px; height: 50px; border-width: 3px; }
+  .scene-strip img { height: 76px; }
 
   /* ---------- dialogs: full width, scrollable, thumb-sized ---------- */
   .dialog {
@@ -911,29 +1030,60 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
   /* ---------- colony bar + menu ---------- */
   .colony-screen { height: 100%; }
+  /* the same corner as the city HUD: name on the left, calendar top right,
+     the money row underneath */
   .colony-bar {
-    flex-wrap: wrap; gap: .4em .6em; padding: .5em .7em;
-    padding-top: max(.5em, env(safe-area-inset-top));
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start; gap: .25em .5em; padding: .4em .55em;
+    padding-top: max(.4em, env(safe-area-inset-top));
   }
-  .colony-bar-brand strong { font-size: 1rem; }
-  .colony-bar-brand span { font-size: .6rem; }
-  .colony-bar-stats { order: 3; width: 100%; gap: .35em; }
-  .colony-chip { font-size: .64rem; padding: .25em .5em; }
-  .colony-bar-actions { gap: .3em; }
-  .colony-bar-actions .btn { padding: .55em .7em; font-size: .72rem; min-height: 2.4em; }
+  .colony-bar-brand { grid-area: 1 / 1; min-width: 0; }
+  .colony-bar .chrono { grid-area: 1 / 2; }
+  .colony-bar-brand strong { font-size: .92rem; }
+  .colony-bar-brand span { font-size: .58rem; }
+  .colony-bar-stats { grid-area: 2 / 1 / 3 / -1; gap: .3em; }
+  .colony-chip { font-size: .6rem; padding: .2em .45em; }
+  .colony-bar-stats .btn { padding: .3em .6em; font-size: .62rem; min-height: 0; }
 
-  /* the five menu tabs scroll sideways instead of wrapping into the board */
-  .colony-menu { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* the five menu tabs become the same docked icon-over-label bar as the city
+     station rail — one bottom menu for the whole game, never jumping around */
+  .colony-screen { padding-bottom: calc(var(--station-bar-h) + env(safe-area-inset-bottom)); }
+  .colony-menu {
+    /* `top: auto` is required: the desktop rule pins `top: 0`, and with both
+       offsets set the top one would win and the dock would jump to the top */
+    position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 6;
+    flex-wrap: nowrap; align-items: stretch; gap: .2rem;
+    height: calc(var(--station-bar-h) + env(safe-area-inset-bottom));
+    padding: .2rem .3rem calc(.2rem + env(safe-area-inset-bottom));
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    background: linear-gradient(180deg, #2a1d13, #14100c);
+    border-top: 1px solid #000; border-bottom: 0;
+    box-shadow: 0 -6px 18px rgba(8, 4, 0, .55);
+    -webkit-overflow-scrolling: touch;
+  }
+  .colony-menu::-webkit-scrollbar { display: none; }
   .colony-menu-label { display: none; }
   .colony-menu-btn {
-    flex: 0 0 auto; padding: .5em .8em; font-size: .74rem;
-    border-bottom: 3px solid transparent;
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: .05em; min-width: 3.9rem; padding: .1em .45em;
+    font-size: .58rem; line-height: 1.1; letter-spacing: .02em; text-align: center;
+    border: 1px solid var(--line); border-radius: 3px;
+    background: linear-gradient(180deg, #efe0c1, #d9c49c); color: var(--ink);
+    box-shadow: 0 2px 6px rgba(20, 10, 0, .18);
   }
+  .colony-menu-btn b { font-size: 1em; font-weight: 600; }
+  .colony-menu-ico { display: block; font-size: 1.05rem; line-height: 1; margin-bottom: .1em; }
   .colony-menu-btn small { display: none; }
-  .colony-menu-btn.active { border-bottom-color: var(--gold); }
+  .colony-menu-btn:hover { background: linear-gradient(180deg, #efe0c1, #d9c49c); color: var(--ink); }
+  .colony-menu-btn.active {
+    background: linear-gradient(180deg, #f6e9c6, #e0bc63);
+    color: var(--ink); border-color: var(--gold); box-shadow: none;
+  }
 
   /* ---------- plantation: one column, board first ---------- */
-  .colony-content { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* the plots are centred with translate(-50%) and may bleed a few pixels past
+     the board edge; clip that instead of giving the content a sideways scroll */
+  .colony-content { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   .colony-view--plantage { height: auto; }
   .colony-layout {
     display: flex; flex-direction: column; gap: .5em;
@@ -952,9 +1102,12 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .colony-side { order: 2; overflow: visible; gap: .5em; }
   .colony-side:last-child { order: 3; }
   .colony-panel { padding: .6em; }
-  /* crops become a horizontal strip of tiles */
+  /* crops become a horizontal strip of tiles; the automatik panel is not a
+     tile, so it spans the whole strip instead of being squeezed into one
+     column (it needs ~150px for the crop select) */
   #colony-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: .35em; }
-  #colony-palette .colony-panel-title, #colony-palette .colony-note { grid-column: 1 / -1; }
+  #colony-palette .colony-panel-title, #colony-palette .colony-note,
+  #colony-palette .colony-auto { grid-column: 1 / -1; }
   .crop-tile { padding: .35em; }
   .crop-tile-label { font-size: .72rem; }
   .crop-tile-meta, .crop-tile-prov { font-size: .58rem; }
@@ -1015,13 +1168,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 @media (max-width: 380px) {
   .station { min-width: 3.6rem; font-size: .62rem; }
   #colony-palette { grid-template-columns: repeat(auto-fill, minmax(4.8rem, 1fr)); }
-  .colony-bar-actions .btn { padding: .5em .55em; font-size: .66rem; }
   .trade-row { grid-template-columns: minmax(0, 1fr) auto; }
 }
 
 /* Short landscape phones (and any wide-but-short window): the chart keeps a
    usable height without pushing the destination list off screen. */
 @media (max-height: 520px) and (min-width: 560px) {
+  /* a 390px-tall window has no room for a decorative photo strip: the chart
+     and the lists get every pixel instead */
+  .stage-frame { display: none; }
+  .worldmap--canvas { height: clamp(150px, 40dvh, 220px); min-height: 150px; }
   #colony-wm-stage { aspect-ratio: auto; height: calc(100dvh - 190px); min-height: 200px; }
   #colony-dest-list { max-height: 30dvh; }
   .colony-layout { grid-template-columns: 190px 1fr 210px; }
