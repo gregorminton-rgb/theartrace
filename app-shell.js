@@ -277,13 +277,11 @@
       return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
         h(d.label) + ' (' + d.days + ' days)</option>';
     }).join('');
-    var seed = Math.floor(Math.random() * 1e9) + 1;
     dialog('Set up a career', '<div class="form">' +
       '<label>Name of the dealer<input id="f-name" value="' + h(G.name) + '"></label>' +
       '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
-      '<label>Seed (same seed, same market)<input id="f-seed" type="number" value="' + seed + '"></label>' +
       '</div>', [
       { label: 'Cancel', onClick: function () { if (!G.started) closeDialog(); else closeDialog(); } },
       { label: 'Begin career', primary: true, onClick: function () {
@@ -291,8 +289,7 @@
             name: el('f-name').value || 'Henry',
             difficulty: el('f-diff').value,
             durationIndex: parseInt(el('f-dur').value, 10),
-            cityId: el('f-city').value,
-            seed: parseInt(el('f-seed').value, 10)
+            cityId: el('f-city').value
           });
           G.ended = false;
           G.view = 'dealer';
