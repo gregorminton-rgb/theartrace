@@ -1,5 +1,5 @@
 /* =========================================================================
- * styles.css Ã¢â‚¬â€ the prototype's "period print shop" look.
+ * styles.css — the prototype's "period print shop" look.
  * Everything is drawn with CSS (no bitmaps in the project to borrow).
  * ========================================================================= */
 :root {
@@ -372,7 +372,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog::before { content: ""; position: absolute; inset: 7px; border: 1px solid var(--gold); pointer-events: none; }
 .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: .9em 1.3em; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #f4e6c8, #e6d2ab); }
 .dialog-head h2 { margin: 0; font-size: 1.25rem; }
-.dialog-close { font-size: 1.5rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--oxblood); }
+.dialog-close {
+  flex: none; width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center;
+  font-size: 1.5rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--oxblood);
+}
+/* The cross is drawn instead of typed: a stray encoding change can never turn
+   the close button into a pair of replacement characters again. */
+.dialog-close-x { position: relative; display: block; width: 1.1rem; height: 1.1rem; pointer-events: none; }
+.dialog-close-x::before, .dialog-close-x::after {
+  content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 100%;
+  background: currentColor; border-radius: 1px; transform: translateX(-50%) rotate(45deg);
+}
+.dialog-close-x::after { transform: translateX(-50%) rotate(-45deg); }
 .dialog-body { padding: 1.2em 1.5em; font-size: .92rem; line-height: 1.6; }
 .dialog-body h3 { font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; color: var(--oxblood); margin: 1.4em 0 .4em; }
 .dialog-body ul { margin: .2em 0 .8em; padding-left: 1.2em; }
@@ -498,8 +509,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .wm-level.is-on { background: var(--gold-2, #c9a548); color: #1a1208; border-color: transparent; }
 
 /* ---- the live canvas chart ---------------------------------------------- *
- * map.js draws the whole plate Ã¢â‚¬â€ sea, land, pins, routes and the moving
- * craft Ã¢â‚¬â€ into one canvas. Because every position is a fraction of the same
+ * map.js draws the whole plate — sea, land, pins, routes and the moving
+ * craft — into one canvas. Because every position is a fraction of the same
  * surface, pins stay glued to their harbours at any resolution or zoom.
  * ------------------------------------------------------------------------ */
 .worldmap--canvas {
@@ -561,7 +572,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .field-progress i { display: block; height: 100%; background: linear-gradient(90deg, #3c6b46, #6aa373); }
 
 /* =========================================================================
- * Colony screen Ã¢â‚¬â€ full-window plantation desk with drag & drop field layout.
+ * Colony screen — full-window plantation desk with drag & drop field layout.
  * ========================================================================= */
 #colony {
   position: fixed; inset: 0; z-index: 40;
