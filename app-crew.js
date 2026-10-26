@@ -41,16 +41,18 @@
   var PLOTS_PER_COLONY = 15;     // max hexagonal plots per colony
   var MAX_FIELD_WORKERS = 4;     // workers a single field can take
   var MAX_COLONY_WORKERS = 16;   // hired workers a colony can house
-  var WORKER_HIRE_COST = 600;    // one-off wage to bring a worker to the colony
+  var PLOT_BUY_FACTOR = 2;       // buying a plot costs twice the seed of its first crop
+  var WORKER_HIRE_COST = 360;    // one-off wage to bring a worker to the colony (was 600)
   var WORKER_SPEED = 0.20;       // each worker speeds growth by +20%
   var WORKER_YIELD = 0.5;        // each worker adds half a unit (two = +1)
   var UPGRADE_SPEED = 0.15;      // each field upgrade speeds growth by +15%
   var UPGRADE_YIELD = 1;         // each field upgrade adds one unit
   var UPGRADES = [
-    { label: 'Irrigation',   cost: 350,  note: '+15% growth, +1 unit' },
-    { label: 'Fertiliser',   cost: 750,  note: '+15% growth, +1 unit' },
-    { label: 'Storage shed', cost: 1400, note: '+15% growth, +1 unit' }
+    { label: 'Irrigation',   cost: 210, note: '+15% growth, +1 unit' },
+    { label: 'Fertiliser',   cost: 450, note: '+15% growth, +1 unit' },
+    { label: 'Storage shed', cost: 840, note: '+15% growth, +1 unit' }
   ];
+  function plotPriceFor(crop) { return crop.cost * PLOT_BUY_FACTOR; }
 
   function colonyFields() {
     return G.fields.filter(function (f) { return f.colonyId === G.colonyId; });
@@ -99,8 +101,14 @@
     var crop = T().CROP_BY_ID[cropId];
     if (!crop) return;
     if (plotField(plotIndex)) { log('That plot is already planted.'); return; }
-    if (G.cash < crop.cost) { log('Not enough cash for ' + crop.label + ' seed (' + A.money(crop.cost) + ').'); return; }
-    G.cash -= crop.cost;
+    var owned = !!ownedPlot(G.colonyId, plotIndex);
+    var land = owned ? 0 : plotPriceFor(crop);
+    var total = land + crop.cost;
+    if (G.cash < total) {
+      log((owned ? 'Not enough cash for ' + crop.label + ' seed (' : 'Land and seed for ' + crop.label + ' cost (') + A.money(total) + ').');
+      return;
+    }
+    G.cash -= total;
     /* the first layout is the purchase: the plot becomes the player's */
     claimPlot(G.colonyId, plotIndex, crop.id);
     G.fields.push({ id: G.nextFieldId++, colonyId: G.colonyId, plotIndex: plotIndex, cropId: crop.id,
@@ -508,6 +516,7 @@
     MAX_FIELD_WORKERS: MAX_FIELD_WORKERS,
     MAX_COLONY_WORKERS: MAX_COLONY_WORKERS,
     WORKER_HIRE_COST: WORKER_HIRE_COST,
+    plotPriceFor: plotPriceFor,
     WORKER_SPEED: WORKER_SPEED,
     WORKER_YIELD: WORKER_YIELD,
     UPGRADE_SPEED: UPGRADE_SPEED,

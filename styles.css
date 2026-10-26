@@ -676,6 +676,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .crop-tile-label { font-weight: 600; font-size: .92rem; }
 .crop-tile-meta { font-family: var(--sans); font-size: .66rem; color: var(--ink-soft); }
 .crop-tile-prov { font-family: var(--sans); font-size: .62rem; color: var(--blue); font-style: italic; }
+.crop-tile-land { font-family: var(--sans); font-size: .66rem; color: var(--ink); font-weight: 700; }
 
 .colony-workers-totals {
   display: grid; grid-template-columns: auto 1fr; gap: .1em .6em; align-items: baseline;

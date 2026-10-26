@@ -27,6 +27,7 @@
   var MAX_FIELD_WORKERS = crew.MAX_FIELD_WORKERS;
   var MAX_COLONY_WORKERS = crew.MAX_COLONY_WORKERS;
   var WORKER_HIRE_COST = crew.WORKER_HIRE_COST;
+  var plotPriceFor = crew.plotPriceFor;
   var WORKER_SPEED = crew.WORKER_SPEED;
   var WORKER_YIELD = crew.WORKER_YIELD;
   var UPGRADE_SPEED = crew.UPGRADE_SPEED;
@@ -486,6 +487,7 @@
         cropThumb(c) +
         '<span class="crop-tile-label">' + h(c.label) + '</span>' +
         '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
+        '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
         '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
         '</div>';
     }).join('');
@@ -643,7 +645,7 @@
       ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
       ' data-colony="plant-at" data-plot="' + i + '" data-empty="1">' +
       '<span class="plot-empty-plus">+</span>' +
-      '<span class="plot-empty-label">' + (G.plantCropId ? 'plant ' + CROP_BY_ID[G.plantCropId].label : 'empty plot') + '</span>' +
+      '<span class="plot-empty-label">' + (G.plantCropId ? 'plant ' + CROP_BY_ID[G.plantCropId].label + ' · ' + A.money(plotPriceFor(CROP_BY_ID[G.plantCropId])) + ' + seed' : 'empty plot') + '</span>' +
       '</button>';
   }
 
