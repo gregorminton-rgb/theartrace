@@ -113,6 +113,7 @@ window.ART_DATA = {
                     "auctionLotCount":  4,
                     "auctionIntervalDays":  5,
                     "auctionCommission":  0.12,
+                    "auctionQuizDiscount": 0.2,
                     "rivalAggression":  0.88,
                     "rivalBidderCount":  3,
                     "baseTicketPrice":  400,

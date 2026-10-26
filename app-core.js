@@ -606,15 +606,70 @@
       inst.purchaseDay = G.day;
       inst.provenance = 'Won at ' + A.city(G.cityId).name + ' auction (day ' + G.day + ')';
       G.portfolio.push(inst);
+      lot.quiz = makeLotQuiz(inst);
       rep(CFG.reputationPerAuctionWin);
       G.stats.hammer += 1;
       log('Hammer! ' + A.work(inst.defId).title + ' for ' + A.money(lot.bid) +
-          ' + ' + A.pct(CFG.auctionCommission) + ' commission = ' + A.money(total) + '.');
+          ' + ' + A.pct(CFG.auctionCommission) + ' commission = ' + A.money(total) + '.' +
+          ' Answer the expert question to cut the price by ' + A.pct(CFG.auctionQuizDiscount) + '.');
     } else {
       lot.leader = 'room';
       log('Lot ' + (index + 1) + ': your ' + A.money(lot.bid) + ' is outbid by the room.');
     }
     checkEnd();
+  }
+
+  /* Expert question after a win: three answers, one correct. The question is
+     built from catalogue facts (year, medium, epoch, school, size). Answering
+     right cuts the purchase price, but only the first attempt counts. */
+  function makeLotQuiz(inst) {
+    var w = A.work(inst.defId);
+    var field = Math.floor(Math.random() * 3);
+    var pool = [
+      { q: 'In which year was it painted?', correct: String(w.yearCreated), key: 'yearCreated' },
+      { q: 'What medium was it painted in?', correct: w.medium || '', key: 'medium' },
+      { q: 'What kind of picture is it?', correct: w.typeName || '', key: 'typeName' }
+    ];
+    var pick = pool[field];
+    if (!pick.correct) pick = pool[0];
+    if (!pick.correct) return null;
+    var all = A.works || [];
+    var decoys = [];
+    for (var j = 0; j < all.length && decoys.length < 2; j++) {
+      var v = all[j][pick.key];
+      if (v && String(v) !== pick.correct && decoys.indexOf(String(v)) < 0) decoys.push(String(v));
+    }
+    var options = [pick.correct].concat(decoys.slice(0, 2));
+    var order = options.map(function (v, idx) { return { v: v, idx: idx }; });
+    for (var s = order.length - 1; s > 0; s--) {
+      var r = Math.floor(Math.random() * (s + 1));
+      var t = order[s]; order[s] = order[r]; order[r] = t;
+    }
+    return {
+      question: pick.q,
+      options: order.map(function (o) { return o.v; }),
+      correct: order.findIndex(function (o) { return o.idx === 0; }),
+      answered: false,
+      right: false
+    };
+  }
+
+  function answerLotQuiz(index, choice) {
+    var lot = G.lots[index];
+    if (!lot || !lot.quiz || lot.quiz.answered) return;
+    var quiz = lot.quiz;
+    quiz.answered = true;
+    quiz.right = choice === quiz.correct;
+    var inst = lot.inst;
+    if (quiz.right) {
+      var cut = Math.round((inst.purchasePrice || 0) * CFG.auctionQuizDiscount);
+      inst.purchasePrice -= cut;
+      G.cash += cut;
+      log('Correct! The price is reduced by ' + A.money(cut) + '.');
+    } else {
+      log('Wrong answer. The price stays as it is.');
+    }
+    syncAuction();
   }
 
   function passLot(index) {
@@ -801,7 +856,7 @@
       findOwned: findOwned, checkEnd: checkEnd,
       beginVoyage: beginVoyage, voyageRoute: voyageRoute, startPassage: startPassage,
       /* player actions — app-shell.js wires these to the buttons */
-      bidLot: bidLot, passLot: passLot, buySlot: buySlot,
+      bidLot: bidLot, passLot: passLot, buySlot: buySlot, answerLotQuiz: answerLotQuiz,
       collect: collect, examine: examine, repay: repay,
       /* auction calendar — app-trade.js reads these instead of guessing */
       auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,

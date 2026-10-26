@@ -363,20 +363,35 @@
     var rows = G.lots.map(function (lot, i) {
       var cls = lot.closed ? (lot.leader === 'you' ? ' won' : ' gone') : '';
       var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
-      return '<div class="row' + cls + '">' + rowHead(lot.inst) +
-        '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
-        '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>' +
-        '<div class="row-num"><span class="ask">bid ' + A.money(lot.bid) + '</span>' +
-        '<span class="est">estimate ' + A.money(lot.low) + '–' + A.money(lot.high) + '</span>' +
+      var open = !lot.closed;
+      var quizOpen = lot.leader === 'you' && lot.quiz && !lot.quiz.answered;
+      var info = open
+        ? '<div class="row-tags"><span class="tag">reserve hidden</span></div>'
+        : rowHead(lot.inst) + '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
+          '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>';
+      var head = open ? '<div class="row-head"><strong>Lot ' + (i + 1) + '</strong></div>' : '';
+      var nums = '<div class="row-num"><span class="ask">bid ' + A.money(lot.bid) + '</span>' +
+        (open ? '' : '<span class="est">estimate ' + A.money(lot.low) + '–' + A.money(lot.high) + '</span>') +
         '<span class="est">' + (lot.closed ? (lot.leader === 'you' ? 'HAMMERED TO YOU' : 'sold to the room')
-          : rivalCount() + ' bidders in the room') + '</span></div>' +
-        '<div class="row-btns">' +
-        (lot.closed ? '' :
-          (live
-            ? '<button class="btn bid" data-action="bid" data-lot="' + i + '">Bid + ' + A.money(step) + '</button>' +
-              '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>'
-            : '<span class="tag">bids open on day ' + G.auctionDay + '</span>')) +
-        '</div></div>';
+          : rivalCount() + ' bidders in the room') + '</span></div>';
+      var quiz = '';
+      if (quizOpen) {
+        quiz = '<div class="quiz"><p class="note">Expert question: ' + lot.quiz.question +
+          ' A correct answer cuts the price by ' + A.pct(CFG.auctionQuizDiscount) + '.</p><div class="row-btns">' +
+          lot.quiz.options.map(function (o, c) {
+            return '<button class="btn" data-action="quiz" data-lot="' + i + '" data-choice="' + c + '">' + o + '</button>';
+          }).join('') + '</div></div>';
+      } else if (lot.quiz && lot.quiz.answered && lot.leader === 'you') {
+        quiz = '<p class="note">' + (lot.quiz.right ? 'Correct — the price is reduced.' : 'Wrong answer — the price stays.') + '</p>';
+      }
+      var btns = '';
+      if (open && live)
+        btns = '<button class="btn bid" data-action="bid" data-lot="' + i + '">Bid + ' + A.money(step) + '</button>' +
+          '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>';
+      else if (open)
+        btns = '<span class="tag">bids open on day ' + G.auctionDay + '</span>';
+      return '<div class="row' + cls + '">' + head + info + nums + quiz +
+        (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</div>';
     }).join('');
     return head + rows;
   }

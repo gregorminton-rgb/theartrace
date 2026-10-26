@@ -37,6 +37,7 @@
   var travelTo = function () { return A.app.travelTo.apply(null, arguments); };
   var bidLot = function () { return A.app.bidLot.apply(null, arguments); };
   var passLot = function () { return A.app.passLot.apply(null, arguments); };
+  var answerLotQuiz = function () { return A.app.answerLotQuiz.apply(null, arguments); };
   var buyOffer = function () { return A.app.buyOffer.apply(null, arguments); };
   var buySlot = function () { return A.app.buySlot.apply(null, arguments); };
   var collect = function () { return A.app.collect.apply(null, arguments); };
@@ -549,6 +550,7 @@
     var uid = t.hasAttribute('data-uid') ? parseInt(t.getAttribute('data-uid'), 10) : -1;
     var lot = t.hasAttribute('data-lot') ? parseInt(t.getAttribute('data-lot'), 10) : -1;
     var amount = t.hasAttribute('data-amount') ? parseInt(t.getAttribute('data-amount'), 10) : 0;
+    var choice = t.hasAttribute('data-choice') ? parseInt(t.getAttribute('data-choice'), 10) : -1;
     var action = t.getAttribute('data-action');
 
     if (action === 'close-dialog') { closeDialog(); return; }
@@ -563,6 +565,7 @@
     else if (action === 'collect') act(collect)(uid);
     else if (action === 'bid') act(bidLot)(lot);
     else if (action === 'pass') act(passLot)(lot);
+    else if (action === 'quiz') act(answerLotQuiz)(lot, choice);
     else if (action === 'borrow') act(borrow)(amount);
     else if (action === 'repay') act(repay)(amount);
     else if (action === 'slot') act(buySlot)();
