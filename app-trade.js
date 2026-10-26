@@ -266,7 +266,7 @@
     hint.textContent = view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
       view === 'auction' ? 'Bid until the room stops you, then settle the commission.' :
       view === 'trade' ? 'Sell the colonial harvest — London and New York pay different rates.' :
-      view === 'dealer' ? 'Dealer asks are inflated, bids are low — reputation narrows the gap.' : '';
+      view === 'dealer' ? 'A gallery is the fast, expensive way to buy — auction rooms are cheaper, if you can wait for the hammer.' : '';
     /* the engraved chart is a canvas, so it can only mount once the panel HTML
        is in the document — that is exactly here. */
     if (A.mapView && A.mapView.sync) A.mapView.sync();
@@ -291,8 +291,9 @@
         '<span class="est">consignor estimate ' + A.money(estLo) + '–' + A.money(estHi) + '</span></div>' +
         '<button class="btn buy" data-action="buy" data-uid="' + inst.uid + '"' + (afford ? '' : ' disabled') + '>Buy</button></div>';
     }).join('');
-    return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · dealer margin ' +
-      A.pct(CFG.dealerMargin) + ' · bids pay ' + A.pct(1 - CFG.dealerMargin - CFG.dealerSpread) + ' of value.</p>' + rows;
+    return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
+      A.pct(CFG.dealerMargin * CFG.dealerPremium) + ' over market value · buy-backs pay ' +
+      A.pct(1 - CFG.dealerSpread) + ' of value.</p>' + rows;
   }
 
   function viewPortfolio() {
@@ -482,9 +483,12 @@
     var rows = [
       ['Career', 'day ' + G.day + ' of ' + G.careerDays + ' · ' + dateOf(G.day).year],
       ['Base', A.city(G.cityId).name],
-      ['Net worth', A.money(netWorth()) + ' of ' + A.money(G.targetWorth)],
+      /* Same score as the end-of-career dialog: pictures, not dollars. */
+      ['Pictures held', G.portfolio.length + ' of ' + G.capacity + ' crates'],
+      ['Collection value', A.money(held)],
+      ['Net worth', A.money(netWorth())],
       ['Cash', A.money(G.cash) + ' · debt ' + A.money(G.loan)],
-      ['Warehouse', A.money(held) + ' in ' + G.portfolio.length + ' crate(s)'],
+      ['Warehouse', G.portfolio.length + ' crate(s) · ' + A.money(held)],
       ['Reputation', Math.round(G.reputation) + ' · slots bought ' + G.slotsBought],
       ['Deals', st.buys + ' bought · ' + st.sells + ' sold · ' + st.hammer + ' hammer wins'],
       ['Best flip', A.money(st.bestProfit) + ' · worst ' + A.money(st.worstProfit)],

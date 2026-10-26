@@ -99,8 +99,24 @@
        Set priceBandLow = 0 to switch the remap off entirely. */
     priceBandLow: 40000,
     priceBandHigh: 200000,
-    priceBandCurve: 1.75         // < 1 lifts the cheap end, > 1 drops the expensive end
-  };
+        priceBandCurve: 1.75,        // < 1 lifts the cheap end, > 1 drops the expensive end
+        /* Dealer premium. The user's rule for the web build: a gallery is the
+           lazy way to buy and must cost about twice what the same picture goes
+           for in an auction room. The markup above market value is multiplied by
+           this. Measured against the whole catalogue: dealerPremium 5.8 lands
+           the median ask at 2.38x market value while the rival bidders (see
+           auctionAggressionScale) keep the median hammer at 1.18x, i.e. the
+           gallery costs just over twice the auction room. Set it to 1 to get
+           the exported dealer margin back. */
+        dealerPremium: 5.8,          // multiplier on the dealer markup
+        /* Rival aggression scale. data.js exports rivalAggression 0.88, measured
+           to push the hammer to ~1.9x value in an auction room -- which made the
+           modest dealer markup the CHEAPEST channel, the opposite of the intent.
+           Scaling the rivals down to 0.4 puts the median winning bid near 1.18x
+           value, so a dealer (2.2x) really is the expensive option and cross-city
+           arbitrage becomes worth the freight. 1 = the exported value. */
+        auctionAggressionScale: 0.4
+      };
 
   /* Web-only keys that are not invented numbers but arithmetic over the export.
      crateSpacePurchaseLimit, for instance, is simply the capacity headroom
@@ -328,12 +344,13 @@
     return Math.max(1, round(unitValue(workDef, inst, cityDef, index, year)));
   }
 
-  /* PriceEngine.DealerAsk — good player reputation shrinks the markup. */
-  function dealerAsk(workDef, inst, cityDef, index, year, reputation, quirk) {
-    var value = unitValue(workDef, inst, cityDef, index, year);
-    var markup = CFG.dealerMargin * Math.max(0.4, 1 - reputation / 300);
-    return Math.max(1, round(value * (1 + markup) * (quirk === undefined ? 1 : quirk)));
-  }
+  /* PriceEngine.DealerAsk — good player reputation shrinks the markup.
+       dealerPremium is the web-only "gallery is the lazy channel" multiplier. */
+    function dealerAsk(workDef, inst, cityDef, index, year, reputation, quirk) {
+      var value = unitValue(workDef, inst, cityDef, index, year);
+      var markup = CFG.dealerMargin * Math.max(0.4, 1 - reputation / 300) * CFG.dealerPremium;
+      return Math.max(1, round(value * (1 + markup) * (quirk === undefined ? 1 : quirk)));
+    }
 
   /* PriceEngine.DealerBid */
   function dealerBid(workDef, inst, cityDef, index, year, reputation) {

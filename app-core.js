@@ -84,6 +84,9 @@
 
   /* ---------- new game -------------------------------------------------- */
   function newGame(opts) {
+    /* A new career always un-latches the end flag: the shell resets it on its
+       own path, but the module API is also called directly (headless tools). */
+    G.ended = false;
     G.name = opts.name || 'Henry';
     G.difficulty = opts.difficulty || 'Normal';
     G.seed = (opts.seed | 0) || (Math.floor(Math.random() * 1e9) + 1);
@@ -125,7 +128,9 @@
     syncAuction();
 
     log('Career begins in ' + A.city(G.cityId).name + ' with ' + A.money(G.cash) +
-        ' and ' + G.careerDays + ' days to make ' + A.money(G.targetWorth) + '.');
+        ' and ' + G.careerDays + ' days to fill the crates.');
+    log('Goal: hold as many pictures as you can when the ' + G.careerDays +
+        '-day career ends — starting crates ' + G.capacity + ' of ' + CFG.maxPortfolioCapacity + '.');
     log('Seed ' + G.seed + ' · ' + G.difficulty + ' · ' + A.DURATIONS[opts.durationIndex || 1].label + ' career.');
   }
 
@@ -435,6 +440,12 @@
     restockIfNeeded();
     syncAuction();
     if (G.view === 'travel') G.view = 'dealer';
+    /* Auto-day is a "carry me across" switch, so docking switches it off; the
+       player wanted the crossing, not the days spent standing in the new
+       port. The colony branch above stops the clock for the same reason.
+       stopClock() also clears the interval, so the tick that landed here can
+       never roll one further day into the arrival. */
+    stopClock();
   }
 
   /* Travel office: ticket price and duration come straight off the map distance. */
@@ -466,6 +477,13 @@
   }
 
   /* ---------- auction house -------------------------------------------- */
+  /* How hard the paddles push a lot. data.js authors the raw aggression; the
+     web-only scale keeps the auction room the cheap channel (see
+     auctionAggressionScale in engine.js) without touching generated data. */
+  function aggression() {
+    return CFG.rivalAggression * CFG.auctionAggressionScale;
+  }
+
   function rivalCount() {
     var base = CFG.rivalBidderCount + A.DIFFICULTY[G.difficulty].rivals;
     return Math.max(0, Math.min(8, base));
@@ -509,7 +527,7 @@
       var mv = A.marketValue(w, inst, city, idx, dateOf(G.day).year);
       var best = 0;
       for (var r = 0; r < rivalCount(); r++) {
-        var ceiling = mv * (0.7 + CFG.rivalAggression * G.rng.range(0.35, 1.15));
+        var ceiling = mv * (0.7 + aggression() * G.rng.range(0.35, 1.15));
         best = Math.max(best, ceiling);
       }
       lots.push({
@@ -687,9 +705,14 @@
   }
 
   function checkEnd() {
-    if (!G.started) return;
-    if (netWorth() >= G.targetWorth) endGame(true);
-    else if (G.day > G.careerDays) endGame(false);
+    if (!G.started || G.ended) return;
+    /* The career is a race for paintings, not for money: it always runs the
+       full 180 days and the result is how many canvases are still in the
+       crates at the end. Reaching a net-worth target no longer ends it early —
+       you may want to spend every last dollar on one more picture.
+       G.ended is set here, not only in the end-of-career dialog, so a headless
+       harness without app-shell.js can still see that the race is over. */
+    if (G.day > G.careerDays) { G.ended = true; endGame(); }
   }
   /* =====================================================================
    * RENDER
@@ -724,7 +747,10 @@
       : (c ? c.country + ' · ' + c.regionName : 'Under way');
     el('hud-cash').textContent = 'Cash ' + A.money(G.cash);
     el('hud-rep').textContent = 'Reputation ' + Math.round(G.reputation) + ' · debt ' + A.money(G.loan);
-    el('hud-goal').textContent = 'Net ' + A.money(netWorth()) + ' / goal ' + A.money(G.targetWorth);
+    /* The career is a race for pictures, so the chip counts crates:
+       how many canvases are held, and what is still unfilled. */
+    el('hud-goal').textContent = 'Pictures ' + G.portfolio.length + ' / ' + G.capacity +
+      ' · net ' + A.money(netWorth());
     /* The calendar exists twice (HUD and colony bar); both copies show the
        same date, because the colony bar covers the HUD while ashore. */
     var d = dateOf(G.day);
@@ -751,6 +777,9 @@
     shared: {
       CFG: CFG, el: el, h: h, show: show,
       MONTHS: MONTHS, dateOf: dateOf, log: log, rep: rep,
+      /* the one writer for the six calendar texts; app-shell.js calls it too,
+         so the HUD and the colony bar can never drift apart */
+      paintDate: paintDate,
       VIEW_TITLES: VIEW_TITLES
     },
     api: {
