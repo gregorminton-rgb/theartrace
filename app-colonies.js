@@ -178,7 +178,10 @@
       list.push({ slug: c.id, label: c.name, sub: c.country + ' · ' + c.regionName,
                   kind: TRADE_HUB_IDS[c.id] ? 'trade' : 'city', mapX: c.mapX, mapY: c.mapY, city: c });
     });
-    COLONIES.forEach(function (c) { list.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony', mapX: c.mapX, mapY: c.mapY, colony: c, colonyId: c.id }); });
+    COLONIES.forEach(function (c) {
+      if (A.city(c.id)) return;
+      list.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony', mapX: c.mapX, mapY: c.mapY, colony: c, colonyId: c.id });
+    });
     return list;
   })();
 
@@ -308,7 +311,7 @@
                  mapX: c.mapX, mapY: c.mapY });
     });
     COLONIES.forEach(function (c) {
-      if (c.id === here) return;
+      if (c.id === here || A.city(c.id)) return;
       out.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony',
                  city: null, colonyId: c.id, mapX: c.mapX, mapY: c.mapY });
     });
