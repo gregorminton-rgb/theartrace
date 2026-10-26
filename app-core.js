@@ -450,20 +450,26 @@
     stopClock();
   }
 
-  /* Travel office: ticket price and duration come straight off the map distance. */
-  function cityTravel(cityId) {
-    var from = A.city(G.cityId);
-    var to = A.city(cityId);
-    if (!to || cityId === G.cityId) return;
-    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
+  /* The one passage rule for every crossing: city to city, city to plantation,
+     plantation to anywhere. Ticket price and duration come off the map
+     distance; freight never applies to the player's own crossings. */
+  function startPassage(from, to, forceColonyId) {
+    if (!from || !to) return false;
+    if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return false; }
     var price = A.ticketPrice(from, to);
     var days = A.ticketDays(from, to);
-    if (price > G.cash) { log('The ticket to ' + to.name + ' costs ' + A.money(price) + '.'); return; }
-    /* Passenger fare only: freight applies to goods shipped from plantations,
-       not to the player's own crossings. */
+    if (price > G.cash) { log('The passage to ' + (to.name || to.label) + ' costs ' + A.money(price) + '.'); return false; }
     G.cash -= price;
-    beginVoyage(to, days, price, 0, 0);
+    beginVoyage(to, days, price, 0, 0, forceColonyId || null, from);
     checkEnd();
+    return true;
+  }
+
+  /* Travel office: a city-to-city passage. */
+  function cityTravel(cityId) {
+    var to = A.city(cityId);
+    if (!to || cityId === G.cityId) return;
+    startPassage(A.city(G.cityId), to);
   }
 
   /* A colony id may also name an art city (Rio, San Francisco). There the
@@ -793,7 +799,7 @@
       /* the rest of the shared vocabulary the later modules call by name */
       askOf: askOf, valueOf: valueOf, idxOf: idxOf, rivalCount: rivalCount,
       findOwned: findOwned, checkEnd: checkEnd,
-      beginVoyage: beginVoyage, voyageRoute: voyageRoute,
+      beginVoyage: beginVoyage, voyageRoute: voyageRoute, startPassage: startPassage,
       /* player actions — app-shell.js wires these to the buttons */
       bidLot: bidLot, passLot: passLot, buySlot: buySlot,
       collect: collect, examine: examine, repay: repay,

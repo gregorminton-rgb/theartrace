@@ -195,13 +195,7 @@
     var colony = COLONY_BY_ID[colonyId];
     if (!colony || G.colonyId || !G.started || G.ended) return;
     if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
-    var from = A.city(G.cityId);
-    var price = A.ticketPrice(from, colony);
-    var days = A.ticketDays(from, colony);
-    if (price > G.cash) { log('The passage to ' + colony.label + ' costs ' + A.money(price) + '.'); return; }
-    G.cash -= price;
-    beginVoyage(colony, days, price, 0, 0, colony.id, from);
-    checkEnd();
+    window.ArtRaceGame.api.startPassage(A.city(G.cityId), colony, colony.id);
   }
 
   function sailBack() {
@@ -376,19 +370,19 @@
     if (!colony || !G.started || G.ended) return;
     if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
     if (price > G.cash) return;
-    G.cash -= price;
     /* the ship leaves from the plantation the player stands on; G.cityId keeps
        naming the port the player last docked at */
-    var origin = colony;
     G.colonyId = null;
     G.colonyMenu = 'plantage';
     G.colonyTravel = false;
     G.selectedFieldId = null;
     G.plantCropId = null;
     show(el('colony'), false);
-    beginVoyage(target, days, price, 0, 0, dest.colonyId || null, origin);
+    if (!window.ArtRaceGame.api.startPassage(colony, target, dest.colonyId || null)) {
+      renderColony();
+      return;
+    }
     if (A.shell && A.shell.resumeClock) A.shell.resumeClock();
-    checkEnd();
     renderAll();
   }
 
