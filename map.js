@@ -80,7 +80,7 @@
      but the panel is not, so one shared scale would either crop the globe or
      leave a sliver of ocean. Longitude uses the level's `lonSpan` window around
      `lon0`, latitude the mercator span of the level. */
-  function camera(level, W, H) {
+  function camera(level, W, H, view) {
     /* mapY is (lat + 90) / 180, so lat0 (the northern edge) has the LARGER
        fraction and lat1 the smaller one. */
     var fA = (level.lat0 + 90) / 180, fB = (level.lat1 + 90) / 180;
@@ -88,14 +88,29 @@
     var span = m0 - m1;
     var deg = level.lonSpan || 360;
     var mid = (level.lon0 || 0) / 360 + 0.5;
+    /* view: { z: zoom factor, cx, cy: plate point kept at the centre (0..1) }.
+       Zoom is applied after the projection, so routes, pins, vessels and
+       hit tests all share it. */
+    var z = view && view.z > 1 ? view.z : 1;
+    var cx = view && typeof view.cx === 'number' ? view.cx : 0.5;
+    var cy = view && typeof view.cy === 'number' ? view.cy : 0.5;
+    function base(x, y) {
+      var t = fB !== fA ? (y - fA) / (fB - fA) : 0;
+      var lat = (1 - t) * level.lat0 + t * level.lat1;
+      return {
+        x: ((x - mid) / (deg / 360) + 0.5) * W,
+        y: (m0 - merc(lat)) * (H / span)
+      };
+    }
+    var origin = z > 1 ? base(cx, cy) : null;
     return {
-      W: W, H: H, level: level,
+      W: W, H: H, level: level, z: z,
       fromMap: function (x, y) {
-        var t = fB !== fA ? (y - fA) / (fB - fA) : 0;
-        var lat = (1 - t) * level.lat0 + t * level.lat1;
+        var p = base(x, y);
+        if (z <= 1) return p;
         return {
-          x: ((x - mid) / (deg / 360) + 0.5) * W,
-          y: (m0 - merc(lat)) * (H / span)
+          x: (p.x - origin.x) * z + W / 2,
+          y: (p.y - origin.y) * z + H / 2
         };
       }
     };
@@ -955,12 +970,12 @@
     } catch (err) {
       return null;
     }
-    var view = app.view;
-    view.className = 'wm-canvas';
-    host.appendChild(view);
+    var canvasEl = app.view;
+    canvasEl.className = 'wm-canvas';
+    host.appendChild(canvasEl);
 
     var api = {
-      canvas: view,
+      canvas: canvasEl,
       voyages: [],
       labels: [],
       level: opts.level && LEVELS[opts.level] ? opts.level : 'world',
@@ -969,6 +984,8 @@
       setAnchor: setAnchor,
       setLabels: setLabels,
       setLevel: setLevel,
+      zoomIn: function () { zoomAt(1.5, W / 2, H / 2); },
+      zoomOut: function () { zoomAt(1 / 1.5, W / 2, H / 2); },
       refresh: refresh,
       destroy: destroy
     };
@@ -976,6 +993,52 @@
     var W = 0, H = 0;
     var dead = false;
     var cam = null;
+    /* zoom state: factor z, and the plate point (0..1) held at the centre */
+    var zoomView = { z: 1, cx: 0.5, cy: 0.5 };
+    var ZMIN = 1, ZMAX = 6;
+
+    /* keep the view centre inside the plate, so the zoom never shows
+       empty space beyond the map edge */
+    function clampView() {
+      zoomView.z = Math.max(ZMIN, Math.min(ZMAX, zoomView.z));
+      var half = 0.5 / zoomView.z;
+      zoomView.cx = Math.max(half, Math.min(1 - half, zoomView.cx));
+      zoomView.cy = Math.max(half, Math.min(1 - half, zoomView.cy));
+      if (zoomView.z === ZMIN) { zoomView.cx = 0.5; zoomView.cy = 0.5; }
+    }
+
+    /* Zoom by a factor around a screen point (css px inside the host); the
+       map point under the finger or cursor stays put. */
+    function zoomAt(factor, sx, sy) {
+      if (!W) return;
+      var old = zoomView.z;
+      var next = Math.max(ZMIN, Math.min(ZMAX, old * factor));
+      if (next === old) return;
+      var ux = zoomView.cx + (sx - W / 2) / (W * old);
+      var uy = zoomView.cy + (sy - H / 2) / (H * old);
+      zoomView.z = next;
+      zoomView.cx = ux;
+      zoomView.cy = uy;
+      clampView();
+      redrawAll();
+    }
+
+    function panBy(dx, dy) {
+      if (!W || zoomView.z <= 1) return;
+      zoomView.cx -= dx / (W * zoomView.z);
+      zoomView.cy -= dy / (H * zoomView.z);
+      clampView();
+      redrawAll();
+    }
+
+    function redrawAll() {
+      buildStatic();
+      drawRoutes();
+      drawPinsAndLabels();
+      drawSelection();
+      drawAnchor();
+      try { app.renderer.render(app.stage); } catch (e) { /* gone */ }
+    }
 
     var seaLayer = new PIXI.Container();
     var gridLayer = new PIXI.Container();
@@ -1029,7 +1092,7 @@
     /* ---- the static plate, rebuilt on resize or level change ---------- */
     function buildStatic() {
       var lv = LEVELS[api.level] || LEVELS.world;
-      cam = camera(lv, W, H);
+      cam = camera(lv, W, H, zoomView);
       liveCam = cam;
 
       clear(seaLayer); clear(gridLayer); clear(landLayer); clear(decoLayer);
@@ -1061,6 +1124,18 @@
       var order = vs.slice().sort(function (a, c) {
         return (a.lane ? 1 : 0) - (c.lane ? 1 : 0);
       });
+      /* a standing lane whose ends match a voyage under way is the same line */
+      function runningOver(route) {
+        for (var k = 0; k < vs.length; k++) {
+          var r = vs[k].route;
+          if (vs[k].lane || !r || !r.pts || !route.pts) continue;
+          var a = r.pts[0], b = route.pts[0];
+          var c = r.pts[r.pts.length - 1], d = route.pts[route.pts.length - 1];
+          if (Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6 &&
+              Math.abs(c.x - d.x) < 1e-6 && Math.abs(c.y - d.y) < 1e-6) return true;
+        }
+        return false;
+      }
       for (var i = 0; i < order.length; i++) {
         var v = order[i];
         var route = v.route;
@@ -1069,6 +1144,7 @@
         var first = px[0], last = px[px.length - 1];
         if (v.lane) {
           if (Math.hypot(last.x - first.x, last.y - first.y) < 18) continue;
+          if (runningOver(route)) continue;
           routeLayer.addChild(laneGraphic(route, px));
           continue;
         }
@@ -1092,6 +1168,27 @@
       return c;
     }
 
+    /* Cut a pixel polyline at a fraction of its length. Returns the part
+       before the cut and the part after it, both starting/ending on the cut. */
+    function splitAtArc(px, t) {
+      var total = 0, i;
+      for (i = 1; i < px.length; i++) total += Math.hypot(px[i].x - px[i - 1].x, px[i].y - px[i - 1].y);
+      var want = total * t, acc = 0;
+      for (i = 1; i < px.length; i++) {
+        var d = Math.hypot(px[i].x - px[i - 1].x, px[i].y - px[i - 1].y);
+        if (acc + d >= want) {
+          var f = d > 0 ? (want - acc) / d : 0;
+          var hp = { x: px[i - 1].x + (px[i].x - px[i - 1].x) * f, y: px[i - 1].y + (px[i].y - px[i - 1].y) * f };
+          return {
+            done: px.slice(0, i).concat([hp]),
+            left: [hp].concat(px.slice(i))
+          };
+        }
+        acc += d;
+      }
+      return { done: px.slice(), left: [px[px.length - 1]] };
+    }
+
     function routeGraphic(route, px, progress) {
       var isRail = route.glyph === 'rail';
       var active = progress < 1;
@@ -1099,22 +1196,22 @@
       /* the part not yet sailed, then the part already covered drawn solid on
          top of it. The dashed remainder must not run underneath the solid one,
          or the eye reads two parallel lines wherever they nearly coincide. */
-      var head = null, upto = 0, seg = null;
       if (progress > 0 && progress < 1) {
-        var hp0 = pointAt(route, progress);
-        head = cam.fromMap(hp0.x, hp0.y);
-        upto = Math.max(1, Math.round(progress * px.length));
-        seg = px.slice(0, upto);
-        seg.push({ x: head.x, y: head.y });
-        var rest = [{ x: head.x, y: head.y }].concat(px.slice(upto));
+        /* split the very same polyline at the head by arc length, so the
+           sailed part and the remainder meet exactly and never run beside
+           each other */
+        var parts = splitAtArc(px, progress);
+        var seg = parts.done, rest = parts.left;
         if (rest.length >= 2) {
           g.lineStyle(active ? 2.2 : 1.5, isRail ? 0xc84836 : 0x56b6f0, 0.72);
           dashedCurve(g, rest, isRail ? 4 : 2, isRail ? 5 : 5);
         }
-        g.lineStyle(5, isRail ? 0x1e140a : 0x041a2c, 0.30);
-        traceCurve(g, seg);
-        g.lineStyle(3, isRail ? 0xffd98a : 0xd8f1ff, 1);
-        traceCurve(g, seg);
+        if (seg.length >= 2) {
+          g.lineStyle(5, isRail ? 0x1e140a : 0x041a2c, 0.30);
+          traceCurve(g, seg);
+          g.lineStyle(3, isRail ? 0xffd98a : 0xd8f1ff, 1);
+          traceCurve(g, seg);
+        }
       } else {
         g.lineStyle(active ? 2.2 : 1.5, isRail ? 0xc84836 : 0x56b6f0,
                     active ? 0.72 : 0.38);
@@ -1402,6 +1499,64 @@
     }
     window.addEventListener('resize', refresh);
 
+    /* ---- zoom input: wheel, pinch, drag-to-pan ------------------------ */
+    var pointers = new Map();
+    var pinchDist = 0;
+    var dragMoved = false;
+    function localPoint(e) {
+      var r = canvasEl.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function onWheel(e) {
+      if (dead) return;
+      e.preventDefault();
+      var p = localPoint(e);
+      zoomAt(e.deltaY < 0 ? 1.25 : 0.8, p.x, p.y);
+    }
+    function onDown(e) {
+      pointers.set(e.pointerId, localPoint(e));
+      dragMoved = false;
+      if (pointers.size === 2) {
+        var pts = Array.from(pointers.values());
+        pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      }
+    }
+    function onMove(e) {
+      if (!pointers.has(e.pointerId)) return;
+      var prev = pointers.get(e.pointerId);
+      var now = localPoint(e);
+      pointers.set(e.pointerId, now);
+      if (pointers.size >= 2) {
+        var pts = Array.from(pointers.values());
+        var d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        if (pinchDist > 0 && d > 0) {
+          var mx = (pts[0].x + pts[1].x) / 2, my = (pts[0].y + pts[1].y) / 2;
+          zoomAt(d / pinchDist, mx, my);
+          pinchDist = d;
+        }
+        dragMoved = true;
+        return;
+      }
+      var dx = now.x - prev.x, dy = now.y - prev.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) dragMoved = true;
+      if (dragMoved) panBy(dx, dy);
+    }
+    function onUp(e) {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinchDist = 0;
+    }
+    /* a drag that moved must not also count as a tap on a pin */
+    function onClickCapture(e) {
+      if (dragMoved) { e.stopPropagation(); e.preventDefault(); dragMoved = false; }
+    }
+    canvasEl.style.touchAction = 'none';
+    canvasEl.addEventListener('wheel', onWheel, { passive: false });
+    canvasEl.addEventListener('pointerdown', onDown);
+    canvasEl.addEventListener('pointermove', onMove);
+    canvasEl.addEventListener('pointerup', onUp);
+    canvasEl.addEventListener('pointercancel', onUp);
+    canvasEl.addEventListener('click', onClickCapture, true);
+
     function destroy() {
       if (dead) return;
       dead = true;
@@ -1409,7 +1564,7 @@
       window.removeEventListener('resize', refresh);
       if (liveCam === cam) liveCam = null;
       try { app.destroy(false, { children: true }); } catch (e) { /* already gone */ }
-      if (view.parentNode) view.parentNode.removeChild(view);
+      if (canvasEl.parentNode) canvasEl.parentNode.removeChild(canvasEl);
     }
 
     /* First paint. resize() only rebuilds when the size actually changed, and
