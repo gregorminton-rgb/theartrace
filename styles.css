@@ -687,20 +687,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-worker-label { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); }
 
 .colony-grid {
-  flex: 1; position: relative; overflow: hidden;
+  position: relative; overflow: hidden;
   /* 15 plots are laid out on this lattice (see colonyGridHTML), so the board
-     needs the same 5 × 3 cells: the tiles fit edge to edge without gaps. */
+     needs the same 5 × 3 cells: the tiles fit edge to edge without gaps.
+     144 × 5 by 190 × 3 is 24:19, so this box is pinned to that ratio instead
+     of taking the rest of the column -- otherwise the leftover height shows
+     up as an empty band above the fields. */
+  flex: none; width: 100%; aspect-ratio: 24 / 19; max-height: 100%;
   --plot-cols: 5;
   --plot-rows: 3;
   --plot-scale: 1;
   background: linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%);
   border-radius: 4px; box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
-}
-.plot-probe {
-  /* Measuring sibling for fitPlotScale(): hidden, with no contents of its
-     own, so the scale cannot depend on the plots it sizes. It sits directly
-     after the board and claims the same share of .colony-main. */
-  flex: 1; visibility: hidden; pointer-events: none;
 }
 .plot {
   position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1119,18 +1117,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   }
   /* the board must be tall enough for a 5 × 3 lattice. Its height cannot use
      --plot-scale: fitPlotScale() derives the scale FROM this height, so the
-     reference would be circular and resolve to the unset value. The board
-     just gets a share of the screen; the plots scale themselves to fit. */
+     reference would be circular and resolve to the unset value. On a phone
+     the width is too narrow for the 24:19 ratio to give enough height, so
+     drop the ratio and give the board a share of the screen; the plots scale
+     themselves to fit. */
   .colony-main { order: 1; flex: none; width: 100%; }
   .colony-grid {
     flex: none; overflow: visible;
+    aspect-ratio: auto; max-height: none;
     height: clamp(230px, 46dvh, 430px);
     min-height: 0;
-  }
-  /* same box, same height: the probe is the board's invisible twin */
-  .plot-probe {
-    flex: none;
-    height: clamp(230px, 46dvh, 430px);
   }
   .colony-side { order: 2; overflow: visible; gap: .5em; }
   .colony-side:last-child { order: 3; }

@@ -311,9 +311,10 @@ Each colony shows a 5 x 3 lattice of plots. A plot carries three bands:
 * `.plot-foot` - growth progress, status and the worker pips.
 
 `fitPlotScale()` in `app-colonies.js` sizes the tiles so the whole lattice fits
-the board. It measures a hidden `#plot-probe` sibling rather than the board
-itself: the board has `overflow: hidden`, so measuring it would measure an
-already-clipped box and the scale would chase its own overflow. The lattice
+the board. The board is pinned to the lattice's 24:19 ratio on desktop
+(`aspect-ratio` in `.colony-grid`), so it does not stretch into an empty band
+above the fields. Its plots are absolutely positioned, so they do not feed
+back into its size and it can be measured directly. The lattice
 coordinates are percentages of the board while a tile is a fixed pixel size,
 so the scale keeps 10 % slack for the per-plot jitter and the 5 % hover grow;
 without that slack the outer plots hang past the edge.

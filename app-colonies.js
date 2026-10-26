@@ -550,16 +550,11 @@
   function fitPlotScale() {
     var board = el('colony-grid');
     if (!board) return;
-    /* A plot's border box is wider than its nominal tile and the hover-grow
-       adds 5% on top, so the outer columns can hang over the board's edges.
-       A board that scrolls reports a clientWidth that already bakes in the
-       overflow, which made the scale chase its own tail at exactly 100%.
-       Measure against a scratch box that has the board's padding but none of
-       its contents instead (see .plot-probe in styles.css). */
-    var probe = fitProbe();
+    /* The plots are absolutely positioned, so the board's own box is set by
+       the flex layout and does not depend on the scale: measure it directly. */
     var tileW = 144, tileH = 190;
-    var w = probe.offsetWidth || board.offsetWidth;
-    var h = probe.offsetHeight || board.offsetHeight;
+    var w = board.offsetWidth;
+    var h = board.offsetHeight;
     if (!w || !h) return;
     var fit = Math.min(w / (tileW * PLOT_COLS), h / (tileH * PLOT_ROWS));
     /* the jitter may nudge a whole column ±1.5% off centre and the hover-grow
@@ -569,22 +564,6 @@
     board.style.setProperty('--plot-scale', scale.toFixed(3));
   }
 
-  /* The measuring stick for fitPlotScale(). It is a sibling of the board with
-     the same padding (see .plot-probe in styles.css), so it reports the space
-     the board would have if its contents still fit. */
-  function fitProbe() {
-    var probe = el('plot-probe');
-    if (!probe) {
-      var board = el('colony-grid');
-      if (!board || !board.parentNode) return board;
-      probe = document.createElement('div');
-      probe.id = 'plot-probe';
-      probe.className = 'plot-probe';
-      probe.setAttribute('aria-hidden', 'true');
-      board.parentNode.insertBefore(probe, board.nextSibling);
-    }
-    return probe;
-  }
   window.addEventListener('resize', function () {
     if (G.colonyId && G.colonyMenu === 'plantage') fitPlotScale();
   });
