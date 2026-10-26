@@ -82,14 +82,6 @@
     renderAll();
   }
 
-  function levelForPlace(place) {
-    /* The Europa plate only carries European ground: every place outside it
-       (colonies and the overseas art cities) has to be shown on the world. */
-    if (!place) return null;
-    if (place.kind === 'colony') return 'world';
-    return onEurope(place.mapX, place.mapY) ? 'europe' : 'world';
-  }
-
   /* The Europa plate only carries European ground: every place outside its
      Mercator window (the colonies and the overseas art cities) has to be
      shown on the world. The window is derived from the places themselves, so
@@ -436,33 +428,51 @@
        the player left behind: hand the departure to the colony module. */
     var ashore = !!G.colonyId && A.colonies && A.colonies.departFromColony;
 
-    /* City: Travel button */
-    if (place.city && (ashore ? place.city.id !== G.colonyId : place.city.id !== G.cityId)) {
+    /* One destination, one question. A city and a plantation differ only in
+       which module books the passage; the dialog is the same everywhere. */
+    var dest = null;
+    if (place.city) {
+      var sameAsHere = ashore ? place.city.id === G.colonyId : place.city.id === G.cityId;
+      if (!sameAsHere) {
+        dest = {
+          slug: place.slug,
+          label: place.label,
+          sail: false,
+          go: function () {
+            closeDialog(); renderAll();
+            if (ashore) A.colonies.departFromColony(place.slug);
+            else travelTo(place.city.id);
+          }
+        };
+      }
+    } else if (place.colony && place.colony.id !== G.colonyId) {
       if (ashore) {
-        buttons.unshift({ label: 'Ja, nach ' + place.label + ' reisen', primary: true, onClick: function () {
-          closeDialog(); renderAll();
-          A.colonies.departFromColony(place.slug);
-        } });
-      } else {
-        buttons.unshift({ label: 'Ja, nach ' + place.label + ' reisen' + (leg ? ' · ' + A.money(leg.price) : ''),
-          primary: true,
-          onClick: function () { closeDialog(); travelTo(place.city.id); renderAll(); } });
+        dest = {
+          slug: 'colony-' + place.colony.id,
+          label: place.colony.label,
+          sail: true,
+          go: function () {
+            closeDialog(); renderAll();
+            A.colonies.departFromColony('colony-' + place.colony.id);
+          }
+        };
+      } else if (!G.colonyId) {
+        dest = {
+          slug: place.slug,
+          label: place.colony.label,
+          sail: true,
+          go: function () { closeDialog(); sailToColony(place.colony.id); }
+        };
       }
     }
 
-    /* Colony: Sail button */
-    if (place.colony && place.colony.id !== G.colonyId) {
-      if (ashore) {
-        buttons.unshift({ label: 'Ja, nach ' + place.colony.label + ' segeln' + (leg ? ' · ' + A.money(leg.price) : ''),
-          primary: true, onClick: function () {
-          closeDialog(); renderAll();
-          A.colonies.departFromColony('colony-' + place.colony.id);
-        } });
-      } else if (!G.colonyId) {
-        buttons.unshift({ label: 'Ja, nach ' + place.colony.label + ' segeln' + (leg ? ' · ' + A.money(leg.price) : ''),
-          primary: true,
-          onClick: function () { closeDialog(); sailToColony(place.colony.id); } });
-      }
+    if (dest) {
+      buttons.unshift({
+        label: 'Ja, nach ' + dest.label + (dest.sail ? ' segeln' : ' reisen') +
+               (leg ? ' · ' + A.money(leg.price) : ''),
+        primary: true,
+        onClick: dest.go
+      });
     }
 
     dialog(place.label + (leg ? ' · ' + leg.days + ' Tage · ' + A.money(leg.price) : ''), body, buttons);
