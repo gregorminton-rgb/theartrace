@@ -445,12 +445,6 @@
     /* the colony screen replaces this panel entirely, so a colony passage
        never shows a banner here — and the day clock keeps running. */
     var away = !!G.voyage && !G.voyage.colonyId;
-    var banner = away ? '<div class="voyage-banner">' +
-      '<span class="voyage-dest">' + h(G.voyage.label) + '</span>' +
-      '<span class="voyage-eta">' + G.voyage.remaining + ' day(s) still to run · ' +
-      (G.voyage.glyph === 'rail' ? 'by rail' : 'at sea') + '</span>' +
-      '<span class="voyage-tip">Advance the calendar — the chart moves as the days do.</span>' +
-      '</div>' : '';
     var rows = A.cities.filter(function (c) { return c.id !== G.cityId; }).map(function (c) {
       var price = A.ticketPrice(from, c);
       var days = A.ticketDays(from, c);
@@ -470,7 +464,7 @@
         '<span class="est">' + days + ' day(s) ' + (days <= 4 ? 'by rail' : 'at sea') + ' · ' + A.distance(from, c).toFixed(2) + ' units</span></div>' +
         '<button class="btn go" data-action="travel" data-city="' + c.id + '"' + (blocked ? ' disabled' : '') + '>Travel</button></div>';
     }).join('');
-    return renderWorldMap() + banner +
+    return renderWorldMap() +
       (away ? '' :
       '<p class="note">Tickets cost ' + A.money(CFG.baseTicketPrice) + ' + ' +
       A.money(CFG.ticketPricePerDistance) + ' per map unit · ' + CFG.crateHandlingFee +

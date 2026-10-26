@@ -59,7 +59,7 @@
     plantCropId: null,         // crop armed for click-to-plant on a free plot
     colonyStats: { planted: 0, harvested: 0, sold: 0, revenue: 0 },
     colonyStock: {},          // colonyId -> { cropId: crates waiting on the quay }
-    auto: {},                 // colonyId -> standing order for the overseer
+    ownedPlots: {},           // "colonyId:plotIndex" -> { auto, cropId }: the plots the player bought
     shipments: [],            // { id, cropId, hubId, units, dueDay, colonyId }
     nextShipmentId: 1,
     portGoods: {}             // cityId -> { cropId: crates landed at the exchange }

@@ -402,11 +402,12 @@
     el('colony-warehouse').textContent = 'An Land ' + crew.colonyUnits() + ' Kiste(n)';
     /* the day clock has a copy on this screen; keep it in step with the state */
     if (A.shell && A.shell.paintClock) A.shell.paintClock();
+    /* the status chip in the top bar now counts the automated fields */
     var autoBtn = el('colony-autopilot');
     if (autoBtn) {
-      var ap = crew.autoOf(colony.id);
-      autoBtn.classList.toggle('active', !!(ap && ap.on));
-      autoBtn.textContent = ap && ap.on ? '✓ Automatik läuft' : 'Automatik';
+      var autoN = colonyFields().filter(function (x) { return crew.fieldAutoOn(x); }).length;
+      autoBtn.classList.toggle('active', autoN > 0);
+      autoBtn.textContent = autoN > 0 ? '✓ Automatik ' + autoN : 'Automatik';
     }
     
     /* Update menu buttons */
@@ -486,34 +487,7 @@
         '</div>';
     }).join('');
     return '<h3 class="colony-panel-title">Crops</h3>' +
-      '<p class="colony-note">Drag a plate onto a plot to lay out a field.</p>' + cards +
-      colonyAutoHTML();
-  }
-
-  /* The overseer: sowing, hiring, assigning and harvesting without the player
-     standing on the plantation. Buying land still needs the visit. */
-  function colonyAutoHTML() {
-    var colony = COLONY_BY_ID[G.colonyId];
-    if (!colony) return '';
-    var o = crew.autoOf(colony.id) || { on: false, cropId: CROPS[0].id, hire: true, assign: true, harvest: true, plant: true };
-    var crops = CROPS.map(function (c) {
-      return '<option value="' + c.id + '"' + (o.cropId === c.id ? ' selected' : '') + '>' + h(c.label) + '</option>';
-    }).join('');
-    var bits = [['hire', 'Arbeiter einstellen'], ['assign', 'Arbeiter zuteilen'],
-                ['harvest', 'Ernten'], ['plant', 'Nachpflanzen']].map(function (b) {
-      return '<label class="auto-check"><input type="checkbox" data-colony="auto" data-auto="' + b[0] + '"' +
-        (o[b[0]] ? ' checked' : '') + ' /> ' + b[1] + '</label>';
-    }).join('');
-    return '<div class="colony-auto' + (o.on ? ' on' : '') + '">' +
-      '<h3 class="colony-panel-title">Automatik</h3>' +
-      '<button class="btn ' + (o.on ? 'primary' : 'go') + ' auto-toggle" type="button" data-colony="auto">' +
-        (o.on ? '✓ Läuft weiter, auch wenn du reist' : 'Automatik einschalten') + '</button>' +
-      '<label class="auto-crop">Anbauen: <select data-colony="auto" data-auto="crop">' + crops + '</select></label>' +
-      '<div class="auto-checks">' + bits + '</div>' +
-      '<p class="colony-note">' + (o.on
-        ? 'Der Verwalter sät, erntet und teilt die Arbeiter ein. Land dazukaufen musst du selbst vorbeikommen.'
-        : 'Ohne Automatik bleiben Ernte und freie Felder liegen, während du unterwegs bist.') + '</p>' +
-      '</div>';
+      '<p class="colony-note">Drag a plate onto a plot to lay out a field. That plot is then yours — and only there can the overseer take over.</p>' + cards;
   }
 
   function colonyWorkersHTML() {
@@ -694,7 +668,11 @@
       (next
         ? '<button class="btn go" data-colony="upgrade" data-field="' + f.id + '"' + (G.cash >= next.cost ? '' : ' disabled') + '>' + h(next.label) + ' · ' + A.money(next.cost) + '</button>'
         : '<button class="btn" disabled>Fully upgraded</button>') +
-      '</div>';
+      '<button class="btn' + (crew.fieldAutoOn(f) ? ' primary' : '') + '" data-colony="auto" data-field="' + f.id + '"' +
+        ' data-on="' + (crew.fieldAutoOn(f) ? '1' : '0') + '">' +
+        (crew.fieldAutoOn(f) ? '✓ Automatik an' : 'Automatik aus') + '</button>' +
+      '</div>' +
+      '<p class="colony-note">Automatik gilt nur für dieses Feld: der Verwalter erntet es, sät dieselbe Frucht neu und stellt einen Arbeiter ab.</p>';
     return html + colonyWarehouseHTML();
   }
 
@@ -794,7 +772,7 @@
     colonyStock: function () { return crew.colonyStock(); },
     colonyUnits: function () { return crew.colonyUnits(); },
     shipOf: function (id) { return crew.shipOf(id); },
-    autoOf: function (id) { return crew.autoOf(id); },
+    fieldAutoOn: function (f) { return crew.fieldAutoOn(f); },
     hubName: hubName, hubIds: hubIds, shipDays: shipDays,
     renderColony: renderColony
   };

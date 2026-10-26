@@ -74,8 +74,28 @@
   }
 
   function renderBackdrop() {
-    var c = A.city(G.cityId);
     var bd = el('backdrop');
+    /* At sea the picture shows the destination, never the port left behind;
+       the route strip above the picture names both ends. */
+    var away = !!G.voyage && !G.voyage.colonyId;
+    el('voyage-strip').hidden = !away;
+    if (away) {
+      var fromCity = A.city(G.voyage.fromId);
+      el('voyage-from').textContent = fromCity ? fromCity.name : G.voyage.fromId;
+      el('voyage-mid').textContent = (G.voyage.glyph === 'rail' ? 'by rail' : 'at sea') +
+        ' · ' + G.voyage.remaining + ' day(s) left';
+      el('voyage-to').textContent = G.voyage.toName;
+      var dest = A.city(G.voyage.toId);
+      if (dest) {
+        var dpic = cityPicture(dest);
+        bd.classList.toggle('has-image', !!dpic);
+        bd.style.backgroundColor = rgb(dest.theme);
+        bd.style.backgroundImage = dpic ? 'url("' + dpic.file + '")' : 'none';
+        el('backdrop-caption').textContent = 'Unterwegs nach ' + dest.name;
+      }
+      return;
+    }
+    var c = A.city(G.cityId);
     /* Ashore the current place is a plantation, not a city: there is no
        city plate to show, so the last port's backdrop stays put. */
     if (!c) return;

@@ -629,12 +629,6 @@
       setClockSpeed(ev.target.value);
       return;
     }
-    /* the plantation's overseer: checkboxes and the crop picker */
-    if (ev.target.hasAttribute && ev.target.hasAttribute('data-colony') &&
-        ev.target.getAttribute('data-colony') === 'auto' && G.started && !G.ended) {
-      colonyAction('auto', ev.target);
-      scheduleSave();
-    }
   });
 
   document.addEventListener('keydown', function (ev) {

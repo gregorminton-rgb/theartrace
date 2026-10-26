@@ -101,6 +101,8 @@
     if (plotField(plotIndex)) { log('That plot is already planted.'); return; }
     if (G.cash < crop.cost) { log('Not enough cash for ' + crop.label + ' seed (' + A.money(crop.cost) + ').'); return; }
     G.cash -= crop.cost;
+    /* the first layout is the purchase: the plot becomes the player's */
+    claimPlot(G.colonyId, plotIndex, crop.id);
     G.fields.push({ id: G.nextFieldId++, colonyId: G.colonyId, plotIndex: plotIndex, cropId: crop.id,
                     plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
     G.colonyStats.planted += 1;
@@ -178,101 +180,94 @@
    * assigning hands and harvesting can be left to an overseer, exactly like
    * the trade orders. One order stands per colony and survives the crossing.
    * ---------------------------------------------------------------------- */
-  var AUTO_REPLANT = true;   /* a harvested plot is sown again straight away */
-
-  function autoOf(colonyId) {
-    return (G.auto && G.auto[colonyId]) || null;
+  /* Automation is per field. A plot only becomes the player's when they lay a
+     field out on it themselves; the overseer never buys or sows land. Each
+     owned field carries its own switch, so the player decides field by field. */
+  /* Owned plots live in G.ownedPlots["colonyId:plotIndex"] = { auto, cropId }.
+     They outlast the crop: a harvested plot stays the player's, and only the
+     plots with auto on are sown again by the overseer. */
+  function ownedPlotKey(colonyId, plotIndex) { return colonyId + ':' + plotIndex; }
+  function ownedPlot(colonyId, plotIndex) {
+    return (G.ownedPlots || {})[ownedPlotKey(colonyId, plotIndex)] || null;
   }
-  function autoOn(colonyId) { return !!(autoOf(colonyId) && autoOf(colonyId).on); }
-  function autoCrops() { return T().CROPS || []; }
+  function claimPlot(colonyId, plotIndex, cropId) {
+    if (!G.ownedPlots) G.ownedPlots = {};
+    var key = ownedPlotKey(colonyId, plotIndex);
+    if (!G.ownedPlots[key]) G.ownedPlots[key] = { auto: false, cropId: cropId };
+    G.ownedPlots[key].cropId = cropId;
+    return G.ownedPlots[key];
+  }
+  function fieldAutoOn(f) {
+    var p = f ? ownedPlot(f.colonyId, f.plotIndex) : null;
+    return !!(p && p.auto);
+  }
 
-  function setAuto(patch) {
-    var id = G.colonyId;
-    if (!id) return;
-    var first = autoCrops()[0];
-    var cur = G.auto[id] || { on: false, cropId: first ? first.id : 'kakao', hire: true, assign: true, harvest: true, plant: true };
-    for (var k in patch) if (patch.hasOwnProperty(k)) cur[k] = patch[k];
-    G.auto[id] = cur;
+  function setFieldAuto(fid, on) {
+    var f = fieldById(fid);
+    if (!f) return;
+    claimPlot(f.colonyId, f.plotIndex, f.cropId).auto = !!on;
     renderColony();
   }
 
-  /* The overseer's day: harvest what is ripe, sow what is free, keep the hands
-     working. It spends the colony's cash like the player would, so it never
-     overdraws. Returns the log lines it wrote (only the loud ones). */
+  /* The overseer's day, for one owned field with its switch on: harvest it
+     when ripe, sow it again with the same crop, and keep one hand on it if
+     there is one to spare. It spends cash like the player would. */
   function runOverseer(colonyId, quiet) {
-    var o = autoOf(colonyId);
-    if (!o || !o.on || !T().CROP_BY_ID) return 0;
-    var crop = T().CROP_BY_ID[o.cropId] || autoCrops()[0];
-    var plots = (T().COLONY_BY_ID[colonyId] || {}).plots || [];
-    var banked = 0;
     var i, f;
-    function fieldsOf() {
-      return G.fields.filter(function (x) { return x.colonyId === colonyId; });
+    var plots = [];
+    for (var key in (G.ownedPlots || {})) {
+      if (!G.ownedPlots.hasOwnProperty(key) || !G.ownedPlots[key].auto) continue;
+      if (key.indexOf(colonyId + ':') !== 0) continue;
+      plots.push({ index: parseInt(key.slice(colonyId.length + 1), 10), plot: G.ownedPlots[key] });
     }
-    function plotOf(index) {
-      var found = null;
-      fieldsOf().forEach(function (x) { if (x.plotIndex === index) found = x; });
-      return found;
-    }
-    function hired() { return G.workers[colonyId] || 0; }
-    function assigned() {
-      var n = 0;
-      fieldsOf().forEach(function (x) { n += x.workers || 0; });
-      return n;
-    }
+    if (!plots.length || !T().CROP_BY_ID) return 0;
+    var banked = 0;
+    var label = T().COLONY_BY_ID[colonyId] ? T().COLONY_BY_ID[colonyId].label : colonyId;
 
-    /* 1. harvest */
-    if (o.harvest) {
-      var ripe = fieldsOf().filter(function (x) { return x.ripe; });
-      for (i = 0; i < ripe.length; i++) {
-        f = ripe[i];
-        var units = fieldYield(f);
-        var at = G.fields.indexOf(f);
-        G.fields.splice(at, 1);
+    /* 1. on each automated plot: harvest when ripe, then sow the same crop */
+    for (i = 0; i < plots.length; i++) {
+      var pi = plots[i].index, pl = plots[i].plot;
+      var cur = null;
+      G.fields.forEach(function (x) { if (x.colonyId === colonyId && x.plotIndex === pi) cur = x; });
+      if (cur && cur.ripe) {
+        var units = fieldYield(cur);
+        G.fields.splice(G.fields.indexOf(cur), 1);
         if (!G.colonyStock) G.colonyStock = {};
         if (!G.colonyStock[colonyId]) G.colonyStock[colonyId] = {};
-        G.colonyStock[colonyId][f.cropId] = (G.colonyStock[colonyId][f.cropId] || 0) + units;
-        G.goods[f.cropId] = (G.goods[f.cropId] || 0) + units;
+        G.colonyStock[colonyId][cur.cropId] = (G.colonyStock[colonyId][cur.cropId] || 0) + units;
+        G.goods[cur.cropId] = (G.goods[cur.cropId] || 0) + units;
         G.colonyStats.harvested += units;
         banked += units;
-        if (!quiet) log('Overseer harvested ' + units + ' ' + T().CROP_BY_ID[f.cropId].label +
-                        ' unit(s) at the ' + T().COLONY_BY_ID[colonyId].label + ' colony.');
+        if (!quiet) log('Overseer harvested ' + units + ' ' + T().CROP_BY_ID[cur.cropId].label +
+                        ' unit(s) at the ' + label + ' colony.');
+        cur = null;
       }
-    }
-
-    /* 2. hire up to two hands per field, as far as the purse allows */
-    if (o.hire) {
-      var want = Math.min(MAX_COLONY_WORKERS, fieldsOf().length * 2);
-      while (hired() < want && G.cash >= WORKER_HIRE_COST) {
-        G.cash -= WORKER_HIRE_COST;
-        G.workers[colonyId] = hired() + 1;
-        if (!quiet) log('Overseer hired a worker at the ' + T().COLONY_BY_ID[colonyId].label + ' colony.');
-      }
-    }
-
-    /* 3. every field keeps a hand if there is one to spare */
-    if (o.assign) {
-      var idle = hired() - assigned();
-      var hands = fieldsOf().sort(function (a, b) { return a.workers - b.workers; });
-      for (i = 0; i < hands.length && idle > 0; i++) {
-        if (hands[i].workers >= MAX_FIELD_WORKERS) continue;
-        hands[i].workers += 1;
-        idle -= 1;
-      }
-    }
-
-    /* 4. sow every free plot with the standing crop */
-    if (o.plant !== false) {
-      for (i = 0; i < plots.length; i++) {
-        if (plotOf(i)) continue;
-        if (G.cash < crop.cost) break;
+      var crop = T().CROP_BY_ID[pl.cropId];
+      if (!cur && crop && G.cash >= crop.cost) {
         G.cash -= crop.cost;
-        G.fields.push({ id: G.nextFieldId++, colonyId: colonyId, plotIndex: i, cropId: crop.id,
+        pl.cropId = crop.id;
+        G.fields.push({ id: G.nextFieldId++, colonyId: colonyId, plotIndex: pi, cropId: crop.id,
                         plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
         G.colonyStats.planted += 1;
-        if (!quiet) log('Overseer laid out a ' + crop.label + ' field on plot ' + (i + 1) + '.');
       }
     }
+
+    /* 2. keep one hand on each automated field, if the purse allows */
+    var hiredNow = G.workers[colonyId] || 0;
+    var assignedNow = 0;
+    G.fields.forEach(function (x) { if (x.colonyId === colonyId) assignedNow += x.workers || 0; });
+    G.fields.forEach(function (x) {
+      if (x.colonyId !== colonyId || !fieldAutoOn(x) || x.workers >= 1) return;
+      if (hiredNow - assignedNow <= 0) {
+        if (hiredNow >= MAX_COLONY_WORKERS || G.cash < WORKER_HIRE_COST) return;
+        G.cash -= WORKER_HIRE_COST;
+        hiredNow += 1;
+        G.workers[colonyId] = hiredNow;
+        if (!quiet) log('Overseer hired a worker at the ' + label + ' colony.');
+      }
+      x.workers += 1;
+      assignedNow += 1;
+    });
     /* 5. load whatever is lying on the quay, if the shipping order is on */
     var order = shipOf(colonyId);
     if (order && order.on) {
@@ -289,9 +284,12 @@
 
   /* Called once a day from the clock, for every colony with a standing order. */
   function runOverseers() {
-    if (!G.auto) return;
-    for (var id in G.auto) {
-      if (!G.auto.hasOwnProperty(id) || !G.auto[id].on) continue;
+    var ids = {};
+    for (var key in (G.ownedPlots || {})) {
+      if (G.ownedPlots.hasOwnProperty(key) && G.ownedPlots[key].auto) ids[key.split(':')[0]] = true;
+    }
+    for (var id in ids) {
+      if (!ids.hasOwnProperty(id)) continue;
       try { runOverseer(id, !!(G.colonyId && id === G.colonyId)); }
       catch (e) { /* a colony never breaks the clock */ }
     }
@@ -336,14 +334,9 @@
     } else if (action === 'depart') {
       departFromColony(t.getAttribute('data-dest'));
     } else if (action === 'auto') {
-      /* data-auto="" toggles the whole order, data-auto="crop" sets the crop */
-      var key = t.getAttribute('data-auto');
-      if (key === 'crop') setAuto({ cropId: t.getAttribute('data-crop') });
-      else if (key === 'hire') setAuto({ hire: !(autoOf(G.colonyId) || {}).hire });
-      else if (key === 'assign') setAuto({ assign: !(autoOf(G.colonyId) || {}).assign });
-      else if (key === 'harvest') setAuto({ harvest: !(autoOf(G.colonyId) || {}).harvest });
-      else if (key === 'plant') setAuto({ plant: !(autoOf(G.colonyId) || {}).plant });
-      else setAuto({ on: !(autoOf(G.colonyId) || {}).on });
+      /* the switch is per field: the player automates the fields they own */
+      setFieldAuto(parseInt(t.getAttribute('data-field'), 10),
+                   t.getAttribute('data-on') !== '1');
     } else if (action === 'ship') {
       shipOrder(t.getAttribute('data-crop'), t.getAttribute('data-hub'),
                 parseInt(t.getAttribute('data-units'), 10));
@@ -540,9 +533,9 @@
     selectField: selectField,
     endColonyDay: endColonyDay,
     colonyAction: colonyAction,
-    autoOf: autoOf,
-    autoOn: autoOn,
-    setAuto: setAuto,
+    setFieldAuto: setFieldAuto,
+    fieldAutoOn: fieldAutoOn,
+    ownedPlot: ownedPlot,
     runOverseer: runOverseer,
     runOverseers: runOverseers,
     hubIds: hubIds,

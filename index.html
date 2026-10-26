@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Great Art Race &mdash; web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261027-PLOTFIT2" />
+<link rel="stylesheet" href="styles.css?v=20261027-VOYAGESTRIP2" />
 </head>
 <body>
 <div id="app">
@@ -85,6 +85,11 @@
       </nav>
 
       <div id="stage">
+        <div id="voyage-strip" class="voyage-strip" hidden>
+          <span class="voyage-from" id="voyage-from"></span>
+          <span class="voyage-mid" id="voyage-mid"></span>
+          <span class="voyage-to" id="voyage-to"></span>
+        </div>
         <div class="stage-frame">
           <div id="backdrop"></div>
           <p id="backdrop-caption">Berlin</p>
@@ -228,16 +233,16 @@
 <script src="map.js?v=20261024-LAYOUT2"></script>
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
-<script src="app-state.js?v=20261025-TOPDOCK1"></script>
-<script src="app-crew.js?v=20261024-COLONY1"></script>
-<script src="app-colonies.js?v=20261027-PLOTFIT2"></script>
+<script src="app-state.js?v=20261027-PLOTAUTO1"></script>
+<script src="app-crew.js?v=20261027-PLOTAUTO1"></script>
+<script src="app-colonies.js?v=20261027-PLOTAUTO1"></script>
 <script src="app-core.js?v=20261027-ECON1"></script>
 <script src="art-notes.js?v=20261024-ART75"></script>
-<script src="app-art.js?v=20261027-TRAVELMAP1"></script>
+<script src="app-art.js?v=20261027-VOYAGESTRIP2"></script>
 <script src="app-artview.js?v=20261024-COLONY1"></script>
 <script src="app-map.js?v=20261027-TRAVELMAP1"></script>
-<script src="app-trade.js?v=20261027-TRAVELMAP1"></script>
-<script src="app-shell.js?v=20261027-AUTOSAVE1"></script>
+<script src="app-trade.js?v=20261027-VOYAGESTRIP2"></script>
+<script src="app-shell.js?v=20261027-PLOTAUTO1"></script>
 <script src="app-audio.js?v=20261026-SHIPMUSIC1"></script>
 </body>
 </html>
