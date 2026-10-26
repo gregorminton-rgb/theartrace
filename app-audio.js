@@ -1,7 +1,8 @@
 /* app-audio.js — the two ambient tracks.
  *
- *   city   "music/trading-cities.mp3"  standing in a port city
- *   travel "music/travel.mp3"          at sea, or ashore on a plantation
+ *   city   "music/trading-cities.mp3"  standing in a port city, or ashore
+ *   sea    "music/ship.mp3"            on a voyage across the ocean
+ *   rail   "music/travel.mp3"          on a voyage by train (short European hop)
  *
  * Exactly one track is meant to be audible. Both elements are created up
  * front and loop; a switch fades the old one out and the new one in, so a
@@ -21,7 +22,8 @@
 
   var TRACKS = {
     city: 'music/trading-cities.mp3',
-    travel: 'music/travel.mp3'
+    sea: 'music/ship.mp3',
+    rail: 'music/travel.mp3'
   };
   var VOLUME = 0.45;
   var FADE_MS = 900;
@@ -61,8 +63,7 @@
     if (document.hidden) return null;
     var screen = document.getElementById('screen-game');
     if (!screen || screen.hidden) return null;
-    if (G.voyage) return 'travel';
-    if (G.colonyId) return 'travel';
+    if (G.voyage) return G.voyage.glyph === 'rail' ? 'rail' : 'sea';
     return (A && A.city && A.city(G.cityId)) ? 'city' : null;
   }
 
