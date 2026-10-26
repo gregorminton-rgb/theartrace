@@ -365,11 +365,15 @@
       var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
       var open = !lot.closed;
       var quizOpen = lot.leader === 'you' && lot.quiz && !lot.quiz.answered;
+      var w = A.work(lot.inst.defId);
+      var a = A.artistById[w.artistId];
       var info = open
-        ? '<div class="row-tags"><span class="tag">reserve hidden</span></div>'
+        ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
+          '<span class="title">' + h(w.title) + '</span>' +
+          '<span class="credit">' + h(a ? a.name : 'Unknown') + '</span></div></div>'
         : rowHead(lot.inst) + '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
           '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>';
-      var head = open ? '<div class="row-head"><strong>Lot ' + (i + 1) + '</strong></div>' : '';
+      var head = '';
       var nums = '<div class="row-num"><span class="ask">bid ' + A.money(lot.bid) + '</span>' +
         (open ? '' : '<span class="est">estimate ' + A.money(lot.low) + '–' + A.money(lot.high) + '</span>') +
         '<span class="est">' + (lot.closed ? (lot.leader === 'you' ? 'HAMMERED TO YOU' : 'sold to the room')
