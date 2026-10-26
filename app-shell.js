@@ -1,7 +1,9 @@
 /* =========================================================================
  * app-shell.js — dialogs, title, wiring, boot.
- * Split out of the former single-file app.js. The load order in
- * index.html is fixed: app-core.js first, because it owns G.
+ * Split out of the former single-file app.js. index.html fixes the load
+ * order: app-state.js owns G, then app-crew / app-colonies lay the colony
+ * on top of it, app-core.js publishes the shared game api, and this file
+ * runs last because it is the one that starts the game.
  * ========================================================================= */
 (function () {
   'use strict';
@@ -14,6 +16,7 @@
   var el = A.shared.el, h = A.shared.h, show = A.shared.show;
   var MONTHS = A.shared.MONTHS, dateOf = A.shared.dateOf;
   var log = A.shared.log, rep = A.shared.rep;
+  var paintDate = A.shared.paintDate;
   /* shared vocabulary published by app-core.js */
   var renderAll = function () { return A.app.renderAll(); };
   var advanceDay = function () { return A.app.advanceDay.apply(null, arguments); };
@@ -85,6 +88,11 @@
 
   function paintClockUi() {
     var speed = G.clockSpeed || 1600;
+    /* The date is repainted here as well as in renderHud(): ashore the colony
+       screen is what advances the day (and it never calls renderHud), so this
+       is the only chance to keep the two date readouts honest while the
+       plantation desk is up. paintDate owns the six texts. */
+    var d = dateOf(G.day);
     eachClockUi(function (ui, auto) {
       auto.checked = !!G.clockWanted;
       var timer = el(ui.timer);
@@ -95,6 +103,8 @@
       }
       var speedEl = el(ui.speed);
       if (speedEl) speedEl.value = String(speed);
+      /* 'cal-day' -> the 'cal' prefix paintDate writes */
+      paintDate(ui.day.replace(/-day$/, ''), d);
     });
   }
 
@@ -134,13 +144,14 @@
     /* Ashore the colony screen drives the day (its fields and workers), so the
        same interval steps that screen instead of a hidden portrait city. */
     if (G.colonyId) {
-      try { crewRef('endColonyDay')(); }
+      try { crewRef('endColonyDay')(); scheduleSave(); }
       catch (err) { stopClock(); log('The clock stopped on day ' + G.day + ': ' + err.message); }
       return;
     }
     try {
       advanceDay(false);
       renderAll();
+      scheduleSave();
     } catch (err) {
       stopClock();
       log('The clock stopped on day ' + G.day + ': ' + err.message);
@@ -148,29 +159,91 @@
     }
   }
 
-  function endGame(won) {
+  /* The career ends when the days are spent, so the report is a collection
+     inventory: how many canvases survived the race, what they are worth, and
+     which ones they are. Money is context, not the score. */
+  function collectionRow(p, showProfit) {
+    var w = A.work(p.defId);
+    var artist = A.artistById[w.artistId];
+    var epoch = A.workEpoch(w);
+    var value = valueOf(p);
+    var where = A.cityById[p.purchaseCityId] ? A.cityById[p.purchaseCityId].name : 'a private sale';
+    /* dateOf() hands back the month NAME and the year, so no month table here. */
+    var bought = dateOf(p.purchaseDay || 1);
+    var paid = 'Bought in ' + where + ' on ' + bought.month + ' ' + bought.day + ', ' +
+      bought.year + ' for ' + A.money(p.purchasePrice || 0);
+    var tags = '<span class="tag">' + A.conditionBand(p.condition) + ' ' + A.pct(p.condition) + '</span>' +
+      '<span class="tag">' + (p.authenticity === 'RevealedForgery' ? 'forgery' :
+        p.authenticity === 'Authenticated' ? 'authenticated' : 'unexamined') + '</span>' +
+      (p.provenance ? '<span class="tag">' + p.provenance + '</span>' : '');
+    var delta = value - (p.purchasePrice || 0);
+    var deltaHtml = showProfit && p.purchasePrice
+      ? '<span class="' + (delta >= 0 ? 'gain' : 'loss') + '">' +
+        (delta >= 0 ? '+' : '') + A.money(delta) + '</span>'
+      : '<span class="est">' + epoch + '</span>';
+    return '<div class="row">' +
+      '<div class="row-main"><div>' +
+        '<span class="title">' + w.title + '</span>' +
+        '<span class="credit">' + (artist ? artist.name : 'Unknown') + ' · ' +
+          (w.yearCreated || 'n.d.') + ' · ' + epoch + '</span>' +
+        '<span class="prov">' + paid + '</span>' +
+      '</div></div>' +
+      '<div class="row-tags">' + tags + '</div>' +
+      '<div class="row-num"><span class="ask">' + A.money(value) + '</span>' + deltaHtml + '</div>' +
+    '</div>';
+  }
+
+  function endGame() {
     if (G.ended) return;
     G.ended = true;
     stopClock();
+    clearSave();
     show(el('colony'), false);
     var worth = netWorth();
     var held = 0;
-    G.portfolio.forEach(function (p) { held += valueOf(p); });
+    var paidTotal = 0;
+    var epochs = {};
+    G.portfolio.forEach(function (p) {
+      held += valueOf(p);
+      paidTotal += p.purchasePrice || 0;
+      var e = A.workEpoch(A.work(p.defId));
+      epochs[e] = (epochs[e] || 0) + 1;
+    });
+    var count = G.portfolio.length;
+    var byEpoch = Object.keys(epochs).sort().map(function (e) {
+      return epochs[e] + ' ' + e;
+    }).join(' · ') || 'none';
+    /* Richest first: the end of a race is a moment for showing off. */
+    var shown = G.portfolio.slice().sort(function (a, b) { return valueOf(b) - valueOf(a); });
     var lines = [
-      won ? 'You made your money and then some.' : 'The clock ran out before the goal did.',
+      count
+        ? 'You end the race with <b>' + count + '</b> picture' + (count === 1 ? '' : 's') +
+          ' in the crates.'
+        : 'You end the race with empty crates. The market beat you this time.',
       '<div class="stats">' +
-      '<div class="stat"><span>Net worth</span><b>' + A.money(worth) + '</b></div>' +
-      '<div class="stat"><span>Goal</span><b>' + A.money(G.targetWorth) + '</b></div>' +
+      '<div class="stat"><span>Pictures held</span><b>' + count + ' / ' + G.capacity + ' crates</b></div>' +
+      '<div class="stat"><span>Market value of the collection</span><b>' + A.money(held) + '</b></div>' +
+      '<div class="stat"><span>Paid for it all</span><b>' + A.money(paidTotal) + '</b></div>' +
+      '<div class="stat"><span>Crate slots bought</span><b>' + G.slotsBought + ' of ' +
+        CFG.crateSpacePurchaseLimit + '</b></div>' +
+      '<div class="stat"><span>Career</span><b>' + G.careerDays + ' days · ' + G.difficulty + '</b></div>' +
       '<div class="stat"><span>Days used</span><b>' + Math.min(G.day, G.careerDays) + ' / ' + G.careerDays + '</b></div>' +
-      '<div class="stat"><span>Still in crates</span><b>' + A.money(held) + '</b></div>' +
+      '<div class="stat"><span>Net worth</span><b>' + A.money(worth) + '</b></div>' +
+      '<div class="stat"><span>Cash on hand</span><b>' + A.money(G.cash) + '</b></div>' +
       '<div class="stat"><span>Debt</span><b>' + A.money(G.loan) + '</b></div>' +
       '<div class="stat"><span>Reputation</span><b>' + Math.round(G.reputation) + '</b></div>' +
-      '<div class="stat"><span>Flips</span><b>' + G.stats.buys + ' bought / ' + G.stats.sells + ' sold</b></div>' +
-      '<div class="stat"><span>Best / worst</span><b>' + A.money(G.stats.bestProfit) + ' / ' + A.money(G.stats.worstProfit) + '</b></div>' +
+      '<div class="stat"><span>Deals</span><b>' + G.stats.buys + ' bought / ' + G.stats.sells + ' sold</b></div>' +
+      '<div class="stat"><span>Best / worst flip</span><b>' + A.money(G.stats.bestProfit) + ' / ' +
+        A.money(G.stats.worstProfit) + '</b></div>' +
       '<div class="stat"><span>Forgeries passed on</span><b>' + G.stats.forgery + '</b></div>' +
-      '</div>'
+      '<div class="stat"><span>By epoch</span><b>' + byEpoch + '</b></div>' +
+      '</div>',
+      shown.length ? '<h3>The collection</h3>' + shown.map(function (p) {
+        return collectionRow(p, true);
+      }).join('') : ''
     ].join('');
-    dialog(won ? 'The Great Art Race — you win' : 'The Great Art Race — time up', lines, [
+    dialog('The Great Art Race — ' + count + ' picture' + (count === 1 ? '' : 's'),
+      lines, [
       { label: 'Read the journal', onClick: function () { G.view = 'report'; G.ended = false; closeDialog(); renderAll(); G.ended = true; } },
       { label: 'New career', primary: true, onClick: backToTitle }
     ]);
@@ -180,6 +253,7 @@
     closeDialog();
     show(el('colony'), false);
     stopClock();
+    clearSave();
     G.started = false;
     G.ended = false;
     el('screen-game').hidden = true;
@@ -190,13 +264,18 @@
   function helpText() {
     var c = A.city(G.cityId);
     return '<p>You are an art dealer with <b>' + A.money(CFG.startingMoney) + '</b> in the first year of a ' +
-      G.careerDays + '-day career. Make <b>' + A.money(G.targetWorth) + '</b> of net worth and you win.</p>' +
+      G.careerDays + '-day career. When the ' + G.careerDays + ' days are up, the race is scored on <b>how many ' +
+      'pictures</b> are still in your crates — the market value of the collection is the tie-breaker you brag about.</p>' +
       '<h3>How money is made</h3><ul>' +
       '<li>Buy where a school is cheap, sell where the collectors want it. Each city pushes its own ' +
       '<em>favourite epochs</em> (and discounts them at home), and every artwork is priced by the artist’s ' +
       'reputation, rarity, age and condition.</li>' +
-      '<li>A dealer sells at <b>+' + A.pct(CFG.dealerMargin) + '</b> over value and buys back at <b>' +
-      A.pct(1 - CFG.dealerMargin - CFG.dealerSpread) + '</b> — so you need a real move in the market to profit.</li>' +
+      '<li>A <b>gallery</b> sells at <b>+' + A.pct(CFG.dealerMargin * CFG.dealerPremium) + '</b> over market value: ' +
+      'the quick way to buy, and the expensive one. Buy-backs pay <b>' + A.pct(1 - CFG.dealerSpread) +
+      '</b> of value.</li>' +
+      '<li><b>Auction rooms are where pictures are cheap.</b> A lot opens near the reserve and only has to beat ' +
+      'the rival paddles, so patience at the hammer beats a gallery shelf almost every time — but you must travel ' +
+      'to the sale and wait for it to be posted.</li>' +
       '<li>Reputation (' + Math.round(G.reputation) + ' now) narrows the dealer spread and raises your loan ceiling.</li>' +
       '</ul><h3>Risks</h3><ul>' +
       '<li><b>Forgeries.</b> Every piece is <em>unexamined</em> until an expert (here: ' +
@@ -251,6 +330,7 @@
      painting, hd-09) when it is imported; otherwise keep the warm gradient. */
   function renderTitle() {
     fillTitleStats();
+    paintContinueButton();
     var canvas = el('title-canvas');
     var pic = pictureFor('hd-09-studio-easel-painting');
     if (pic) {
@@ -269,9 +349,12 @@
     }).join('');
     var diffOpts = ['Easy', 'Normal', 'Hard'].map(function (d) {
       var v = A.DIFFICULTY[d];
+      /* No money target any more: difficulty only moves the starting purse,
+         the expert fees and the size of the auction crowd. */
       return '<option value="' + d + '"' + (d === 'Normal' ? ' selected' : '') + '>' +
         d + ' — start ' + A.money(CFG.startingMoney * v.startingMoney) +
-        ', target ' + A.money(Math.round(CFG.targetNetWorth * v.target)) + '</option>';
+        ', rivals ' + (v.rivals >= 0 ? '+' : '') + v.rivals +
+        ', fees ×' + v.fee + '</option>';
     }).join('');
     var durOpts = A.DURATIONS.map(function (d, i) {
       return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
@@ -298,8 +381,134 @@
           el('screen-game').hidden = false;
           el('player-name').textContent = G.name;
           renderAll();
+          clearSave();
+          scheduleSave();
         } }
     ], 'dialog--setup');
+  }
+
+  /* =====================================================================
+   * AUTOSAVE / CONTINUE
+   *   A phone that refreshes (pull-to-refresh, a backgrounded tab reclaimed
+   *   by the OS, a reload) used to drop the whole career, because nothing
+   *   was ever written down. The state is small enough to keep in
+   *   localStorage: one JSON blob of G minus the RNG closure and the clock
+   *   timer, which are rebuilt on load.
+   *
+   *   Storage access is wrapped in try/catch everywhere: a file:// page and
+   *   Safari's private mode both throw on localStorage (quota or security),
+   *   and the game must keep playing without a save rather than fail.
+   * ===================================================================== */
+  var SAVE_KEY = 'artrace.career.v1';
+  var store = (function () {
+    try {
+      var s = window.localStorage;
+      s.setItem(SAVE_KEY + '.probe', '1');
+      s.removeItem(SAVE_KEY + '.probe');
+      return s;
+    } catch (err) {
+      return null;                       // no persistence available
+    }
+  })();
+  var saveTimer = null;
+
+  /* G holds a couple of things JSON cannot carry: the mulberry32 closure in
+     G.rng and the interval handle in G.clockTimer. Both are dropped here and
+     rebuilt by restore(). */
+  function snapshot() {
+    var copy = {};
+    Object.keys(G).forEach(function (k) {
+      if (k === 'rng' || k === 'clockTimer') return;
+      copy[k] = G[k];
+    });
+    copy.v = 1;
+    copy.savedAt = Date.now();
+    return copy;
+  }
+
+  function saveNow() {
+    /* a finished career is not resumable: endGame() clears the slot instead */
+    if (!store || !G.started || G.ended) return;
+    try {
+      store.setItem(SAVE_KEY, JSON.stringify(snapshot()));
+    } catch (err) {
+      /* quota or private mode: keep playing, just without a save */
+      store = null;
+    }
+  }
+
+  /* Debounced: a colony clicks a dozen times in a row, and the blob is
+     rewritten for every one of them otherwise. */
+  function scheduleSave() {
+    if (!store || !G.started || G.ended) return;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { saveTimer = null; saveNow(); }, 700);
+  }
+
+  function clearSave() {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+    if (!store) return;
+    try { store.removeItem(SAVE_KEY); } catch (err) {}
+  }
+
+  function loadSave() {
+    if (!store) return null;
+    try {
+      var raw = store.getItem(SAVE_KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      /* a save from an older build may lack fields this one renders; the
+         shallow checks below are enough to reject garbage safely */
+      if (!data || data.v !== 1 || typeof data.day !== 'number' ||
+          !data.portfolio || typeof data.cityId !== 'string') return null;
+      return data;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /* Reseeds the RNG from the stored seed. The exact stream will diverge from
+     an uninterrupted session (a closure cannot be serialised), which is
+     acceptable: the seed still makes the restored career reproducible. */
+  function restore(data) {
+    Object.keys(data).forEach(function (k) {
+      if (k === 'v' || k === 'savedAt' || k === 'rng' || k === 'clockTimer') return;
+      G[k] = data[k];
+    });
+    G.rng = A.makeRng(G.seed);
+    G.clockTimer = null;
+    /* a restored page does not silently start spending days: the clock is
+       off until the player ticks Auto again */
+    G.clockWanted = false;
+    G.ended = false;
+    G.started = true;
+  }
+
+  function startSavedCareer() {
+    var data = loadSave();
+    if (!data) { closeDialog(); return; }
+    closeDialog();
+    restore(data);
+    el('player-name').textContent = G.name;
+    el('screen-title').hidden = true;
+    el('screen-game').hidden = false;
+    renderAll();
+    /* the plantation screen is a layer of its own: restore it, not the city */
+    if (G.colonyId && A.colonies && A.colonies.COLONY_BY_ID[G.colonyId]) A.colonies.openColony();
+    else { G.colonyId = null; show(el('colony'), false); }
+    paintClockUi();
+  }
+
+  /* The Continue button only exists while there is something to continue,
+     and it says what: "day 42 of 180 · 3 pictures". */
+  function paintContinueButton() {
+    var btn = el('resume-game');
+    if (!btn) return;
+    var data = loadSave();
+    show(btn, !!data);
+    if (!data) return;
+    btn.textContent = 'Continue — day ' + data.day + ' of ' + data.careerDays +
+      ' · ' + (data.portfolio ? data.portfolio.length : 0) + ' pictures';
   }
 
   /* ---------- wiring ---------------------------------------------------- */
@@ -308,18 +517,20 @@
       if (!G.started || G.ended) return;
       fn.apply(null, arguments);
       renderAll();
+      scheduleSave();
     };
   }
 
   document.addEventListener('click', function (ev) {
-    var t = ev.target.closest('[data-action],[data-view],[data-dialog],[data-place],[data-colony],#new-game,#show-help,#show-data');
+    var t = ev.target.closest('[data-action],[data-view],[data-dialog],[data-place],[data-colony],#new-game,#resume-game,#show-help,#show-data');
     if (!t) return;
 
     if (t.id === 'new-game') { showNewGameForm(); return; }
+    if (t.id === 'resume-game') { startSavedCareer(); return; }
     if (t.id === 'show-help') { dialog('How to play', helpText(), [{ label: 'Back', primary: true, onClick: closeDialog }]); return; }
     if (t.id === 'show-data') { dialog('Data source', dataText(), [{ label: 'Back', primary: true, onClick: closeDialog }]); return; }
 
-    if (t.hasAttribute('data-colony')) { colonyAction(t.getAttribute('data-colony'), t); return; }
+    if (t.hasAttribute('data-colony')) { colonyAction(t.getAttribute('data-colony'), t); scheduleSave(); return; }
     if (t.hasAttribute('data-place')) { showPlace(t.getAttribute('data-place')); return; }
 
     if (t.hasAttribute('data-dialog')) {
@@ -331,6 +542,7 @@
     if (t.hasAttribute('data-view')) {
       G.view = t.getAttribute('data-view');
       renderAll();
+      scheduleSave();
       return;
     }
 
@@ -393,6 +605,7 @@
     var pi = parseInt(plot.getAttribute('data-plot'), 10);
     if (cropId && !plotField(pi) && G.colonyId && G.started && !G.ended) {
       plantCrop(cropId, pi);
+      scheduleSave();
     }
   });
 
@@ -420,12 +633,25 @@
     if (ev.target.hasAttribute && ev.target.hasAttribute('data-colony') &&
         ev.target.getAttribute('data-colony') === 'auto' && G.started && !G.ended) {
       colonyAction('auto', ev.target);
+      scheduleSave();
     }
   });
 
   document.addEventListener('keydown', function (ev) {
     if (ev.key === 'Escape') closeDialog();
-    if (ev.key === 'Enter' && G.started && !G.ended && el('overlay').hidden && el('colony').hidden) { advanceDay(false); renderAll(); }
+    if (ev.key === 'Enter' && G.started && !G.ended && el('overlay').hidden && el('colony').hidden) {
+      advanceDay(false);
+      renderAll();
+      scheduleSave();
+    }
+  });
+
+  /* A refresh, a pulled-down phone tab or a browser that reclaims the page
+     can land mid-day: write the pending state now instead of waiting for the
+     debounce, so nothing after the last click is lost. */
+  window.addEventListener('pagehide', saveNow);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') saveNow();
   });
 
   /* ---------- boot ------------------------------------------------------ */

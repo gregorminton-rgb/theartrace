@@ -549,14 +549,41 @@
      fields stay at their natural size. */
   function fitPlotScale() {
     var board = el('colony-grid');
-    if (!board || !board.clientWidth) return;
-    var tileW = 144, tileH = 170;
-    var fit = Math.min(board.clientWidth / (tileW * PLOT_COLS),
-                       board.clientHeight / (tileH * PLOT_ROWS));
-    /* a hair of slack: a plot hovering under the pointer grows 5%.
-       The floor is low enough that a 5 × 3 board still fits a phone. */
-    var scale = Math.max(0.26, Math.min(1, fit / 1.06));
+    if (!board) return;
+    /* A plot's border box is wider than its nominal tile and the hover-grow
+       adds 5% on top, so the outer columns can hang over the board's edges.
+       A board that scrolls reports a clientWidth that already bakes in the
+       overflow, which made the scale chase its own tail at exactly 100%.
+       Measure against a scratch box that has the board's padding but none of
+       its contents instead (see .plot-probe in styles.css). */
+    var probe = fitProbe();
+    var tileW = 144, tileH = 190;
+    var w = probe.offsetWidth || board.offsetWidth;
+    var h = probe.offsetHeight || board.offsetHeight;
+    if (!w || !h) return;
+    var fit = Math.min(w / (tileW * PLOT_COLS), h / (tileH * PLOT_ROWS));
+    /* the jitter may nudge a whole column ±1.5% off centre and the hover-grow
+       adds 5% more, so even a tile that fits exactly would bleed past an
+       edge. Reserve both, or the outer plots are always clipped. */
+    var scale = Math.max(0.26, Math.min(1, fit / 1.10));
     board.style.setProperty('--plot-scale', scale.toFixed(3));
+  }
+
+  /* The measuring stick for fitPlotScale(). It is a sibling of the board with
+     the same padding (see .plot-probe in styles.css), so it reports the space
+     the board would have if its contents still fit. */
+  function fitProbe() {
+    var probe = el('plot-probe');
+    if (!probe) {
+      var board = el('colony-grid');
+      if (!board || !board.parentNode) return board;
+      probe = document.createElement('div');
+      probe.id = 'plot-probe';
+      probe.className = 'plot-probe';
+      probe.setAttribute('aria-hidden', 'true');
+      board.parentNode.insertBefore(probe, board.nextSibling);
+    }
+    return probe;
   }
   window.addEventListener('resize', function () {
     if (G.colonyId && G.colonyMenu === 'plantage') fitPlotScale();
@@ -643,13 +670,19 @@
       return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
         ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
+        /* the crop label and the crew size sit above the soil, the progress
+           rail below it — the diorama keeps the middle band to itself */
+        '<span class="plot-head">' +
+          '<span class="plot-label">' + h(crop.label) + '</span>' +
+          '<span class="plot-workers">' + f.workers + ' worker' + (f.workers === 1 ? '' : 's') + '</span>' +
+        '</span>' +
         fieldSVG(crop, f, pct) +
         houseSVG +
-        '<span class="plot-label">' + h(crop.label) + '</span>' +
-        '<span class="plot-workers">' + f.workers + ' worker(s)</span>' +
-        '<span class="field-progress"><i style="width:' + pct + '%"></i></span>' +
-        '<span class="plot-status">' + (f.ripe ? 'RIPE' : fieldDaysLeft(f) + 'd') + '</span>' +
-        '<span class="plot-pips">' + pips + '</span>' +
+        '<span class="plot-foot">' +
+          '<span class="field-progress"><i style="width:' + pct + '%"></i></span>' +
+          '<span class="plot-status">' + (f.ripe ? 'RIPE' : fieldDaysLeft(f) + 'd') + '</span>' +
+          '<span class="plot-pips">' + pips + '</span>' +
+        '</span>' +
         '</button>';
     }
     
