@@ -357,8 +357,10 @@
     return { pts: [{ x: from.mapX, y: from.mapY }, { x: to.mapX, y: to.mapY }], glyph: 'ship' };
   }
 
-  function beginVoyage(to, days, price, freight, crates, forceColonyId) {
-    var from = A.city(G.cityId);
+  /* from: the place the ship actually leaves — a city, or the plantation the
+     player is standing on. Defaults to the current port. */
+  function beginVoyage(to, days, price, freight, crates, forceColonyId, from) {
+    from = from || A.city(G.cityId);
     /* Rio and San Francisco are art cities *and* colony ids. A voyage started
        from a city must always end in a city unless the caller explicitly asked
        for the plantation, so the colony twin only counts on request. */
@@ -457,10 +459,10 @@
     var price = A.ticketPrice(from, to);
     var days = A.ticketDays(from, to);
     if (price > G.cash) { log('The ticket to ' + to.name + ' costs ' + A.money(price) + '.'); return; }
-    var crates = G.portfolio.length;
-    var freight = crates * CFG.crateHandlingFee;
-    G.cash -= price + freight;
-    beginVoyage(to, days, price, freight, crates);
+    /* Passenger fare only: freight applies to goods shipped from plantations,
+       not to the player's own crossings. */
+    G.cash -= price;
+    beginVoyage(to, days, price, 0, 0);
     checkEnd();
   }
 

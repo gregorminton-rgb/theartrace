@@ -174,6 +174,7 @@
     if (G.mapHover) return mapHoverPreview();
     if (!G.mapPick) return null;
     var here = A.city(G.cityId);
+    if (G.colonyId) here = null;
       if (!here) return null;
       var dest = null;
       for (var i = 0; i < PLACES.length; i++) {
@@ -197,6 +198,11 @@
     if (G.colonyId) {
       var p = PLACE_BY_SLUG['colony-' + G.colonyId];
       if (p) return p;
+    }
+    /* at sea the ship leaves from the voyage's origin, not the last port */
+    if (G.voyage && G.voyage.fromId) {
+      var fp = PLACE_BY_SLUG[A.city(G.voyage.fromId) ? G.voyage.fromId : 'colony-' + G.voyage.fromId];
+      if (fp) return fp;
     }
     var c = A.city(G.cityId);
     return c ? { mapX: c.mapX, mapY: c.mapY, city: c } : null;
@@ -363,6 +369,7 @@
   /* The fare and the passage from wherever the traveller stands to `place`,
      or null when the two ends are the same. */
   function legTo(place) {
+    if (G.voyage) return null;
     var from = herePoint();
     if (!from) return null;
     if (place.city && G.cityId && place.city.id === G.cityId) return null;

@@ -200,7 +200,7 @@
     var days = A.ticketDays(from, colony);
     if (price > G.cash) { log('The passage to ' + colony.label + ' costs ' + A.money(price) + '.'); return; }
     G.cash -= price;
-    beginVoyage(colony, days, price, 0, 0, colony.id);
+    beginVoyage(colony, days, price, 0, 0, colony.id, from);
     checkEnd();
   }
 
@@ -377,15 +377,16 @@
     if (G.voyage) { log('You are already en route to ' + G.voyage.toName + '.'); return; }
     if (price > G.cash) return;
     G.cash -= price;
-    /* the ship leaves from the colony, so the chart must start there */
-    G.cityId = colony.id && A.city(colony.id) ? colony.id : G.colonyReturnCityId || G.cityId;
+    /* the ship leaves from the plantation the player stands on; G.cityId keeps
+       naming the port the player last docked at */
+    var origin = colony;
     G.colonyId = null;
     G.colonyMenu = 'plantage';
     G.colonyTravel = false;
     G.selectedFieldId = null;
     G.plantCropId = null;
     show(el('colony'), false);
-    beginVoyage(target, days, price, 0, 0, dest.colonyId || null);
+    beginVoyage(target, days, price, 0, 0, dest.colonyId || null, origin);
     if (A.shell && A.shell.resumeClock) A.shell.resumeClock();
     checkEnd();
     renderAll();
