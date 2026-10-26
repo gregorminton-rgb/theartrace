@@ -250,8 +250,9 @@
       var price = d.price;
       var days = d.days;
       var kind = d.kind === 'colony' ? 'Kolonie' : d.kind === 'trade' ? 'Handel' : 'Stadt';
-      var disabled = price > G.cash ? ' disabled' : '';
-      return '<button type="button" class="dest-row" data-colony="depart" data-dest="' + h(d.slug) + '"' +
+      var poor = price > G.cash;
+      var disabled = poor ? ' disabled aria-disabled="true" title="Zu wenig Bargeld"' : '';
+      return '<button type="button" class="dest-row' + (poor ? ' is-poor' : '') + '" data-colony="depart" data-dest="' + h(d.slug) + '"' +
         ' data-price="' + price + '" data-days="' + days + '"' + disabled + '>' +
         '<span class="dest-name">' + h(d.label) + '</span>' +
         '<span class="dest-kind">' + kind + '</span>' +

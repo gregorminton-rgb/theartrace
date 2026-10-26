@@ -372,7 +372,13 @@
     if (G.voyage) return null;
     var from = herePoint();
     if (!from) return null;
-    if (place.city && G.cityId && place.city.id === G.cityId) return null;
+    /* Ashore, the last port is no longer "here": the plantation is. So a city
+       only counts as the same place when the player is standing in it, and a
+       colony id that also names an art city (Rio, San Francisco) is the same
+       place while its plantation is open. */
+    if (G.colonyId) {
+      if (place.city && place.city.id === G.colonyId) return null;
+    } else if (place.city && G.cityId && place.city.id === G.cityId) return null;
     if (place.colony && G.colonyId && place.colony.id === G.colonyId) return null;
     var target = place.city || place.colony;
     var origin = from.city || from.colony;
@@ -431,7 +437,7 @@
     var ashore = !!G.colonyId && A.colonies && A.colonies.departFromColony;
 
     /* City: Travel button */
-    if (place.city && place.city.id !== G.cityId) {
+    if (place.city && (ashore ? place.city.id !== G.colonyId : place.city.id !== G.cityId)) {
       if (ashore) {
         buttons.unshift({ label: 'Ja, nach ' + place.label + ' reisen', primary: true, onClick: function () {
           closeDialog(); renderAll();
