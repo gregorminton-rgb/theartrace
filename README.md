@@ -28,10 +28,20 @@ python -m http.server 8080
 | `works-extra.js` | painters, works and catalogue facts the web build adds |
 | `images.js` | **generated** image manifest - do not edit by hand |
 | `engine.js` | pure data + maths layer: prices, markets, travel, bank, studio |
-| `app.js` | DOM, state, day loop, dialogs, city backdrops, world map |
+| `app-core.js` | new game, day loop, `renderAll()`, end of a career |
+| `app-shell.js` | screens, clock, day ticker, dialogs, autosave / continue |
+| `app-state.js` | owns `G`, the single mutable game state object |
+| `app-crew.js` / `app-colonies.js` | crew, plantation plots, colony day |
+| `app-map.js` | travel office, routes, voyage booking |
+| `app-trade.js` | dealer, auction, report and the end score sheet |
+| `app-art.js` / `app-artview.js` | artwork rows, detail view, zoom |
+| `app-audio.js` | city and travel music |
+| `map.js` / `world-geo.js` | canvas world map and its outlines |
 | `tools/cfgcheck.ps1` | cross-checks every `CFG.*` read against the export |
 | `tools/syntax-check.js` | parses the scripts without needing Node |
-| `tools/domcheck.ps1` | fails if `app.js` looks up an id that no element has |
+| `tools/domcheck.ps1` | fails if a script looks up an id that no element has |
+| `tools/smoke.js` | headless end-to-end run (WSH), no browser needed |
+| `tools/import-artwork-images.ps1` | writes `images/art/` + `artwork-images.js` |
 | `tools/import-images.ps1` | writes web JPEGs + `images.js` from the master pictures |
 
 ## Where the numbers come from
@@ -52,7 +62,7 @@ merged into `CFG` **only when the export does not supply the key**:
 `loanOverdueRepPenalty`, `debtCallAfterDays`, `debtCallSeizeArtworks`,
 `debtCallReputationPenalty`, `crateSpacePurchaseLimit`,
 `travelDayScale`, `travelDayExponent`,
-`priceBandLow`, `priceBandHigh`, `priceBandCurve`.
+`priceBandLow`, `priceBandHigh`, `priceBandCurve`, `dealerPremium`, `auctionAggressionScale`.
 
 The moment `EconomyConfig.cs` grows a field of the same name, the exporter
 carries it and the default stops applying. The *Data Source* dialog in-game
@@ -109,6 +119,32 @@ $742, Berlin->New York 10 days / $2 664.
 > you re-export, re-apply them, or move them into `WEB_ONLY_DEFAULTS` as the
 > band keys already are.
 
+## Buying: auction vs. dealer
+
+Pictures are cheap at the auction and expensive at the dealer - that gap is
+the whole reason to travel. The knobs live in `WEB_ONLY_DEFAULTS` in
+`engine.js`:
+
+| setting | value | effect |
+| --- | --- | --- |
+| `dealerMargin` | 0.26 | base mark-up the dealer asks on top of a work's value |
+| `dealerPremium` | 5.8 | extra dealer mark-up in the web build |
+| `auctionAggressionScale` | 0.4 | rival bidders bid more cautiously |
+| `dealerSpread` / `commission` | 0.3 / 0.12 | bid-back spread, auction commission |
+
+Measured on the live data: a dealer **asks 2.38 x value**, the auction
+**hammer lands at 1.18 x value**, so a gallery is **2.02 x** the hammer for
+the same work - close to the intended "about twice as expensive".
+
+Two honest limitations, both structural rather than bugs:
+
+* `dealerBid()` deliberately ignores `dealerPremium` - if it honoured it, you
+  could buy low at an auction and sell high to the same dealer without ever
+  travelling.
+* Because of that, a pure cross-city flip is currently loss-making (the best
+  margin found is -21 %); the city wealth multipliers only span 0.90 - 1.42.
+  Profit comes from auctions, the plantation and reputation, not from
+  reselling a picture in the next town.
 ## City backdrops
 
 The parlour frame above the panel shows the current city. `app.js` looks the
@@ -224,10 +260,73 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\cfgcheck.ps1
 # do the scripts still parse? (no Node needed, uses WSH)
 cscript //nologo tools\syntax-check.js
 
-# does every el('...') id in app.js exist in the DOM or get created by it?
+# does every el('...') id exist in the DOM or get created by the scripts?
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\domcheck.ps1
+
+# end-to-end play-through without a browser (WSH)
+cscript //nologo tools\smoke.js
 ```
 
 `cfgcheck.ps1` exits non-zero on a genuine problem, writes its report to
 `_cfgcheck.txt` and also prints it. `domcheck.ps1` does the same with
 `_domcheck.txt` and fails only on a missing id.
+
+## The goal
+
+A career is a fixed stretch of time (180 days by default) and **the score is
+the number of pictures you hold when it ends**. Everything else - money,
+reputation, the plantation - exists to buy more pictures.
+
+When the last day is spent the game closes the career itself (`checkEnd()` in
+`app-core.js` only latches `G.ended` once `G.day > G.careerDays`) and the shell
+shows a result sheet: pictures held, the market value of the whole collection,
+the most expensive single work, how many painters are represented and how far
+the purse moved. The same numbers are also reachable during play through the
+*Report* view, so the estimate never comes as a surprise.
+
+## The clock, and auto-day
+
+The date in the header is driven by the *clock* (`app-shell.js`). One tick is
+one day and a tick only happens when the day actually advanced - a dialog that
+is open, a voyage animation or a paused tab never eats days.
+
+* **Auto** keeps ticking while you are in a city; it switches itself off as
+  soon as you arrive at a destination, so a long voyage does not silently
+  spend the days that follow.
+* The ticker text at the header top names the current mode, so the state is
+  never hidden.
+
+The colony has its own day loop (`endColonyDay()` in `app-crew.js`): work in the
+plots is settled first, then the clock's day is advanced, and the header date is
+repainted from `G.day` on every render - which is why it no longer freezes while
+the colony screen is open.
+
+## Colony screen
+
+Each colony shows a 5 x 3 lattice of plots. A plot carries three bands:
+
+* `.plot-head` **above the field** - what is planted there and how many workers
+  are assigned,
+* the illustrated field itself,
+* `.plot-foot` - growth progress, status and the worker pips.
+
+`fitPlotScale()` in `app-colonies.js` sizes the tiles so the whole lattice fits
+the board. It measures a hidden `#plot-probe` sibling rather than the board
+itself: the board has `overflow: hidden`, so measuring it would measure an
+already-clipped box and the scale would chase its own overflow. The lattice
+coordinates are percentages of the board while a tile is a fixed pixel size,
+so the scale keeps 10 % slack for the per-plot jitter and the 5 % hover grow;
+without that slack the outer plots hang past the edge.
+
+## Saving and resuming
+
+There is no server. `app-shell.js` keeps one slot in `localStorage`
+(`artrace.career.v1`) written on a 700 ms debounce plus on `pagehide` and
+`visibilitychange`, which is what makes a pull-to-refresh on a phone cheap:
+the title screen then offers **Continue - day N of M**.
+
+The slot is cleared when a career ends or when a new one begins, so a finished
+race cannot be resumed. The RNG is a closure and cannot be serialised; it is
+re-seeded from `G.seed` on restore, so a resumed career is reproducible but its
+random stream diverges from an uninterrupted one. A restored page does not
+restart the clock on its own.

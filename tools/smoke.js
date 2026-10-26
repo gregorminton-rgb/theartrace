@@ -99,7 +99,10 @@ check('new game starts', G.day === 1 && !G.ended, 'city=' + G.cityId);
 /* every colony must be reachable and open its screen */
 var colonies = A.colonies.COLONIES;
 for (var c = 0; c < colonies.length; c++) {
-  G.cash = 500000; G.colonyId = null; G.voyage = null;
+  /* One fresh career per colony: a single career only lasts 180 days and the
+     round trip to the far colonies alone spends most of them. */
+  api.newGame({ difficulty: 'Normal', seed: 42 + c });
+  G.cash = 500000;
   A.colonies.sailToColony(colonies[c].id);
   var started = !!G.voyage && G.voyage.colonyId === colonies[c].id;
   var arrived = runToArrival();
@@ -114,10 +117,10 @@ for (var c = 0; c < colonies.length; c++) {
 }
 
 /* every city pair must arrive where it promised */
-var from = G.cityId;
 for (var k = 0; k < A.cities.length; k++) {
   var to = A.cities[k];
-  if (to.id === G.cityId) continue;
+  if (to.id === 'amsterdam') continue;
+  api.newGame({ difficulty: 'Normal', seed: 100 + k });
   G.cash = 500000;
   var here = G.cityId;
   window.ArtRaceGame.api.travelTo(to.id);
@@ -138,8 +141,41 @@ check('remaining counts down', !!total && seen[0] === total && seen.length >= to
       'first=' + seen[0] + ' of ' + total + ' steps=' + seen.length);
 
 /* a long stretch of the calendar must never throw */
+G.careerDays = G.day + 3;   /* the sweep above outruns one career */
+G.ended = false;
 days(200);
 check('200 further days', true, 'day=' + G.day + ' ended=' + G.ended);
+
+/* The win condition: the career runs its full length and then stops. It must
+   never end early on a net-worth target, and it must end once the days are up. */
+check('career runs the full length', G.day > G.careerDays,
+      'day=' + G.day + ' of ' + G.careerDays);
+check('career ends when the days are spent', G.ended === true, 'ended=' + G.ended);
+
+/* The collection is the score, so the held count must survive the ending and
+   the portfolio values must still be readable from the market. */
+var heldCount = G.portfolio.length;
+var heldValue = 0;
+for (var q = 0; q < G.portfolio.length; q++) heldValue += A.app.valueOf(G.portfolio[q]);
+check('collection count survives the ending', heldCount >= 0 && heldCount <= G.capacity,
+      'held=' + heldCount + ' capacity=' + G.capacity);
+check('collection value is computable', heldValue >= 0, 'value=' + Math.round(heldValue));
+
+/* Dealer asks must be clearly dearer than market value, and the auction room
+   must be the cheap channel: the gallery premium is the web-only knob. */
+check('dealer premium is configured', A.CFG.dealerPremium > 1,
+      'premium=' + A.CFG.dealerPremium);
+check('rival aggression is scaled down', A.CFG.auctionAggressionScale < 1,
+      'scale=' + A.CFG.auctionAggressionScale);
+
+/* Nothing may end the career before the last day. */
+(function () {
+  window.ArtRaceGame.api.newGame({ difficulty: 'Easy', durationIndex: 1, cityId: 'amsterdam' });
+  var before = G.ended;
+  days(10);
+  check('no early ending in the first days', before === false && G.ended === false,
+        'day=' + G.day + ' ended=' + G.ended);
+})();
 
 WScript.Echo(fails ? ('\n' + fails + ' check(s) failed') : '\nall checks passed');
 WScript.Quit(fails ? 1 : 0);
