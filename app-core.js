@@ -446,7 +446,6 @@
     log('Arrived in ' + to.name + ' on day ' + G.day + '.');
     restockIfNeeded();
     syncAuction();
-    if (G.view === 'travel') G.view = 'dealer';
     /* Auto-day is a "carry me across" switch, so docking switches it off; the
        player wanted the crossing, not the days spent standing in the new
        port. The colony branch above stops the clock for the same reason.

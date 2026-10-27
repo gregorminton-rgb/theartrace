@@ -345,23 +345,23 @@
   /* The one question before the money is spent: destination, price, days. */
   function confirmDeparture(dest, colony, target, price, days) {
     A.shell.dialog(
-      'Nach ' + dest.label + ' reisen?',
+      'Travel to ' + dest.label + '?',
       '<div class="confirm-leg">' +
         '<p class="confirm-head">Von <b>' + h(colony.label) + '</b> nach <b>' + h(dest.label) + '</b></p>' +
         '<div class="confirm-grid">' +
-          '<div><span>Reisedauer</span><b>' + days + ' Tage</b></div>' +
-          '<div><span>Fahrpreis</span><b>' + A.money(price) + '</b></div>' +
-          '<div><span>Bargeld danach</span><b>' + A.money(G.cash - price) + '</b></div>' +
+          '<div><span>Travel time</span><b>' + days + ' days</b></div>' +
+          '<div><span>Fare</span><b>' + A.money(price) + '</b></div>' +
+          '<div><span>Cash afterwards</span><b>' + A.money(G.cash - price) + '</b></div>' +
         '</div>' +
         '<p class="confirm-note">Die Plantage bleibt bewirtschaftet zurück. Ankunft an Tag ' +
           (G.day + days) + '.</p>' +
       '</div>',
       [
-        { label: 'Abbrechen', onClick: function () {
+        { label: 'Cancel', onClick: function () {
             A.shell.closeDialog();
             if (A.mapView && A.mapView.clear) A.mapView.clear();
           } },
-        { label: 'Ja, ablegen', primary: true, onClick: function () {
+        { label: 'Yes, sail', primary: true, onClick: function () {
             A.shell.closeDialog();
             bookPassage(dest, colony, target, price, days);
           } }

@@ -417,14 +417,14 @@
       body += '<div class="place-leg">' +
         '<div><span>Von hier</span><b>' + h(G.colonyId ? (COLONY_BY_ID[G.colonyId] || {}).label || '' : (A.city(G.cityId) || {}).name || '') + '</b></div>' +
         '<div><span>Passage</span><b>' + leg.days + ' Tage</b></div>' +
-        '<div><span>Fahrpreis</span><b>' + A.money(leg.price) + '</b></div>' +
+        '<div><span>Fare</span><b>' + A.money(leg.price) + '</b></div>' +
         '<div><span>Danach</span><b>' + A.money(G.cash - leg.price) + '</b></div>' +
         '</div>';
       if (leg.price > G.cash) {
         body += '<p class="place-warn">Der Fahrpreis liegt über deinem Bargeld — diese Überfahrt ist nicht buchbar.</p>';
       }
     }
-    var buttons = [{ label: 'Abbrechen', onClick: function () { G.mapPick = null; closeDialog(); if (worldMap) syncWorldMap(); } }];
+    var buttons = [{ label: 'Cancel', onClick: function () { G.mapPick = null; closeDialog(); if (worldMap) syncWorldMap(); } }];
 
     /* Ashore on a plantation the voyage starts from the colony, not the city
        the player left behind: hand the departure to the colony module. */
@@ -470,7 +470,7 @@
 
     if (dest) {
       buttons.unshift({
-        label: 'Ja, nach ' + dest.label + (dest.sail ? ' segeln' : ' reisen') +
+        label: (dest.sail ? 'Yes, sail to ' : 'Yes, travel to ') + dest.label +
                (leg ? ' · ' + A.money(leg.price) : ''),
         primary: true,
         onClick: dest.go
