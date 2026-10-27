@@ -154,9 +154,6 @@
     Array.prototype.forEach.call(nav.querySelectorAll('.station'), function (b) {
       var v = b.getAttribute('data-view');
       var ok = !!c;
-      /* At sea only the chart and the crates are reachable; the rooms of the
-         port we sailed from are not. */
-      if (inTransit()) ok = v === 'travel' || v === 'portfolio';
       /* Rooms that exist only in some cities are hidden, not greyed out: a
          locked door with no explanation reads like a bug. The auction is the
          clearest case — the room is only there while a catalogue is hanging. */
@@ -164,6 +161,10 @@
       if (v === 'bank') ok = !!c && !!c.hasBank;
       if (v === 'studio') ok = !!c && !!c.hasRestorationStudio;
       if (v === 'trade') ok = !!c && !!TRADE_HUB_IDS[c.id];
+      /* At sea only the chart and the crates are reachable; the rooms of the
+         port we sailed from are not. This must come last so no room rule
+         above can switch them back on. */
+      if (inTransit()) ok = v === 'travel' || v === 'portfolio';
       b.hidden = !ok;
       b.disabled = !ok;
       b.classList.toggle('active', ok && G.view === v);
