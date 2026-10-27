@@ -139,6 +139,11 @@
     el('news-list').innerHTML = list.length ? list.join('') : '<li class="news">No news. The salerooms are quiet.</li>';
   }
 
+  /* A sea or rail leg in progress: G.cityId still names the port we left. */
+  function inTransit() {
+    return !!G.voyage && !G.voyage.colonyId;
+  }
+
   function renderStations() {
     /* Standing on a plantation means G.colonyId is set; the city in G.cityId is
        only the port the player last left, so its rooms are not reached from
@@ -149,6 +154,9 @@
     Array.prototype.forEach.call(nav.querySelectorAll('.station'), function (b) {
       var v = b.getAttribute('data-view');
       var ok = !!c;
+      /* At sea only the chart and the crates are reachable; the rooms of the
+         port we sailed from are not. */
+      if (inTransit()) ok = v === 'travel' || v === 'portfolio';
       /* Rooms that exist only in some cities are hidden, not greyed out: a
          locked door with no explanation reads like a bug. The auction is the
          clearest case — the room is only there while a catalogue is hanging. */
@@ -233,6 +241,7 @@
     var here = A.city(G.cityId);
     var c = here || A.city(G.colonyReturnCityId) || A.city(G.colonyId);
     var view = G.view;
+    if (inTransit() && view !== 'portfolio') view = 'travel';
     if (!here) {
       G.view = 'portfolio';
       el('panel').innerHTML = '<div class="panel-head"><h2>' + h(VIEW_TITLES.portfolio) + '</h2>' +
