@@ -77,7 +77,7 @@
     var bd = el('backdrop');
     /* At sea the picture shows the destination, never the port left behind;
        the route strip above the picture names both ends. */
-    var away = !!G.voyage && !G.voyage.colonyId;
+    var away = !!G.voyage;
     el('voyage-strip').hidden = !away;
     if (away) {
       var fromCity = A.city(G.voyage.fromId);

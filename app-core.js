@@ -380,6 +380,11 @@
       route: route.pts, glyph: route.glyph,
       path: path || { pts: route.pts, glyph: route.glyph }
     };
+    /* the chart switches to the level that holds the destination, so the
+       Europe plate does not stay on screen while the ship sails overseas */
+    if (A.mapView && A.mapView.setLevel) {
+      A.mapView.setLevel(A.mapView.levelFor({ kind: colonyId ? 'colony' : 'city', mapX: to.mapX, mapY: to.mapY }));
+    }
     log('You set out for ' + toName + ': ' + A.money(price) +
         ' ticket' + (freight ? ', ' + A.money(freight) + ' freight for ' + crates + ' crate(s)' : '') +
         ', ' + days + ' day(s) ' + (route.glyph === 'rail' ? 'by rail' : 'at sea') + '.');

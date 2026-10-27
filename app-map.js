@@ -117,7 +117,7 @@
   /* ---- the live chart ------------------------------------------------ */
   var worldMap = null;
   A.mapView = { get: function () { return worldMap; }, render: renderWorldMap,
-                 sync: syncWorldMap, setLevel: setMapLevel,
+                 sync: syncWorldMap, setLevel: setMapLevel, levelFor: levelForPlace,
                  /* pick a place by id instead of by pixel: the chart's own
                     hit-test needs a real canvas rect, tests and the city list
                     do not have one. */
