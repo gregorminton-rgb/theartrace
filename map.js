@@ -49,8 +49,8 @@
          globe is squeezed into the panel and Europe is a hairline in the middle.
          Window chosen so all six European cities sit clear of the frame. */
       lonSpan: 36,
-      sea: ['#12405f', '#0a2b45', '#08243a'],
-      land: '#e3d3ad', coast: '#6d5426',
+      sea: ['#1b6c94', '#0f4a70', '#093352'],
+      land: '#d8b47a', coast: '#4e2f10',
       city: '#8a2525', trade: '#b3872c', colony: '#9e2a2b',
       ocean: [['ATLANTIC  OCEAN', -18, 42], ['MEDITERRANEAN', 16, 37],
               ['BLACK  SEA', 34, 43]],
@@ -59,8 +59,8 @@
     world: {
       id: 'world',
       lat0: 76, lat1: -56, cell: 20, lon0: 0,
-      sea: ['#17465c', '#0e3049', '#0a2437'],
-      land: '#dabc98', coast: '#6b4c2c',
+      sea: ['#1f7396', '#114d6e', '#0a3450'],
+      land: '#d4a86a', coast: '#5a3a16',
       city: '#1a2b3c', trade: '#b3872c', colony: '#9e2a2b',
       ocean: [['ATLANTIC  OCEAN', -32, 8], ['PACIFIC  OCEAN', -140, 0],
               ['INDIAN  OCEAN', 78, -22]],
@@ -139,6 +139,42 @@
 
   var RINGS = decode(GEO && GEO.land);
   var LAKES = decode(GEO && GEO.lakes);
+
+  /* Terrain regions as soft, irregular blobs: [lon, lat, rLon, rLat] in
+   * degrees. Each blob is drawn as a wobbly ellipse and clipped to the land,
+   * so no straight edges show. Later groups paint over earlier ones. */
+  var TERRAIN = [
+    { color: 0x9bb36a, blobs: [            /* farmland */
+      [5, 47, 7, 4], [18, 50, 7, 3.5], [-2, 53, 4, 2.5], [10, 53, 5, 3.5],
+      [35, 50, 9, 4], [-93, 40, 9, 5], [-80, 40, 5, 4], [115, 32, 6, 5],
+      [80, 26, 6, 2.5], [-62, -35, 5, 6], [148, -33, 2.5, 3.5], [-2, 42, 4, 3]
+    ] },
+    { color: 0xe6c86e, blobs: [            /* desert */
+      [10, 23, 18, 6], [30, 27, 9, 4], [45, 22, 7, 7], [105, 42, 9, 3.5],
+      [131, -25, 11, 6], [22, -23, 5, 4], [-69, -22, 2.5, 5], [56, 33, 5, 3.5]
+    ] },
+    { color: 0x2f5e2a, blobs: [            /* jungle */
+      [-62, -4, 11, 5], [22, 0, 7, 5], [114, 0, 3.5, 2.5], [102, 0, 2.5, 3.5],
+      [-88, 15, 3.5, 2], [-3, 7, 4, 2.5], [-72, -8, 4, 3]
+    ] },
+    { color: 0xf6f3e8, blobs: [            /* snow and ice */
+      [-42, 72, 11, 5], [-100, 70, 14, 4.5], [100, 70, 22, 4.5],
+      [-150, 64, 5, 2.5], [20, 68, 5, 2.5], [85, 32, 7, 2]
+    ] }
+  ];
+
+  /* An irregular ellipse in map space, projected to the screen. */
+  function blobToPixels(cam, b, k) {
+    var out = [], n = 14;
+    for (var i = 0; i < n; i++) {
+      var t = i / n * Math.PI * 2;
+      var j = 1 + 0.22 * Math.sin(3 * t + k) + 0.12 * Math.cos(5 * t + 2 * k);
+      var lon = b[0] + b[2] * Math.cos(t) * j;
+      var lat = b[1] + b[3] * Math.sin(t) * j;
+      out.push(cam.fromMap((lon + 180) / 360, (lat + 90) / 180));
+    }
+    return out;
+  }
 
   /* =====================================================================
    * 2. Land mask + sea routing (all in map space, level-independent)
@@ -662,7 +698,7 @@
   function drawGraticule(lv, cam) {
     var g = new PIXI.Graphics();
     var lon, lat, i, p;
-    g.lineStyle(1, 0xc8e1f5, 0.13);
+    g.lineStyle(1, 0xd8ecff, 0.20);
     for (lon = -180; lon <= 180; lon += lv.cell) {
       var x = (lon + 180) / 360;
       var first = true;
@@ -678,7 +714,7 @@
       g.lineTo(b.x, b.y);
     }
     /* equator + tropics get the classic emphasis */
-    g.lineStyle(1, 0xc8e1f5, 0.26);
+    g.lineStyle(1, 0xd8ecff, 0.36);
     [0, 23.43, -23.43].forEach(function (deg) {
       var yy = (deg + 90) / 180;
       var aa = cam.fromMap(0, yy), bb = cam.fromMap(1, yy);
@@ -694,7 +730,7 @@
 
   function drawRhumb(cam) {
     var g = new PIXI.Graphics();
-    g.lineStyle(1, 0xc8e1f5, 0.08);
+    g.lineStyle(1, 0xd8ecff, 0.11);
     var cx = cam.W * 0.16, cy = cam.H * 0.42, R = Math.max(cam.W, cam.H) * 1.6;
     for (var i = 0; i < 16; i++) {
       var a = i * Math.PI / 8;
@@ -718,58 +754,68 @@
   }
 
   function drawLand(lv, cam) {
-    var g = new PIXI.Graphics();
+    var g = new PIXI.Container();
     var r, i, pts;
     var land = hex(lv.land), coast = hex(lv.coast);
 
-    /* the shallow shelf: a wide, soft edge under every coast */
+    /* the shallow shelf: a wide, soft edge under every coast, drawn first so
+       the landmass sits on top of it */
+    var shelf = new PIXI.Graphics();
     for (r = 0; r < RINGS.length; r++) {
       if (!visibleRing(cam, RINGS[r])) continue;
       pts = toPixels(cam, RINGS[r]);
-      g.beginFill(0x5a4628, 0.30);
-      g.lineStyle(10, 0x5a4628, 0.20);
-      g.drawPolygon(flatten(pts));
-      g.endFill();
+      shelf.beginFill(0x3a2a14, 0.18);
+      shelf.lineStyle(6, 0x3a2a14, 0.25);
+      shelf.drawPolygon(flatten(pts));
+      shelf.endFill();
+    }
+    g.addChild(shelf);
+
+    /* the landmass itself: the base tone, then the terrain zones clipped to it */
+    var fill = new PIXI.Graphics();
+    for (r = 0; r < RINGS.length; r++) {
+      if (!visibleRing(cam, RINGS[r])) continue;
+      fill.beginFill(land, 1);
+      fill.drawPolygon(flatten(toPixels(cam, RINGS[r])));
+      fill.endFill();
     }
 
-    /* the landmass itself: pale parchment, one ink line on the coast */
+    var terrain = new PIXI.Graphics();
+    /* terrain zones are only drawn on the world plate; Europe stays a clean base */
+    if (lv.id === 'world') {
+      for (var z = 0; z < TERRAIN.length; z++) {
+        terrain.beginFill(TERRAIN[z].color, 1);
+        for (var b = 0; b < TERRAIN[z].blobs.length; b++) {
+          terrain.drawPolygon(flatten(blobToPixels(cam, TERRAIN[z].blobs[b], b * 1.7 + z)));
+        }
+        terrain.endFill();
+      }
+    }
+    /* the base tone is visible; the terrain zones are clipped to it */
+    g.addChild(fill);
+    g.addChild(terrain);
+
+    /* coastline ink, a faint highlight and lakes sit above the zones; they go
+       in their own child, since a Graphics draws its own geometry before its
+       children and would otherwise be hidden under the fill */
+    var ink = new PIXI.Graphics();
     for (r = 0; r < RINGS.length; r++) {
       if (!visibleRing(cam, RINGS[r])) continue;
       pts = toPixels(cam, RINGS[r]);
-      g.beginFill(land, 1);
-      g.lineStyle(1.4, coast, 0.92);
-      g.drawPolygon(flatten(pts));
-      g.endFill();
-      g.lineStyle(0.6, 0xfffae6, 0.30);
-      g.drawPolygon(flatten(pts));
+      ink.lineStyle(1.4, coast, 0.92);
+      ink.drawPolygon(flatten(pts));
+      ink.lineStyle(0.6, 0xfffae6, 0.3);
+      ink.drawPolygon(flatten(pts));
     }
-
     for (i = 0; i < LAKES.length; i++) {
       if (!visibleRing(cam, LAKES[i])) continue;
       pts = toPixels(cam, LAKES[i]);
-      g.beginFill(0xa0afaa, 0.85);
-      g.lineStyle(0.6, 0x4a3823, 0.42);
-      g.drawPolygon(flatten(pts));
-      g.endFill();
+      ink.beginFill(0xa0afaa, 0.85);
+      ink.lineStyle(0.6, 0x4a3823, 0.42);
+      ink.drawPolygon(flatten(pts));
+      ink.endFill();
     }
-    return g;
-  }
-
-  function drawFrame(cam) {
-    var g = new PIXI.Graphics();
-    var W = cam.W, H = cam.H;
-    g.lineStyle(2, 0x4a3823, 0.72);
-    g.drawRect(7, 7, W - 14, H - 14);
-    g.lineStyle(0.8, 0x4a3823, 0.72);
-    g.drawRect(12.5, 12.5, W - 25, H - 25);
-    var L = 16;
-    g.lineStyle(1.4, 0x4a3823, 0.85);
-    [[13, 13, 1, 1], [W - 13, 13, -1, 1], [13, H - 13, 1, -1], [W - 13, H - 13, -1, -1]]
-      .forEach(function (c) {
-        g.moveTo(c[0] + c[2] * L, c[1]);
-        g.lineTo(c[0], c[1]);
-        g.lineTo(c[0], c[1] + c[3] * L);
-      });
+    g.addChild(ink);
     return g;
   }
 
@@ -1035,7 +1081,7 @@
       drawPinsAndLabels();
       drawSelection();
       drawAnchor();
-      try { app.renderer.render(app.stage); } catch (e) { /* gone */ }
+      try { app.renderer.render(app.stage); } catch (e) { console.error('[map] render failed', e); }
     }
 
     var seaLayer = new PIXI.Container();
@@ -1097,9 +1143,7 @@
 
       seaLayer.addChild(drawSea(lv, cam));
       gridLayer.addChild(drawGraticule(lv, cam));
-      gridLayer.addChild(drawRhumb(cam));
       landLayer.addChild(drawLand(lv, cam));
-      decoLayer.addChild(drawFrame(cam));
       decoLayer.addChild(drawCompassRose(cam));
       decoLayer.addChild(drawScaleBar(cam));
       decoLayer.addChild(drawCartouche(lv, cam));

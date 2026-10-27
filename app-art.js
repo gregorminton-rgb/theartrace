@@ -33,9 +33,16 @@
 
   /* The thumbnail carries the click-to-enlarge action: the row's own buttons
      stay free for Buy / Sell / Bid. */
-  function thumb(w, uid) {
+  function thumb(w, uid, plain) {
     var tint = EPOCH_TINT[A.workEpoch(w)] || EPOCH_TINT.Modern;
     var pic = artPicture(w.id);
+    /* plain: a picture that does not open anything (used while a quiz is open) */
+    if (plain) {
+      return pic
+        ? '<span class="thumb thumb-art"><img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy"></span>'
+        : '<span class="thumb" style="background:linear-gradient(135deg,' + tint[0] + ' 25%,' + tint[1] + ' 100%)">' +
+          '<span class="thumb-init">' + h((A.artistById[w.artistId] || { name: '?' }).name.slice(0, 1)) + '</span></span>';
+    }
     var attr = ' data-action="art" data-work="' + h(w.id) + '"' +
       (uid != null ? ' data-uid="' + h(uid) + '"' : '') +
       ' title="' + h(w.title) + ' — click for the full picture"';
@@ -79,9 +86,17 @@
        the route strip above the picture names both ends. */
     var away = !!G.voyage;
     el('voyage-strip').hidden = !away;
+    var from = el('backdrop-from');
+    bd.classList.toggle('is-split', away);
+    from.hidden = !away;
     if (away) {
       var fromCity = A.city(G.voyage.fromId);
-      el('voyage-from').textContent = fromCity ? fromCity.name : G.voyage.fromId;
+      var fromColony = !fromCity && G.voyage.fromColonyId && A.colonies
+        ? A.colonies.COLONY_BY_ID[G.voyage.fromColonyId] : null;
+      var fromPic = fromCity ? cityPicture(fromCity) : (fromColony ? pictureFor(fromColony.pic) : null);
+      from.style.backgroundColor = fromCity ? rgb(fromCity.theme) : '';
+      from.style.backgroundImage = fromPic ? 'url("' + fromPic.file + '")' : 'none';
+      el('voyage-from').textContent = fromCity ? fromCity.name : (fromColony ? fromColony.label : G.voyage.fromId);
       el('voyage-mid').textContent = (G.voyage.glyph === 'rail' ? 'by rail' : 'at sea') +
         ' · ' + G.voyage.remaining + ' day(s) left';
       el('voyage-to').textContent = G.voyage.toName;

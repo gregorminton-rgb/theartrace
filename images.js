@@ -241,24 +241,24 @@ window.ART_IMAGES = {
                                          ]
                              },
                    "plantage1":  {
-                                     "file":  "images/plantage1.jpg",
-                                     "width":  1600,
-                                     "height":  893,
-                                     "bytes":  388319,
+                                     "file":  "images/plantage1.jpg?v=20261027-JAMAICA1",
+                                                                          "width":  1024,
+                                                                          "height":  765,
+                                                                          "bytes":  325669,
                                      "role":  "city",
-                                     "source":  "Plantage1.jpg",
+                                                                          "source":  "jamaica.jpg",
                                      "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
                                  },
                    "plantage2":  {
-                                     "file":  "images/plantage2.jpg",
-                                     "width":  1600,
-                                     "height":  1195,
-                                     "bytes":  712211,
+                                     "file":  "images/plantage2.jpg?v=20261027-TRINIDAD1",
+                                                                          "width":  1024,
+                                                                          "height":  765,
+                                                                          "bytes":  337283,
                                      "role":  "city",
-                                     "source":  "Plantage2.jpg",
+                                                                          "source":  "Trinidad.jpg",
                                      "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
                                      "ids":  [
 

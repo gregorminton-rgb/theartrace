@@ -141,7 +141,7 @@
 
   /* A sea or rail leg in progress: G.cityId still names the port we left. */
   function inTransit() {
-    return !!G.voyage && !G.voyage.colonyId;
+    return !!G.voyage;
   }
 
   function renderStations() {
@@ -377,12 +377,21 @@
       var quizOpen = lot.leader === 'you' && lot.quiz && !lot.quiz.answered;
       var w = A.work(lot.inst.defId);
       var a = A.artistById[w.artistId];
+      /* While the expert question is open, the row must not show the answer:
+         year, medium and kind of picture stay hidden, and the picture does not open. */
       var info = open
         ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
           '<span class="title">' + h(w.title) + '</span>' +
           '<span class="credit">' + h(a ? a.name : 'Unknown') + '</span></div></div>'
-        : rowHead(lot.inst) + '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
-          '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>';
+        : quizOpen
+          ? '<div class="row-main">' + thumb(w, lot.inst.uid, true) + '<div>' +
+            '<span class="title">' + h(w.title) + '</span>' +
+            '<span class="credit">' + h(a ? a.name : 'Unknown') + '</span>' +
+            '<span class="prov">' + h(lot.inst.provenance) + '</span></div></div>' +
+            '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
+            '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>'
+          : rowHead(lot.inst) + '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
+            '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>';
       var head = '';
       var nums = '<div class="row-num"><span class="ask">bid ' + A.money(lot.bid) + '</span>' +
         (open ? '' : '<span class="est">estimate ' + A.money(lot.low) + '–' + A.money(lot.high) + '</span>') +

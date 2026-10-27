@@ -460,6 +460,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 #backdrop.has-image + #backdrop-caption { background: none; }
 
+/* At sea: departure picture left, destination picture right, same frame. */
+#backdrop-from {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 50%;
+  background-size: cover; background-position: center center; background-repeat: no-repeat;
+  background-color: #1d1409; z-index: 0;
+}
+#backdrop-from[hidden] { display: none; }
+#backdrop.is-split { left: 50%; width: 50%; }
+#backdrop.is-split::after { left: 0; right: 0; }
+
 /* =========================================================================
  * World map (travel office).
  *

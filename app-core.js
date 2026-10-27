@@ -374,8 +374,11 @@
     var path = window.ArtRaceMap && window.ArtRaceMap.buildRoute
       ? window.ArtRaceMap.buildRoute(from.mapX, from.mapY, to.mapX, to.mapY)
       : null;
+    /* a plantation departure keeps its colony id, so the picture and label
+       of the departure side can be shown while the ship is at sea */
+    var fromColonyId = !A.city(from.id) && COLONY_BY_ID[from.id] ? from.id : null;
     G.voyage = {
-      fromId: from.id, toId: to.id, toName: toName, colonyId: colonyId,
+      fromId: from.id, fromColonyId: fromColonyId, toId: to.id, toName: toName, colonyId: colonyId,
       days: days, remaining: days, startDay: G.day, label: from.name + ' → ' + toName,
       route: route.pts, glyph: route.glyph,
       path: path || { pts: route.pts, glyph: route.glyph }
