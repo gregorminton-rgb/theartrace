@@ -86,12 +86,19 @@
         ' · ' + G.voyage.remaining + ' day(s) left';
       el('voyage-to').textContent = G.voyage.toName;
       var dest = A.city(G.voyage.toId);
+      var colony = G.voyage.colonyId && A.colonies ? A.colonies.COLONY_BY_ID[G.voyage.colonyId] : null;
       if (dest) {
         var dpic = cityPicture(dest);
         bd.classList.toggle('has-image', !!dpic);
         bd.style.backgroundColor = rgb(dest.theme);
         bd.style.backgroundImage = dpic ? 'url("' + dpic.file + '")' : 'none';
         el('backdrop-caption').textContent = 'Unterwegs nach ' + dest.name;
+      } else if (colony) {
+        var kpic = pictureFor(colony.pic);
+        bd.classList.toggle('has-image', !!kpic);
+        bd.style.backgroundColor = '';
+        bd.style.backgroundImage = kpic ? 'url("' + kpic.file + '")' : 'none';
+        el('backdrop-caption').textContent = 'Unterwegs nach ' + colony.label;
       }
       return;
     }
