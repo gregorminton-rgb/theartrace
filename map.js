@@ -984,8 +984,6 @@
       setAnchor: setAnchor,
       setLabels: setLabels,
       setLevel: setLevel,
-      zoomIn: function () { zoomAt(1.5, W / 2, H / 2); },
-      zoomOut: function () { zoomAt(1 / 1.5, W / 2, H / 2); },
       refresh: refresh,
       destroy: destroy
     };

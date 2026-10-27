@@ -69,8 +69,6 @@
       '" data-map-level="europe">Europa</button>' +
       '<button type="button" class="wm-level' + (lv === 'world' ? ' is-on' : '') +
       '" data-map-level="world">Welt</button>' +
-      '<button type="button" class="wm-level" data-map-zoom="in" aria-label="Zoom rein">+</button>' +
-      '<button type="button" class="wm-level" data-map-zoom="out" aria-label="Zoom raus">&minus;</button>' +
       '</span>' +
       '</div>' + (hasCanvas ? '' : '<p class="wm-fallback">The engraved chart could not be drawn — the list below still works.</p>') + '</div>';
   }
@@ -292,12 +290,6 @@
       stage.addEventListener('click', function (ev) {
         var lvBtn = ev.target.closest('[data-map-level]');
         if (lvBtn) { setMapLevel(lvBtn.getAttribute('data-map-level')); return; }
-        var zBtn = ev.target.closest('[data-map-zoom]');
-        if (zBtn && worldMap) {
-          var dir = zBtn.getAttribute('data-map-zoom');
-          if (dir === 'in') worldMap.zoomIn(); else worldMap.zoomOut();
-          return;
-        }
         var c = worldMap && worldMap.canvas;
         if (!c || ev.target !== c) return;
         pickPlaceAt(ev, c);
