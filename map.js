@@ -728,18 +728,6 @@
     return g;
   }
 
-  function drawRhumb(cam) {
-    var g = new PIXI.Graphics();
-    g.lineStyle(1, 0xd8ecff, 0.11);
-    var cx = cam.W * 0.16, cy = cam.H * 0.42, R = Math.max(cam.W, cam.H) * 1.6;
-    for (var i = 0; i < 16; i++) {
-      var a = i * Math.PI / 8;
-      g.moveTo(cx, cy);
-      g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
-    }
-    return g;
-  }
-
   function visibleRing(cam, ring) {
     var W = cam.W, H = cam.H;
     var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
@@ -765,7 +753,6 @@
       if (!visibleRing(cam, RINGS[r])) continue;
       pts = toPixels(cam, RINGS[r]);
       shelf.beginFill(0x3a2a14, 0.18);
-      shelf.lineStyle(6, 0x3a2a14, 0.25);
       shelf.drawPolygon(flatten(pts));
       shelf.endFill();
     }
