@@ -612,6 +612,7 @@
       var crop = CROP_BY_ID[f.cropId];
       var pct = fieldProgressPct(f);
       var selected = G.selectedFieldId === f.id ? ' selected' : '';
+      if (crew.multiSelect.ids[f.id]) selected += ' multi';
       var pips = '';
       for (var l = 0; l < f.level; l++) pips += '<i class="plot-pip"></i>';
       var houseSVG = '<svg class="plot-house" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">' +
@@ -649,17 +650,34 @@
       '</button>';
   }
 
+  /* Bulk bar: toggles selection mode and applies Automatik to the selection. */
+  function colonyMultiBarHTML() {
+    var n = crew.multiSelectIds().length;
+    var on = crew.multiSelect.active;
+    return '<div class="colony-multi">' +
+      '<button class="btn' + (on ? ' primary' : '') + '" data-colony="multi-toggle">' +
+        (on ? 'Auswahl beenden' : 'Mehrfachauswahl') + '</button>' +
+      (on
+        ? '<span class="colony-multi-count">' + n + ' gewählt</span>' +
+          '<button class="btn" data-colony="auto-bulk" data-on="1"' + (n ? '' : ' disabled') + '>Automatik an</button>' +
+          '<button class="btn ghost" data-colony="auto-bulk" data-on="0"' + (n ? '' : ' disabled') + '>Automatik aus</button>'
+        : '') +
+      '</div>';
+  }
+
   function colonyInspectorHTML() {
     var f = G.selectedFieldId ? fieldById(G.selectedFieldId) : null;
     if (!f) {
       return '<h3 class="colony-panel-title">Inspector</h3>' +
+        colonyMultiBarHTML() +
         '<p class="colony-note">Click a field to inspect it, assign workers and upgrade it. Ripe fields harvest here or on the plot.</p>' +
         colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
     var next = UPGRADES[f.level];
     var idle = colonyIdle();
-    var html = '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
+    var html = colonyMultiBarHTML() +
+      '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
       '<div class="colony-field-head">' + cropThumb(crop, 'crop-thumb--card') +
         '<div><span class="colony-field-title">' + h(crop.label) + '</span>' +
         '<span class="colony-field-sub">plot ' + (f.plotIndex + 1) + ' · planted day ' + f.plantedDay + '</span></div></div>' +

@@ -217,6 +217,35 @@
     renderColony();
   }
 
+  /* Bulk switch for several fields at once: one mutation pass, one render. */
+  function setFieldsAuto(fids, on) {
+    var n = 0;
+    (fids || []).forEach(function (fid) {
+      var f = fieldById(fid);
+      if (!f) return;
+      claimPlot(f.colonyId, f.plotIndex, f.cropId).auto = !!on;
+      n++;
+    });
+    if (n) renderColony();
+    return n;
+  }
+
+  /* Multi-select: a set of field ids, toggled from the plot grid. */
+  var multiSelect = { active: false, ids: {} };
+  function toggleMultiSelect(fid) {
+    if (!fid) return;
+    if (multiSelect.ids[fid]) delete multiSelect.ids[fid];
+    else multiSelect.ids[fid] = true;
+    renderColony();
+  }
+  function multiSelectIds() {
+    return Object.keys(multiSelect.ids).map(Number).filter(function (fid) { return !!fieldById(fid); });
+  }
+  function clearMultiSelect() {
+    multiSelect.ids = {};
+    renderColony();
+  }
+
   /* The overseer's day, for one owned field with its switch on: harvest it
      when ripe, sow it again with the same crop, and keep one hand on it if
      there is one to spare. It spends cash like the player would. */
@@ -324,7 +353,18 @@
       if (!G.plantCropId) { log('Pick a crop plate first, then click a free plot.'); return; }
       plantCrop(G.plantCropId, pi);
     } else if (action === 'select') {
-      selectField(parseInt(t.getAttribute('data-field'), 10));
+      var sfid = parseInt(t.getAttribute('data-field'), 10);
+      if (multiSelect.active) toggleMultiSelect(sfid);
+      else selectField(sfid);
+    } else if (action === 'multi-toggle') {
+      multiSelect.active = !multiSelect.active;
+      if (!multiSelect.active) clearMultiSelect();
+      renderColony();
+    } else if (action === 'auto-bulk') {
+      var bulkIds = multiSelectIds();
+      if (!bulkIds.length) { log('Select fields first.'); return; }
+      setFieldsAuto(bulkIds, t.getAttribute('data-on') !== '1');
+      clearMultiSelect();
     } else if (action === 'harvest') {
       harvestField(parseInt(t.getAttribute('data-field'), 10));
     } else if (action === 'hire') {
@@ -543,6 +583,11 @@
     endColonyDay: endColonyDay,
     colonyAction: colonyAction,
     setFieldAuto: setFieldAuto,
+    setFieldsAuto: setFieldsAuto,
+    multiSelect: multiSelect,
+    toggleMultiSelect: toggleMultiSelect,
+    multiSelectIds: multiSelectIds,
+    clearMultiSelect: clearMultiSelect,
     fieldAutoOn: fieldAutoOn,
     ownedPlot: ownedPlot,
     runOverseer: runOverseer,
