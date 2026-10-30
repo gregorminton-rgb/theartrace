@@ -1176,10 +1176,17 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .trade-stock { grid-column: 2; justify-self: end; }
   .trade-price { grid-column: 1; font-size: .72rem; }
   .trade-btns { grid-column: 2; justify-self: end; }
-  .trade-btns .btn { padding: .35em .6em; font-size: .7rem; }
+  .trade-btns .btn { padding: .35em .6em; font-size: .7rem; min-height: 40px; }
   .trade-auto { font-size: .66rem; }
   .ship-row { flex-wrap: wrap; gap: .3em; }
+  .ship-row .btn, .ship-row .link-btn { min-height: 40px; }
   .colony-simple-panel { margin: .5em; padding: .9em; }
+  /* fingertip targets: trade hubs, worker and store buttons, auto toggles */
+  .hub-btn { min-height: 40px; padding: .5em .9em; }
+  .colony-simple-panel .btn, .colony-trade-panel .btn { min-height: 40px; }
+  .auto-check { min-height: 40px; }
+  .auto-check input { width: 22px; height: 22px; }
+  .auto-crop select { min-height: 40px; font-size: .9rem; }
 
   /* ---------- artwork detail ---------- */
   .av { grid-template-columns: 1fr; }
