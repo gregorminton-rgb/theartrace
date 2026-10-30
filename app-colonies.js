@@ -135,27 +135,6 @@
       plots: null
     }
   ];
-  /* The fifteen plots sit on a 5 × 3 lattice that fills the board edge to
-     edge: the tiles are large, so any gap left inside a cell shows up as a
-     hole between the fields. Each cell carries a small positional offset —
-     fixed per plot, so a plot never moves between renders — enough to keep
-     the plantation from looking like a spreadsheet. */
-  var PLOT_COLS = 5, PLOT_ROWS = 3;
-  function plotLattice() {
-    var out = [];
-    for (var i = 0; i < PLOT_COLS * PLOT_ROWS; i++) {
-      var col = i % PLOT_COLS, row = Math.floor(i / PLOT_COLS);
-      var x = (col + 0.5) * 100 / PLOT_COLS;
-      var y = (row + 0.5) * 100 / PLOT_ROWS;
-      var jx = ((hash2('jx' + i) % 7) - 3) * 0.5;   /* ±1.5 % of the board */
-      var jy = ((hash2('jy' + i) % 7) - 3) * 0.5;
-      out.push({ x: +(x + jx).toFixed(2), y: +(y + jy).toFixed(2) });
-    }
-    return out;
-  }
-  var PLOTS = plotLattice();
-  COLONIES.forEach(function (c) { if (!c.plots) c.plots = PLOTS; });
-
   var COLONY_BY_ID = {};
   COLONIES.forEach(function (c) { COLONY_BY_ID[c.id] = c; });
 
@@ -450,7 +429,6 @@
       el('colony-workers').innerHTML = colonyWorkersHTML();
       el('colony-grid').innerHTML = colonyGridHTML();
       el('colony-grid').style.background = colony.bg || '';
-      fitPlotScale();
       el('colony-inspector').innerHTML = colonyInspectorHTML();
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
@@ -518,44 +496,6 @@
     return cells.join('');
   }
 
-  /* The tiles are 200% of their old size, so a board that is narrower than
-     the lattice would push the outer fields out of sight. Measure the board
-     and scale the whole grid down to fit — never up: at full width the
-     fields stay at their natural size. */
-  function fitPlotScale() {
-    var board = el('colony-grid');
-    if (!board) return;
-    /* The plots are absolutely positioned, so the board's own box is set by
-       the flex layout and does not depend on the scale: measure it directly. */
-    var tileW = 144, tileH = 190;
-    var w = board.offsetWidth;
-    var h = board.offsetHeight;
-    if (!w || !h) return;
-    var fit = Math.min(w / (tileW * PLOT_COLS), h / (tileH * PLOT_ROWS));
-    /* the jitter may nudge a whole column ±1.5% off centre and the hover-grow
-       adds 5% more, so even a tile that fits exactly would bleed past an
-       edge. Reserve both, or the outer plots are always clipped. */
-    var scale = Math.max(0.26, Math.min(1, fit / 1.10));
-    board.style.setProperty('--plot-scale', scale.toFixed(3));
-  }
-
-  window.addEventListener('resize', function () {
-    if (G.colonyId && G.colonyMenu === 'plantage') fitPlotScale();
-  });
-
-  /* The board gets its final size only after the browser has laid the colony
-     out, so a one-shot fit right after render can measure a stale box (the
-     fields then keep their unscaled 144 × 170 size and spill over the edge).
-     Re-fit whenever the board itself changes size. */
-  (function observeBoard() {
-    var board = el('colony-grid');
-    if (!board || typeof ResizeObserver === 'undefined') return;
-    var ro = new ResizeObserver(function () {
-      if (G.colonyMenu === 'plantage') fitPlotScale();
-    });
-    ro.observe(board);
-  })();
-
   /* A little SVG diorama: tilled soil, crop rows that grow with progress, and
      the assigned workers walking/picking along a row. Workers are PNG cutouts
      placed with <image> so they scale with the tile. */
@@ -604,8 +544,7 @@
 
   function colonyPlotHTML(i) {
     var colony = COLONY_BY_ID[G.colonyId];
-    if (!colony || !colony.plots || i >= colony.plots.length) return '';
-    var pos = colony.plots[i];
+    if (!colony) return '';
     var f = plotField(i);
     
     if (f) {
@@ -623,7 +562,6 @@
         '<rect x="19" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '</svg>';
       return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
-        ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
         /* the crop label and the crew size sit above the soil, the progress
            rail below it — the diorama keeps the middle band to itself */
@@ -643,7 +581,6 @@
     
     var armed = G.plantCropId ? ' can-plant' : '';
     return '<button type="button" class="plot plot--empty' + armed + '"' +
-      ' style="left:' + pos.x + '%;top:' + pos.y + '%"' +
       ' data-colony="plant-at" data-plot="' + i + '" data-empty="1">' +
       '<span class="plot-empty-plus">+</span>' +
       '<span class="plot-empty-label">' + (G.plantCropId ? 'plant ' + CROP_BY_ID[G.plantCropId].label + ' · ' + A.money(plotPriceFor(CROP_BY_ID[G.plantCropId])) + ' + seed' : 'empty plot') + '</span>' +

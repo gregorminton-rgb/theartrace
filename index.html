@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Great Art Race &mdash; web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261031-MULTI2" />
+<link rel="stylesheet" href="styles.css?v=20261031-LAYOUT1" />
 </head>
 <body>
 <div id="app">
@@ -174,16 +174,14 @@
       <!-- PLANTAGE view -->
       <div class="colony-view colony-view--plantage" id="colony-view-plantage">
         <div class="colony-layout">
-          <aside class="colony-side">
-            <div class="colony-panel" id="colony-palette"></div>
-            <div class="colony-panel" id="colony-workers"></div>
-          </aside>
           <main class="colony-main">
             <div class="colony-grid" id="colony-grid"></div>
             <p class="colony-hint" id="colony-hint"></p>
           </main>
           <aside class="colony-side">
             <div class="colony-panel" id="colony-inspector"></div>
+            <div class="colony-panel" id="colony-palette"></div>
+            <div class="colony-panel" id="colony-workers"></div>
           </aside>
         </div>
       </div>
@@ -235,8 +233,8 @@
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261030-PLOTAUTO1"></script>
-<script src="app-crew.js?v=20261031-MULTI2"></script>
-<script src="app-colonies.js?v=20261031-MULTI2"></script>
+<script src="app-crew.js?v=20261031-LAYOUT1"></script>
+<script src="app-colonies.js?v=20261031-LAYOUT1"></script>
 <script src="app-core.js?v=20261030-QUIZ1"></script>
 <script src="art-notes.js?v=20261030-ART75"></script>
 <script src="app-art.js?v=20261031-PLAIN1"></script>

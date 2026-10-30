@@ -657,7 +657,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 .colony-layout {
-  flex: 1; display: grid; grid-template-columns: 240px 1fr 260px; gap: 1em;
+  flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1em;
   padding: 1em; min-height: 0; height: 100%;
 }
 .colony-side { display: flex; flex-direction: column; gap: 1em; min-height: 0; overflow: auto; }
@@ -695,28 +695,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-worker-num { font-size: 1.1rem; font-weight: 700; color: var(--oxblood); }
 .colony-worker-label { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); }
 
+/* Fields sit in a regular grid: 2 per row, 16 at most (4 rows), with one
+   equal gap in both directions. The board scrolls on its own, so the field
+   list never pushes the side panels off screen. */
 .colony-grid {
-  position: relative; overflow: hidden;
-  /* 15 plots are laid out on this lattice (see colonyGridHTML), so the board
-     needs the same 5 × 3 cells: the tiles fit edge to edge without gaps.
-     144 × 5 by 190 × 3 is 24:19, so this box is pinned to that ratio instead
-     of taking the rest of the column -- otherwise the leftover height shows
-     up as an empty band above the fields. */
-  flex: none; width: 100%; aspect-ratio: 24 / 19; max-height: 100%;
-  --plot-cols: 5;
-  --plot-rows: 3;
-  --plot-scale: 1;
+  --plot-gap: 8px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--plot-gap); align-content: start;
+  overflow-y: auto; padding: var(--plot-gap);
+  flex: 1; min-height: 0;
   background: linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%);
   border-radius: 4px; box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
+  -webkit-overflow-scrolling: touch; touch-action: pan-y;
 }
 .plot {
-  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: .15em; padding: .4em .3em;
-  /* The fields carry the whole plantation, so they are sized generously:
-     200% of the old 72×85 tile, with the worker figures scaled to match. */
-  width: calc(144px * var(--plot-scale)); height: calc(190px * var(--plot-scale));
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .15em; padding: .4em .3em; min-width: 0; min-height: 0;
+  aspect-ratio: 144 / 190;
   cursor: pointer;
-  transform: translate(-50%, -50%);
   background: transparent; border: 2px dashed rgba(140, 110, 70, .6);
   border-radius: 6px; color: var(--ink); transition: all .2s;
 }
@@ -730,7 +726,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-multi .btn { min-height: 40px; }
 .colony-multi-count { font-size: 13px; opacity: .8; }
 .plot.drag-over { border-color: var(--gold); background: rgba(247, 236, 214, .4); box-shadow: 0 0 14px rgba(179, 135, 44, .6); }
-.plot:hover { transform: translate(-50%, -50%) scale(1.05); }
+.plot:hover { border-color: var(--gold); }
 .plot-house { width: 36px; height: 36px; margin-bottom: .1em; filter: drop-shadow(0 2px 5px rgba(20, 10, 0, .5)); }
 .plot-crop { width: 44px; height: 44px; }
 .plot-label { font-size: .78rem; font-weight: 700; line-height: 1.1; text-align: center; color: #2a1f12; text-shadow: 0 1px 2px rgba(255,255,255,.6); }
@@ -1128,25 +1124,13 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     display: flex; flex-direction: column; gap: .5em;
     padding: .5em; height: auto; min-height: 0;
   }
-  /* the board must be tall enough for a 5 × 3 lattice. Its height cannot use
-     --plot-scale: fitPlotScale() derives the scale FROM this height, so the
-     reference would be circular and resolve to the unset value. On a phone
-     the width is too narrow for the 24:19 ratio to give enough height, so
-     drop the ratio and give the board a share of the screen; the plots scale
-     themselves to fit. */
   .colony-main { order: 1; flex: none; width: 100%; }
-  .colony-grid {
-    flex: none; overflow: visible;
-    aspect-ratio: auto; max-height: none;
-    height: clamp(230px, 46dvh, 430px);
-    min-height: 0;
-  }
+  .colony-grid { height: auto; max-height: 62dvh; }
   .colony-side { order: 2; overflow: visible; gap: .5em; }
   .colony-side:last-child { order: 3; }
   .colony-panel { padding: .6em; }
   /* crops become a horizontal strip of tiles; the automatik panel is not a
-     tile, so it spans the whole strip instead of being squeezed into one
-     column (it needs ~150px for the crop select) */
+     tile, so it spans the whole strip */
   #colony-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: .35em; }
   #colony-palette .colony-panel-title, #colony-palette .colony-note,
   #colony-palette .colony-auto { grid-column: 1 / -1; }
@@ -1222,6 +1206,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .worldmap--canvas { height: clamp(150px, 40dvh, 220px); min-height: 150px; }
   #colony-wm-stage { aspect-ratio: auto; height: calc(100dvh - 190px); min-height: 200px; }
   #colony-dest-list { max-height: 30dvh; }
-  .colony-layout { grid-template-columns: 190px 1fr 210px; }
+  .colony-layout { grid-template-columns: minmax(0, 1fr) 210px; }
   #hud .hud-brand { display: none; }
 }

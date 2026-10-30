@@ -38,7 +38,7 @@
    * and upgrade each field individually. Ripe fields harvest into the colonial
    * warehouse and are sold at the London / New York trade desks.
    * ---------------------------------------------------------------------- */
-  var PLOTS_PER_COLONY = 15;     // max hexagonal plots per colony
+  var PLOTS_PER_COLONY = 16;     // max fields per colony (2 per row, scrollable)
   var MAX_FIELD_WORKERS = 4;     // workers a single field can take
   var MAX_COLONY_WORKERS = 16;   // hired workers a colony can house
   var PLOT_BUY_FACTOR = 2;       // buying a plot costs twice the seed of its first crop

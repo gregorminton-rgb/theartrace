@@ -303,21 +303,19 @@ the colony screen is open.
 
 ## Colony screen
 
-Each colony shows a 5 x 3 lattice of plots. A plot carries three bands:
+Each colony shows up to 16 usable plots (`PLOTS_PER_COLONY` in `app-crew.js`)
+in a 2-column CSS grid (`.colony-grid`) with an equal 8 px gap. Each plot keeps
+a 144:190 aspect ratio and the grid scrolls vertically. A plot carries three bands:
 
 * `.plot-head` **above the field** - what is planted there and how many workers
   are assigned,
 * the illustrated field itself,
 * `.plot-foot` - growth progress, status and the worker pips.
 
-`fitPlotScale()` in `app-colonies.js` sizes the tiles so the whole lattice fits
-the board. The board is pinned to the lattice's 24:19 ratio on desktop
-(`aspect-ratio` in `.colony-grid`), so it does not stretch into an empty band
-above the fields. Its plots are absolutely positioned, so they do not feed
-back into its size and it can be measured directly. The lattice
-coordinates are percentages of the board while a tile is a fixed pixel size,
-so the scale keeps 10 % slack for the per-plot jitter and the 5 % hover grow;
-without that slack the outer plots hang past the edge.
+On desktop the grid sits in the left column and one right-hand side panel holds
+the inspector, the crop palette with automation, and the workers. On phones the
+side panel is placed after the grid. Multi-select is an explicit toggle mode
+(`crew.multiSelect`), so it also works on touch devices.
 
 ## Saving and resuming
 
