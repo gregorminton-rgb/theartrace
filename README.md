@@ -7,7 +7,14 @@ auction floor.
 
 Plain HTML, CSS and JavaScript. No build step, no backend.
 
-## Play
+## ▶️ Play now
+
+**[Start The Great Art Race](https://gregorminton-rgb.github.io/theartrace/)**
+
+No install, no account — it runs in the browser and works offline after the
+first visit.
+
+## Play locally
 
 The game must be served over HTTP (a `file://` page cannot load the bundled data).
 
