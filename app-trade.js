@@ -404,7 +404,7 @@
         quiz = '<div class="quiz"><p class="note"><strong>' +
           (de ? 'Mögliche Ersparnis bei richtiger Antwort: ' : 'Potential saving with a correct answer: ') +
           A.money(potentialSaving) + ' (' + A.pct(CFG.auctionQuizDiscount) + ')</strong></p>' +
-          '<p class="note">' + (de ? 'Expertenfrage: ' : 'Expert question: ') + lot.quiz.question +
+          '<p class="note">' + (de ? 'Expertenfrage: ' : 'Expert question: ') + (de ? ({'In which year was it painted?':'In welchem Jahr wurde das Bild gemalt?', 'What medium was it painted in?':'Mit welcher Technik wurde es gemalt?', 'What kind of picture is it?':'Um welche Bildgattung handelt es sich?' }[lot.quiz.question] || lot.quiz.question) : lot.quiz.question) +
           '</p><div class="row-btns">' +
           lot.quiz.options.map(function (o, c) {
             return '<button class="btn" data-action="quiz" data-lot="' + i + '" data-choice="' + c + '">' + o + '</button>';
