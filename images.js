@@ -361,10 +361,10 @@ window.ART_IMAGES = {
                                              ]
                                  },
                    "jamaica":  {
-                                   "file":  "images/jamaica.jpg",
+                                   "file":  "images/jamaica.jpg?v=20261101-JAMTRIN",
                                    "width":  1024,
                                    "height":  765,
-                                   "bytes":  269529,
+                                   "bytes":  325669,
                                    "role":  "city",
                                    "source":  "jamaica.jpg",
                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
@@ -433,10 +433,10 @@ window.ART_IMAGES = {
                                          ]
                              },
                    "trinidad":  {
-                                    "file":  "images/trinidad.jpg",
+                                    "file":  "images/trinidad.jpg?v=20261101-JAMTRIN",
                                     "width":  1024,
                                     "height":  765,
-                                    "bytes":  279030,
+                                    "bytes":  337283,
                                     "role":  "city",
                                     "source":  "Trinidad.jpg",
                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
