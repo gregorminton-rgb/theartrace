@@ -88,6 +88,12 @@
     var span = m0 - m1;
     var deg = level.lonSpan || 360;
     var mid = (level.lon0 || 0) / 360 + 0.5;
+    /* Fit the ENTIRE plate inside the viewport at 1x. Preserve its 1.85:1
+       geometry by letterboxing; never crop at the minimum zoom. */
+    var plateRatio = 1.85;
+    var drawW = Math.min(W, H * plateRatio);
+    var drawH = drawW / plateRatio;
+    var insetX = (W - drawW) / 2, insetY = (H - drawH) / 2;
     /* view: { z: zoom factor, cx, cy: plate point kept at the centre (0..1) }.
        Zoom is applied after the projection, so routes, pins, vessels and
        hit tests all share it. */
@@ -98,8 +104,8 @@
       var t = fB !== fA ? (y - fA) / (fB - fA) : 0;
       var lat = (1 - t) * level.lat0 + t * level.lat1;
       return {
-        x: ((x - mid) / (deg / 360) + 0.5) * W,
-        y: (m0 - merc(lat)) * (H / span)
+        x: insetX + ((x - mid) / (deg / 360) + 0.5) * drawW,
+        y: insetY + (m0 - merc(lat)) * (drawH / span)
       };
     }
     /* cx/cy are normalized PROJECTED screen coordinates, not longitude/latitude.\n       Feeding them back through base() flips Y and distorts zoom/panning. */
@@ -1489,20 +1495,16 @@
       if (!rect.width || !rect.height) return;
       var cssW = Math.max(220, Math.round(rect.width));
       var cssH = Math.max(150, Math.round(rect.height || cssW * 0.60));
-      /* The map must not turn into a tall, squeezed globe on portrait
-         phones. Render a wide plate (at least 1.85:1), and crop its sides
-         inside the viewport. Dragging pans the actual map, not a stretched
-         texture. Desktop uses its natural available dimensions. */
-      var plateW = Math.max(cssW, Math.round(cssH * 1.85));
-      var offset = Math.round((cssW - plateW) / 2);
-      canvasEl.style.width = plateW + 'px';
-      canvasEl.style.height = cssH + 'px';
-      canvasEl.style.maxWidth = 'none';
-      canvasEl.style.position = 'absolute';
-      canvasEl.style.left = offset + 'px';
-      canvasEl.style.top = '0';
-      if (plateW === W && cssH === H) return;
-      W = plateW; H = cssH;
+      /* Canvas matches the visible viewport exactly. The camera, not CSS,
+         fits the whole map with correct aspect and permits 1x overview. */
+      canvasEl.style.width = '100%';
+      canvasEl.style.height = '100%';
+      canvasEl.style.maxWidth = '';
+      canvasEl.style.position = '';
+      canvasEl.style.left = '';
+      canvasEl.style.top = '';
+      if (cssW === W && cssH === H) return;
+      W = cssW; H = cssH;
       app.renderer.resize(W, H);
       buildStatic();
       drawRoutes();
