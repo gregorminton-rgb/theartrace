@@ -39,11 +39,90 @@ var pairs=[
 ['Expert','Experte'],['Forgery','Fälschung'],['Genuine','Echt'],['Unknown','Unbekannt'],
 ['No offers','Keine Angebote'],['Sold','Verkauft'],['Bought','Gekauft'],['Destination','Zielort'],
 ['Reputation:','Ansehen:'],['Cash:','Bargeld:'],['Current city','Aktueller Ort'],
-['Buy low','Günstig einkaufen'],['Sell high','Teuer verkaufen']
+['Buy low','Günstig einkaufen'],['Sell high','Teuer verkaufen'],
+["The collection","Die Sammlung"],
+["Pictures held","Gemälde im Besitz"],
+["Market value of the collection","Marktwert der Sammlung"],
+["Paid for it all","Gesamter Kaufpreis"],
+["Crate slots bought","Gekaufte Kistenplätze"],
+["Career","Karriere"],
+["Days used","Verbrauchte Tage"],
+["Net worth","Nettovermögen"],
+["Cash on hand","Bargeldbestand"],
+["Debt","Schulden"],
+["Deals","Geschäfte"],
+["Best / worst flip","Bester / schlechtester Verkauf"],
+["Forgeries passed on","Weiterverkaufte Fälschungen"],
+["By epoch","Nach Epoche"],
+["Read the journal","Tagebuch lesen"],
+["New career","Neue Karriere"],
+["crates","Kisten"],
+["none","keine"],
+["of","von"],
+["bought","gekauft"],
+["sold","verkauft"],
+["A new day","Ein neuer Tag"],
+["Auction house","Auktionshaus"],
+["Auction lots","Auktionslose"],
+["Current auction","Aktuelle Auktion"],
+["Sell goods","Waren verkaufen"],
+["Trade goods","Handelswaren"],
+["Plant crops","Feldfrüchte pflanzen"],
+["Hire worker","Arbeitskraft einstellen"],
+["Upgrade field","Feld verbessern"],
+["Harvest now","Jetzt ernten"],
+["Your fields","Deine Felder"],
+["Go back","Zurück"],
+["Close window","Fenster schließen"],
+["No artworks","Keine Kunstwerke"],
+["No news","Keine Nachrichten"],
+["Continue career","Karriere fortsetzen"],
+["Available cash","Verfügbares Bargeld"],
+["Bank balance","Kontostand"],
+["Auction results","Auktionsergebnisse"],
+["Journal","Tagebuch"],
+["Overview","Übersicht"],
+["Buy price","Kaufpreis"],
+["Sale price","Verkaufspreis"],
+["Travel cost","Reisekosten"],
+["Travel time","Reisezeit"],
+["Trade route","Handelsroute"],
+["Available routes","Verfügbare Routen"],
+["Current location","Aktueller Standort"],
+["Harvested","Geerntet"],
+["Planted fields","Bepflanzte Felder"],
+["Workers assigned","Zugewiesene Arbeitskräfte"],
+["Stock","Lagerbestand"],
+["In stock","Auf Lager"],
+["Out of stock","Nicht verfügbar"],
+["Quantity","Menge"],
+["Unit price","Einzelpreis"],
+["Storage","Lagerung"],
+["Warehouse capacity","Lagerkapazität"],
+["Available workers","Verfügbare Arbeitskräfte"],
+["Assign","Zuweisen"],
+["Remove","Entfernen"],
+["Sell all","Alles verkaufen"],
+["Buy all","Alles kaufen"],
+["Selected","Ausgewählt"],
+["Next day","Nächster Tag"],
+["Report","Bericht"],
+["Statistics","Statistik"],
+["Profit / loss","Gewinn / Verlust"],
+["Instructions","Anleitung"],
+["Help","Hilfe"],
+["Start game","Spiel starten"],
+["New game","Neues Spiel"],
+["Game over","Spielende"],
+["End of career","Karriereende"],
+["Victory","Sieg"],
+["Defeat","Niederlage"],
+["Congratulations","Glückwunsch"],
+["Continue —","Fortsetzen —"]
 ];
 var map=Object.create(null),reverse=Object.create(null);
 pairs.forEach(function(p){map[p[0]]=p[1];if(!(p[1] in reverse))reverse[p[1]]=p[0];});
-var originals=new WeakMap(),mutating=false;
+var originals=new WeakMap(), rendered=new WeakMap(),mutating=false;
 function convert(s){
  var match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match||!match[2])return s;
  var text=match[2], result=lang==='de'?(map[text]||text):text;
@@ -61,8 +140,9 @@ function walk(root){
  if(root.nodeType===3){
    if(!root.nodeValue.trim())return;
    var src=originals.get(root);
-   if(src===undefined || (root.nodeValue!==src && root.nodeValue!==convert(src))){src=root.nodeValue;originals.set(root,src);}
+   if(src===undefined || (root.nodeValue!==src && root.nodeValue!==rendered.get(root))){src=root.nodeValue;originals.set(root,src);}
    var target=convert(src);if(root.nodeValue!==target)root.nodeValue=target;
+   rendered.set(root,target);
    return;
  }
  if(root.nodeType!==1&&root.nodeType!==9&&root.nodeType!==11)return;
