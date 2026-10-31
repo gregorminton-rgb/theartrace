@@ -766,6 +766,8 @@
       G.history.unshift({ day: G.day, headline: ev.headline, body: ev.body, ends: ev.endDay,
                           category: ev.category, scope: ev.scope, multiplier: ev.multiplier });
       log('NEWS: ' + ev.headline + ' (' + A.pct(ev.multiplier - 1) + ', until day ' + ev.endDay + ')');
+      /* Player must be able to respond to market-changing news. */
+      if (G.clockWanted && A.shell && A.shell.stopClock) A.shell.stopClock();
     }
 
     restockIfNeeded();
