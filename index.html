@@ -9,8 +9,20 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="stylesheet" href="styles.css?v=20261031-PWA1" />
+<link rel="stylesheet" href="language.css?v=20261031-1" />
 </head>
 <body>
+<div id="language-gate" class="language-gate" role="dialog" aria-modal="true" aria-labelledby="language-heading" hidden>
+  <div class="language-card">
+    <p class="language-brand">The Great Art Race</p>
+    <h2 id="language-heading">Sprache wählen / Choose language</h2>
+    <p>Wähle deine Sprache / Select your language</p>
+    <div class="language-options">
+      <button type="button" data-select-language="de" class="btn big primary" lang="de">Deutsch</button>
+      <button type="button" data-select-language="en" class="btn big primary" lang="en">English</button>
+    </div>
+  </div>
+</div>
 <div id="app">
 
   <!-- ============================ TITLE SCREEN ========================== -->
@@ -20,6 +32,7 @@
     <header class="title-bar">
       <span class="title-bar-brand">The Great Art Race</span>
       <span class="title-bar-meta" id="title-stats"></span>
+      <button class="language-switch" id="language-switch" type="button" aria-label="Change language">DE / EN</button>
     </header>
     <div class="title-canvas" id="title-canvas">
       <div class="title-placard">
@@ -45,6 +58,7 @@
         <span class="hud-name" id="player-name">Henry</span>
       </div>
       <div id="hud-balance">
+        <button class="language-switch" type="button" data-change-language aria-label="Change language">DE / EN</button>
         <button class="hud-chip hud-music" id="hud-music" type="button"
                 aria-label="Music" aria-pressed="false" title="Music">&#9834;</button>
         <span class="hud-chip" id="hud-cash">Cash $12,000</span>
@@ -144,6 +158,7 @@
         <span id="colony-sub">Colonial plantation</span>
       </div>
       <div class="colony-bar-stats">
+        <button class="language-switch" type="button" data-change-language aria-label="Change language">DE / EN</button>
         <span class="colony-chip" id="colony-cash">Cash $0</span>
         <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
         <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Overseer: sows, harvests and assigns workers">Autopilot</button>
@@ -247,6 +262,7 @@
 <script src="app-trade.js?v=20261031-PWA1"></script>
 <script src="app-shell.js?v=20261031-PWA1"></script>
 <script src="app-audio.js?v=20261031-PWA1"></script>
+<script src="language.js?v=20261031-2"></script>
 <script>
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', () => {

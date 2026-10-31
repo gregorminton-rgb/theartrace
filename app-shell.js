@@ -264,6 +264,30 @@
 
   function helpText() {
     var c = A.city(G.cityId);
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    if (de) return '<p>Du beginnst als Kunsthändler mit <b>' + A.money(CFG.startingMoney) + '</b> und hast ' + G.careerDays +
+      ' Tage Zeit. Am Ende zählt vor allem, <b>wie viele Gemälde</b> sich in deinen Transportkisten befinden. Bei Gleichstand entscheidet der Marktwert der Sammlung.</p>' +
+      '<h3>So verdienst du Geld</h3><ul>' +
+      '<li>Kaufe Werke dort, wo eine Kunstrichtung günstig ist, und verkaufe sie dort, wo Sammler viel zahlen. Jede Stadt bevorzugt bestimmte Epochen. Künstleransehen, Seltenheit, Alter und Zustand bestimmen den Wert.</li>' +
+      '<li>Eine <b>Galerie</b> verkauft mit <b>+' + A.pct(CFG.dealerMargin * CFG.dealerPremium) + '</b> Aufschlag auf den Marktwert. Für Rückkäufe zahlt sie <b>' +
+      A.pct(1 - CFG.dealerSpread) + '</b> des Werts.</li>' +
+      '<li><b>Bei Auktionen sind Kunstwerke oft günstiger.</b> Ein Los startet nahe dem Mindestpreis. Biete gegen andere Sammler und reise rechtzeitig zur Auktion.</li>' +
+      '<li>Dein Ansehen (derzeit ' + Math.round(G.reputation) + ') verbessert Händlerpreise und erhöht den möglichen Kredit.</li>' +
+      '</ul><h3>Risiken</h3><ul>' +
+      '<li><b>Fälschungen:</b> Ein Werk gilt zunächst als <em>ungeprüft</em>. Ein Sachverständiger (hier verfügbar: ' +
+      (c.hasExpertOffice ? 'ja' : 'nein') + ') kann es untersuchen, irrt sich aber in ' + A.pct(CFG.expertErrorChance) +
+      ' der Fälle. Eine entdeckte Fälschung ist nur <b>' + A.pct(CFG.forgeryValueMultiplier) + '</b> des Originals wert.</li>' +
+      '<li><b>Zustand:</b> Bilder verlieren täglich <b>' + A.pct(CFG.dailyConditionDecay) + '</b> an Zustand. Im Atelier lassen sich bis zu <b>' +
+      A.pct(CFG.restorationMaxGain) + '</b> wiederherstellen. Jede Verbesserung um 0,01 kostet ' + A.money(CFG.restorationCostPerHundredth) + '.</li>' +
+      '<li><b>Schulden:</b> Die täglichen Zinsen betragen <b>' + A.pct(CFG.dailyLoanInterest) + '</b>. Nach ' + CFG.loanGraceDays +
+      ' Tagen fallen ' + A.money(CFG.loanPenaltyPerDay) + ' Verzugsgebühren pro Tag an. Nach ' + CFG.debtCallAfterDays +
+      ' Tagen kann die Bank ' + CFG.debtCallSeizeArtworks + ' Kunstwerke pfänden.</li>' +
+      '<li><b>Nachrichten:</b> Skandale, königliche Aufträge und neue Trends verändern vorübergehend die Marktindizes. Reisen kosten Zeit und Geld und können Bilder beschädigen.</li>' +
+      '</ul><h3>Kolonien und Plantagen</h3><ul>' +
+      '<li>Segle vom Reisebüro zu einer Kolonie. Ziehe eine Pflanzkarte auf eine freie Parzelle, um Kakao, Tee, Kaffee, Tabak oder Textilien anzubauen.</li>' +
+      '<li>Stelle Arbeitskräfte ein und weise sie Feldern zu, um das Wachstum zu beschleunigen und mehr zu ernten. Verbessere Felder für einen höheren Ertrag.</li>' +
+      '<li>Reife Felder liefern Ernte ins Lager. Verkaufe Waren an den Handelsplätzen in <b>London</b> oder <b>New York</b>, wo unterschiedliche Preise gelten.</li>' +
+      '</ul><p class="note">Mit „Tag beenden“ laufen Preise, Kalender und Nachrichten weiter. Das Spiel nutzt aus Unity exportierte Daten aus <code>tools/export-data.ps1</code>.</p>';
     return '<p>You are an art dealer with <b>' + A.money(CFG.startingMoney) + '</b> in the first year of a ' +
       G.careerDays + '-day career. When the ' + G.careerDays + ' days are up, the race is scored on <b>how many ' +
       'pictures</b> are still in your crates — the market value of the collection is the tie-breaker you brag about.</p>' +
@@ -309,6 +333,18 @@
     ].map(function (r) {
       return '<div class="stat"><span>' + h(r[0]) + '</span><b>' + r[1] + '</b></div>';
     }).join('');
+    if (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') {
+      return '<p>Alle im Spiel angezeigten Zahlen stammen aus dem Unity-Projekt, mit Ausnahme einiger Balancing-Einstellungen, die nur für den Browser-Prototyp gelten.</p>' +
+        '<div class="stats">' + rows + '</div>' +
+        '<p class="note">Preise, Marktindizes, Ereigniseffekte sowie Reise- und Kreditberechnungen wurden aus ' +
+        '<code>PriceEngine.cs</code>, <code>MarketState.cs</code> und <code>EconomyManager.cs</code> übernommen. ' +
+        'Seltenheitswerte von 1 bis 10 und Ansehensstufen entsprechen der Berechnung im C#-Code.</p>' +
+        '<p class="note">Nur für die Webversion: <code>' + h(A.WEB_ONLY_CFG_KEYS.join(', ')) +
+        '</code>. Die Standardwerte stehen in <code>engine.js</code> und werden automatisch überschrieben, sobald ' +
+        '<code>EconomyConfig.cs</code> ein gleichnamiges Feld enthält.</p>' +
+        '<p class="note"><code>data.js</code> wurde mit <code>tools/export-data.ps1</code> erzeugt. ' +
+        'Führe dieses Skript nach Änderungen an den Unity-Assets erneut aus.</p>';
+    }
     return '<p>Every number on screen comes from the Unity project, except the handful of ' +
       'balance knobs the browser prototype models and the Unity build does not have yet.</p>' +
       '<div class="stats">' + rows + '</div>' +
