@@ -111,15 +111,24 @@
       grow(p);travel(p);buy(p);
     });
   }
+  /* Conservation score: every painting contributes; preservation rewards care. */
+  function artworkPoints(inst) {
+    var condition = Number(inst && inst.condition);
+    if (!isFinite(condition)) condition = 0;
+    return condition >= .90 ? 3 : condition >= .80 ? 2 : 1;
+  }
+  function collectionPoints(portfolio) {
+    return (portfolio || []).reduce(function(sum, inst){ return sum + artworkPoints(inst); }, 0);
+  }
   function standings(){
     ensure();
-    return [{id:0,name:G.name||'Player',type:'human',pictures:G.portfolio.length,
+    return [{id:0,name:G.name||'Player',type:'human',pictures:G.portfolio.length,points:collectionPoints(G.portfolio),
       cash:G.cash,city:G.colonyId||G.cityId,colonies:Object.keys(G.ownedPlots||{}).length,
       net:G.cash}].concat(G.rivals.map(function(p){
-      return {id:p.id,name:p.name,type:'computer',pictures:p.portfolio.length,
+      return {id:p.id,name:p.name,type:'computer',pictures:p.portfolio.length,points:collectionPoints(p.portfolio),
         cash:p.cash,city:p.destination||p.cityId,colonies:p.fields.length,
         net:p.cash};
-    })).sort(function(a,b){return b.pictures-a.pictures || b.net-a.net;});
+    })).sort(function(a,b){return b.points-a.points || b.pictures-a.pictures || b.net-a.net;});
   }
   function draw() {
     var root=document.getElementById('race-standings');
@@ -129,10 +138,10 @@
       rows.map(function(p,i){
         return '<div class="race-player'+(p.type==='human'?' is-human':'')+'">'+
           '<span class="race-rank">'+(i+1)+'.</span><span class="race-person">'+A.escapeRace(p.name)+
-          '<small>'+A.escapeRace(p.city)+'</small></span><strong>'+p.pictures+' 🖼️</strong>'+
+          '<small>'+A.escapeRace(p.city)+'</small></span><strong>'+p.points+' ★ <small>('+p.pictures+' 🖼️)</small></strong>'+
           '<span class="race-money">'+A.money(p.cash)+'</span></div>';
       }).join('');
   }
   A.escapeRace=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-  A.race={init:init,ensure:ensure,advance:advance,standings:standings,draw:draw};
+  A.race={init:init,ensure:ensure,advance:advance,standings:standings,draw:draw,artworkPoints:artworkPoints,collectionPoints:collectionPoints};
 })(window);
