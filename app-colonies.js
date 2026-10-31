@@ -193,6 +193,7 @@
     G.colonyReturnCityId = null;
     G.colonyMenu = 'plantage';
     G.selectedFieldId = null;
+    crew.multiSelect.ids = {};
     G.plantCropId = null;
     show(el('colony'), false);
     if (A.shell && A.shell.resumeClock) A.shell.resumeClock();
@@ -385,14 +386,14 @@
     el('colony-warehouse').textContent = 'Ashore ' + crew.colonyUnits() + ' crate(s)';
     /* the day clock has a copy on this screen; keep it in step with the state */
     if (A.shell && A.shell.paintClock) A.shell.paintClock();
-    /* the status chip in the top bar now counts the automated fields */
+    /* The header is a read-only summary. Automation is controlled from the field toolbar. */
     var autoBtn = el('colony-autopilot');
     if (autoBtn) {
       var autoN = colonyFields().filter(function (x) { return crew.fieldAutoOn(x); }).length;
-      autoBtn.classList.toggle('active', autoN > 0);
-      autoBtn.textContent = autoN > 0 ? '✓ Autopilot ' + autoN : 'Autopilot';
+      autoBtn.textContent = 'Auto: ' + autoN + '/' + colonyFields().length;
+      autoBtn.title = 'Automated fields (change in the field toolbar)';
     }
-    
+
     /* Update menu buttons */
     Array.prototype.forEach.call(document.querySelectorAll('.colony-menu-btn'), function (btn) {
       var menu = btn.getAttribute('data-menu');
@@ -425,11 +426,16 @@
     
     /* Render plantage view (only when visible) */
     if (G.colonyMenu === 'plantage') {
+      el('colony-field-toolbar').innerHTML = colonyMultiBarHTML();
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
-      el('colony-grid').innerHTML = colonyGridHTML();
+      var grid = el('colony-grid');
+      var gridScroll = grid.scrollTop;
+      grid.innerHTML = colonyGridHTML();
+      grid.scrollTop = gridScroll;
       el('colony-grid').style.background = colony.bg || '';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
+      el('colony-hint').textContent = crew.multiSelectIds().length > 1 ? 'Selected fields: automation changes apply to all selected fields.' : el('colony-hint').textContent;
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
         : 'Drag a crop plate onto a free plot, or click a plate then a plot.';
@@ -479,16 +485,15 @@
     var idle = colonyIdle();
     var maxed = hired >= MAX_COLONY_WORKERS;
     var afford = G.cash >= WORKER_HIRE_COST;
-    return '<div class="colony-workers-row">' +
-        '<span class="colony-workers-totals">' +
-          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
-          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
-          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
-        '</span>' +
-        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire · ' + A.money(WORKER_HIRE_COST) + '</button>' +
+    return '<h3 class="colony-panel-title">Workers</h3>' +
+      '<div class="colony-workers-totals">' +
+        '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
+        '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
+        '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
       '</div>' +
+      '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire worker · ' + A.money(WORKER_HIRE_COST) + '</button>' +
       '<p class="colony-note">' + (maxed ? 'The colony is fully staffed.'
-        : 'Each worker: +' + Math.round(WORKER_SPEED * 100) + '% growth, +1 unit per two. Assign from a field below.') + '</p>';
+        : 'Each worker adds +' + Math.round(WORKER_SPEED * 100) + '% growth and +1 unit per two. Assign them from a field\'s inspector.') + '</p>';
   }
 
   /* Only the fields in use plus one free plot are drawn: that free plot is the
@@ -598,34 +603,38 @@
       '</button>';
   }
 
-  /* Bulk bar: toggles selection mode and applies Autopilot to the selection. */
+  /* One persistent toolbar: selection is always available, and bulk commands
+     always act on the selected fields only. No separate selection mode. */
   function colonyMultiBarHTML() {
-    var n = crew.multiSelectIds().length;
-    var on = crew.multiSelect.active;
-    return '<div class="colony-multi">' +
-      '<button class="btn colony-multi-toggle' + (on ? ' primary' : '') + '" data-colony="multi-toggle">' +
-        (on ? 'End selection' : 'Select fields') + '</button>' +
-      (on
-        ? '<span class="colony-multi-count">' + n + ' selected</span>' +
-          '<button class="btn colony-multi-auto" data-colony="auto-bulk" data-on="1"' + (n ? '' : ' disabled') + '>Autopilot on</button>' +
-          '<button class="btn ghost colony-multi-auto" data-colony="auto-bulk" data-on="0"' + (n ? '' : ' disabled') + '>Autopilot off</button>'
-        : '') +
+    var ids = crew.multiSelectIds();
+    var n = ids.length;
+    var total = colonyFields().length;
+    var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
+    return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
+      '<strong class="colony-multi-count">' + (n ? n + ' of ' + total + ' fields selected' : 'Tap fields to select') + '</strong>' +
+      '<div class="colony-multi-actions">' +
+        '<button class="btn ghost" type="button" data-colony="select-all"' + (total && n !== total ? '' : ' disabled') + '>Select all</button>' +
+        '<button class="btn ghost" type="button" data-colony="select-clear"' + (n ? '' : ' disabled') + '>Clear</button>' +
+      '</div>' +
+      '<div class="colony-multi-actions">' +
+        '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (n && autoN !== n ? '' : ' disabled') + '>Auto on (' + n + ')</button>' +
+        '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (autoN ? '' : ' disabled') + '>Auto off (' + n + ')</button>' +
+      '</div>' +
       '</div>';
   }
 
   function colonyInspectorHTML() {
     var f = G.selectedFieldId ? fieldById(G.selectedFieldId) : null;
+    var selectedCount = crew.multiSelectIds().length;
     if (!f) {
-      return '<h3 class="colony-panel-title">Inspector</h3>' +
-        colonyMultiBarHTML() +
-        '<p class="colony-note">Click a field to inspect it, assign workers and upgrade it. Ripe fields harvest here or on the plot.</p>' +
+      return '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
+        '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to enable or disable automation for the selected fields.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
         colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
     var next = UPGRADES[f.level];
     var idle = colonyIdle();
-    var html = colonyMultiBarHTML() +
-      '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
+    var html = '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
       '<div class="colony-field-head">' + cropThumb(crop, 'crop-thumb--card') +
         '<div><span class="colony-field-title">' + h(crop.label) + '</span>' +
         '<span class="colony-field-sub">plot ' + (f.plotIndex + 1) + ' · planted day ' + f.plantedDay + '</span></div></div>' +
@@ -642,12 +651,10 @@
       '<div class="colony-controls-row">' +
       '<button class="btn" data-colony="assign" data-field="' + f.id + '"' + ((idle > 0 && f.workers < MAX_FIELD_WORKERS) ? '' : ' disabled') + '>+1 worker</button>' +
       '<button class="btn ghost" data-colony="unassign" data-field="' + f.id + '"' + (f.workers > 0 ? '' : ' disabled') + '>-1 worker</button>' +
-      '<button class="btn colony-auto-btn' + (crew.fieldAutoOn(f) ? ' primary' : '') + '" data-colony="auto" data-field="' + f.id + '"' +
-        ' data-on="' + (crew.fieldAutoOn(f) ? '1' : '0') + '">' +
-        (crew.fieldAutoOn(f) ? '✓ Autopilot on' : 'Autopilot off') + '</button>' +
+
       '</div>' +
       '</div>' +
-      '<p class="colony-note">Autopilot applies to this field only: the overseer harvests it, sows the same crop again and posts a worker.</p>';
+      '<p class="colony-note">Automation is controlled above for all selected fields. The overseer harvests, replants and assigns workers automatically.</p>';
     return html + colonyWarehouseHTML();
   }
 
