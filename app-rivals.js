@@ -13,8 +13,9 @@
   }
   function city(p) { return A.cityById[p.cityId] || A.cities[0]; }
   function cropFor(p) { var c=A.colonies && A.colonies.CROPS; return c && c[p.id%c.length]; }
-  function init() {
-    G.rivals=NAMES.map(function(name,i) {
+  function init(names) {
+    var roster = (Array.isArray(names) && names.length===3 ? names : NAMES).map(function(n,i){return String(n || '').trim().slice(0,24) || NAMES[i];});
+    G.rivals=roster.map(function(name,i) {
       return {id:i+1,name:name,type:'computer',cityId:A.cities[(i*3)%A.cities.length].id,
         destination:null,travelDays:0, cash:Math.round(G.cash), reputation:25,
         capacity:G.capacity, portfolio:[], nextUid:1, fields:[],

@@ -1322,3 +1322,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .btn:focus-visible,.hub-btn:focus-visible,.plot:focus-visible,.crop-tile:focus-visible {
   outline: 3px solid var(--gold-2); outline-offset: 3px;
 }
+
+/* Four-player setup, compact on mobile. */
+.race-setup{border:1px solid var(--line);border-radius:12px;padding:10px;margin:6px 0}
+.race-setup legend{font:700 .9rem var(--sans);padding:0 6px}
+.race-setup-note{font:.77rem var(--sans);color:var(--ink-soft);margin:0 0 8px}
+.race-setup-slot{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:5px 0;font:.8rem var(--sans)}
+.race-setup-slot span{flex:1}.race-setup-slot input{max-width:55%;min-width:0;padding:6px;border-radius:7px;border:1px solid var(--line);font:inherit}

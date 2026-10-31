@@ -404,6 +404,13 @@
     }).join('');
     dialog('Set up a career', '<div class="form">' +
       '<label>Name of the dealer<input id="f-name" value="' + h(G.name) + '"></label>' +
+      '<fieldset class="race-setup"><legend>Four-player race</legend>' +
+      '<p class="race-setup-note">One human player and three computer opponents. Most paintings after the career wins.</p>' +
+      '<div class="race-setup-slot"><span>1 · You</span><b>Human player</b></div>' +
+      '<label class="race-setup-slot"><span>2 · Opponent</span><input id="f-ai-1" maxlength="24" value="Ada" aria-label="Computer opponent 1 name"></label>' +
+      '<label class="race-setup-slot"><span>3 · Opponent</span><input id="f-ai-2" maxlength="24" value="Clara" aria-label="Computer opponent 2 name"></label>' +
+      '<label class="race-setup-slot"><span>4 · Opponent</span><input id="f-ai-3" maxlength="24" value="Felix" aria-label="Computer opponent 3 name"></label>' +
+      '</fieldset>' +
       '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
@@ -414,7 +421,8 @@
             name: el('f-name').value || 'Henry',
             difficulty: el('f-diff').value,
             durationIndex: parseInt(el('f-dur').value, 10),
-            cityId: el('f-city').value
+            cityId: el('f-city').value,
+            rivalNames: [el('f-ai-1').value, el('f-ai-2').value, el('f-ai-3').value]
           });
           G.ended = false;
           G.view = 'dealer';
