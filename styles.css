@@ -1636,3 +1636,5 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 .market-explainer{font:.76rem/1.45 var(--sans);margin:7px 0 10px;color:var(--ink-soft);background:rgba(255,245,219,.65);padding:8px;border-radius:7px}
+
+.crop-market-change{display:inline-block;font-size:.74rem;font-weight:700;white-space:nowrap}.crop-market-change.gain{color:#246b32}.crop-market-change.loss{color:#9b3030}.trade-price .crop-market-change{display:block;margin-top:3px}
