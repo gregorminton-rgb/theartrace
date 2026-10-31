@@ -435,6 +435,8 @@
       el('colony-field-toolbar').innerHTML = colonyMultiBarHTML();
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
+      var mobileWorkers = el('colony-workers-mobile');
+      if (mobileWorkers) mobileWorkers.innerHTML = colonyWorkersHTML();
       var grid = el('colony-grid');
       var gridScroll = grid.scrollTop;
       grid.innerHTML = colonyGridHTML();
