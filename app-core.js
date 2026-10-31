@@ -615,6 +615,7 @@
       inst.provenance = 'Won at ' + A.city(G.cityId).name + ' auction (day ' + G.day + ')';
       G.portfolio.push(inst);
       lot.quiz = makeLotQuiz(inst);
+      if (lot.quiz) { lot.quiz.round = 1; lot.quiz.basePrice = total; lot.quiz.results = []; lot.quiz.savedAmount = 0; }
       rep(CFG.reputationPerAuctionWin);
       G.stats.hammer += 1;
       log('Hammer! ' + A.work(inst.defId).title + ' for ' + A.money(lot.bid) +
@@ -665,17 +666,39 @@
   function answerLotQuiz(index, choice) {
     var lot = G.lots[index];
     if (!lot || !lot.quiz || lot.quiz.answered) return;
-    var quiz = lot.quiz;
-    quiz.answered = true;
-    quiz.right = choice === quiz.correct;
-    var inst = lot.inst;
-    if (quiz.right) {
-      var cut = Math.round((inst.purchasePrice || 0) * CFG.auctionQuizDiscount);
-      inst.purchasePrice -= cut;
-      G.cash += cut;
-      log('Correct! The price is reduced by ' + A.money(cut) + '.');
+    var quiz = lot.quiz, inst = lot.inst;
+    /* Every round uses the original hammer total (including commission):
+       +20% discount for correct, +10% surcharge for incorrect.
+       Three correct answers = exactly 60% off, not compound discounts. */
+    if (!quiz.basePrice) quiz.basePrice = inst.purchasePrice;
+    if (!quiz.round) quiz.round = 1;
+    if (!quiz.results) quiz.results = [];
+    var correct = choice === quiz.correct;
+    var delta = Math.round(quiz.basePrice * (correct ? .20 : -.10));
+    var oldPrice = inst.purchasePrice;
+    var nextPrice = Math.max(0, oldPrice - delta);
+    var change = oldPrice - nextPrice;
+    inst.purchasePrice = nextPrice;
+    G.cash += change;
+    quiz.results.push({ right: correct, change: change, price: nextPrice });
+    quiz.savedAmount = quiz.basePrice - nextPrice;
+    quiz.right = correct;
+    log((correct ? 'Correct: ' : 'Incorrect: ') +
+      (change >= 0 ? 'saved ' : 'surcharge ') + A.money(Math.abs(change)) +
+      '. Total ' + A.money(nextPrice) + '.');
+    if (quiz.round >= 3) {
+      quiz.answered = true;
     } else {
-      log('Wrong answer. The price stays as it is.');
+      var nextQuiz = makeLotQuiz(inst);
+      if (!nextQuiz) {
+        quiz.answered = true;
+      } else {
+        quiz.round += 1;
+        quiz.question = nextQuiz.question;
+        quiz.options = nextQuiz.options;
+        quiz.correct = nextQuiz.correct;
+        quiz.answered = false;
+      }
     }
     syncAuction();
   }
