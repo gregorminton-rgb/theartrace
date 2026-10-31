@@ -5,7 +5,7 @@ window.ART_ARTWORK_IMAGES = {
                  "maxWidth":  900,
                  "quality":  80,
                  "count":  75,
-                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\Bilder",
+                 "folder":  "ArtRace3Artwork\\Bilder",
                  "note":  "Auction/scene plates in the folder are exported to images/scenes and shown as UI art."
              },
     "images":  {

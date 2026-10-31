@@ -6,9 +6,9 @@ window.ART_IMAGES = {
                  "quality":  82,
                  "count":  48,
                  "folders":  [
-                                 "city \u003c- D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
-                                 "city \u003c- D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
-                                 "scene \u003c- D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork"
+                                 "city \u003c- ArtRace3Artwork\\new",
+                                 "city \u003c- ArtRace3Artwork\\städte",
+                                 "scene \u003c- ArtRace3Artwork\\hdArtwork"
                              ]
              },
     "images":  {
@@ -19,7 +19,7 @@ window.ART_IMAGES = {
                                   "bytes":  329341,
                                   "role":  "city",
                                   "source":  "Aktion.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -31,7 +31,7 @@ window.ART_IMAGES = {
                                      "bytes":  495063,
                                      "role":  "city",
                                      "source":  "Amsterdam.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
                                                  "city"
                                              ]
@@ -43,7 +43,7 @@ window.ART_IMAGES = {
                                       "bytes":  444388,
                                       "role":  "city",
                                       "source":  "Australien.jpg",
-                                      "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                      "folder":  "ArtRace3Artwork\\new",
                                       "ids":  [
 
                                               ]
@@ -55,7 +55,7 @@ window.ART_IMAGES = {
                                   "bytes":  377658,
                                   "role":  "city",
                                   "source":  "Berlin.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
                                               "city"
                                           ]
@@ -67,7 +67,7 @@ window.ART_IMAGES = {
                                      "bytes":  445510,
                                      "role":  "city",
                                      "source":  "Brasilien.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
@@ -79,7 +79,7 @@ window.ART_IMAGES = {
                                                                      "bytes":  467209,
                                                                      "role":  "city",
                                                                      "source":  "Gemini_Generated_Image_jizxzkjizxzkjizx (1).jpg",
-                                                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                                                     "folder":  "ArtRace3Artwork\\new",
                                                                      "ids":  [
 
                                                                              ]
@@ -91,7 +91,7 @@ window.ART_IMAGES = {
                                  "bytes":  212777,
                                  "role":  "city",
                                  "source":  "Hafen.jpg",
-                                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                 "folder":  "ArtRace3Artwork\\new",
                                  "ids":  [
 
                                          ]
@@ -103,7 +103,7 @@ window.ART_IMAGES = {
                                   "bytes":  338680,
                                   "role":  "city",
                                   "source":  "Hafen2.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -115,7 +115,7 @@ window.ART_IMAGES = {
                                   "bytes":  253774,
                                   "role":  "city",
                                   "source":  "Hotel1.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -127,7 +127,7 @@ window.ART_IMAGES = {
                                   "bytes":  467192,
                                   "role":  "city",
                                   "source":  "Indien.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -139,7 +139,7 @@ window.ART_IMAGES = {
                                    "bytes":  491809,
                                    "role":  "city",
                                    "source":  "Indien2.jpg",
-                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                   "folder":  "ArtRace3Artwork\\new",
                                    "ids":  [
 
                                            ]
@@ -151,7 +151,7 @@ window.ART_IMAGES = {
                                       "bytes":  331012,
                                       "role":  "city",
                                       "source":  "Indonesien.jpg",
-                                      "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                      "folder":  "ArtRace3Artwork\\new",
                                       "ids":  [
 
                                               ]
@@ -163,7 +163,7 @@ window.ART_IMAGES = {
                                   "bytes":  511499,
                                   "role":  "city",
                                   "source":  "Kaffee.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -175,7 +175,7 @@ window.ART_IMAGES = {
                                  "bytes":  493253,
                                  "role":  "city",
                                  "source":  "Kakao.jpg",
-                                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                 "folder":  "ArtRace3Artwork\\new",
                                  "ids":  [
 
                                          ]
@@ -187,7 +187,7 @@ window.ART_IMAGES = {
                                     "bytes":  356891,
                                     "role":  "city",
                                     "source":  "Kolonie1.jpg",
-                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                    "folder":  "ArtRace3Artwork\\new",
                                     "ids":  [
 
                                             ]
@@ -199,7 +199,7 @@ window.ART_IMAGES = {
                                     "bytes":  475885,
                                     "role":  "city",
                                     "source":  "Lissabon.jpg",
-                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                    "folder":  "ArtRace3Artwork\\new",
                                     "ids":  [
 
                                             ]
@@ -211,7 +211,7 @@ window.ART_IMAGES = {
                                   "bytes":  467209,
                                   "role":  "city",
                                   "source":  "London.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
                                               "city"
                                           ]
@@ -223,7 +223,7 @@ window.ART_IMAGES = {
                                    "bytes":  498854,
                                    "role":  "city",
                                    "source":  "NewYork.jpg",
-                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                   "folder":  "ArtRace3Artwork\\new",
                                    "ids":  [
                                                "city"
                                            ]
@@ -235,7 +235,7 @@ window.ART_IMAGES = {
                                  "bytes":  434432,
                                  "role":  "city",
                                  "source":  "Paris.jpg",
-                                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                 "folder":  "ArtRace3Artwork\\new",
                                  "ids":  [
                                              "city"
                                          ]
@@ -247,7 +247,7 @@ window.ART_IMAGES = {
                                      "bytes":  388319,
                                      "role":  "city",
                                      "source":  "Plantage1.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
@@ -259,7 +259,7 @@ window.ART_IMAGES = {
                                      "bytes":  712211,
                                      "role":  "city",
                                      "source":  "Plantage2.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
@@ -271,7 +271,7 @@ window.ART_IMAGES = {
                                "bytes":  510120,
                                "role":  "city",
                                "source":  "Rio.jpg",
-                               "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                               "folder":  "ArtRace3Artwork\\new",
                                "ids":  [
 
                                        ]
@@ -283,7 +283,7 @@ window.ART_IMAGES = {
                                         "bytes":  450260,
                                         "role":  "city",
                                         "source":  "SanFrancisco.jpg",
-                                        "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                        "folder":  "ArtRace3Artwork\\new",
                                         "ids":  [
 
                                                 ]
@@ -295,7 +295,7 @@ window.ART_IMAGES = {
                                   "bytes":  487858,
                                   "role":  "city",
                                   "source":  "Stoffe.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                  "folder":  "ArtRace3Artwork\\new",
                                   "ids":  [
 
                                           ]
@@ -307,7 +307,7 @@ window.ART_IMAGES = {
                                  "bytes":  485663,
                                  "role":  "city",
                                  "source":  "Tabak.jpg",
-                                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                 "folder":  "ArtRace3Artwork\\new",
                                  "ids":  [
 
                                          ]
@@ -319,7 +319,7 @@ window.ART_IMAGES = {
                                "bytes":  475282,
                                "role":  "city",
                                "source":  "Tee.jpg",
-                               "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                               "folder":  "ArtRace3Artwork\\new",
                                "ids":  [
 
                                        ]
@@ -331,7 +331,7 @@ window.ART_IMAGES = {
                                      "bytes":  471816,
                                      "role":  "city",
                                      "source":  "Unbekannt.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
@@ -343,7 +343,7 @@ window.ART_IMAGES = {
                                       "bytes":  480271,
                                       "role":  "city",
                                       "source":  "Unbekannt2.jpg",
-                                      "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                      "folder":  "ArtRace3Artwork\\new",
                                       "ids":  [
 
                                               ]
@@ -355,7 +355,7 @@ window.ART_IMAGES = {
                                      "bytes":  430351,
                                      "role":  "city",
                                      "source":  "WeltKarte.jpg",
-                                     "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\new",
+                                     "folder":  "ArtRace3Artwork\\new",
                                      "ids":  [
 
                                              ]
@@ -367,7 +367,7 @@ window.ART_IMAGES = {
                                    "bytes":  325669,
                                    "role":  "city",
                                    "source":  "jamaica.jpg",
-                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                   "folder":  "ArtRace3Artwork\\städte",
                                    "ids":  [
 
                                            ]
@@ -379,7 +379,7 @@ window.ART_IMAGES = {
                                   "bytes":  540678,
                                   "role":  "city",
                                   "source":  "madrid.jpg",
-                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                  "folder":  "ArtRace3Artwork\\städte",
                                   "ids":  [
                                               "city"
                                           ]
@@ -391,7 +391,7 @@ window.ART_IMAGES = {
                                     "bytes":  540636,
                                     "role":  "city",
                                     "source":  "münchen.jpg",
-                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                    "folder":  "ArtRace3Artwork\\städte",
                                     "ids":  [
                                                 "city"
                                             ]
@@ -403,7 +403,7 @@ window.ART_IMAGES = {
                                 "bytes":  508841,
                                 "role":  "city",
                                 "source":  "prag.jpg",
-                                "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                "folder":  "ArtRace3Artwork\\städte",
                                 "ids":  [
                                             "city"
                                         ]
@@ -415,7 +415,7 @@ window.ART_IMAGES = {
                                 "bytes":  586960,
                                 "role":  "city",
                                 "source":  "Rom.jpg",
-                                "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                "folder":  "ArtRace3Artwork\\städte",
                                 "ids":  [
                                             "city"
                                         ]
@@ -427,7 +427,7 @@ window.ART_IMAGES = {
                                  "bytes":  530043,
                                  "role":  "city",
                                  "source":  "Tokio.jpg",
-                                 "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                 "folder":  "ArtRace3Artwork\\städte",
                                  "ids":  [
                                              "city"
                                          ]
@@ -439,7 +439,7 @@ window.ART_IMAGES = {
                                     "bytes":  337283,
                                     "role":  "city",
                                     "source":  "Trinidad.jpg",
-                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                    "folder":  "ArtRace3Artwork\\städte",
                                     "ids":  [
 
                                             ]
@@ -451,7 +451,7 @@ window.ART_IMAGES = {
                                    "bytes":  526102,
                                    "role":  "city",
                                    "source":  "venedig.jpg",
-                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                   "folder":  "ArtRace3Artwork\\städte",
                                    "ids":  [
 
                                            ]
@@ -463,7 +463,7 @@ window.ART_IMAGES = {
                                 "bytes":  579536,
                                 "role":  "city",
                                 "source":  "wien.jpg",
-                                "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                "folder":  "ArtRace3Artwork\\städte",
                                 "ids":  [
                                             "city"
                                         ]
@@ -475,7 +475,7 @@ window.ART_IMAGES = {
                                    "bytes":  529433,
                                    "role":  "city",
                                    "source":  "zürich.jpg",
-                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\städte",
+                                   "folder":  "ArtRace3Artwork\\städte",
                                    "ids":  [
                                                "city"
                                            ]
@@ -487,7 +487,7 @@ window.ART_IMAGES = {
                                                   "bytes":  453467,
                                                   "role":  "scene",
                                                   "source":  "01_city_square_1918.png",
-                                                  "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                                  "folder":  "ArtRace3Artwork\\hdArtwork",
                                                   "ids":  [
 
                                                           ]
@@ -499,7 +499,7 @@ window.ART_IMAGES = {
                                                "bytes":  384735,
                                                "role":  "scene",
                                                "source":  "02_colonial_town.png",
-                                               "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                               "folder":  "ArtRace3Artwork\\hdArtwork",
                                                "ids":  [
 
                                                        ]
@@ -511,7 +511,7 @@ window.ART_IMAGES = {
                                               "bytes":  452640,
                                               "role":  "scene",
                                               "source":  "03_harbour_city.png",
-                                              "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                              "folder":  "ArtRace3Artwork\\hdArtwork",
                                               "ids":  [
 
                                                       ]
@@ -523,7 +523,7 @@ window.ART_IMAGES = {
                                                     "bytes":  485013,
                                                     "role":  "scene",
                                                     "source":  "04_plantation_savanna.png",
-                                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                                    "folder":  "ArtRace3Artwork\\hdArtwork",
                                                     "ids":  [
 
                                                             ]
@@ -535,7 +535,7 @@ window.ART_IMAGES = {
                                                    "bytes":  498008,
                                                    "role":  "scene",
                                                    "source":  "05_plantation_jungle.png",
-                                                   "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                                   "folder":  "ArtRace3Artwork\\hdArtwork",
                                                    "ids":  [
 
                                                            ]
@@ -547,7 +547,7 @@ window.ART_IMAGES = {
                                             "bytes":  249011,
                                             "role":  "scene",
                                             "source":  "06_hotel_room.png",
-                                            "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                            "folder":  "ArtRace3Artwork\\hdArtwork",
                                             "ids":  [
 
                                                     ]
@@ -559,7 +559,7 @@ window.ART_IMAGES = {
                                                     "bytes":  171753,
                                                     "role":  "scene",
                                                     "source":  "07_warehouse_interior.png",
-                                                    "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                                    "folder":  "ArtRace3Artwork\\hdArtwork",
                                                     "ids":  [
 
                                                             ]
@@ -571,7 +571,7 @@ window.ART_IMAGES = {
                                            "bytes":  223806,
                                            "role":  "scene",
                                            "source":  "08_world_map.png",
-                                           "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                           "folder":  "ArtRace3Artwork\\hdArtwork",
                                            "ids":  [
 
                                                    ]
@@ -583,7 +583,7 @@ window.ART_IMAGES = {
                                                        "bytes":  289614,
                                                        "role":  "scene",
                                                        "source":  "09_studio_easel_painting.png",
-                                                       "folder":  "D:\\Projekte\\Ren\\ArtRace3Artwork\\hdArtwork",
+                                                       "folder":  "ArtRace3Artwork\\hdArtwork",
                                                        "ids":  [
 
                                                                ]

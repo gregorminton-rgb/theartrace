@@ -1,5 +1,5 @@
 var fso = new ActiveXObject('Scripting.FileSystemObject');
-function read(p){ var f=fso.OpenTextFile('D:\\Projekte\\Ren\\TheArtRaceWeb\\' + p,1); var s=f.ReadAll(); f.Close(); return s; }
+function read(p){ var base=fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName))+'\\'; var f=fso.OpenTextFile(base+p,1); var s=f.ReadAll(); f.Close(); return s; }
 Array.prototype.forEach = Array.prototype.forEach || function(fn,th){ for(var i=0;i<this.length;i++) fn.call(th,this[i],i,this); };
 Array.prototype.map = Array.prototype.map || function(fn,th){ var o=[]; for(var i=0;i<this.length;i++) o.push(fn.call(th,this[i],i,this)); return o; };
 Array.prototype.filter = Array.prototype.filter || function(fn,th){ var o=[]; for(var i=0;i<this.length;i++) if(fn.call(th,this[i],i,this)) o.push(this[i]); return o; };
