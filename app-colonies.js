@@ -144,11 +144,13 @@
     for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
     return h;
   }
-  function cropPrice(crop, hubId) {
+  function cropPriceOnDay(crop, hubId, day) {
     var mult = (TRADE_HUB_MULT[hubId] || {})[crop.id] || 1;
-    var wave = 0.8 + 0.4 * Math.sin(G.day * 0.17 + (hash2(crop.id + ':' + hubId) % 1000) * 0.01);
+    var wave = 0.8 + 0.4 * Math.sin(day * 0.17 + (hash2(crop.id + ':' + hubId) % 1000) * 0.01);
     return Math.round(crop.base * mult * wave);
   }
+
+  function cropPrice(crop,hubId){return cropPriceOnDay(crop,hubId,G.day);}
 
   /* Plantagen-Koordinaten korrigiert für realistische Weltkarte */
 
@@ -685,6 +687,9 @@
     var rows = CROPS.map(function (c) {
       var units = stock[c.id] || 0;
       var price = cropPrice(c, hub);
+      var previousPrice = cropPriceOnDay(c,hub,G.day-1);
+      var change = previousPrice ? (price/previousPrice-1)*100 : 0;
+      var trend = '<small class="crop-market-change '+(change>0.05?'gain':change<-.05?'loss':'')+'">'+(change>=0?'+':'')+change.toFixed(1)+'% '+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'seit gestern':'vs yesterday')+'</small>';
       var soon = (G.shipments || []).filter(function (s) {
         return s.colonyId === colony.id && s.cropId === c.id;
       }).reduce(function (n, s) { return n + s.units; }, 0);
@@ -693,7 +698,7 @@
         '<div class="trade-goods">' + cropThumb(c) +
           '<span><b>' + h(c.label) + '</b> <span class="trade-stock">' +
           (soon ? soon + ' in transit' : ' ashore') + '</span></span></div>' +
-        '<span class="trade-price">' + units + ' → ' + A.money(price) + '</span>' +
+        '<span class="trade-price">' + units + ' → ' + A.money(price) + trend + '</span>' +
         '<span class="trade-btns">' +
           '<button class="btn" type="button" data-colony="ship" data-crop="' + c.id + '"' +
             ' data-hub="' + hub + '" data-units="1"' + (can ? '' : ' disabled') + '>1</button>' +
@@ -747,7 +752,7 @@
   A.colonies = window.ArtRaceColonies = {
     CROPS: CROPS, CROP_BY_ID: CROP_BY_ID, COLONIES: COLONIES, COLONY_BY_ID: COLONY_BY_ID,
     TRADE_HUB_IDS: TRADE_HUB_IDS, TRADE_HUB_MULT: TRADE_HUB_MULT,
-    cropPrice: cropPrice, cropThumb: cropThumb, hash2: hash2,
+    cropPrice: cropPrice, cropPriceOnDay: cropPriceOnDay, cropThumb: cropThumb, hash2: hash2,
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
     colonyDestinations: colonyDestinations, departFromColony: departFromColony,
     colonyTravelRowsHTML: colonyTravelRowsHTML, openColonyTravel: openColonyTravel,
