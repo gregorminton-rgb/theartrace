@@ -71,8 +71,8 @@
     if (G.log.length > 120) G.log.pop();
   }
 
-  /* ReputationModel.Change clamps to ReputationModel.Max (100) on the Unity
-     side and never lets a record go below zero. The web build tracks one
+  /* ReputationModel.Change clamps to the maximum of 100
+     and never lets a record go below zero. The web build tracks one
      overall score instead of a per-city record, so the same clamp applies -
      otherwise a bad run of debt calls could push the loan ceiling negative. */
   function rep(delta) {

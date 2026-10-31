@@ -1,6 +1,6 @@
 /* =========================================================================
- * engine.js — pure data + maths layer for the web prototype.
- * Every formula here is a direct port of the Unity C# in
+ * engine.js — pure data + maths layer for the web build.
+ * Every formula here follows the original design, documented in
  *   Assets/_Project/Scripts/Core/PriceEngine.cs
  *   Assets/_Project/Scripts/Core/MarketState.cs
  *   Assets/_Project/Scripts/Core/ArtworkInstance.cs
@@ -14,7 +14,7 @@
   var DATA = global.ART_DATA;
   if (!DATA) { throw new Error('data.js must be loaded before engine.js'); }
 
-  /* Cities the web build adds on top of the Unity export (Lisbon, Rio, San
+  /* Cities the web build adds on top of the generated data (Lisbon, Rio, San
      Francisco). `data.js` is generated and must not be hand-edited, so the
      extra entries are declared in app.js and merged in here, before any city
      lookup table or per-city derived field is built. The merge is idempotent
@@ -32,7 +32,7 @@
   })();
 
   /* Painters and pictures of the same kind: works-extra.js declares the
-     fifteen masters the Unity export never knew (see that file), and the
+     fifteen masters that are not in the generated data (see that file), and the
      catalogue facts for every work. Merged here for the same reason as the
      cities - before artistById / workById and the price band are built, so an
      extra painter is priced, stocked and auctioned like an exported one. */
@@ -63,8 +63,8 @@
    *
    * web/data.js is generated straight from Assets/_Project/Scripts/Data/
    * EconomyConfig.cs, so the export can only ever carry fields that exist on
-   * that ScriptableObject. The browser prototype models two consequences of
-   * debt that the Unity build does not have yet - a late fee once a loan has
+   * that ScriptableObject. The browser build models two consequences of
+   * debt that the reference build does not have yet - a late fee once a loan has
    * been outstanding a while, and a debt call that seizes crates - and app.js
    * reads those knobs through CFG too. Rather than invent numbers at the point
    * of use, they are declared once here as an explicit list of defaults that
@@ -75,14 +75,14 @@
    * tools/cfgcheck.ps1 reports the key as exported instead of web-only.
    * ------------------------------------------------------------------- */
   var WEB_ONLY_DEFAULTS = {
-    startingReputation: 25,       // Unity opens a career at 0 standing everywhere
+    startingReputation: 25,       // the reference build opens every career at 0 standing
     loanGraceDays: 14,            // days of debt before the bank starts charging
     loanPenaltyPerDay: 150,       // flat late fee on top of the daily interest
     loanOverdueRepPenalty: 1,     // reputation lost per day past the grace period
     debtCallAfterDays: 90,        // days of debt before the bank seizes crates
     debtCallSeizeArtworks: 2,     // crates taken in one debt call
     debtCallReputationPenalty: 10,// reputation hit when a debt call runs
-    /* Travel time. Unity multiplies daysPerDistance by the raw map distance,
+    /* Travel time. The reference build multiplies daysPerDistance by the raw map distance,
        which the authored coordinates (spanning 0.02..0.6) collapse onto a
        single day for even an Atlantic crossing. The web build reads travel
        time off a power curve instead, fitted to the two voyages that define

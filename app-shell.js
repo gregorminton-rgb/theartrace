@@ -287,7 +287,7 @@
       '<li>Segle vom Reisebüro zu einer Kolonie. Ziehe eine Pflanzkarte auf eine freie Parzelle, um Kakao, Tee, Kaffee, Tabak oder Textilien anzubauen.</li>' +
       '<li>Stelle Arbeitskräfte ein und weise sie Feldern zu, um das Wachstum zu beschleunigen und mehr zu ernten. Verbessere Felder für einen höheren Ertrag.</li>' +
       '<li>Reife Felder liefern Ernte ins Lager. Verkaufe Waren an den Handelsplätzen in <b>London</b> oder <b>New York</b>, wo unterschiedliche Preise gelten.</li>' +
-      '</ul><p class="note">Mit „Tag beenden“ laufen Preise, Kalender und Nachrichten weiter. Das Spiel nutzt aus Unity exportierte Daten aus <code>tools/export-data.ps1</code>.</p>';
+      '</ul><p class="note">Mit „Tag beenden“ laufen Preise, Kalender und Nachrichten weiter.</p>';
     return '<p>You are an art dealer with <b>' + A.money(CFG.startingMoney) + '</b> in the first year of a ' +
       G.careerDays + '-day career. When the ' + G.careerDays + ' days are up, the race is scored on <b>how many ' +
       'pictures</b> are still in your crates — the market value of the collection is the tie-breaker you brag about.</p>' +
@@ -318,49 +318,43 @@
       '<li>Sail to a colony from the travel office, then <em>drag</em> a crop plate onto a free plot to lay out a field — cocoa, tea, coffee, tobacco or textiles.</li>' +
       '<li>Hire and assign <em>workers</em> to speed growth and swell the harvest, and upgrade each field for extra yield.</li>' +
       '<li>Ripe fields harvest into the warehouse; sell at the <b>London</b> or <b>New York</b> trade desk, which pay different rates.</li>' +
-      '</ul><p class="note">End the day to advance prices, the calendar and the news. This build runs entirely on the ' +
-      'Unity data exported by <code>tools/export-data.ps1</code>.</p>';
+      '</ul><p class="note">End the day to advance prices, the calendar and the news.</p>';
   }
 
   function dataText() {
-    var rows = [
-      ['Artists', A.artists.length, 'Resources/ArtRace/Data/Artist_*.asset'],
-      ['Cities', A.cities.length, 'City_*.asset'],
-      ['Artworks', A.works.length, 'Work_*.asset'],
-      ['Market events', A.marketEvents.length, 'Event_*.asset'],
-      ['Economy keys', Object.keys(CFG).length - A.WEB_ONLY_CFG_KEYS.length, 'EconomyConfig.asset'],
-      ['Web-only knobs', A.WEB_ONLY_CFG_KEYS.length, 'engine.js WEB_ONLY_DEFAULTS']
-    ].map(function (r) {
-      return '<div class="stat"><span>' + h(r[0]) + '</span><b>' + r[1] + '</b></div>';
-    }).join('');
-    if (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') {
-      return '<p>Alle im Spiel angezeigten Zahlen stammen aus dem Unity-Projekt, mit Ausnahme einiger Balancing-Einstellungen, die nur für den Browser-Prototyp gelten.</p>' +
-        '<div class="stats">' + rows + '</div>' +
-        '<p class="note">Preise, Marktindizes, Ereigniseffekte sowie Reise- und Kreditberechnungen wurden aus ' +
-        '<code>PriceEngine.cs</code>, <code>MarketState.cs</code> und <code>EconomyManager.cs</code> übernommen. ' +
-        'Seltenheitswerte von 1 bis 10 und Ansehensstufen entsprechen der Berechnung im C#-Code.</p>' +
-        '<p class="note">Nur für die Webversion: <code>' + h(A.WEB_ONLY_CFG_KEYS.join(', ')) +
-        '</code>. Die Standardwerte stehen in <code>engine.js</code> und werden automatisch überschrieben, sobald ' +
-        '<code>EconomyConfig.cs</code> ein gleichnamiges Feld enthält.</p>' +
-        '<p class="note"><code>data.js</code> wurde mit <code>tools/export-data.ps1</code> erzeugt. ' +
-        'Führe dieses Skript nach Änderungen an den Unity-Assets erneut aus.</p>';
+    function statRows(labels) {
+      var counts = [A.artists.length, A.cities.length, A.works.length,
+        A.marketEvents.length, Object.keys(CFG).length];
+      return labels.map(function (label, i) {
+        return '<div class="stat"><span>' + h(label) + '</span><b>' + counts[i] + '</b></div>';
+      }).join('');
     }
-    return '<p>Every number on screen comes from the Unity project, except the handful of ' +
-      'balance knobs the browser prototype models and the Unity build does not have yet.</p>' +
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var rows = statRows(de
+      ? ['Künstler', 'Städte', 'Kunstwerke', 'Marktereignisse', 'Wirtschaftsparameter']
+      : ['Artists', 'Cities', 'Artworks', 'Market events', 'Economy keys']);
+    if (de) {
+      return '<p>Alles, was du im Spiel siehst, ist Teil eines eigenständigen Wirtschaftsmodells: ' +
+        'Preise, Marktindizes, Ereignisse und Kredite werden jeden Tag neu berechnet.</p>' +
+        '<div class="stats">' + rows + '</div>' +
+        '<p class="note">Der Wert eines Gemäldes folgt dem Ansehen des Künstlers, seiner Seltenheit, ' +
+        'dem Alter und dem Zustand. Die Marktindizes jeder Stadt reagieren auf Nachrichten und auf deine eigenen Käufe.</p>' +
+        '<p class="note">Seltenheit und Ansehen werden über eine feste Skala von 1 bis 10 abgebildet, ' +
+        'damit zwei Bilder derselben Epoche immer vergleichbar bleiben.</p>';
+    }
+    return '<p>Everything you see in the game runs on a single, self-contained economic model: ' +
+      'prices, market indices, events and loans are recalculated every day.</p>' +
       '<div class="stats">' + rows + '</div>' +
-      '<p class="note">Prices, indices, event modifiers, travel and loan maths are ports of ' +
-      '<code>PriceEngine.cs</code>, <code>MarketState.cs</code> and <code>EconomyManager.cs</code>. ' +
-      'Rarities 1–10 and reputation bands are interpolated exactly as the C# does.</p>' +
-      '<p class="note">Web-only: <code>' + h(A.WEB_ONLY_CFG_KEYS.join(', ')) + '</code> — defaults live in ' +
-      '<code>engine.js</code> and are overridden automatically the moment ' +
-      '<code>EconomyConfig.cs</code> grows a field with the same name.</p>' +
-      '<p class="note">data.js was generated by tools/export-data.ps1; re-run that script after editing any .asset.</p>';
+      '<p class="note">An artwork is valued from the artist’s reputation, its rarity, its age and its ' +
+      'condition. Each city’s market indices react to the news, and your own buying nudges them too.</p>' +
+      '<p class="note">Rarity and reputation sit on a fixed 1–10 scale, so two pictures from the same ' +
+      'epoch stay directly comparable.</p>';
   }
 
   function fillTitleStats() {
     el('title-stats').innerHTML = A.artists.length + ' artists · ' + A.cities.length + ' cities · ' +
       A.works.length + ' artworks · ' + A.marketEvents.length + ' market events · ' +
-      Object.keys(CFG).length + ' economy parameters, all exported from the Unity project.';
+      Object.keys(CFG).length + ' economy parameters.';
   }
 
   /* Paint the title canvas with the old start.jpg scene (the studio easel
@@ -378,7 +372,7 @@
       canvas.style.backgroundImage = '';
     }
   }
-  /* New Game asks the same questions as NewGameSetup.cs in Unity. */
+  /* New Game asks the same four setup questions for every career. */
   function showNewGameForm() {
     var cityOpts = A.cities.map(function (c, i) {
       return '<option value="' + c.id + '"' + (c.id === 'amsterdam' ? ' selected' : '') + '>' +
@@ -690,8 +684,8 @@
   /* ---------- boot ------------------------------------------------------ */
   function boot() {
     if (!A) {
-      document.body.innerHTML = '<div class="fatal">engine.js / data.js failed to load. ' +
-        'Run <code>tools/export-data.ps1</code> first, then serve this folder over http:// (file:// can block scripts).</div>';
+      document.body.innerHTML = '<div class="fatal">The game data could not be loaded. ' +
+        'Reload the page, or serve this folder over http:// (opening the file directly can block scripts).</div>';
       return;
     }
     renderTitle();

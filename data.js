@@ -1,7 +1,7 @@
-/* Generated from the Unity project - do not edit by hand. */
+/* Generated game data - do not edit by hand. */
 window.ART_DATA = {
     "meta":  {
-                 "source":  "TheArtRace3/Assets/Resources/ArtRace (tools/export-data.ps1)",
+                 "source":  "Game economy configuration",
                  "generated":  "2026-10-12 20:17",
                  "counts":  {
                                 "artists":  20,
