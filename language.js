@@ -193,6 +193,7 @@ function updateLanguageButtons(){
   button.textContent=lang.toUpperCase();
   button.setAttribute('aria-label',lang==='de'?'Sprache auswählen, aktuell Deutsch':'Choose language, currently English');
   button.setAttribute('aria-expanded','false');
+  button.setAttribute('aria-haspopup','true');
  });
 }
 function closeLanguageMenu(){
@@ -212,7 +213,10 @@ function openLanguageMenu(button){
   option.setAttribute('aria-pressed',String(lang===choice[0]));
   menu.appendChild(option);
  });
- button.insertAdjacentElement('afterend',menu);
+ document.body.appendChild(menu);
+ var rect=button.getBoundingClientRect();
+ menu.style.top=Math.min(rect.bottom+5,window.innerHeight-100)+'px';
+ menu.style.left=Math.max(6,Math.min(rect.left,window.innerWidth-135))+'px';
  button.setAttribute('aria-expanded','true');
 }
 function setLanguage(value){
