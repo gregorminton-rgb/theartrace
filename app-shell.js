@@ -211,12 +211,17 @@
       epochs[e] = (epochs[e] || 0) + 1;
     });
     var count = G.portfolio.length;
+    var raceBoard = A.race ? A.race.standings() : [];
+    var winner = raceBoard.length && raceBoard[0].type === 'human';
+    var rivalSummary = raceBoard.length ? '<h3>' + (winner ? 'You won the art race!' : 'Final standings') + '</h3>' +
+      '<ol>' + raceBoard.map(function(p) { return '<li>' + h(p.name) + ': ' + p.pictures + ' paintings · ' + A.money(p.cash) + '</li>'; }).join('') + '</ol>' : '';
     var byEpoch = Object.keys(epochs).sort().map(function (e) {
       return epochs[e] + ' ' + e;
     }).join(' · ') || 'none';
     /* Richest first: the end of a race is a moment for showing off. */
     var shown = G.portfolio.slice().sort(function (a, b) { return valueOf(b) - valueOf(a); });
     var lines = [
+      rivalSummary,
       count
         ? 'You end the race with <b>' + count + '</b> picture' + (count === 1 ? '' : 's') +
           ' in the crates.'
@@ -507,6 +512,7 @@
       G[k] = data[k];
     });
     G.rng = A.makeRng(G.seed);
+    if (A.race) A.race.ensure();
     G.clockTimer = null;
     /* a restored page does not silently start spending days: the clock is
        off until the player ticks Auto again */
