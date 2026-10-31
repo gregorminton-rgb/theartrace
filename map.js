@@ -58,7 +58,7 @@
     },
     world: {
       id: 'world',
-      lat0: 76, lat1: -56, cell: 20, lon0: 0,
+      lat0: 85, lat1: -85, cell: 20, lon0: 0,
       sea: ['#1f7396', '#114d6e', '#0a3450'],
       land: '#d4a86a', coast: '#5a3a16',
       city: '#1a2b3c', trade: '#b3872c', colony: '#9e2a2b',
@@ -90,7 +90,10 @@
     var mid = (level.lon0 || 0) / 360 + 0.5;
     /* Fit the ENTIRE plate inside the viewport at 1x. Preserve its 1.85:1
        geometry by letterboxing; never crop at the minimum zoom. */
-    var plateRatio = 1.85;
+    /* Mercator must use the SAME pixel scale horizontally (radians of
+       longitude) and vertically (Mercator latitude). A fixed 1.85:1
+       ratio distorted both plates and obscured their true extent. */
+    var plateRatio = (deg * Math.PI / 180) / span;
     var drawW = Math.min(W, H * plateRatio);
     var drawH = drawW / plateRatio;
     var insetX = (W - drawW) / 2, insetY = (H - drawH) / 2;
@@ -1024,6 +1027,7 @@
       setAnchor: setAnchor,
       setLabels: setLabels,
       setLevel: setLevel,
+      resetZoom: resetZoom,
       refresh: refresh,
       destroy: destroy
     };
@@ -1059,6 +1063,13 @@
       zoomView.cy = uy;
       clampView();
       redrawAll();
+    }
+
+    function resetZoom() {
+      zoomView.z = 1;
+      zoomView.cx = 0.5;
+      zoomView.cy = 0.5;
+      if (W && H) redrawAll();
     }
 
     function panBy(dx, dy) {
@@ -1114,6 +1125,8 @@
     function setLevel(id) {
       if (!LEVELS[id] || api.level === id) return;
       api.level = id;
+      /* A new geographical view always starts with the whole plate. */
+      resetZoom();
       if (!W || !H) return;
       buildStatic();
       drawRoutes();
