@@ -1570,7 +1570,7 @@
       if (dead) return;
       e.preventDefault();
       var p = localPoint(e);
-      zoomAt(e.deltaY < 0 ? 1.25 : 0.8, p.x, p.y);
+      zoomAt(e.deltaY < 0 ? 1.10 : 1 / 1.10, p.x, p.y);
     }
     function onDown(e) {
       pointers.set(e.pointerId, localPoint(e));
@@ -1590,7 +1590,9 @@
         var d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
         if (pinchDist > 0 && d > 0) {
           var mx = (pts[0].x + pts[1].x) / 2, my = (pts[0].y + pts[1].y) / 2;
-          zoomAt(d / pinchDist, mx, my);
+          /* Dampen abrupt touch-distance changes, especially on small screens. */
+          var ratio = Math.max(0.82, Math.min(1.18, d / pinchDist));
+          zoomAt(Math.pow(ratio, 0.38), mx, my);
           pinchDist = d;
         }
         dragMoved = true;
