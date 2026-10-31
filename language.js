@@ -193,31 +193,18 @@ function setLanguage(value){
  lang=value;chosen=true;
  try{localStorage.setItem(KEY,value);}catch(e){}
  document.documentElement.lang=value;
- var gate=document.getElementById('language-gate');if(gate)gate.hidden=true;
+
  document.querySelectorAll('.language-switch').forEach(function(button){button.textContent=value==='de'?'DE / EN':'EN / DE';});
  paint();
 }
-function showGate(){
- var gate=document.getElementById('language-gate');if(!gate)return;
- gate.hidden=false;
- var btn=gate.querySelector('[data-select-language="'+lang+'"]')||gate.querySelector('button');
- if(btn)btn.focus();
-}
 document.addEventListener('click',function(ev){
- var selection=ev.target.closest('[data-select-language]');
- if(selection){setLanguage(selection.getAttribute('data-select-language'));return;}
- if(ev.target.closest('#language-switch,[data-change-language]')){showGate();}
+ if(ev.target.closest('#language-switch,[data-change-language]')) setLanguage(lang==='en'?'de':'en');
 });
-document.addEventListener('keydown',function(ev){
- var gate=document.getElementById('language-gate');
- if(!gate||gate.hidden)return;
- if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();}
- if(ev.key==='Tab'){var btns=Array.from(gate.querySelectorAll('button'));if(!btns.length)return;
- var current=btns.indexOf(document.activeElement),next=ev.shiftKey?(current<=0?btns.length-1:current-1):(current===btns.length-1?0:current+1);
- if(current<0)next=0;ev.preventDefault();btns[next].focus();}
-},true);
+document.addEventListener('change',function(ev){
+ if(ev.target.id==='f-language')setLanguage(ev.target.value);
+});
 document.documentElement.lang=lang;
-if(!chosen)showGate();
+
 if(typeof MutationObserver!=='undefined'){
  var observer=new MutationObserver(function(records){if(mutating)return;
  for(var i=0;i<records.length;i++){if(records[i].target.closest&&records[i].target.closest('#language-gate'))continue;paint();break;}
