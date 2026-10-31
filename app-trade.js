@@ -399,13 +399,25 @@
           : rivalCount() + ' bidders in the room') + '</span></div>';
       var quiz = '';
       if (quizOpen) {
-        quiz = '<div class="quiz"><p class="note">Expert question: ' + lot.quiz.question +
-          ' A correct answer cuts the price by ' + A.pct(CFG.auctionQuizDiscount) + '.</p><div class="row-btns">' +
+        var potentialSaving = Math.round((lot.inst.purchasePrice || 0) * CFG.auctionQuizDiscount);
+        var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+        quiz = '<div class="quiz"><p class="note"><strong>' +
+          (de ? 'Mögliche Ersparnis bei richtiger Antwort: ' : 'Potential saving with a correct answer: ') +
+          A.money(potentialSaving) + ' (' + A.pct(CFG.auctionQuizDiscount) + ')</strong></p>' +
+          '<p class="note">' + (de ? 'Expertenfrage: ' : 'Expert question: ') + lot.quiz.question +
+          '</p><div class="row-btns">' +
           lot.quiz.options.map(function (o, c) {
             return '<button class="btn" data-action="quiz" data-lot="' + i + '" data-choice="' + c + '">' + o + '</button>';
           }).join('') + '</div></div>';
       } else if (lot.quiz && lot.quiz.answered && lot.leader === 'you') {
-        quiz = '<p class="note">' + (lot.quiz.right ? 'Correct — the price is reduced.' : 'Wrong answer — the price stays.') + '</p>';
+        var deResult = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+        quiz = '<p class="note">' + (lot.quiz.right
+          ? (deResult ? 'Richtig! Ersparnis: ' : 'Correct! You saved ') +
+            A.money(lot.quiz.savedAmount != null ? lot.quiz.savedAmount :
+              Math.round((lot.inst.purchasePrice || 0) * CFG.auctionQuizDiscount /
+                (1 - CFG.auctionQuizDiscount))) + ' (' + A.pct(CFG.auctionQuizDiscount) + ').'
+          : (deResult ? 'Leider falsch: 0 Ersparnis. Der volle Preis bleibt bestehen.' :
+              'Wrong answer: $0 saved. The full price remains.')) + '</p>';
       }
       var btns = '';
       if (open && live)
