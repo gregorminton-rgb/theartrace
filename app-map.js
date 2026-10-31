@@ -70,7 +70,6 @@
       '" data-map-level="europe">Europa</button>' +
       '<button type="button" class="wm-level' + (lv === 'world' ? ' is-on' : '') +
       '" data-map-level="world">Welt</button>' +
-      '<button type="button" class="wm-level" data-map-fit="1" title="Show complete map">Ganz zeigen</button>' +
       '</span>' +
       '</div>' + (hasCanvas ? '' : '<p class="wm-fallback">The engraved chart could not be drawn — the list below still works.</p>') + '</div>';
   }
@@ -292,7 +291,6 @@
       stage.addEventListener('click', function (ev) {
         var lvBtn = ev.target.closest('[data-map-level]');
         if (lvBtn) { setMapLevel(lvBtn.getAttribute('data-map-level')); return; }
-        if (ev.target.closest('[data-map-fit]')) { if (worldMap && worldMap.resetZoom) worldMap.resetZoom(); return; }
         var c = worldMap && worldMap.canvas;
         if (!c || ev.target !== c) return;
         pickPlaceAt(ev, c);

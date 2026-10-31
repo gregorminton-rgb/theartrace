@@ -58,7 +58,7 @@
     },
     world: {
       id: 'world',
-      lat0: 85, lat1: -85, cell: 20, lon0: 0,
+      lat0: 76, lat1: -56, cell: 20, lon0: 0,
       sea: ['#1f7396', '#114d6e', '#0a3450'],
       land: '#d4a86a', coast: '#5a3a16',
       city: '#1a2b3c', trade: '#b3872c', colony: '#9e2a2b',
@@ -93,7 +93,9 @@
     /* Mercator must use the SAME pixel scale horizontally (radians of
        longitude) and vertically (Mercator latitude). A fixed 1.85:1
        ratio distorted both plates and obscured their true extent. */
-    var plateRatio = (deg * Math.PI / 180) / span;
+    /* Comfortable atlas proportions; all longitudes and relevant ports fit at 1x.
+       The former full-polar Mercator aspect produced huge blank bands. */
+    var plateRatio = level.id === 'world' ? 1.85 : 1.55;
     var drawW = Math.min(W, H * plateRatio);
     var drawH = drawW / plateRatio;
     var insetX = (W - drawW) / 2, insetY = (H - drawH) / 2;
