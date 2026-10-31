@@ -8,7 +8,8 @@ rights to them and releases them under the terms below.
 
 | File | Source | Licence |
 | --- | --- | --- |
-| `against-the-rising-tide.mp3` | AI-generated, by the author | CC BY 4.0 |
+| `Horizon's Lullaby.mp3` | AI-generated, by the author | CC BY 4.0 |
+| `Open Sea Reflections.mp3` | AI-generated, by the author | CC BY 4.0 |
 | `ship.mp3` | AI-generated, by the author | CC BY 4.0 |
 | `trading-cities.mp3` | AI-generated, by the author | CC BY 4.0 |
 | `travel.mp3` | AI-generated, by the author | CC BY 4.0 |

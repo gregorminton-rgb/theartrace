@@ -2,7 +2,8 @@
  *
  *   city    "music/trading-cities.mp3"       standing in a port city, or ashore
  *   auction "music/Gallery Walk.mp3"         the auction room
- *   sea     "music/against-the-rising-tide.mp3"  on a voyage across the ocean
+ *   sea     "music/Horizon's Lullaby.mp3" or "music/Open Sea Reflections.mp3"
+ *           on a voyage across the ocean; the two alternate from voyage to voyage
  *   rail    "music/Quiet Uplift.mp3"         on a voyage by train (short European hop)
  *
  * Exactly one track is meant to be audible. Both elements are created up
@@ -24,9 +25,13 @@
   var TRACKS = {
     city: 'music/trading-cities.mp3',
     auction: 'music/Gallery Walk.mp3',
-    sea: 'music/against-the-rising-tide.mp3',
+    sea_a: "music/Horizon's Lullaby.mp3",
+    sea_b: 'music/Open Sea Reflections.mp3',
     rail: 'music/Quiet Uplift.mp3'
   };
+  var SEA_KEYS = ['sea_a', 'sea_b'];
+  var seaIndex = 0;          /* which sea track the current ocean voyage plays */
+  var seaVoyage = null;      /* the voyage object seaIndex was last advanced for */
   var VOLUME = 0.45;
   var FADE_MS = 900;
   var FADE_STEP_MS = 60;
@@ -68,6 +73,11 @@
     if (G.voyage) return G.voyage.glyph === 'rail' ? 'rail' : 'sea';
     if (!(A && A.city && A.city(G.cityId))) return null;
     return G.view === 'auction' ? 'auction' : 'city';
+  }
+
+  /* Maps the generic 'sea' want onto whichever sea track is due this voyage. */
+  function resolveKey(want) {
+    return want === 'sea' ? SEA_KEYS[seaIndex] : want;
   }
 
   function fadeTo(name, inMs) {
@@ -119,7 +129,12 @@
   /* The single entry point: the game calls this from renderAll(). */
   function sync() {
     try {
-      var want = trackForNow();
+      var raw = trackForNow();
+      if (raw === 'sea' && G.voyage !== seaVoyage) {
+        seaVoyage = G.voyage;
+        seaIndex = 1 - seaIndex;
+      }
+      var want = resolveKey(raw);
       /* a track whose file will not load must not silence the other one */
       if (want && failed[want]) {
         current = null;
@@ -190,7 +205,7 @@
        the wanted track may be muted, awaiting a gesture, or blocked */
     current: function () {
       if (muted || !unlocked) return null;
-      var want = trackForNow();
+      var want = resolveKey(trackForNow());
       if (!want || failed[want]) return null;
       var a = players[want];
       return (a && !a.paused) ? want : null;
@@ -198,7 +213,7 @@
     /* a support hook: what the module thinks the player should hear and why */
     diag: function () {
       return {
-        want: trackForNow(), current: current, unlocked: unlocked, armed: armed,
+        want: resolveKey(trackForNow()), current: current, unlocked: unlocked, armed: armed,
         muted: muted, failed: JSON.stringify(failed),
         players: Object.keys(players).map(function (k) {
           var a = players[k];
