@@ -56,10 +56,11 @@
    * the colonies are authored here because they only exist as artwork, not as
    * CityDefinition entries. Clicking a pin opens its imported picture.
    * ---------------------------------------------------------------------- */
-  function renderWorldMap() {
+  function renderWorldMap(stageId) {
+    stageId = stageId === 'colony-wm-stage' ? stageId : 'wm-stage';
     var hasCanvas = !!(window.ArtRaceMap && window.ArtRaceMap.available);
     var lv = G.mapLevel || 'world';
-    return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="wm-stage">' +
+    return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="' + stageId + '">' +
       '<div class="wm-legend">' +
       '<span class="wm-key wm-key--colony">Colonies</span>' +
       '<span class="wm-key wm-key--city">Art-trade cities</span>' +
