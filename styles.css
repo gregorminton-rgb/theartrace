@@ -1345,3 +1345,17 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog--setup .race-setup-slot strong{font:700 .82rem var(--sans);padding:8px 0}
 @media(max-width:650px){.dialog--setup .career-settings{grid-template-columns:minmax(0,1fr)}.dialog--setup .race-setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dialog--setup .race-setup{padding:10px}}
 @media(max-width:380px){.dialog--setup .race-setup-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Career setup v2: player identities are one coherent section, not split across columns. */
+.dialog--setup .career-setup-v2{gap:16px}
+.dialog--setup .career-setup-v2 .race-setup{width:100%;box-sizing:border-box}
+.dialog--setup .career-setup-v2 .race-setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dialog--setup .career-setup-v2 .race-setup-slot{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,1.2fr);align-items:center;gap:10px;min-height:52px;margin:0;padding:8px 10px}
+.dialog--setup .career-setup-v2 .race-setup-slot span{font-size:.81rem;color:var(--ink);line-height:1.2}
+.dialog--setup .career-setup-v2 .race-setup-slot small{display:block;font-size:.68rem;color:var(--ink-soft);font-weight:400;margin-top:2px}
+.dialog--setup .career-setup-v2 .race-setup-slot input{min-height:40px;padding:7px 10px}
+.dialog--setup .career-setup-v2 .career-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:12px}
+.dialog--setup .career-setup-v2 .career-settings label{min-width:0}
+.dialog--setup .career-setup-v2 .career-settings input,.dialog--setup .career-setup-v2 .career-settings select{min-height:44px}
+@media(max-width:750px){.dialog--setup .career-setup-v2 .race-setup-grid{grid-template-columns:minmax(0,1fr)}.dialog--setup .career-setup-v2 .career-settings{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:380px){.dialog--setup .career-setup-v2 .race-setup-slot{grid-template-columns:minmax(0,1fr)}}
