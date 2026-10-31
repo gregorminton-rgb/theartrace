@@ -1377,3 +1377,23 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     height:clamp(240px,70dvh,520px);min-height:240px;
   }
 }
+
+/* Travel map: full phone-width panel, immersive height without stretching. */
+@media(max-width:760px){
+ #screen-game:has(#wm-stage) #stage{min-height:0;flex:1 1 auto}
+ #screen-game:has(#wm-stage) .stage-frame{display:none}
+ #screen-game:has(#wm-stage) #panel-wrap{flex:1 1 auto;min-height:0}
+ #screen-game:has(#wm-stage) #panel{padding:7px;overflow-y:auto}
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+   width:100%;height:clamp(390px,66dvh,660px);min-height:390px;
+   aspect-ratio:auto;overflow:hidden;position:relative;
+ }
+ #wm-stage canvas.wm-canvas,#colony-wm-stage canvas.wm-canvas{
+   max-width:none;object-fit:none;height:100%;touch-action:none;
+ }
+}
+@media(max-width:760px) and (orientation:landscape){
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+   height:clamp(240px,65dvh,430px);min-height:240px;
+ }
+}
