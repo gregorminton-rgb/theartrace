@@ -391,7 +391,6 @@
     if (autoBtn) {
       var autoN = colonyFields().filter(function (x) { return crew.fieldAutoOn(x); }).length;
       autoBtn.textContent = 'Auto: ' + autoN + '/' + colonyFields().length;
-      autoBtn.disabled = true;
       autoBtn.title = 'Automated fields (change in the field toolbar)';
     }
 
@@ -427,6 +426,7 @@
     
     /* Render plantage view (only when visible) */
     if (G.colonyMenu === 'plantage') {
+      el('colony-field-toolbar').innerHTML = colonyMultiBarHTML();
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
       var grid = el('colony-grid');
@@ -627,16 +627,14 @@
     var f = G.selectedFieldId ? fieldById(G.selectedFieldId) : null;
     var selectedCount = crew.multiSelectIds().length;
     if (!f) {
-      return colonyMultiBarHTML() +
-        '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
+      return '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
         '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to enable or disable automation for the selected fields.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
         colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
     var next = UPGRADES[f.level];
     var idle = colonyIdle();
-    var html = colonyMultiBarHTML() +
-      '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
+    var html = '<h3 class="colony-panel-title">' + h(crop.label) + ' field</h3>' +
       '<div class="colony-field-head">' + cropThumb(crop, 'crop-thumb--card') +
         '<div><span class="colony-field-title">' + h(crop.label) + '</span>' +
         '<span class="colony-field-sub">plot ' + (f.plotIndex + 1) + ' · planted day ' + f.plantedDay + '</span></div></div>' +
