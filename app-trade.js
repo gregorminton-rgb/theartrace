@@ -42,7 +42,7 @@
           var crop = CROP_BY_ID[k], units = landed[k], price = cropPrice(crop, hub);
           return '<div class="row"><div class="row-main">' + cropThumb(crop) + '<div>' +
             '<span class="title">' + h(crop.label) + '</span>' +
-            '<span class="credit">' + units + ' crate(s) on the dock · ' + cityName + ' pays ' + A.money(price) + ' each</span></div></div>' +
+            '<span class="credit">' + units + ' crate(s) on the dock · ' + cityName + ' pays ' + A.money(price) + ' each · ' + cropTrendLabel(crop,hub) + '</span></div></div>' +
             '<div class="row-num"><span class="ask">' + A.money(price * units) + '</span>' +
             '<span class="est">' + A.money(price) + ' × ' + units + '</span></div>' +
             '<div class="row-btns">' +
@@ -69,7 +69,7 @@
         '<button class="btn sell" data-action="sell-goods" data-crop="' + k + '" data-units="' + units + '">Sell all</button>' +
         '<button class="btn" data-action="sell-goods" data-crop="' + k + '" data-units="1">Sell 1</button></div></div>';
     }).join('');
-    return landedHTML + '<p class="note">Produce prices drift with the calendar; London, New York and Tokio pay different rates.</p>' + rows;
+    return landedHTML + '<p class="note">Produce prices drift with the calendar; London, New York and Tokio pay different rates. Percent changes compare today with yesterday at this port.</p>' + rows;
   }
 
   /* Crates that already landed in this port, sold straight off the dock. */
@@ -105,6 +105,16 @@
     checkEnd();
   }
 
+  function cropMarketDelta(crop,hub){
+    var today=cropPrice(crop,hub);
+    var previous=A.colonies.cropPriceOnDay(crop,hub,G.day-1);
+    return previous>0?(today/previous-1)*100:0;
+  }
+  function cropTrendLabel(crop,hub){
+    var change=cropMarketDelta(crop,hub);
+    return '<span class="crop-market-change '+(change>0.05?'gain':change<-.05?'loss':'')+'">'+
+      (change>=0?'+':'')+change.toFixed(1)+'% '+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'seit gestern':'vs yesterday')+'</span>';
+  }
   function renderMarket() {
     var c = A.city(G.cityId);
     /* Ashore there is no city market to quote: the table keeps the last port's
@@ -117,7 +127,7 @@
       var cls = ch > 0.004 ? 'up' : (ch < -0.004 ? 'down' : 'flat');
       var fav = c.favouriteEpochs.indexOf(e) >= 0 ? ' fav' : (c.bohemianEpochs.indexOf(e) >= 0 ? ' boh' : '');
       return '<tr class="' + cls + fav + '"><td>' + h(e) + '</td>' +
-             '<td class="num">' + i.toFixed(3) + '</td>' +
+             '<td class="num">' + (i >= 1 ? '+' : '−') + Math.abs((i - 1) * 100).toFixed(1) + '%</td>' +
              '<td class="num">' + (ch >= 0 ? '+' : '') + (ch * 100).toFixed(1) + '%</td>' +
              '<td class="arrow">' + arrow + '</td></tr>';
     }).join('');
