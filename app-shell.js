@@ -660,7 +660,7 @@
       return;
     }
 
-    if (t.hasAttribute('data-view')) {
+    if (t.hasAttribute('data-view')) { colonyDetailsType=null;closeDialog();
       G.view = t.getAttribute('data-view');
       renderAll();
       scheduleSave();
