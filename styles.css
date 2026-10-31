@@ -1253,3 +1253,13 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .colony-layout { grid-template-columns: minmax(0, 1fr) 210px; }
   #hud .hud-brand { display: none; }
 }
+
+/* Mobile-first plot selection: one toolbar above the field grid. */
+#colony-field-toolbar{flex:0 0 auto;position:sticky;top:0;z-index:3}
+#colony-field-toolbar .colony-multi{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:0}
+#colony-field-toolbar .colony-multi-count{width:100%;font:700 .85rem var(--sans)}
+#colony-field-toolbar .colony-multi-actions{display:flex;gap:8px;flex:1 1 240px}
+#colony-field-toolbar .colony-multi-actions .btn{flex:1;min-width:0;min-height:44px;white-space:normal}
+.plot.multi{outline:4px solid #f0a91a;outline-offset:-4px}
+.plot.multi::after{content:"✓";position:absolute;top:4px;right:4px;display:grid;place-items:center;background:#3f7a1e;color:white;border-radius:50%;width:26px;height:26px;font:700 18px var(--sans);z-index:5}
+@media(max-width:700px){.colony-layout{display:flex;flex-direction:column;min-height:0;height:auto}.colony-main{min-height:55vh}.colony-side{overflow:visible}.colony-grid{min-height:45vh;overflow-y:auto}.colony-multi-actions{min-width:0}}
