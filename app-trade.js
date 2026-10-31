@@ -398,14 +398,50 @@
         '<span class="est">' + (lot.closed ? (lot.leader === 'you' ? 'HAMMERED TO YOU' : 'sold to the room')
           : rivalCount() + ' bidders in the room') + '</span></div>';
       var quiz = '';
-      if (quizOpen) {
-        quiz = '<div class="quiz"><p class="note">Expert question: ' + lot.quiz.question +
-          ' A correct answer cuts the price by ' + A.pct(CFG.auctionQuizDiscount) + '.</p><div class="row-btns">' +
-          lot.quiz.options.map(function (o, c) {
-            return '<button class="btn" data-action="quiz" data-lot="' + i + '" data-choice="' + c + '">' + o + '</button>';
-          }).join('') + '</div></div>';
-      } else if (lot.quiz && lot.quiz.answered && lot.leader === 'you') {
-        quiz = '<p class="note">' + (lot.quiz.right ? 'Correct — the price is reduced.' : 'Wrong answer — the price stays.') + '</p>';
+      if (lot.quiz && lot.leader === 'you') {
+        var q = lot.quiz;
+        var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+        var base = q.basePrice || lot.inst.purchasePrice || 0;
+        var round = q.round || 1;
+        var results = q.results || [];
+        var totalChange = base - lot.inst.purchasePrice;
+        var status = results.map(function(r,j) {
+          return (j + 1) + ': ' + (r.right ? (de ? 'Richtig' : 'Correct') : (de ? 'Falsch' : 'Wrong')) +
+            ' (' + (r.change >= 0 ? '−' : '+') + A.money(Math.abs(r.change)) + ')';
+        }).join(' · ');
+        quiz = '<div class="quiz">' +
+          '<p class="note"><strong>' + (de ? 'Expertenquiz · Runde ' : 'Expert quiz · Round ') +
+          round + '/3</strong> · ' + (de ? 'Richtig: −20 % · Falsch: +10 % vom Zuschlagspreis' :
+          'Correct: −20% · Wrong: +10% of original hammer total') + '</p>' +
+          '<p class="note">' + (de ? 'Ursprünglicher Gesamtpreis: ' : 'Original total: ') +
+          A.money(base) + ' · ' + (de ? 'Aktueller Preis: ' : 'Current price: ') +
+          A.money(lot.inst.purchasePrice) + '</p>' +
+          (status ? '<p class="note">' + status + '</p>' : '');
+        if (quizOpen) {
+          var question = q.question;
+          if (de) question = ({
+            'In which year was it painted?':'In welchem Jahr wurde das Werk geschaffen?',
+            'What medium was it painted in?':'Mit welcher Technik wurde es gemalt?',
+            'What kind of picture is it?':'Um welche Bildgattung handelt es sich?'
+          })[question] || question;
+          quiz += '<p class="note"><strong>' +
+            (de ? 'Diese Runde: ' : 'This round: ') +
+            (de ? '−' : '−') + A.money(Math.round(base * .20)) +
+            ' / +' + A.money(Math.round(base * .10)) + '</strong></p>' +
+            '<p class="note">' + question + '</p><div class="row-btns">' +
+            q.options.map(function(o,c) {
+              return '<button class="btn" data-action="quiz" data-lot="' + i +
+                '" data-choice="' + c + '">' + h(o) + '</button>';
+            }).join('') + '</div>';
+        } else {
+          quiz += '<p class="note"><strong>' +
+            (de ? 'Quiz abgeschlossen. Endpreis: ' : 'Quiz complete. Final price: ') +
+            A.money(lot.inst.purchasePrice) + ' · ' +
+            (totalChange >= 0 ? (de ? 'Gespart: ' : 'Saved: ') :
+              (de ? 'Aufpreis: ' : 'Surcharge: ')) + A.money(Math.abs(totalChange)) +
+            '</strong></p>';
+        }
+        quiz += '</div>';
       }
       var btns = '';
       if (open && live)
