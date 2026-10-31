@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Great Art Race &mdash; web prototype</title>
-<link rel="stylesheet" href="styles.css?v=20261031-LAYOUT1" />
+<link rel="stylesheet" href="styles.css?v=20261101-CONTROLS1" />
 </head>
 <body>
 <div id="app">
@@ -61,11 +61,11 @@
               <b id="cal-day">1</b><span id="cal-month">January</span><span id="cal-year">1925</span>
             </div>
             <div class="chrono-timer" id="cal-timer"><i></i></div>
-            <label class="chrono-auto" title="Tage automatisch verstreichen lassen"><input type="checkbox" id="cal-auto" /> auto</label>
-            <select class="chrono-speed" id="cal-speed" title="Geschwindigkeit" aria-label="Day speed">
-              <option value="2600">langsam</option>
+            <label class="chrono-auto" title="Let days pass automatically"><input type="checkbox" id="cal-auto" /> auto</label>
+            <select class="chrono-speed" id="cal-speed" title="Speed" aria-label="Day speed">
+              <option value="2600">slow</option>
               <option value="1600" selected>normal</option>
-              <option value="900">schnell</option>
+              <option value="900">fast</option>
             </select>
           </div>
           <button class="btn go" type="button" id="end-day" data-action="next-day">End day</button>
@@ -142,7 +142,7 @@
       <div class="colony-bar-stats">
         <span class="colony-chip" id="colony-cash">Cash $0</span>
         <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
-        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Verwalter: s&auml;t, erntet und teilt Arbeiter ein">Automatik</button>
+        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Overseer: sows, harvests and assigns workers">Autopilot</button>
       </div>
       <div class="chrono">
         <div class="chrono-row">
@@ -151,18 +151,18 @@
               <b id="colony-cal-day">1</b><span id="colony-cal-month">January</span><span id="colony-cal-year">1925</span>
             </div>
             <div class="chrono-timer" id="colony-cal-timer"><i></i></div>
-            <label class="chrono-auto" title="Tage automatisch verstreichen lassen"><input type="checkbox" id="colony-cal-auto" /> auto</label>
-            <select class="chrono-speed" id="colony-cal-speed" title="Geschwindigkeit" aria-label="Day speed">
-              <option value="2600">langsam</option>
+            <label class="chrono-auto" title="Let days pass automatically"><input type="checkbox" id="colony-cal-auto" /> auto</label>
+            <select class="chrono-speed" id="colony-cal-speed" title="Speed" aria-label="Day speed">
+              <option value="2600">slow</option>
               <option value="1600" selected>normal</option>
-              <option value="900">schnell</option>
+              <option value="900">fast</option>
             </select>
           </div>
           <button class="btn go" type="button" data-colony="endday">End day</button>
         </div>
       </div>
     </header>
-    <nav class="colony-menu" aria-label="Kolonie-Men&uuml;">
+    <nav class="colony-menu" aria-label="Plantation menu">
       <span class="colony-menu-label">Plantation menu</span>
       <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage"><span class="colony-menu-ico">&#127793;</span><b>Crops</b><small>Sow fields</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><span class="colony-menu-ico">&#128176;</span><b>Trade</b><small>Ship the harvest</small></button>
@@ -192,14 +192,14 @@
       <!-- LAGER view -->
       <div class="colony-view colony-view--lager" id="colony-view-lager" hidden>
         <div class="colony-simple-panel">
-          <h2>Lager</h2>
+          <h2>Store</h2>
           <div id="colony-lager-content"></div>
         </div>
       </div>
       <!-- ARBEITER view -->
       <div class="colony-view colony-view--arbeiter" id="colony-view-arbeiter" hidden>
         <div class="colony-simple-panel">
-          <h2>Arbeiter</h2>
+          <h2>Workers</h2>
           <div id="colony-arbeiter-content"></div>
         </div>
       </div>
@@ -234,13 +234,13 @@
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261030-PLOTAUTO1"></script>
 <script src="app-crew.js?v=20261031-LAYOUT1"></script>
-<script src="app-colonies.js?v=20261101-EMPTYPLOT1"></script>
+<script src="app-colonies.js?v=20261101-CONTROLS1"></script>
 <script src="app-core.js?v=20261030-QUIZ1"></script>
 <script src="art-notes.js?v=20261030-ART75"></script>
-<script src="app-art.js?v=20261031-PLAIN1"></script>
+<script src="app-art.js?v=20261101-SAILING1"></script>
 <script src="app-artview.js?v=20261030-COLONY1"></script>
-<script src="app-map.js?v=20261031"></script>
-<script src="app-trade.js?v=20261031-PLAIN1"></script>
+<script src="app-map.js?v=20261101-ENGLISH1"></script>
+<script src="app-trade.js?v=20261101-ENGLISH1"></script>
 <script src="app-shell.js?v=20261030-QUIZ1"></script>
 <script src="app-audio.js?v=20261031-SHIPMUSIC2"></script>
 </body>

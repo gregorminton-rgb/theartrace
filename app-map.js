@@ -415,13 +415,13 @@
     /* the question the player actually has: what does it cost, how long */
     if (leg) {
       body += '<div class="place-leg">' +
-        '<div><span>Von hier</span><b>' + h(G.colonyId ? (COLONY_BY_ID[G.colonyId] || {}).label || '' : (A.city(G.cityId) || {}).name || '') + '</b></div>' +
-        '<div><span>Passage</span><b>' + leg.days + ' Tage</b></div>' +
+        '<div><span>From here</span><b>' + h(G.colonyId ? (COLONY_BY_ID[G.colonyId] || {}).label || '' : (A.city(G.cityId) || {}).name || '') + '</b></div>' +
+        '<div><span>Passage</span><b>' + leg.days + ' days</b></div>' +
         '<div><span>Fare</span><b>' + A.money(leg.price) + '</b></div>' +
-        '<div><span>Danach</span><b>' + A.money(G.cash - leg.price) + '</b></div>' +
+        '<div><span>Afterwards</span><b>' + A.money(G.cash - leg.price) + '</b></div>' +
         '</div>';
       if (leg.price > G.cash) {
-        body += '<p class="place-warn">Der Fahrpreis liegt über deinem Bargeld — diese Überfahrt ist nicht buchbar.</p>';
+        body += '<p class="place-warn">The fare is more than your cash &mdash; this crossing cannot be booked.</p>';
       }
     }
     var buttons = [{ label: 'Cancel', onClick: function () { G.mapPick = null; closeDialog(); if (worldMap) syncWorldMap(); } }];
@@ -477,7 +477,7 @@
       });
     }
 
-    dialog(place.label + (leg ? ' · ' + leg.days + ' Tage · ' + A.money(leg.price) : ''), body, buttons);
+    dialog(place.label + (leg ? ' · ' + leg.days + ' days · ' + A.money(leg.price) : ''), body, buttons);
     if (worldMap) syncWorldMap();
   }
 

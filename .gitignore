@@ -13,3 +13,5 @@ _syntax*.txt
 
 # Static server cache
 __pycache__/
+# Local backups, not part of the game
+_backup_auktion/

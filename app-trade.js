@@ -53,7 +53,7 @@
     var ids = CROPS.map(function (c) { return c.id; }).filter(function (k) { return (G.goods[k] || 0) > 0; });
     if (!ids.length) {
       var empty = '<p class="note">The ' + cityName + ' trade desk buys colonial produce. You have nothing here yet — ' +
-        'set a standing order on a plantation, or use the <b>Ernte verschiffen</b> tab on a colony to load a ship.</p>';
+        'set a standing order on a plantation, or use the <b>Trade</b> tab on a colony to load a ship.</p>';
       return landedHTML || empty;
     }
     var rows = ids.map(function (k) {

@@ -107,13 +107,13 @@
         bd.classList.toggle('has-image', !!dpic);
         bd.style.backgroundColor = rgb(dest.theme);
         bd.style.backgroundImage = dpic ? 'url("' + dpic.file + '")' : 'none';
-        el('backdrop-caption').textContent = 'Unterwegs nach ' + dest.name;
+        el('backdrop-caption').textContent = 'Sailing to ' + dest.name;
       } else if (colony) {
         var kpic = pictureFor(colony.pic);
         bd.classList.toggle('has-image', !!kpic);
         bd.style.backgroundColor = '';
         bd.style.backgroundImage = kpic ? 'url("' + kpic.file + '")' : 'none';
-        el('backdrop-caption').textContent = 'Unterwegs nach ' + colony.label;
+        el('backdrop-caption').textContent = 'Sailing to ' + colony.label;
       }
       return;
     }

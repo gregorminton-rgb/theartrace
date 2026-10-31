@@ -118,15 +118,15 @@
       bg: 'linear-gradient(to bottom, #97874f 0%, #7a6c3c 40%, #615530 100%)',
       plots: null
     },
-    { id: 'indien', label: 'Indien', sub: 'Cotton, indigo & tea', mapX: 0.700, mapY: 0.660, pic: 'indien',
+    { id: 'indien', label: 'India', sub: 'Cotton, indigo & tea', mapX: 0.700, mapY: 0.660, pic: 'indien',
       bg: 'linear-gradient(to bottom, #9a8154 0%, #7b6440 40%, #5f4c31 100%)',
       plots: null
     },
-    { id: 'indonesien', label: 'Niederländisch-Indien', sub: 'Spice islands & coffee', mapX: 0.790, mapY: 0.560, pic: 'indonesien',
+    { id: 'indonesien', label: 'Dutch East Indies', sub: 'Spice islands & coffee', mapX: 0.790, mapY: 0.560, pic: 'indonesien',
       bg: 'linear-gradient(to bottom, #6b9a7a 0%, #4d7a5c 40%, #3a5f46 100%)',
       plots: null
     },
-    { id: 'australien', label: 'Australien', sub: 'Wool stations & vineyards', mapX: 0.845, mapY: 0.290, pic: 'australien',
+    { id: 'australien', label: 'Australia', sub: 'Wool stations & vineyards', mapX: 0.845, mapY: 0.290, pic: 'australien',
       bg: 'linear-gradient(to bottom, #b0925e 0%, #8e7449 40%, #6d5838 100%)',
       plots: null
     },
@@ -232,9 +232,9 @@
     return rows.map(function (d) {
       var price = d.price;
       var days = d.days;
-      var kind = d.kind === 'colony' ? 'Kolonie' : d.kind === 'trade' ? 'Handel' : 'Stadt';
+      var kind = d.kind === 'colony' ? 'Colony' : d.kind === 'trade' ? 'Trade' : 'City';
       var poor = price > G.cash;
-      var disabled = poor ? ' disabled aria-disabled="true" title="Zu wenig Bargeld"' : '';
+      var disabled = poor ? ' disabled aria-disabled="true" title="Not enough cash"' : '';
       return '<button type="button" class="dest-row' + (poor ? ' is-poor' : '') + '" data-colony="depart" data-dest="' + h(d.slug) + '"' +
         ' data-price="' + price + '" data-days="' + days + '"' + disabled + '>' +
         '<span class="dest-name">' + h(d.label) + '</span>' +
@@ -326,13 +326,13 @@
     A.shell.dialog(
       'Travel to ' + dest.label + '?',
       '<div class="confirm-leg">' +
-        '<p class="confirm-head">Von <b>' + h(colony.label) + '</b> nach <b>' + h(dest.label) + '</b></p>' +
+        '<p class="confirm-head">From <b>' + h(colony.label) + '</b> to <b>' + h(dest.label) + '</b></p>' +
         '<div class="confirm-grid">' +
           '<div><span>Travel time</span><b>' + days + ' days</b></div>' +
           '<div><span>Fare</span><b>' + A.money(price) + '</b></div>' +
           '<div><span>Cash afterwards</span><b>' + A.money(G.cash - price) + '</b></div>' +
         '</div>' +
-        '<p class="confirm-note">Die Plantage bleibt bewirtschaftet zurück. Ankunft an Tag ' +
+        '<p class="confirm-note">The plantation stays worked while you are away. Arrival on day ' +
           (G.day + days) + '.</p>' +
       '</div>',
       [
@@ -382,7 +382,7 @@
     el('colony-sub').textContent = colony.sub;
     /* the date lives in the top-right calendar of this bar, not in the cash chip */
     el('colony-cash').textContent = 'Cash ' + A.money(G.cash) + ' · ' + colonyFields().length + ' field(s)';
-    el('colony-warehouse').textContent = 'An Land ' + crew.colonyUnits() + ' Kiste(n)';
+    el('colony-warehouse').textContent = 'Ashore ' + crew.colonyUnits() + ' crate(s)';
     /* the day clock has a copy on this screen; keep it in step with the state */
     if (A.shell && A.shell.paintClock) A.shell.paintClock();
     /* the status chip in the top bar now counts the automated fields */
@@ -390,7 +390,7 @@
     if (autoBtn) {
       var autoN = colonyFields().filter(function (x) { return crew.fieldAutoOn(x); }).length;
       autoBtn.classList.toggle('active', autoN > 0);
-      autoBtn.textContent = autoN > 0 ? '✓ Automatik ' + autoN : 'Automatik';
+      autoBtn.textContent = autoN > 0 ? '✓ Autopilot ' + autoN : 'Autopilot';
     }
     
     /* Update menu buttons */
@@ -597,17 +597,17 @@
       '</button>';
   }
 
-  /* Bulk bar: toggles selection mode and applies Automatik to the selection. */
+  /* Bulk bar: toggles selection mode and applies Autopilot to the selection. */
   function colonyMultiBarHTML() {
     var n = crew.multiSelectIds().length;
     var on = crew.multiSelect.active;
     return '<div class="colony-multi">' +
-      '<button class="btn' + (on ? ' primary' : '') + '" data-colony="multi-toggle">' +
-        (on ? 'Auswahl beenden' : 'Mehrfachauswahl') + '</button>' +
+      '<button class="btn colony-multi-toggle' + (on ? ' primary' : '') + '" data-colony="multi-toggle">' +
+        (on ? 'End selection' : 'Select fields') + '</button>' +
       (on
-        ? '<span class="colony-multi-count">' + n + ' gewählt</span>' +
-          '<button class="btn" data-colony="auto-bulk" data-on="1"' + (n ? '' : ' disabled') + '>Automatik an</button>' +
-          '<button class="btn ghost" data-colony="auto-bulk" data-on="0"' + (n ? '' : ' disabled') + '>Automatik aus</button>'
+        ? '<span class="colony-multi-count">' + n + ' selected</span>' +
+          '<button class="btn colony-multi-auto" data-colony="auto-bulk" data-on="1"' + (n ? '' : ' disabled') + '>Autopilot on</button>' +
+          '<button class="btn ghost colony-multi-auto" data-colony="auto-bulk" data-on="0"' + (n ? '' : ' disabled') + '>Autopilot off</button>'
         : '') +
       '</div>';
   }
@@ -631,25 +631,29 @@
       '<span class="field-progress"><i style="width:' + fieldProgressPct(f) + '%"></i></span>' +
       '<span class="colony-field-state">' + (f.ripe ? 'Ripe — ready to harvest' : fieldDaysLeft(f) + ' day(s) left · +' + Math.round(fieldGrowthRate(f) * 100) + '% growth/day') + '</span>' +
       '<span class="colony-field-yield">Harvest ' + fieldYield(f) + ' unit(s) · ' + f.workers + ' worker(s) · level ' + f.level + '</span>' +
-      '<div class="colony-inspector-btns">' +
+      '<div class="colony-controls">' +
+      '<div class="colony-controls-row">' +
       (f.ripe ? '<button class="btn buy" data-colony="harvest" data-field="' + f.id + '">Harvest ' + fieldYield(f) + ' unit(s)</button>' : '') +
-      '<button class="btn" data-colony="assign" data-field="' + f.id + '"' + ((idle > 0 && f.workers < MAX_FIELD_WORKERS) ? '' : ' disabled') + '>+1 worker</button>' +
-      '<button class="btn ghost" data-colony="unassign" data-field="' + f.id + '"' + (f.workers > 0 ? '' : ' disabled') + '>-1 worker</button>' +
       (next
         ? '<button class="btn go" data-colony="upgrade" data-field="' + f.id + '"' + (G.cash >= next.cost ? '' : ' disabled') + '>' + h(next.label) + ' · ' + A.money(next.cost) + '</button>'
         : '<button class="btn" disabled>Fully upgraded</button>') +
-      '<button class="btn' + (crew.fieldAutoOn(f) ? ' primary' : '') + '" data-colony="auto" data-field="' + f.id + '"' +
-        ' data-on="' + (crew.fieldAutoOn(f) ? '1' : '0') + '">' +
-        (crew.fieldAutoOn(f) ? '✓ Automatik an' : 'Automatik aus') + '</button>' +
       '</div>' +
-      '<p class="colony-note">Automatik gilt nur für dieses Feld: der Verwalter erntet es, sät dieselbe Frucht neu und stellt einen Arbeiter ab.</p>';
+      '<div class="colony-controls-row">' +
+      '<button class="btn" data-colony="assign" data-field="' + f.id + '"' + ((idle > 0 && f.workers < MAX_FIELD_WORKERS) ? '' : ' disabled') + '>+1 worker</button>' +
+      '<button class="btn ghost" data-colony="unassign" data-field="' + f.id + '"' + (f.workers > 0 ? '' : ' disabled') + '>-1 worker</button>' +
+      '<button class="btn colony-auto-btn' + (crew.fieldAutoOn(f) ? ' primary' : '') + '" data-colony="auto" data-field="' + f.id + '"' +
+        ' data-on="' + (crew.fieldAutoOn(f) ? '1' : '0') + '">' +
+        (crew.fieldAutoOn(f) ? '✓ Autopilot on' : 'Autopilot off') + '</button>' +
+      '</div>' +
+      '</div>' +
+      '<p class="colony-note">Autopilot applies to this field only: the overseer harvests it, sows the same crop again and posts a worker.</p>';
     return html + colonyWarehouseHTML();
   }
 
   /* ---------- handel: consign the harvest -------------------------------- *
    * Three exchanges buy colonial produce — London, New York and Tokio — and
    * each pays a different rate per crop. A shipment leaves the quay here and
-   * arrives a crossing later; the standing order ("automatisch verschiffen")
+   * arrives a crossing later; the standing order ("ship automatically")
    * keeps sending whatever the fields deliver, so a plantation earns while
    * the player is hunting pictures in Europe.
    * ---------------------------------------------------------------------- */
@@ -677,13 +681,13 @@
       return '<div class="trade-row' + (can ? '' : ' is-empty') + '">' +
         '<div class="trade-goods">' + cropThumb(c) +
           '<span><b>' + h(c.label) + '</b> <span class="trade-stock">' +
-          (soon ? soon + ' unterwegs' : 'an Land') + '</span></span></div>' +
+          (soon ? soon + ' in transit' : ' ashore') + '</span></span></div>' +
         '<span class="trade-price">' + units + ' → ' + A.money(price) + '</span>' +
         '<span class="trade-btns">' +
           '<button class="btn" type="button" data-colony="ship" data-crop="' + c.id + '"' +
             ' data-hub="' + hub + '" data-units="1"' + (can ? '' : ' disabled') + '>1</button>' +
           '<button class="btn buy" type="button" data-colony="ship" data-crop="' + c.id + '"' +
-            ' data-hub="' + hub + '" data-units="' + units + '"' + (can ? '' : ' disabled') + '>Alle</button>' +
+            ' data-hub="' + hub + '" data-units="' + units + '"' + (can ? '' : ' disabled') + '>All</button>' +
         '</span></div>';
     }).join('');
 
@@ -691,30 +695,30 @@
     var shipLines = ships.length ? ships.map(function (s) {
       var c = CROP_BY_ID[s.cropId];
       return '<div class="ship-row"><b>' + s.units + '× ' + h(c ? c.label : s.cropId) + '</b> → ' +
-        h(hubName(s.hubId)) + ' · ' + (s.autoSell ? 'Verkauf bei Ankunft' : 'Einlagerung') +
-        '<small>Tag ' + s.dueDay + ' (' + Math.max(0, s.dueDay - G.day) + 'd)</small>' +
-        '<button class="link-btn" type="button" data-colony="ship-clear" data-crop="' + s.cropId + '">stornieren</button></div>';
-    }).join('') : '<div class="ship-row is-empty">Kein Schiff unterwegs.</div>';
+        h(hubName(s.hubId)) + ' · ' + (s.autoSell ? 'Sold on arrival' : 'Stored') +
+        '<small>Day ' + s.dueDay + ' (' + Math.max(0, s.dueDay - G.day) + 'd)</small>' +
+        '<button class="link-btn" type="button" data-colony="ship-clear" data-crop="' + s.cropId + '">cancel</button></div>';
+    }).join('') : '<div class="ship-row is-empty">No ship at sea.</div>';
 
-    return '<h3 class="colony-warehouse-title">Ernte verschiffen</h3>' +
+    return '<h3 class="colony-warehouse-title">Ship the harvest</h3>' +
       '<div class="trade-head">' +
-        '<span class="trade-head-meta">An Land: <b>' + onQuay + '</b> Kiste(n) · Fracht ' +
-          A.money(crew.SHIP_FEE_PER_CRATE) + '/Kiste · Überfahrt ' + days + ' Tage nach ' +
+        '<span class="trade-head-meta">Ashore: <b>' + onQuay + '</b> crate(s) · freight ' +
+          A.money(crew.SHIP_FEE_PER_CRATE) + '/crate · crossing ' + days + ' day(s) to ' +
           h(hubName(hub)) + '</span>' +
       '</div>' +
       '<div class="trade-hubs">' + hubBtns + '</div>' +
       '<div class="trade-table">' +
-        '<div class="trade-row trade-row--head"><span>Ware · An Land · Börse zahlt</span>' +
-          '<span>Verladung</span></div>' +
+        '<div class="trade-row trade-row--head"><span>Goods · ashore · exchange pays</span>' +
+          '<span>Loading</span></div>' +
         rows + '</div>' +
       '<div class="trade-auto">' +
-        '<button class="btn ' + (order.on ? 'is-on' : '') + '" type="button" data-colony="ship-auto">' +
-          (order.on ? '✓ Automatischer Versand läuft' : 'Automatisch verschiffen') + '</button>' +
+        '<button class="btn trade-auto-btn ' + (order.on ? 'is-on' : '') + '" type="button" data-colony="ship-auto">' +
+          (order.on ? '✓ Auto-shipping on' : 'Ship automatically') + '</button>' +
         '<span class="colony-note">' + (order.on
-          ? 'Jede Ernte geht automatisch nach ' + h(hubName(hub)) + ' und wird dort verkauft.'
-          : 'Ernte bleibt am Kai liegen, bis du sie verschiffst.') + '</span>' +
+          ? 'Every harvest sails for ' + h(hubName(hub)) + ' on its own and is sold there.'
+          : 'Harvest waits on the quay until you ship it.') + '</span>' +
       '</div>' +
-      '<h4 class="colony-warehouse-title">Unterwegs</h4>' +
+      '<h4 class="colony-warehouse-title">At sea</h4>' +
       '<div class="ship-list">' + shipLines + '</div>';
   }
 
