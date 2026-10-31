@@ -413,6 +413,12 @@
        not openColonyTravel) has to arm that flag itself. */
     if (G.colonyMenu === 'reise') {
       G.colonyTravel = true;
+      /* Reuse the exact same map/legend/Europe-World controls as city travel.
+         Keep the mounted canvas between renders instead of rebuilding it. */
+      var colonyStage = el('colony-wm-stage');
+      if (colonyStage && !colonyStage.classList.contains('worldmap') && A.mapView && A.mapView.render) {
+        colonyStage.outerHTML = A.mapView.render('colony-wm-stage');
+      }
       var dl = el('colony-dest-list');
       if (dl) {
         dl.innerHTML = colonyTravelRowsHTML();
