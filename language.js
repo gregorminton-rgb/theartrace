@@ -134,6 +134,29 @@ function convert(s){
  .replace(/(\d+) cities · /,'$1 Städte · ').replace(/(\d+) artworks · /,'$1 Kunstwerke · ')
  .replace(/(\d+) market events · /,'$1 Marktereignisse · ')
  .replace(/economy parameters\./,'Wirtschaftsparameter.');
+ if(lang==='de') {
+   result=result
+    .replace(/^(\d+) of (\d+) fields selected$/, '$1 von $2 Feldern ausgewählt')
+    .replace(/^(\d+)\/(\d+) selected$/, '$1/$2 ausgewählt')
+    .replace(/^(\d+) (?:field|fields)\b/, '$1 Felder')
+    .replace(/^(\d+) (?:worker|workers)\b/, '$1 Arbeitskräfte')
+    .replace(/^(\d+) (?:crate|crates)\b/, '$1 Kisten')
+    .replace(/^(\d+) (?:picture|pictures)\b/, '$1 Gemälde')
+    .replace(/^Ashore /, 'An Land ')
+    .replace(/^Auto: /, 'Automatik: ')
+    .replace(/^Harvest (\d+) unit\(s\)/, '$1 Einheiten ernten')
+    .replace(/^(\d+) day\(s\) left/, 'Noch $1 Tage')
+    .replace(/^You are already en route to /, 'Du bist bereits unterwegs nach ')
+    .replace(/^Cash /, 'Bargeld ')
+    .replace(/^Reputation /, 'Ansehen ')
+    .replace(/^Gallery in /, 'Galerie in ')
+    .replace(/^Arrived in /, 'Angekommen in ')
+    .replace(/^Arrived at /, 'Angekommen in ')
+    .replace(/^Day (\d+) opened\./, 'Tag $1 hat begonnen.')
+    .replace(/^NEWS: /, 'NACHRICHT: ')
+    .replace(/^Auction in /, 'Auktion in ')
+    .replace(/^Trade and travel open again once you are back in a port\.$/, 'Handel und Reisen stehen im nächsten Hafen wieder zur Verfügung.');
+ }
  return match[1]+result+match[3];
 }
 function walk(root){
