@@ -115,7 +115,10 @@
     if (G.clockTimer) { clearInterval(G.clockTimer); G.clockTimer = null; }
     if (!G.clockWanted || G.ended) { paintClockUi(); return; }
     paintClockUi();
-    G.clockTimer = setInterval(tickClock, G.clockSpeed || 1600);
+    /* First day happens immediately; do not restart after an arrival or event. */
+    tickClock();
+    if (G.clockWanted && !G.ended && !G.clockTimer)
+      G.clockTimer = setInterval(tickClock, G.clockSpeed || 1600);
   }
 
   function stopClock() {
@@ -136,8 +139,11 @@
     if (!v || v < 300) return;
     G.clockSpeed = v;
     /* a running clock picks the new pace up immediately */
-    if (G.clockTimer) startClock();
-    else paintClockUi();
+    if (G.clockTimer) {
+      clearInterval(G.clockTimer);
+      G.clockTimer = setInterval(tickClock, G.clockSpeed || 1600);
+    }
+    paintClockUi();
   }
 
   function tickClock() {
