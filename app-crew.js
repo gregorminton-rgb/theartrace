@@ -231,11 +231,13 @@
   }
 
   /* Multi-select: a set of field ids, toggled from the plot grid. */
-  var multiSelect = { active: false, ids: {} };
+  var multiSelect = { active: true, ids: {} };
   function toggleMultiSelect(fid) {
-    if (!fid) return;
+    if (!fid || !fieldById(fid)) return;
     if (multiSelect.ids[fid]) delete multiSelect.ids[fid];
     else multiSelect.ids[fid] = true;
+    var ids = multiSelectIds();
+    G.selectedFieldId = ids.length === 1 ? ids[0] : null;
     renderColony();
   }
   function multiSelectIds() {
@@ -243,6 +245,13 @@
   }
   function clearMultiSelect() {
     multiSelect.ids = {};
+    G.selectedFieldId = null;
+    renderColony();
+  }
+  function selectAllFields() {
+    multiSelect.ids = {};
+    colonyFields().forEach(function(f) { multiSelect.ids[f.id] = true; });
+    G.selectedFieldId = null;
     renderColony();
   }
 
@@ -354,16 +363,16 @@
       plantCrop(G.plantCropId, pi);
     } else if (action === 'select') {
       var sfid = parseInt(t.getAttribute('data-field'), 10);
-      if (multiSelect.active) toggleMultiSelect(sfid);
-      else selectField(sfid);
-    } else if (action === 'multi-toggle') {
-      multiSelect.active = !multiSelect.active;
-      if (!multiSelect.active) clearMultiSelect();
-      renderColony();
+      toggleMultiSelect(sfid);
+    } else if (action === 'select-all') {
+      selectAllFields();
+    } else if (action === 'select-clear') {
+      clearMultiSelect();
     } else if (action === 'auto-bulk') {
       var bulkIds = multiSelectIds();
       if (!bulkIds.length) { log('Select fields first.'); return; }
-      setFieldsAuto(bulkIds, t.getAttribute('data-on') !== '1');
+      setFieldsAuto(bulkIds, t.getAttribute('data-on') === '1');
+    } else if (action === 'multi-toggle') {
       clearMultiSelect();
     } else if (action === 'harvest') {
       harvestField(parseInt(t.getAttribute('data-field'), 10));
@@ -588,6 +597,7 @@
     toggleMultiSelect: toggleMultiSelect,
     multiSelectIds: multiSelectIds,
     clearMultiSelect: clearMultiSelect,
+    selectAllFields: selectAllFields,
     fieldAutoOn: fieldAutoOn,
     ownedPlot: ownedPlot,
     runOverseer: runOverseer,
