@@ -130,8 +130,8 @@
 
     log('Career begins in ' + A.city(G.cityId).name + ' with ' + A.money(G.cash) +
         ' and ' + G.careerDays + ' days to fill the crates.');
-    log('Goal: hold as many pictures as you can when the ' + G.careerDays +
-        '-day career ends — starting crates ' + G.capacity + ' of ' + CFG.maxPortfolioCapacity + '.');
+    log('Goal: earn the most collection points when the ' + G.careerDays +
+        '-day career ends — condition below 80%: 1 point, 80–89%: 2, 90%+: 3 per painting. Starting crates ' + G.capacity + ' of ' + CFG.maxPortfolioCapacity + '.');
     log('Seed ' + G.seed + ' · ' + G.difficulty + ' · ' + A.DURATIONS[opts.durationIndex || 1].label + ' career.');
   }
 
@@ -826,7 +826,7 @@
 
   function checkEnd() {
     if (!G.started || G.ended) return;
-    /* The career is a race for paintings, not for money: it always runs the
+    /* The career is scored by conservation quality, not by cash: it runs the
        full 180 days and the result is how many canvases are still in the
        crates at the end. Reaching a net-worth target no longer ends it early —
        you may want to spend every last dollar on one more picture.
