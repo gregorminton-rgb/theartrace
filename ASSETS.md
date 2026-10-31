@@ -1,29 +1,35 @@
 # Assets
 
-This file records where the images and music come from. Licence status is
-**not yet confirmed** for the artwork and music. Do not reuse them outside this
-project until that is resolved.
+Images and music were created with AI tools by the project author
+(gregorminton-rgb) and are published by the author. The author holds the
+rights to them and releases them under the terms below.
 
 ## Music (`music/`)
 
 | File | Source | Licence |
 | --- | --- | --- |
-| `against-the-rising-tide.mp3` | unknown | unconfirmed |
-| `ship.mp3` | unknown | unconfirmed |
-| `trading-cities.mp3` | unknown | unconfirmed |
-| `travel.mp3` | unknown | unconfirmed |
+| `against-the-rising-tide.mp3` | AI-generated, by the author | CC BY 4.0 |
+| `ship.mp3` | AI-generated, by the author | CC BY 4.0 |
+| `trading-cities.mp3` | AI-generated, by the author | CC BY 4.0 |
+| `travel.mp3` | AI-generated, by the author | CC BY 4.0 |
 
 ## Images
 
-- `images/` (48 city and scene pictures, 19.9 MB) and `images/art/`
-  (75 artwork pictures, 9.4 MB) were produced by the scripts in `tools/` from
-  master files kept outside this repository.
-- `images/scenes/` contains auction-room plates derived from the same masters.
-- Masters are generated or purchased images whose licence terms are unconfirmed.
+- `images/` (city and scene pictures) and `images/art/` (artwork pictures)
+  were created with AI image tools by the author and processed with the
+  scripts in `tools/`.
+- `images/scenes/` contains auction-room plates derived from the same images.
 - Painting titles and artist names refer to historical works and are used
   descriptively.
+
+Images: CC BY 4.0. Attribution: "TheArtRace by gregorminton-rgb".
 
 ## Code and third-party code
 
 - Game code: MIT (see `LICENSE`).
 - `vendor/pixi.min.js`: PixiJS, MIT, copyright Mathew Groves and Chad Engle.
+
+## Contributing
+
+Contributions are welcome. Please keep new assets under a licence compatible
+with CC BY 4.0 and list them in this file.
