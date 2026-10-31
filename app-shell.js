@@ -333,6 +333,18 @@
     ].map(function (r) {
       return '<div class="stat"><span>' + h(r[0]) + '</span><b>' + r[1] + '</b></div>';
     }).join('');
+    if (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') {
+      return '<p>Alle im Spiel angezeigten Zahlen stammen aus dem Unity-Projekt, mit Ausnahme einiger Balancing-Einstellungen, die nur für den Browser-Prototyp gelten.</p>' +
+        '<div class="stats">' + rows + '</div>' +
+        '<p class="note">Preise, Marktindizes, Ereigniseffekte sowie Reise- und Kreditberechnungen wurden aus ' +
+        '<code>PriceEngine.cs</code>, <code>MarketState.cs</code> und <code>EconomyManager.cs</code> übernommen. ' +
+        'Seltenheitswerte von 1 bis 10 und Ansehensstufen entsprechen der Berechnung im C#-Code.</p>' +
+        '<p class="note">Nur für die Webversion: <code>' + h(A.WEB_ONLY_CFG_KEYS.join(', ')) +
+        '</code>. Die Standardwerte stehen in <code>engine.js</code> und werden automatisch überschrieben, sobald ' +
+        '<code>EconomyConfig.cs</code> ein gleichnamiges Feld enthält.</p>' +
+        '<p class="note"><code>data.js</code> wurde mit <code>tools/export-data.ps1</code> erzeugt. ' +
+        'Führe dieses Skript nach Änderungen an den Unity-Assets erneut aus.</p>';
+    }
     return '<p>Every number on screen comes from the Unity project, except the handful of ' +
       'balance knobs the browser prototype models and the Unity build does not have yet.</p>' +
       '<div class="stats">' + rows + '</div>' +
