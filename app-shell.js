@@ -41,6 +41,7 @@
   var buyOffer = function () { return A.app.buyOffer.apply(null, arguments); };
   var buySlot = function () { return A.app.buySlot.apply(null, arguments); };
   var collect = function () { return A.app.collect.apply(null, arguments); };
+  var restoreArtwork = function () { return A.app.restore.apply(null, arguments); };
   var examine = function () { return A.app.examine.apply(null, arguments); };
   var repay = function () { return A.app.repay.apply(null, arguments); };
 
@@ -619,7 +620,7 @@
     if (action === 'buy') act(buyOffer)(uid);
     else if (action === 'sell') act(sellOwned)(uid);
     else if (action === 'examine') act(examine)(uid);
-    else if (action === 'restore') act(restore)(uid, Math.min(CFG.restorationMaxGain, 1 - (findOwned(uid) || { condition: 1 }).condition));
+    else if (action === 'restore') act(restoreArtwork)(uid, Math.min(CFG.restorationMaxGain, 1 - (findOwned(uid) || { condition: 1 }).condition));
     else if (action === 'collect') act(collect)(uid);
     else if (action === 'bid') act(bidLot)(lot);
     else if (action === 'pass') act(passLot)(lot);

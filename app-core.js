@@ -915,7 +915,7 @@
       beginVoyage: beginVoyage, voyageRoute: voyageRoute, startPassage: startPassage,
       /* player actions — app-shell.js wires these to the buttons */
       bidLot: bidLot, passLot: passLot, buySlot: buySlot, answerLotQuiz: answerLotQuiz,
-      collect: collect, examine: examine, repay: repay,
+      restore: restore, collect: collect, examine: examine, repay: repay,
       /* auction calendar — app-trade.js reads these instead of guessing */
       auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
       daysToAuction: daysToAuction, saleLeadDays: saleLeadDays
