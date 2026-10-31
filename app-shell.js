@@ -68,6 +68,63 @@
       if (A.mapView && A.mapView.get()) syncWorldMap();
     }
   }
+  /* Focused auction quiz instead of three answer buttons in every lot row. */
+  function auctionQuizDialog(index) {
+    var lot=G.lots && G.lots[index];
+    if(!lot || !lot.quiz || lot.leader!=='you')return;
+    var q=lot.quiz, de=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+    var base=q.basePrice||lot.inst.purchasePrice, current=lot.inst.purchasePrice;
+    var results=q.results||[], finished=!!q.answered;
+    var name=A.work(lot.inst.defId).title;
+    var intro='<div class="auction-quiz-modal"><div class="auction-quiz-prices"><span>'+
+      (de?'Zuschlag inklusive Provision: ':'Original price including commission: ')+
+      '<b>'+A.money(base)+'</b></span><span>'+(de?'Aktueller Preis: ':'Current price: ')+
+      '<b>'+A.money(current)+'</b></span></div>'+
+      '<p class="auction-quiz-rules">'+(de?'Richtig: −20 % · Falsch: +10 % des ursprünglichen Gesamtpreises. Maximal 60 % Rabatt.' :
+       'Correct: −20% · Wrong: +10% of the original total. Up to 60% discount.')+'</p>'+
+      (results.length?'<p class="auction-quiz-history">'+results.map(function(r,i){
+        return (i+1)+'. '+(r.right?(de?'Richtig':'Correct'):(de?'Falsch':'Wrong'))+
+          ' ('+(r.change>=0?'−':'+')+A.money(Math.abs(r.change))+')';
+      }).join(' · ')+'</p>':'');
+    if(finished){
+      var saved=base-current;
+      dialog(de?'Quiz abgeschlossen':'Quiz complete',intro+
+        '<p class="auction-quiz-summary"><strong>'+(de?'Endpreis: ':'Final price: ')+A.money(current)+'</strong></p>'+
+        '<p>'+(saved>=0?(de?'Gesamtersparnis: ':'Total saved: '):(de?'Gesamtaufschlag: ':'Total surcharge: '))+
+        '<strong>'+A.money(Math.abs(saved))+'</strong></p></div>',
+        [{label:de?'Schließen':'Close',primary:true,onClick:closeDialog}],'auction-quiz-dialog');
+      return;
+    }
+    var question=q.question;
+    if(de)question=({
+      'In which year was it painted?':'In welchem Jahr wurde das Werk geschaffen?',
+      'What medium was it painted in?':'Mit welcher Technik wurde es gemalt?',
+      'What kind of picture is it?':'Um welche Bildgattung handelt es sich?'
+    })[question]||question;
+    var buttons=q.options.map(function(option,choice){
+      return {label:String(option),onClick:function(){
+        act(answerLotQuiz)(index,choice);
+        auctionQuizDialog(index);
+      }};
+    });
+    dialog((de?'Expertenquiz · Runde ':'Expert quiz · Round ')+(q.round||1)+'/3',
+      intro+'<p class="auction-quiz-art">'+h(name)+'</p>'+
+      '<p class="auction-quiz-question">'+h(question)+'</p>'+
+      '<p class="auction-quiz-stakes">'+(de?'Diese Antwort: −':'This answer: −')+
+      A.money(Math.round(base*.2))+' / +'+A.money(Math.round(base*.1))+'</p></div>',
+      buttons,'auction-quiz-dialog');
+  }
+  var colonyDetailsType=null;
+  function colonyDetailsDialog(type){
+    if(!G.colonyId)return;
+    colonyDetailsType=type;
+    var source=el(type==='crop'?'colony-palette':'colony-inspector');
+    var de=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+    dialog(type==='crop'?(de?'Pflanzen auswählen':'Choose crops'):(de?'Feld bearbeiten':'Edit field'),
+      '<div class="colony-modal-content">'+(source?source.innerHTML:'')+'</div>',
+      [{label:de?'Fertig':'Done',primary:true,onClick:function(){colonyDetailsType=null;closeDialog();}}],
+      'colony-ui-dialog');
+  }
   /* =====================================================================
    * SCREENS
    * ===================================================================== */
@@ -590,7 +647,11 @@
     if (t.id === 'show-help') { dialog('How to play', helpText(), [{ label: 'Back', primary: true, onClick: closeDialog }]); return; }
     if (t.id === 'show-data') { dialog('Data source', dataText(), [{ label: 'Back', primary: true, onClick: closeDialog }]); return; }
 
-    if (t.hasAttribute('data-colony')) { colonyAction(t.getAttribute('data-colony'), t); scheduleSave(); return; }
+    if (t.hasAttribute('data-colony')) {
+      colonyAction(t.getAttribute('data-colony'), t); scheduleSave();
+      if(colonyDetailsType)colonyDetailsDialog(colonyDetailsType);
+      return;
+    }
     if (t.hasAttribute('data-place')) { showPlace(t.getAttribute('data-place')); return; }
 
     if (t.hasAttribute('data-dialog')) {
@@ -599,7 +660,7 @@
       return;
     }
 
-    if (t.hasAttribute('data-view')) {
+    if (t.hasAttribute('data-view')) { colonyDetailsType=null;closeDialog();
       G.view = t.getAttribute('data-view');
       renderAll();
       scheduleSave();
@@ -612,7 +673,9 @@
     var choice = t.hasAttribute('data-choice') ? parseInt(t.getAttribute('data-choice'), 10) : -1;
     var action = t.getAttribute('data-action');
 
-    if (action === 'close-dialog') { closeDialog(); return; }
+    if (action === 'close-dialog') { colonyDetailsType=null;closeDialog();return; }
+    if (action === 'auction-quiz-open') { auctionQuizDialog(lot);return; }
+    if (action === 'colony-ui-open') { colonyDetailsDialog(t.getAttribute('data-panel'));return; }
     if (action === 'art') {
       if (A.artView) A.artView.open(t.getAttribute('data-work'), uid >= 0 ? uid : null);
       return;
@@ -622,7 +685,7 @@
     else if (action === 'examine') act(examine)(uid);
     else if (action === 'restore') act(restoreArtwork)(uid, Math.min(CFG.restorationMaxGain, 1 - (findOwned(uid) || { condition: 1 }).condition));
     else if (action === 'collect') act(collect)(uid);
-    else if (action === 'bid') act(bidLot)(lot);
+    else if (action === 'bid') { act(bidLot)(lot); if(G.lots[lot] && G.lots[lot].leader==='you' && G.lots[lot].quiz && !G.lots[lot].quiz.answered)auctionQuizDialog(lot); }
     else if (action === 'pass') act(passLot)(lot);
     else if (action === 'quiz') act(answerLotQuiz)(lot, choice);
     else if (action === 'borrow') act(borrow)(amount);

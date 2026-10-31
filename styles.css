@@ -1608,3 +1608,29 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 @media(max-width:760px){.dialog.av-dialog{width:100vw;max-width:100vw}.av-plate.av-zoomable img{max-height:66dvh}.portfolio-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-gallery-tile img{height:145px}}
 
 .portfolio-gallery-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.portfolio-gallery-controls label{display:flex;flex-direction:column;gap:4px;font:700 .75rem var(--sans)}.portfolio-gallery-controls select{min-height:40px;border:1px solid #967445;border-radius:7px;padding:4px 8px;background:#fff8e7}.portfolio-gallery-tile[hidden]{display:none!important}
+
+/* Dialog-first mobile auction and plantation tools. */
+.auction-quiz-inline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;font-size:.85rem}
+.auction-quiz-inline .btn{min-height:40px}
+.dialog.auction-quiz-dialog{width:min(560px,calc(100vw - 18px));max-height:90dvh}
+.auction-quiz-dialog .dialog-body{padding:16px}
+.auction-quiz-prices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.auction-quiz-prices span{padding:10px;background:#ead9ba;border-radius:8px;font-size:.85rem}
+.auction-quiz-prices b{display:block;font-size:1.12rem}
+.auction-quiz-rules,.auction-quiz-history,.auction-quiz-stakes{line-height:1.45;font-size:.85rem}
+.auction-quiz-art{font-weight:700;margin-top:16px}
+.auction-quiz-question{font-size:1.18rem;font-weight:700;line-height:1.35}
+.auction-quiz-dialog .dialog-actions{display:flex;flex-direction:column;gap:8px;padding:12px}
+.auction-quiz-dialog .dialog-actions .btn{min-height:48px;white-space:normal;text-align:center}
+.colony-mobile-dialog-buttons{display:none}
+@media(max-width:760px){
+ .colony-mobile-dialog-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
+ .colony-mobile-dialog-buttons .btn{min-height:44px;white-space:normal;font-size:.79rem}
+ #colony-inspector,#colony-palette{display:none!important}
+ #overlay:has(.colony-ui-dialog){z-index:2000}
+ .dialog.colony-ui-dialog{width:min(540px,calc(100vw - 16px));max-height:88dvh}
+ .colony-ui-dialog .dialog-body{padding:10px;overflow:auto}
+ .colony-ui-dialog .colony-modal-content{display:block}
+ .colony-ui-dialog .colony-modal-content .colony-panel-title{margin-top:0}
+ .auction-quiz-prices{grid-template-columns:1fr}
+}
