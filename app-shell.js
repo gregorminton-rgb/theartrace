@@ -405,6 +405,10 @@
     dialog('Set up a career', '<div class="form career-setup-form">' +
       '<div class="career-settings">' +
       '<label>Name of the dealer<input id="f-name" value="' + h(G.name) + '"></label>' +
+      '<label>Language / Sprache<select id="f-language" aria-label="Language / Sprache">' +
+        '<option value="en"' + (!window.ArtRaceLanguage || window.ArtRaceLanguage.get()==='en' ? ' selected' : '') + '>English</option>' +
+        '<option value="de"' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de' ? ' selected' : '') + '>Deutsch</option>' +
+      '</select></label>' +
       '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
@@ -420,6 +424,7 @@
       '</div>', [
       { label: 'Cancel', onClick: function () { if (!G.started) closeDialog(); else closeDialog(); } },
       { label: 'Begin career', primary: true, onClick: function () {
+          if (window.ArtRaceLanguage) window.ArtRaceLanguage.set(el('f-language').value);
           newGame({
             name: el('f-name').value || 'Henry',
             difficulty: el('f-diff').value,
