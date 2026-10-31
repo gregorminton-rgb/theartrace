@@ -576,7 +576,7 @@
         '<rect x="8" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '<rect x="19" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '</svg>';
-      return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
+      return '<button type="button" aria-pressed="' + (crew.multiSelect.ids[f.id] ? 'true' : 'false') + '" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
         /* the crop label and the crew size sit above the soil, the progress
            rail below it — the diorama keeps the middle band to itself */
@@ -611,7 +611,7 @@
     var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
     return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
       '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
-      '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>All</button>' +
+      '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>Select all</button>' +
       '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
       '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
       '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
