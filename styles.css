@@ -1273,3 +1273,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .plot.multi{outline:4px solid #f0a91a;outline-offset:-4px}
 .plot.multi::after{content:"✓";position:absolute;top:4px;right:4px;display:grid;place-items:center;background:#3f7a1e;color:white;border-radius:50%;width:26px;height:26px;font:700 18px var(--sans);z-index:5}
 @media(max-width:700px){.colony-layout{display:flex;flex-direction:column;min-height:0;height:auto}.colony-main{min-height:55vh}.colony-side{overflow:visible}.colony-grid{min-height:45vh;overflow-y:auto}.colony-multi-actions{min-width:0}}
+
+/* Compact selection actions docked below the field grid. */
+#colony-field-toolbar{position:sticky;bottom:0;z-index:5;flex:0 0 auto;box-shadow:0 -3px 12px rgba(47,31,14,.14)}
+#colony-field-toolbar .colony-multi{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding:5px 6px;margin:0;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+#colony-field-toolbar .colony-multi-count{font:700 .7rem var(--sans);width:auto;flex:0 0 auto;white-space:nowrap;opacity:1}
+#colony-field-toolbar .colony-multi>.btn{flex:1 1 0;min-width:0;min-height:40px;padding:5px 3px;font-size:.63rem;white-space:nowrap}
+@media(min-width:650px){#colony-field-toolbar .colony-multi{gap:8px;padding:8px}#colony-field-toolbar .colony-multi>.btn{font-size:.75rem}}
+@media(max-width:380px){#colony-field-toolbar .colony-multi-count{font-size:.64rem}#colony-field-toolbar .colony-multi>.btn{font-size:.57rem}}
