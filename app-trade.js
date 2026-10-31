@@ -332,7 +332,7 @@
       html += '</div></div>';
       return html;
     }).join('');
-    return '<p class="note">Warehouse value at today’s indices: ' + A.money(total) +
+    return '<div class="portfolio-gallery"><div class="portfolio-gallery-heading"><h3>Meine Galerie / My gallery</h3><p>Tippe auf ein Bild, um es groß zu betrachten · Tap a painting to enlarge</p></div><div class="portfolio-gallery-grid">' + G.portfolio.map(function(inst){ var w=A.work(inst.defId), pic=window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images && window.ART_ARTWORK_IMAGES.images[w.id]; return '<button type="button" class="portfolio-gallery-tile" data-action="art" data-work="'+h(w.id)+'" data-uid="'+inst.uid+'">'+(pic?'<img loading="lazy" alt="'+h(w.title)+'" src="'+h(pic.file)+'">':'<span class="portfolio-gallery-noimage">'+h(w.title)+'</span>')+'<span>'+h(w.title)+' · '+Math.round(inst.condition*100)+'%</span></button>'; }).join('') + '</div></div><p class="note">Warehouse value at today’s indices: ' + A.money(total) +
       ' · condition slips ' + A.pct(CFG.dailyConditionDecay) + ' every day.</p>' + rows;
   }
   /* Is the auction room open for business right now, for this player? */
