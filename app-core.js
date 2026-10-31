@@ -614,7 +614,7 @@
       inst.purchaseDay = G.day;
       inst.provenance = 'Won at ' + A.city(G.cityId).name + ' auction (day ' + G.day + ')';
       G.portfolio.push(inst);
-      lot.quiz = makeLotQuiz(inst);
+      lot.quiz = makeLotQuiz(inst, 0);
       if (lot.quiz) { lot.quiz.round = 1; lot.quiz.basePrice = total; lot.quiz.results = []; lot.quiz.savedAmount = 0; }
       rep(CFG.reputationPerAuctionWin);
       G.stats.hammer += 1;
@@ -631,9 +631,9 @@
   /* Expert question after a win: three answers, one correct. The question is
      built from catalogue facts (year, medium, epoch, school, size). Answering
      right cuts the purchase price, but only the first attempt counts. */
-  function makeLotQuiz(inst) {
+  function makeLotQuiz(inst, roundIndex) {
     var w = A.work(inst.defId);
-    var field = Math.floor(Math.random() * 3);
+    var field = typeof roundIndex === 'number' ? roundIndex % 3 : Math.floor(Math.random() * 3);
     var pool = [
       { q: 'In which year was it painted?', correct: String(w.yearCreated), key: 'yearCreated' },
       { q: 'What medium was it painted in?', correct: w.medium || '', key: 'medium' },
@@ -689,7 +689,7 @@
     if (quiz.round >= 3) {
       quiz.answered = true;
     } else {
-      var nextQuiz = makeLotQuiz(inst);
+      var nextQuiz = makeLotQuiz(inst, quiz.round);
       if (!nextQuiz) {
         quiz.answered = true;
       } else {
