@@ -1576,3 +1576,15 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-title .title-frame .race{font-size:1.6rem}
  #screen-title .title-tag{font-size:.67rem}
 }
+
+/* Artwork on the journey: substantial image, small caption, non-modal. */
+.art-spotlight{position:fixed;right:16px;bottom:86px;width:min(340px,calc(100vw - 24px));z-index:80;box-sizing:border-box;padding:9px;background:#f5e6c9;border:2px solid #956d36;border-radius:12px;box-shadow:0 12px 35px #0007;color:#352410;animation:spotlight-in .2s ease-out}
+.art-spotlight-label{font:700 .74rem var(--sans);letter-spacing:.07em;text-transform:uppercase;margin:0 32px 7px 3px;color:#694722}
+.art-spotlight-close{position:absolute;top:4px;right:5px;min-width:38px;min-height:38px;border:0;background:transparent;color:#352410;font-size:26px;cursor:pointer}
+.art-spotlight-picture{display:block;width:100%;height:215px;padding:0;border:0;background:#382a1a;cursor:pointer}
+.art-spotlight-picture img{display:block;width:100%;height:100%;object-fit:contain}
+.art-spotlight-copy{display:flex;flex-direction:column;gap:3px;padding:9px 3px 2px}
+.art-spotlight-copy strong{font-size:1rem}.art-spotlight-copy span{font:.75rem var(--sans)}.art-spotlight-copy small{font:.69rem var(--sans);opacity:.8}
+@media(max-width:760px){.art-spotlight{bottom:calc(72px + env(safe-area-inset-bottom));right:8px;width:min(290px,calc(100vw - 16px))}.art-spotlight-picture{height:170px}}
+@media(prefers-reduced-motion:reduce){.art-spotlight{animation:none}}
+@keyframes spotlight-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}

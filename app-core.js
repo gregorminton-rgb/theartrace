@@ -819,6 +819,9 @@
     if (!silent && CFG.logDailyMoves) log('Day ' + G.day + ' opened.');
     arriveIfDue();
     checkEnd();
+    if (typeof window !== 'undefined' && window.dispatchEvent && typeof CustomEvent !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('artrace-day-advanced', {detail:{day:G.day}}));
+    }
   }
 
   function checkEnd() {
