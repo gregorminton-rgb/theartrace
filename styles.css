@@ -1359,3 +1359,21 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog--setup .career-setup-v2 .career-settings input,.dialog--setup .career-setup-v2 .career-settings select{min-height:44px}
 @media(max-width:750px){.dialog--setup .career-setup-v2 .race-setup-grid{grid-template-columns:minmax(0,1fr)}.dialog--setup .career-setup-v2 .career-settings{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:380px){.dialog--setup .career-setup-v2 .race-setup-slot{grid-template-columns:minmax(0,1fr)}}
+
+/* Shared city/colony travel map on phones: one component, one touch size. */
+#wm-stage,#colony-wm-stage{width:100%;box-sizing:border-box}
+#colony-wm-stage.worldmap{aspect-ratio:auto;margin-bottom:0}
+@media(max-width:700px){
+  #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+    height:clamp(410px,68dvh,740px);min-height:410px;max-height:none;
+  }
+  .colony-travel-wrap{max-width:none;padding:6px 8px 12px}
+  #colony-dest-list{max-height:none}
+  #wm-stage .wm-legend,#colony-wm-stage .wm-legend{gap:5px;max-width:calc(100% - 12px);box-sizing:border-box}
+  #wm-stage .wm-level,#colony-wm-stage .wm-level{min-height:38px;padding:7px 10px;font-size:.72rem}
+}
+@media(max-height:520px) and (min-width:560px){
+  #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+    height:clamp(240px,70dvh,520px);min-height:240px;
+  }
+}
