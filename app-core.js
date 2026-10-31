@@ -597,7 +597,27 @@
     if (!lot || lot.closed) return;
     if (G.portfolio.length >= G.capacity) { log('No crate space left for a auction win.'); return; }
     var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
-    lot.bid += step;
+    var nextBid = lot.bid + step;
+    var nextTotal = Math.round(nextBid * (1 + CFG.auctionCommission));
+    if (nextTotal > G.cash) {
+      var missing = nextTotal - G.cash;
+      var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+      if (A.shell && A.shell.dialog) A.shell.dialog(
+        de ? 'Nicht genug Geld für das Gebot' : 'Not enough money to bid',
+        '<p>' + (de ? 'Das nächste Gebot würde inklusive Auktionsprovision ' : 'The next bid would cost ') +
+          '<strong>' + A.money(nextTotal) + '</strong>' +
+          (de ? ' kosten. Du hast ' : ' including commission. You have ') +
+          '<strong>' + A.money(G.cash) + '</strong>' +
+          (de ? '. Es fehlen ' : '. You need another ') +
+          '<strong>' + A.money(missing) + '</strong>.</p>' +
+          '<p>' + (de ? 'Die Auktion bleibt geöffnet; dieses Gebot wurde nicht abgegeben.' :
+            'The auction remains open; no bid was placed.') + '</p>',
+        [{label:de ? 'Verstanden' : 'OK',primary:true,onClick:function(){A.shell.closeDialog();}}]
+      );
+      else log('Not enough cash to bid: need ' + A.money(nextTotal) + ', available ' + A.money(G.cash) + '.');
+      return;
+    }
+    lot.bid = nextBid;
     if (lot.bid > lot.rivalCeiling) {
       var total = Math.round(lot.bid * (1 + CFG.auctionCommission));
       if (total > G.cash) {
@@ -620,7 +640,7 @@
       G.stats.hammer += 1;
       log('Hammer! ' + A.work(inst.defId).title + ' for ' + A.money(lot.bid) +
           ' + ' + A.pct(CFG.auctionCommission) + ' commission = ' + A.money(total) + '.' +
-          ' Answer the expert question to cut the price by ' + A.pct(CFG.auctionQuizDiscount) + '.');
+          ' Three expert quiz rounds: correct −20%, wrong +10% of the original total.');
     } else {
       lot.leader = 'room';
       log('Lot ' + (index + 1) + ': your ' + A.money(lot.bid) + ' is outbid by the room.');
