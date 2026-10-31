@@ -1329,3 +1329,19 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .race-setup-note{font:.77rem var(--sans);color:var(--ink-soft);margin:0 0 8px}
 .race-setup-slot{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:5px 0;font:.8rem var(--sans)}
 .race-setup-slot span{flex:1}.race-setup-slot input{max-width:55%;min-width:0;padding:6px;border-radius:7px;border:1px solid var(--line);font:inherit}
+
+/* Career dialog: settings first, four player slots in a full-width row. */
+.dialog--setup .career-setup-form{display:flex;flex-direction:column;gap:18px;width:100%}
+.dialog--setup .career-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;align-items:end}
+.dialog--setup .career-settings>label{min-width:0}
+.dialog--setup .career-settings input,.dialog--setup .career-settings select{width:100%;min-width:0;max-width:100%;box-sizing:border-box;text-overflow:ellipsis}
+.dialog--setup .race-setup{min-width:0;margin:0;padding:12px 14px 14px;border:1px solid #d5bd86;border-radius:12px}
+.dialog--setup .race-setup legend{padding:0 8px;font:700 1rem var(--sans);color:var(--ink)}
+.dialog--setup .race-setup-note{margin:0 0 12px;font-size:.78rem;line-height:1.4}
+.dialog--setup .race-setup-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dialog--setup .race-setup-slot{display:flex;flex-direction:column;align-items:stretch;justify-content:start;gap:6px;min-width:0;padding:10px;background:rgba(255,250,239,.6);border:1px solid var(--line);border-radius:9px;text-transform:none;letter-spacing:normal}
+.dialog--setup .race-setup-slot>span{flex:none;font:700 .72rem var(--sans);color:var(--ink-soft)}
+.dialog--setup .race-setup-slot input{width:100%;min-width:0;max-width:none;box-sizing:border-box;font:400 .9rem var(--sans)}
+.dialog--setup .race-setup-slot strong{font:700 .82rem var(--sans);padding:8px 0}
+@media(max-width:650px){.dialog--setup .career-settings{grid-template-columns:minmax(0,1fr)}.dialog--setup .race-setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dialog--setup .race-setup{padding:10px}}
+@media(max-width:380px){.dialog--setup .race-setup-grid{grid-template-columns:minmax(0,1fr)}}
