@@ -121,6 +121,11 @@
              '<td class="num">' + (ch >= 0 ? '+' : '') + (ch * 100).toFixed(1) + '%</td>' +
              '<td class="arrow">' + arrow + '</td></tr>';
     }).join('');
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+    var hint = document.getElementById('market-explainer');
+    if(hint) hint.innerHTML = de
+      ? '<strong>Was bedeuten die Indizes?</strong> 1,000 = normales Preisniveau · 1,200 = etwa 20 % höher · 0,800 = etwa 20 % niedriger. „Tag“ zeigt die Änderung seit gestern. Niedrige Werte können günstige Kaufgelegenheiten sein, hohe Werte gute Verkaufsgelegenheiten. Nachrichten können diese Werte vorübergehend verändern.'
+      : '<strong>How do market indices work?</strong> 1.000 = normal price level · 1.200 = about 20% higher · 0.800 = about 20% lower. “Day” shows the change since yesterday. Low indices may offer buying opportunities; high indices may favor selling. News can temporarily shift the market.';
     el('market-table').innerHTML = '<thead><tr><th>Epoch</th><th class="num">Index</th>' +
       '<th class="num">Day</th><th></th></tr></thead><tbody>' + rows + '</tbody>';
   }
