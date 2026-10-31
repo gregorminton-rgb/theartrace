@@ -122,7 +122,7 @@
     G.plantCropId = null;
     G.colonyStats = { planted: 0, harvested: 0, sold: 0, revenue: 0 };
     G.market = A.createMarket(G.rng);
-    if (A.race) A.race.init();
+    if (A.race) A.race.init(opts.rivalNames);
     G.started = true;
 
     A.cities.forEach(function (c) { stockCity(c.id); });
