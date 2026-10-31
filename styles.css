@@ -1420,3 +1420,47 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    width:100%;height:100%;object-fit:fill;
  }
 }
+
+/* Mobile HUD: no narrow balance sidebar; all controls remain readable. */
+@media(max-width:760px){
+ #screen-game #hud{
+   display:flex;flex-direction:column;align-items:stretch;
+   gap:8px;padding:10px 12px;min-width:0;box-sizing:border-box;
+ }
+ #screen-game #hud .chrono{order:0;display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0;gap:8px;margin:0}
+ #screen-game #hud .hud-stead{align-items:flex-start;text-align:left;min-width:0}
+ #screen-game #hud-city{font-size:1rem;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+ #screen-game #hud-sub{font-size:.72rem;line-height:1.25}
+ #screen-game #hud .chrono-row{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;min-width:0}
+ #screen-game #hud .chrono-cal{
+   display:grid;grid-template-columns:minmax(0,1fr) auto minmax(82px,auto);
+   align-items:center;gap:7px;width:100%;min-width:0;box-sizing:border-box;
+   padding:6px 8px;
+ }
+ #screen-game #hud .chrono-date{min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 5px;white-space:normal}
+ #screen-game #hud .chrono-date b{font-size:1.15rem}
+ #screen-game #hud .chrono-date span{font-size:.72rem}
+ #screen-game #hud .chrono-date span:last-child{font-size:.68rem}
+ #screen-game #hud .chrono-timer{display:none}
+ #screen-game #hud .chrono-auto{min-width:0;min-height:44px;padding:6px 8px;font-size:.76rem;white-space:normal}
+ #screen-game #hud .chrono-auto input{width:22px;height:22px}
+ #screen-game #hud .chrono-speed{min-width:0;width:100%;max-width:none;min-height:44px;font-size:.76rem}
+ #screen-game #hud #end-day{align-self:stretch;width:100%;min-height:48px;padding:10px;font-size:.94rem}
+ #screen-game #hud-balance{order:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:7px;min-width:0;margin:0;align-items:stretch}
+ #screen-game #hud-balance .language-switch,#screen-game #hud-music,#screen-game #hud-cash,#screen-game #hud-rep{
+   width:100%;min-width:0;max-width:none;box-sizing:border-box;
+   display:flex;align-items:center;justify-content:center;
+   min-height:42px;padding:6px 9px;margin:0;overflow:visible;
+   white-space:normal;overflow-wrap:anywhere;text-overflow:clip;
+   font-size:.78rem;line-height:1.25;text-align:center;
+ }
+ #screen-game #hud-balance .language-switch{border-radius:10px}
+ #screen-game #hud-music{font-size:1.1rem}
+ #screen-game #hud-goal{display:none}
+ #screen-game #ticker{order:3;width:100%;min-width:0;box-sizing:border-box;max-height:26px;font-size:.65rem}
+}
+@media(max-width:365px){
+ #screen-game #hud{padding:8px;gap:6px}
+ #screen-game #hud .chrono-cal{grid-template-columns:minmax(0,1fr) minmax(96px,auto);gap:6px}
+ #screen-game #hud .chrono-speed{grid-column:1/-1}
+}
