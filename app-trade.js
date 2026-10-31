@@ -306,6 +306,18 @@
       A.pct(1 - CFG.dealerSpread) + ' of value.</p>' + rows;
   }
 
+  document.addEventListener('change',function(e){
+    if(!e.target || (e.target.id!=='gallery-sort' && e.target.id!=='gallery-epoch'))return;
+    var gallery=document.querySelector('.portfolio-gallery');if(!gallery)return;
+    var grid=gallery.querySelector('.portfolio-gallery-grid'),sort=gallery.querySelector('#gallery-sort').value,epoch=gallery.querySelector('#gallery-epoch').value;
+    var tiles=Array.from(grid.querySelectorAll('.portfolio-gallery-tile'));
+    tiles.sort(function(a,b){
+      if(sort==='condition')return Number(b.dataset.condition)-Number(a.dataset.condition);
+      if(sort==='epoch')return a.dataset.epoch.localeCompare(b.dataset.epoch)||a.dataset.title.localeCompare(b.dataset.title);
+      return a.dataset.title.localeCompare(b.dataset.title);
+    });
+    tiles.forEach(function(tile){tile.hidden=epoch!=='all'&&tile.dataset.epoch!==epoch;grid.appendChild(tile);});
+  });
   function viewPortfolio() {
     if (!G.portfolio.length) return '<p class="empty">No crates yet. Buy something at the dealer, or take a chance at the auction.</p>';
     var city = A.city(G.cityId);
@@ -332,7 +344,7 @@
       html += '</div></div>';
       return html;
     }).join('');
-    return '<div class="portfolio-gallery"><div class="portfolio-gallery-heading"><h3>Meine Galerie / My gallery</h3><p>Tippe auf ein Bild, um es groß zu betrachten · Tap a painting to enlarge</p></div><div class="portfolio-gallery-grid">' + G.portfolio.map(function(inst){ var w=A.work(inst.defId), pic=window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images && window.ART_ARTWORK_IMAGES.images[w.id]; return '<button type="button" class="portfolio-gallery-tile" data-action="art" data-work="'+h(w.id)+'" data-uid="'+inst.uid+'">'+(pic?'<img loading="lazy" alt="'+h(w.title)+'" src="'+h(pic.file)+'">':'<span class="portfolio-gallery-noimage">'+h(w.title)+'</span>')+'<span>'+h(w.title)+' · '+Math.round(inst.condition*100)+'%</span></button>'; }).join('') + '</div></div><p class="note">Warehouse value at today’s indices: ' + A.money(total) +
+    return '<div class="portfolio-gallery"><div class="portfolio-gallery-heading"><h3>Meine Galerie / My gallery</h3><p>Tippe auf ein Bild, um es groß zu betrachten · Tap a painting to enlarge</p></div><div class="portfolio-gallery-controls"><label>Sortieren / Sort <select id="gallery-sort"><option value="title">Titel / Title</option><option value="condition">Zustand / Condition</option><option value="epoch">Epoche / Epoch</option></select></label><label>Epoche / Epoch <select id="gallery-epoch"><option value="all">Alle / All</option>' + Array.from(new Set(G.portfolio.map(function(inst){return A.workEpoch(A.work(inst.defId));}))).sort().map(function(ep){return '<option value="'+h(ep)+'">'+h(ep)+'</option>';}).join('') + '</select></label></div><div class="portfolio-gallery-grid">' + G.portfolio.map(function(inst){ var w=A.work(inst.defId), pic=window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images && window.ART_ARTWORK_IMAGES.images[w.id]; return '<button type="button" class="portfolio-gallery-tile" data-epoch="'+h(A.workEpoch(w))+'" data-title="'+h(w.title)+'" data-condition="'+Math.round(inst.condition*100)+'" data-action="art" data-work="'+h(w.id)+'" data-uid="'+inst.uid+'">'+(pic?'<img loading="lazy" alt="'+h(w.title)+'" src="'+h(pic.file)+'">':'<span class="portfolio-gallery-noimage">'+h(w.title)+'</span>')+'<span>'+h(w.title)+' · '+Math.round(inst.condition*100)+'%</span></button>'; }).join('') + '</div></div><p class="note">Warehouse value at today’s indices: ' + A.money(total) +
       ' · condition slips ' + A.pct(CFG.dailyConditionDecay) + ' every day.</p>' + rows;
   }
   /* Is the auction room open for business right now, for this player? */

@@ -1606,3 +1606,5 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .portfolio-gallery-tile span{font-size:.75rem;line-height:1.25}
 .portfolio-gallery-noimage{height:150px;display:grid;place-items:center}
 @media(max-width:760px){.dialog.av-dialog{width:100vw;max-width:100vw}.av-plate.av-zoomable img{max-height:66dvh}.portfolio-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-gallery-tile img{height:145px}}
+
+.portfolio-gallery-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.portfolio-gallery-controls label{display:flex;flex-direction:column;gap:4px;font:700 .75rem var(--sans)}.portfolio-gallery-controls select{min-height:40px;border:1px solid #967445;border-radius:7px;padding:4px 8px;background:#fff8e7}.portfolio-gallery-tile[hidden]{display:none!important}
