@@ -18,6 +18,21 @@ python -m http.server 8080
 
 On Windows, `serve.cmd` starts the same server.
 
+### Play offline / install as an app
+
+The game is a Progressive Web App (PWA). On first visit it caches its code and
+core images. Music and extra pictures are cached the first time you use them.
+
+- **Desktop Chrome / Edge:** click the install icon in the address bar.
+- **Android Chrome:** menu → "Install app" / "Add to Home screen".
+- **iOS Safari:** Share → "Add to Home Screen".
+
+Once cached, the game runs without a connection. Service workers need HTTPS or
+`localhost`, so they do not work from a `file://` page.
+
+After changing game files, bump `CACHE_VERSION` in `sw.js` and the `?v=` value
+in `index.html` so players receive the update.
+
 ## Project layout
 
 | File / folder | Purpose |
