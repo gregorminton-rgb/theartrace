@@ -1519,3 +1519,23 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    padding:8px 9px;font-size:.79rem;
  }
 }
+
+/* Compact phone plantation board: three small plots across instead of two
+   oversized cards. Keep the selection toolbar visible beneath the board. */
+@media(max-width:700px){
+ .colony-view--plantage .colony-main{min-height:0;flex:none}
+ .colony-view--plantage .colony-grid{
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   --plot-gap:5px;min-height:0;height:auto;max-height:34dvh;
+ }
+ .colony-view--plantage .plot{padding:4px 2px;gap:2px;font-size:.75rem}
+ .colony-view--plantage .plot--empty .plot-empty-plus{font-size:1.5rem}
+ .colony-view--plantage .plot--empty .plot-empty-label{font-size:.7rem;line-height:1.15;overflow-wrap:anywhere;text-align:center}
+ .colony-view--plantage .plot--planted .plot-house{width:36px;height:36px}
+ .colony-view--plantage .plot--planted .plot-label,
+ .colony-view--plantage .plot--planted .plot-workers,
+ .colony-view--plantage .plot--planted .plot-status{font-size:.7rem}
+ #colony-field-toolbar .colony-multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+ #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
+ #colony-field-toolbar .colony-multi>.btn{min-height:36px;white-space:normal;line-height:1.12;font-size:.66rem}
+}
