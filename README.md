@@ -56,6 +56,14 @@ in `index.html` so players receive the update.
 | `images/`, `music/` | Artwork, city pictures and soundtrack |
 | `tools/` | PowerShell importers and checks used during development |
 
+## Contributing
+
+The `main` branch is protected. Changes go in through pull requests:
+
+1. Fork the repository, or create a branch if you have write access.
+2. Make your change and run `tools/cfgcheck.ps1` if you touched scripts, assets or the service worker.
+3. Open a pull request against `main` and describe what changed and why.
+
 ## Credits
 
 - Rendering: [PixiJS](https://pixijs.com/) v7.4.3, MIT License.
