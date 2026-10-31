@@ -490,9 +490,19 @@
         : 'Each worker adds +' + Math.round(WORKER_SPEED * 100) + '% growth and +1 unit per two. Assign them from a field\'s inspector.') + '</p>';
   }
 
+  /* Only the fields in use plus one free plot are drawn: that free plot is the
+     drop target / click target for laying out the next field. */
   function colonyGridHTML() {
     var cells = [];
-    for (var i = 0; i < PLOTS_PER_COLONY; i++) cells.push(colonyPlotHTML(i));
+    var shown = 0;
+    for (var i = 0; i < PLOTS_PER_COLONY; i++) {
+      if (plotField(i)) { cells.push(colonyPlotHTML(i)); shown++; }
+    }
+    if (shown < PLOTS_PER_COLONY) {
+      for (var j = 0; j < PLOTS_PER_COLONY; j++) {
+        if (!plotField(j)) { cells.push(colonyPlotHTML(j)); break; }
+      }
+    }
     return cells.join('');
   }
 

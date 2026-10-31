@@ -303,7 +303,7 @@ the colony screen is open.
 
 ## Colony screen
 
-Each colony shows up to 16 usable plots (`PLOTS_PER_COLONY` in `app-crew.js`)
+Each colony can hold up to 16 fields (`PLOTS_PER_COLONY` in `app-crew.js`); the grid shows only the fields in use plus one free plot for the next layout
 in a 2-column CSS grid (`.colony-grid`) with an equal 8 px gap. Each plot keeps
 a 144:190 aspect ratio and the grid scrolls vertically. A plot carries three bands:
 
