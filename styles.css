@@ -1539,3 +1539,40 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
  #colony-field-toolbar .colony-multi>.btn{min-height:36px;white-space:normal;line-height:1.12;font-size:.66rem}
 }
+
+/* Mobile title: frame the artwork, not the introductory text card. */
+@media(max-width:760px){
+ #screen-title{min-height:100dvh}
+ #screen-title .title-bar{padding:5px 10px;gap:4px 8px}
+ #screen-title .title-bar-brand{font-size:.8rem;letter-spacing:.09em}
+ #screen-title .title-bar-meta{font-size:.57rem;line-height:1.25}
+ #screen-title .title-canvas{
+   display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+   min-height:0;flex:1 1 auto;padding:12px 10px 18px;
+   background-position:center 34%;
+ }
+ #screen-title .title-canvas.has-image::after{
+   background:linear-gradient(to bottom,rgba(20,12,5,.1) 0%,transparent 48%,rgba(20,12,5,.14) 70%,rgba(20,12,5,.48) 100%);
+ }
+ #screen-title .title-canvas::before{inset:8px;border-width:1px}
+ #screen-title .title-placard{
+   width:min(290px,78vw);max-width:100%;box-sizing:border-box;
+   padding:12px 15px 11px;border-width:2px;border-radius:11px;
+   background:rgba(255,248,232,.9);
+   box-shadow:0 6px 22px rgba(8,4,0,.38);
+ }
+ #screen-title .title-placard::before{inset:5px}
+ #screen-title .title-frame{margin:0 0 5px;line-height:1.04}
+ #screen-title .title-frame .the{font-size:.76rem;letter-spacing:.28em}
+ #screen-title .title-frame .race{font-size:clamp(1.65rem,6vw,2.15rem)}
+ #screen-title .title-tag{font-size:.72rem;line-height:1.25;margin:0}
+ #screen-title .title-foot{display:none}
+ #screen-title .title-actions{gap:6px;padding:8px 7px calc(8px + env(safe-area-inset-bottom))}
+ #screen-title .title-actions .btn.big{min-width:0;min-height:40px;padding:7px 10px;font-size:.75rem;flex:1 1 40%}
+}
+@media(max-width:380px){
+ #screen-title .title-bar-meta{display:none}
+ #screen-title .title-placard{width:min(255px,76vw);padding:9px 12px}
+ #screen-title .title-frame .race{font-size:1.6rem}
+ #screen-title .title-tag{font-size:.67rem}
+}
