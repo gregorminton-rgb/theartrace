@@ -333,7 +333,7 @@
       var inStudio = inst.restoreReadyDay >= 0 && G.day < inst.restoreReadyDay;
       var html = '<div class="row' + (inStudio ? ' busy' : '') + '">' + rowHead(inst) +
         '<div class="row-tags">' + condTag(inst) + authTag(inst) +
-        (inStudio ? '<span class="tag warn">studio · day ' + inst.restoreReadyDay + '</span>' : '') + '</div>' +
+        (inStudio ? '<span class="tag warn">Restoration booked · ready day ' + inst.restoreReadyDay + '</span>' : '') + '</div>' +
         '<div class="row-num"><span class="ask">' + A.money(val) + '</span>' +
         '<span class="est">paid ' + A.money(inst.purchasePrice) + ' · dealer bids ' + A.money(bid) + '</span>' +
         '<span class="' + (profit >= 0 ? 'gain' : 'loss') + '">' + (profit >= 0 ? '+' : '') + A.money(profit) + ' if sold now</span></div>' +
@@ -515,7 +515,7 @@
       return '<div class="row' + (inStudio ? ' busy' : '') + '">' + rowHead(inst) +
         '<div class="row-tags">' + condTag(inst) + '</div>' +
         '<div class="row-num"><span class="ask">' + (inStudio ? 'ready day ' + inst.restoreReadyDay : A.money(cost)) + '</span>' +
-        '<span class="est">' + (inStudio ? 'collect when the frame dries' : '+' + A.pct(gain) + ' in ' + days + ' day(s)') + '</span></div>' +
+        '<span class="est">' + (inStudio ? 'Restoring: ' + A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + (inst.pendingRestore || 0))) + ' when ready' : A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + gain)) + ' in ' + days + ' day(s)') + '</span></div>' +
         '<div class="row-btns">' +
         (inStudio
           ? '<button class="btn" data-action="collect" data-uid="' + inst.uid + '"' + (G.day >= inst.restoreReadyDay ? '' : ' disabled') + '>Collect</button>'
