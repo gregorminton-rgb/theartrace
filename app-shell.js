@@ -220,7 +220,7 @@
     var raceBoard = A.race ? A.race.standings() : [];
     var winner = raceBoard.length && raceBoard[0].type === 'human';
     var rivalSummary = raceBoard.length ? '<h3>' + (winner ? 'You won the art race!' : 'Final standings') + '</h3>' +
-      '<ol>' + raceBoard.map(function(p) { return '<li>' + h(p.name) + ': ' + p.pictures + ' paintings · ' + A.money(p.cash) + '</li>'; }).join('') + '</ol>' : '';
+      '<ol>' + raceBoard.map(function(p) { return '<li>' + h(p.name) + ': ' + p.points + ' points · ' + p.pictures + ' paintings · ' + A.money(p.cash) + '</li>'; }).join('') + '</ol>' : '';
     var byEpoch = Object.keys(epochs).sort().map(function (e) {
       return epochs[e] + ' ' + e;
     }).join(' · ') || 'none';
@@ -233,6 +233,7 @@
           ' in the crates.'
         : 'You end the race with empty crates. The market beat you this time.',
       '<div class="stats">' +
+      '<div class="stat"><span>Collection points</span><b>' + (A.race ? A.race.collectionPoints(G.portfolio) : count) + '</b></div>' +
       '<div class="stat"><span>Pictures held</span><b>' + count + ' / ' + G.capacity + ' crates</b></div>' +
       '<div class="stat"><span>Market value of the collection</span><b>' + A.money(held) + '</b></div>' +
       '<div class="stat"><span>Paid for it all</span><b>' + A.money(paidTotal) + '</b></div>' +
@@ -301,7 +302,7 @@
       '</ul><p class="note">Mit „Tag beenden“ laufen Preise, Kalender und Nachrichten weiter.</p>';
     return '<p>You are an art dealer with <b>' + A.money(CFG.startingMoney) + '</b> in the first year of a ' +
       G.careerDays + '-day career. When the ' + G.careerDays + ' days are up, the race is scored on <b>how many ' +
-      'pictures</b> are still in your crates — the market value of the collection is the tie-breaker you brag about.</p>' +
+      'collection points</b> your paintings earn. Condition below 80% = 1 point, 80–89% = 2, 90–100% = 3. More paintings break point ties.</p>' +
       '<h3>How money is made</h3><ul>' +
       '<li>Buy where a school is cheap, sell where the collectors want it. Each city pushes its own ' +
       '<em>favourite epochs</em> (and discounts them at home), and every artwork is priced by the artist’s ' +
@@ -404,7 +405,7 @@
     }).join('');
     dialog('Set up a career', '<div class="form career-setup-form career-setup-v2">' +
       '<fieldset class="race-setup"><legend>Four-player race</legend>' +
-      '<p class="race-setup-note">Most paintings at the end of the career wins.</p>' +
+      '<p class="race-setup-note">Most collection points win: below 80% = 1 point, 80–89% = 2, 90–100% = 3 per painting.</p>' +
       '<div class="race-setup-grid">' +
       '<label class="race-setup-slot"><span>1 · You <small>Human</small></span><input id="f-name" maxlength="24" value="' + h(G.name) + '" aria-label="Your player name"></label>' +
       '<label class="race-setup-slot"><span>2 · Ada <small>Computer</small></span><input id="f-ai-1" maxlength="24" value="Ada" aria-label="Computer opponent 1 name"></label>' +
