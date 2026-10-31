@@ -1464,3 +1464,48 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud .chrono-cal{grid-template-columns:minmax(0,1fr) minmax(96px,auto);gap:6px}
  #screen-game #hud .chrono-speed{grid-column:1/-1}
 }
+
+/* Compact mobile header: information remains legible without four giant tiles. */
+@media(max-width:760px){
+ #screen-game #hud{gap:4px;padding:6px 9px}
+ #screen-game #hud .chrono{gap:4px}
+ #screen-game #hud .hud-stead{display:flex;flex-direction:row;align-items:baseline;justify-content:space-between;gap:8px}
+ #screen-game #hud-city{font-size:.87rem;line-height:1.12}
+ #screen-game #hud-sub{font-size:.65rem;text-align:right;flex:0 1 auto}
+ #screen-game #hud .chrono-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:stretch}
+ #screen-game #hud .chrono-cal{grid-column:1;display:flex;flex-wrap:wrap;gap:5px;padding:3px 5px;min-width:0;box-shadow:none}
+ #screen-game #hud .chrono-date{flex:1 1 104px;gap:2px 4px}
+ #screen-game #hud .chrono-date b{font-size:.96rem}
+ #screen-game #hud .chrono-date span{font-size:.64rem}
+ #screen-game #hud .chrono-date span:last-child{font-size:.60rem}
+ #screen-game #hud .chrono-auto{min-height:34px;padding:3px 5px;font-size:.66rem;gap:4px}
+ #screen-game #hud .chrono-auto input{width:18px;height:18px}
+ #screen-game #hud .chrono-speed{min-height:34px;width:72px;max-width:72px;padding:3px 4px;font-size:.67rem}
+ #screen-game #hud #end-day{grid-column:2;grid-row:1;align-self:stretch;width:auto;min-width:84px;min-height:42px;padding:6px 10px;font-size:.72rem}
+ #screen-game #hud-balance{display:flex;flex-wrap:nowrap;gap:5px;order:2}
+ #screen-game #hud-balance .language-switch,#screen-game #hud-music,#screen-game #hud-cash,#screen-game #hud-rep{
+   flex:1 1 0;width:auto;min-width:0;min-height:34px;padding:3px 5px;
+   border-radius:8px;font-size:.68rem;line-height:1.12
+ }
+ #screen-game #hud-balance .language-switch{flex:.76 1 0}
+ #screen-game #hud-music{flex:.44 1 0;font-size:.91rem}
+ #screen-game #hud-cash,#screen-game #hud-rep{flex:1.4 1 0}
+ #screen-game #ticker{font-size:.59rem;max-height:22px}
+ .colony-workers-mobile{display:block}
+ #colony-workers-mobile{padding:5px 8px;background:var(--paper);border:1px solid var(--line);border-radius:9px;margin-bottom:5px}
+ #colony-workers-mobile .colony-workers-totals{display:flex;gap:12px;justify-content:center;margin:2px 0 5px}
+ #colony-workers-mobile .colony-panel-title{margin:0 0 4px;font-size:.76rem}
+ #colony-workers-mobile .colony-note{display:none}
+ #colony-workers-mobile .btn.buy{min-height:40px;width:100%;font-size:.8rem}
+ #colony-workers{display:none}
+}
+@media(max-width:390px){
+ #screen-game #hud .hud-stead{flex-wrap:wrap}
+ #screen-game #hud .chrono-row{grid-template-columns:minmax(0,1fr) 80px}
+ #screen-game #hud .chrono-cal{gap:3px}
+ #screen-game #hud .chrono-speed{width:68px}
+ #screen-game #hud-balance{flex-wrap:wrap}
+ #screen-game #hud-balance .language-switch,#screen-game #hud-music{flex:1 1 40px}
+ #screen-game #hud-cash,#screen-game #hud-rep{flex:2 1 115px}
+}
+@media(min-width:761px){.colony-workers-mobile{display:none}}
