@@ -1,9 +1,9 @@
 /* app-audio.js — the two ambient tracks.
  *
  *   city    "music/trading-cities.mp3"       standing in a port city, or ashore
- *   auction "music/ship.mp3"                 the auction room
+ *   auction "music/Gallery Walk.mp3"         the auction room
  *   sea     "music/against-the-rising-tide.mp3"  on a voyage across the ocean
- *   rail    "music/travel.mp3"               on a voyage by train (short European hop)
+ *   rail    "music/Quiet Uplift.mp3"         on a voyage by train (short European hop)
  *
  * Exactly one track is meant to be audible. Both elements are created up
  * front and loop; a switch fades the old one out and the new one in, so a
@@ -23,9 +23,9 @@
 
   var TRACKS = {
     city: 'music/trading-cities.mp3',
-    auction: 'music/ship.mp3',
+    auction: 'music/Gallery Walk.mp3',
     sea: 'music/against-the-rising-tide.mp3',
-    rail: 'music/travel.mp3'
+    rail: 'music/Quiet Uplift.mp3'
   };
   var VOLUME = 0.45;
   var FADE_MS = 900;
