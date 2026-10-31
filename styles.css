@@ -1,6 +1,6 @@
 /* =========================================================================
- * styles.css — the prototype's "period print shop" look.
- * Everything is drawn with CSS (no bitmaps in the project to borrow).
+ * styles.css - Hay Day-inspired farm and trade theme.
+ * Everything is drawn with CSS; no bitmap textures.
  * ========================================================================= */
 :root {
   --ink: #3d2614;
