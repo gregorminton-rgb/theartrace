@@ -292,7 +292,7 @@
       stage.addEventListener('click', function (ev) {
         var lvBtn = ev.target.closest('[data-map-level]');
         if (lvBtn) { setMapLevel(lvBtn.getAttribute('data-map-level')); return; }
-        if (e.target.closest('[data-map-fit]')) { if (worldMap && worldMap.resetZoom) worldMap.resetZoom(); return; }
+        if (ev.target.closest('[data-map-fit]')) { if (worldMap && worldMap.resetZoom) worldMap.resetZoom(); return; }
         var c = worldMap && worldMap.canvas;
         if (!c || ev.target !== c) return;
         pickPlaceAt(ev, c);
