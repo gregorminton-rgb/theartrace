@@ -46,7 +46,7 @@ $data    = $json | ConvertFrom-Json
 $artists = @($data.artists)
 $works   = @($data.works)
 
-# The web build adds painters and pictures the Unity export never knew
+# The web build adds painters and pictures the base data never knew
 # (works-extra.js). Merging them here keeps the importer and the game looking
 # at the same catalogue: a plate whose painter only exists in that overlay
 # still finds its work instead of being reported as unmapped.

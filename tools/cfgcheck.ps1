@@ -6,10 +6,10 @@ $data = $json | ConvertFrom-Json
 $econ = $data.economy
 $names = $econ.PSObject.Properties.Name
 
-# Keys the browser prototype invents on purpose. They are declared once, in the
-# WEB_ONLY_DEFAULTS block of web/engine.js, and merged into CFG at load time, so
+# Keys the game engine declares on its own. They are declared once, in the
+# WEB_ONLY_DEFAULTS block of engine.js, and merged into CFG at load time, so
 # reading them is legitimate. Anything else read through CFG must come from the
-# Unity export - that is the whole point of this check.
+# data.js - that is the whole point of this check.
 $engineRaw = Get-Content 'engine.js' -Raw
 $webOnly = @()
 foreach ($blockName in 'WEB_ONLY_DEFAULTS', 'WEB_ONLY_DERIVED') {
@@ -61,15 +61,15 @@ $out += "  maxLoanReputationMultiplier = $($econ.maxLoanReputationMultiplier)"
 # LoanCeiling parity: web/engine.js must reproduce EconomyConfig.LoanCeiling.
 # Every operand is coerced to [double] on purpose - PowerShell otherwise binds
 # Math.Max(int,int) and truncates the 0..1 ramp to a step function.
-function UnityCeiling([double]$rep) {
+function ReferenceCeiling([double]$rep) {
   $base = [double]$econ.baseLoanCeiling
   $mult = [double]$econ.maxLoanReputationMultiplier
   $repForMax = [double]$econ.reputationForMaxLoan
   $t = [Math]::Min([double]1, [Math]::Max([double]0, $rep / [Math]::Max([double]1, $repForMax)))
   return [int][Math]::Round($base * (1 + ($mult - 1) * $t), [MidpointRounding]::AwayFromZero)
 }
-$out += "loan ceiling (Unity formula, for parity with engine.js loanCeiling):"
-foreach ($r in 0, 15, 25, 40, 80, 120, 200) { $out += "  rep {0,3} -> {1}" -f $r, (UnityCeiling $r) }
+$out += "loan ceiling (reference formula, for parity with engine.js loanCeiling):"
+foreach ($r in 0, 15, 25, 40, 80, 120, 200) { $out += "  rep {0,3} -> {1}" -f $r, (ReferenceCeiling $r) }
 
 $out += if ($fail) { "RESULT: FAIL ($($fail -join ', '))" } else { "RESULT: OK" }
 $out | Set-Content -Path '_cfgcheck.txt' -Encoding UTF8

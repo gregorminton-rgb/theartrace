@@ -6,7 +6,7 @@ try { var saved=localStorage.getItem(KEY);if(saved==='de'||saved==='en'){lang=sa
 var pairs=[
 ['New Game','Neues Spiel'],['Continue','Fortsetzen'],['How to Play','Spielanleitung'],['Data Source','Datenquelle'],
 ['Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.','Kaufe günstig in Amsterdam. Verkaufe teuer in Berlin. Hüte dich vor Fälschungen.'],
-['Prototype build · every number is exported from the Unity project','Prototyp · alle Werte aus dem Unity-Projekt exportiert'],
+['A hand-built art trading game · version 1.0','Ein handgefertigtes Kunsthandelsspiel · Version 1.0'],
 ['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
 ['Market indices','Marktindizes'],['News','Nachrichten'],['End day','Tag beenden'],['Cash','Bargeld'],['Reputation','Ansehen'],['Goal','Ziel'],
 ['Music','Musik'],['Gallery in Amsterdam','Galerie in Amsterdam'],['Day speed','Tagesgeschwindigkeit'],['Let days pass automatically','Tage automatisch verstreichen lassen'],
@@ -132,7 +132,7 @@ function convert(s){
  .replace(/^Gallery in /,'Galerie in ').replace(/(\d+) artists · /,'$1 Künstler · ')
  .replace(/(\d+) cities · /,'$1 Städte · ').replace(/(\d+) artworks · /,'$1 Kunstwerke · ')
  .replace(/(\d+) market events · /,'$1 Marktereignisse · ')
- .replace(/economy parameters, all exported from the Unity project\./,'Wirtschaftsparameter, alle aus dem Unity-Projekt exportiert.');
+ .replace(/economy parameters\./,'Wirtschaftsparameter.');
  return match[1]+result+match[3];
 }
 function walk(root){

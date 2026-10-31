@@ -488,7 +488,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  * World map (travel office).
  *
  * app.js pins the trade network onto the imported map picture. City pins
- * reuse the mapX/mapY the Unity data ships (0..1 longitude/latitude); the
+ * reuse the mapX/mapY from the generated data (0..1 longitude/latitude); the
  * plantation and port pins are authored in app.js and land on the same
  * equirectangular grid. background-size is 100% 100% on purpose so a pin's
  * left/top percentages stay glued to the artwork.
@@ -675,18 +675,26 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1em;
   padding: 1em; min-height: 0; height: 100%;
 }
-.colony-side { display: flex; flex-direction: column; gap: 1em; min-height: 0; overflow: auto; }
+.colony-side { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 .colony-main { display: flex; flex-direction: column; gap: .8em; min-height: 0; }
 
-.colony-panel {
+/* Workers, inspector and palette share one card, parted by hairlines instead
+   of three stacked boxes. */
+.colony-stack {
+  display: flex; flex-direction: column; gap: .55em;
+  flex: 1 1 auto; min-height: 0; overflow: auto;
   background: var(--card); border: 2px solid #c9a46a; border-radius: 14px;
-  padding: .8em; box-shadow: 0 2px 6px rgba(20, 10, 0, .15);
+  padding: .7em .75em; box-shadow: 0 2px 6px rgba(20, 10, 0, .15);
+}
+.colony-panel { padding: 0; border: 0; background: none; box-shadow: none; }
+.colony-stack > .colony-panel + .colony-panel {
+  border-top: 1px solid #ddc79f; padding-top: .55em;
 }
 .colony-panel-title {
-  margin: 0 0 .5em; font-size: .86rem; letter-spacing: .12em; text-transform: uppercase;
+  margin: 0 0 .35em; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
   color: var(--oxblood);
 }
-.colony-note { font-size: .78rem; color: var(--ink-soft); margin: .3em 0 .7em; }
+.colony-note { font-size: .74rem; color: var(--ink-soft); margin: .25em 0 .45em; line-height: 1.35; }
 
 .crop-tile {
   display: flex; flex-direction: column; align-items: center; gap: .15em;
@@ -703,15 +711,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .crop-tile-prov { font-family: var(--sans); font-size: .62rem; color: var(--blue); font-style: italic; }
 .crop-tile-land { font-family: var(--sans); font-size: .66rem; color: var(--ink); font-weight: 700; }
 
-.colony-panel--workers .colony-panel-title { margin: 0 0 .3em; }
-.colony-panel--workers .colony-note { margin: .4em 0 0; font-size: .72rem; line-height: 1.35; }
-.colony-workers-totals {
-  display: flex; flex-wrap: wrap; gap: .2em .9em; align-items: baseline;
-  margin-bottom: .4em;
+.colony-workers-row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em .7em;
+  margin-bottom: .3em;
 }
-.colony-worker-num { font-size: 1rem; font-weight: 700; color: var(--oxblood); }
-.colony-worker-label { font-family: var(--sans); font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin-left: .25em; }
-.colony-panel--workers .btn.buy { padding: .35em .9em; font-size: .8rem; }
+.colony-workers-totals {
+  display: flex; flex-wrap: wrap; gap: .15em .8em; align-items: baseline;
+  flex: 1 1 auto; min-width: 0;
+}
+.colony-worker-num { font-size: .95rem; font-weight: 700; color: var(--oxblood); }
+.colony-worker-label { font-family: var(--sans); font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-left: .22em; }
+.colony-workers-row .btn.buy { padding: .3em .8em; font-size: .76rem; }
+.colony-panel--workers .colony-note { margin: .1em 0 .35em; }
 
 /* Fields sit in a regular grid: 2 per row, 16 at most (4 rows), with one
    equal gap in both directions. The board scrolls on its own, so the field
@@ -740,7 +751,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .plot.ripe { border-color: var(--gold-2); box-shadow: 0 0 12px rgba(224, 188, 99, .7), inset 0 0 8px rgba(224, 188, 99, .3); }
 .plot.selected { border-color: var(--oxblood); box-shadow: 0 0 10px rgba(109, 31, 31, .6), inset 0 0 6px rgba(109, 31, 31, .3); }
 .plot.multi { outline: 3px dashed var(--gold, #c9a227); outline-offset: 2px; }
-.colony-multi { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 10px; }
+.colony-multi { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 .5em; }
 .colony-multi .btn { min-height: 40px; }
 .colony-multi-toggle { flex: 0 0 auto; min-width: 7.6rem; white-space: nowrap; }
 .colony-multi-auto { flex: 0 0 auto; min-width: 8.4rem; white-space: nowrap; }
@@ -765,7 +776,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-field-sub { display: block; font-family: var(--sans); font-size: .66rem; color: var(--ink-soft); }
 .colony-field-state { display: block; font-family: var(--sans); font-size: .7rem; color: var(--green); margin-top: .3em; }
 .colony-field-yield { display: block; font-family: var(--sans); font-size: .7rem; color: var(--ink-soft); margin: .3em 0 .6em; }
-.colony-controls { display: flex; flex-direction: column; gap: .4em; padding: .55em .6em; border: 1px solid var(--line); border-radius: var(--radius-sm, 10px); background: rgba(250, 243, 228, .55); }
+.colony-controls { display: flex; flex-direction: column; gap: .35em; padding: .45em .5em; border: 1px solid var(--line); border-radius: var(--radius-sm, 10px); background: rgba(250, 243, 228, .55); }
 .colony-controls-row { display: flex; flex-wrap: wrap; gap: .4em; }
 .colony-controls-row .btn { flex: 1 1 auto; }
 .colony-auto-btn { flex: 0 0 auto; min-width: 8.6rem; white-space: nowrap; }
@@ -1151,9 +1162,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   }
   .colony-main { order: 1; flex: none; width: 100%; }
   .colony-grid { height: auto; max-height: 62dvh; }
-  .colony-side { order: 2; overflow: visible; gap: .5em; }
+  .colony-side { order: 2; overflow: visible; }
   .colony-side:last-child { order: 3; }
-  .colony-panel { padding: .6em; }
+  .colony-stack { overflow: visible; gap: .45em; padding: .55em .6em; }
+  .colony-stack > .colony-panel + .colony-panel { padding-top: .45em; }
   /* crops become a horizontal strip of tiles; the automatik panel is not a
      tile, so it spans the whole strip */
   #colony-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: .35em; }

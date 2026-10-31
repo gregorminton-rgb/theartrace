@@ -479,15 +479,16 @@
     var idle = colonyIdle();
     var maxed = hired >= MAX_COLONY_WORKERS;
     var afford = G.cash >= WORKER_HIRE_COST;
-    return '<h3 class="colony-panel-title">Workers</h3>' +
-      '<div class="colony-workers-totals">' +
-        '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
-        '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
-        '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
+    return '<div class="colony-workers-row">' +
+        '<span class="colony-workers-totals">' +
+          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
+          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
+          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
+        '</span>' +
+        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire · ' + A.money(WORKER_HIRE_COST) + '</button>' +
       '</div>' +
-      '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire worker · ' + A.money(WORKER_HIRE_COST) + '</button>' +
       '<p class="colony-note">' + (maxed ? 'The colony is fully staffed.'
-        : 'Each worker adds +' + Math.round(WORKER_SPEED * 100) + '% growth and +1 unit per two. Assign them from a field\'s inspector.') + '</p>';
+        : 'Each worker: +' + Math.round(WORKER_SPEED * 100) + '% growth, +1 unit per two. Assign from a field below.') + '</p>';
   }
 
   /* Only the fields in use plus one free plot are drawn: that free plot is the

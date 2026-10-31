@@ -28,7 +28,7 @@
 
   /* Every place the travel office can show: the art cities from data.js,
      the two trade hubs and the colonies. City pins reuse the mapX/mapY the
-     Unity data already ships (0..1 longitude/latitude); the hubs and the
+     data already ships (0..1 longitude/latitude); the hubs and the
      colonies are authored in app-colonies.js because they only exist as
      artwork, not as CityDefinition entries. */
     var PLACES = (function () {
@@ -52,7 +52,7 @@
   /* ---------- world map -------------------------------------------------- *
    * The travel office draws the imported world map (hd-08-world-map) and pins
    * every place of the trade network onto it. City pins reuse the mapX/mapY
-   * the Unity data already ships (0..1 longitude/latitude); the trade hubs and
+   * the data already ships (0..1 longitude/latitude); the trade hubs and
    * the colonies are authored here because they only exist as artwork, not as
    * CityDefinition entries. Clicking a pin opens its imported picture.
    * ---------------------------------------------------------------------- */
