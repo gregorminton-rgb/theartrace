@@ -126,6 +126,8 @@
         '</figure>'
       : '<div class="av-plate av-plate--missing"><span>No picture imported for this work yet</span></div>';
 
+    var enriched = window.ART_EXTRA_STORIES && window.ART_EXTRA_STORIES[id];
+    var extraStory = enriched ? '<section class="av-extra"><h4>' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Hintergrundgeschichte' : 'Behind the painting') + '</h4><p>' + h(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? enriched.de : enriched.en) + '</p><a target="_blank" rel="noopener noreferrer" href="' + h(enriched.source) + '">' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Museumsquelle ansehen' : 'Museum source') + '</a></section>' : '';
     var story = note.story ? '<p class="av-story">' + h(note.story) + '</p>' : '<p class="av-story">' + h(w.description || '') + '</p>';
     var aside = note.note ? '<p class="av-note">' + h(note.note) + '</p>' : '';
 
@@ -147,7 +149,7 @@
     if (artistNote) bio += '<p class="av-bio av-bio--note">' + h(artistNote) + '</p>';
 
     var body = '<div class="av">' +
-      '<div class="av-left">' + plate + story + aside + '</div>' +
+      '<div class="av-left">' + plate + '<div class="av-zoom-controls"><button type="button" data-artzoom="out" aria-label="Zoom out">−</button><button type="button" data-artzoom="reset">100%</button><button type="button" data-artzoom="in" aria-label="Zoom in">+</button></div>' + story + aside + extraStory + '</div>' +
       '<div class="av-right">' +
         '<h3 class="av-title">' + h(w.title) + '</h3>' +
         '<p class="av-credit">' + h(artist ? artist.name : 'Unknown') + ', ' + w.yearCreated + '</p>' +
@@ -159,6 +161,35 @@
 
     dialog(w.title, body, [{ label: 'Close', primary: true, onClick: closeDialog }], 'av-dialog');
 
+    var root = document.querySelector('.dialog.av-dialog');
+    var image = root && root.querySelector('.av-plate img');
+    var plateNode = root && root.querySelector('.av-plate');
+    if (image && plateNode) {
+      var scale=1, dx=0, dy=0, activePointers=new Map(), previousDistance=0;
+      plateNode.classList.add('av-zoomable');
+      function apply(){image.style.transform='translate('+dx+'px,'+dy+'px) scale('+scale+')';}
+      function zoom(factor){scale=Math.max(1,Math.min(5,scale*factor));if(scale===1){dx=0;dy=0;}apply();}
+      root.querySelectorAll('[data-artzoom]').forEach(function(button){button.addEventListener('click',function(){
+        var act=button.getAttribute('data-artzoom');
+        if(act==='reset'){scale=1;dx=0;dy=0;apply();}
+        else zoom(act==='in'?1.3:1/1.3);
+      });});
+      plateNode.addEventListener('wheel',function(e){e.preventDefault();zoom(e.deltaY<0?1.12:1/1.12);},{passive:false});
+      plateNode.addEventListener('pointerdown',function(e){activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});plateNode.setPointerCapture(e.pointerId);});
+      plateNode.addEventListener('pointermove',function(e){
+        if(!activePointers.has(e.pointerId))return;
+        var prev=activePointers.get(e.pointerId),point={x:e.clientX,y:e.clientY};
+        activePointers.set(e.pointerId,point);
+        if(activePointers.size===1 && scale>1){dx+=point.x-prev.x;dy+=point.y-prev.y;apply();}
+        if(activePointers.size===2){
+          var p=Array.from(activePointers.values()),dist=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+          if(previousDistance>0)zoom(Math.pow(dist/previousDistance,.65));
+          previousDistance=dist;
+        }
+      });
+      function up(e){activePointers.delete(e.pointerId);previousDistance=0;}
+      plateNode.addEventListener('pointerup',up);plateNode.addEventListener('pointercancel',up);
+    }
     /* hand the instance to nothing else: the dialog is read-only */
     void inst;
   }
