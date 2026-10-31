@@ -435,7 +435,6 @@
       grid.scrollTop = gridScroll;
       el('colony-grid').style.background = colony.bg || '';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
-      el('colony-hint').textContent = crew.multiSelectIds().length > 1 ? 'Selected fields: automation changes apply to all selected fields.' : el('colony-hint').textContent;
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
         : 'Drag a crop plate onto a free plot, or click a plate then a plot.';
@@ -577,7 +576,7 @@
         '<rect x="8" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '<rect x="19" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
         '</svg>';
-      return '<button type="button" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
+      return '<button type="button" aria-pressed="' + (crew.multiSelect.ids[f.id] ? 'true' : 'false') + '" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
         ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
         /* the crop label and the crew size sit above the soil, the progress
            rail below it — the diorama keeps the middle band to itself */
@@ -611,15 +610,11 @@
     var total = colonyFields().length;
     var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
     return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
-      '<strong class="colony-multi-count">' + (n ? n + ' of ' + total + ' fields selected' : 'Tap fields to select') + '</strong>' +
-      '<div class="colony-multi-actions">' +
-        '<button class="btn ghost" type="button" data-colony="select-all"' + (total && n !== total ? '' : ' disabled') + '>Select all</button>' +
-        '<button class="btn ghost" type="button" data-colony="select-clear"' + (n ? '' : ' disabled') + '>Clear</button>' +
-      '</div>' +
-      '<div class="colony-multi-actions">' +
-        '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (n && autoN !== n ? '' : ' disabled') + '>Auto on (' + n + ')</button>' +
-        '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (autoN ? '' : ' disabled') + '>Auto off (' + n + ')</button>' +
-      '</div>' +
+      '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
+      '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>Select all</button>' +
+      '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
+      '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
+      '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
       '</div>';
   }
 
