@@ -412,6 +412,10 @@
       '<label class="race-setup-slot"><span>4 · Felix <small>Computer</small></span><input id="f-ai-3" maxlength="24" value="Felix" aria-label="Computer opponent 3 name"></label>' +
       '</div></fieldset>' +
       '<div class="career-settings">' +
+      '<label>Language / Sprache<select id="f-language" aria-label="Language / Sprache">' +
+        '<option value="en"' + (!window.ArtRaceLanguage || window.ArtRaceLanguage.get()==='en' ? ' selected' : '') + '>English</option>' +
+        '<option value="de"' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de' ? ' selected' : '') + '>Deutsch</option>' +
+      '</select></label>' +
       '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
@@ -419,6 +423,7 @@
       '</div>', [
       { label: 'Cancel', onClick: function () { if (!G.started) closeDialog(); else closeDialog(); } },
       { label: 'Begin career', primary: true, onClick: function () {
+          if (window.ArtRaceLanguage) window.ArtRaceLanguage.set(el('f-language').value);
           newGame({
             name: el('f-name').value || 'Henry',
             difficulty: el('f-diff').value,
