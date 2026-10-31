@@ -402,18 +402,21 @@
       return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
         h(d.label) + ' (' + d.days + ' days)</option>';
     }).join('');
-    dialog('Set up a career', '<div class="form">' +
+    dialog('Set up a career', '<div class="form career-setup-form">' +
+      '<div class="career-settings">' +
       '<label>Name of the dealer<input id="f-name" value="' + h(G.name) + '"></label>' +
-      '<fieldset class="race-setup"><legend>Four-player race</legend>' +
-      '<p class="race-setup-note">One human player and three computer opponents. Most paintings after the career wins.</p>' +
-      '<div class="race-setup-slot"><span>1 · You</span><b>Human player</b></div>' +
-      '<label class="race-setup-slot"><span>2 · Opponent</span><input id="f-ai-1" maxlength="24" value="Ada" aria-label="Computer opponent 1 name"></label>' +
-      '<label class="race-setup-slot"><span>3 · Opponent</span><input id="f-ai-2" maxlength="24" value="Clara" aria-label="Computer opponent 2 name"></label>' +
-      '<label class="race-setup-slot"><span>4 · Opponent</span><input id="f-ai-3" maxlength="24" value="Felix" aria-label="Computer opponent 3 name"></label>' +
-      '</fieldset>' +
       '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
+      '</div>' +
+      '<fieldset class="race-setup"><legend>Four-player race</legend>' +
+      '<p class="race-setup-note">One human player and three computer opponents. Most paintings after the career wins.</p>' +
+      '<div class="race-setup-grid">' +
+      '<div class="race-setup-slot"><span>1 · You</span><strong>Human player</strong></div>' +
+      '<label class="race-setup-slot"><span>2 · Computer</span><input id="f-ai-1" maxlength="24" value="Ada" aria-label="Computer opponent 1 name"></label>' +
+      '<label class="race-setup-slot"><span>3 · Computer</span><input id="f-ai-2" maxlength="24" value="Clara" aria-label="Computer opponent 2 name"></label>' +
+      '<label class="race-setup-slot"><span>4 · Computer</span><input id="f-ai-3" maxlength="24" value="Felix" aria-label="Computer opponent 3 name"></label>' +
+      '</div></fieldset>' +
       '</div>', [
       { label: 'Cancel', onClick: function () { if (!G.started) closeDialog(); else closeDialog(); } },
       { label: 'Begin career', primary: true, onClick: function () {
