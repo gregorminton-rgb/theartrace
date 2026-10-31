@@ -161,7 +161,7 @@
         <button class="language-switch" type="button" data-change-language aria-label="Change language">DE / EN</button>
         <span class="colony-chip" id="colony-cash">Cash $0</span>
         <span class="colony-chip" id="colony-warehouse">Warehouse 0</span>
-        <button class="btn ghost" type="button" data-colony="auto" id="colony-autopilot" title="Overseer: sows, harvests and assigns workers">Autopilot</button>
+        <span class="colony-chip" id="colony-autopilot" title="Automated fields">Auto: 0/0</span>
       </div>
       <div class="chrono">
         <div class="chrono-row">
@@ -194,6 +194,7 @@
       <div class="colony-view colony-view--plantage" id="colony-view-plantage">
         <div class="colony-layout">
           <main class="colony-main">
+            <div id="colony-field-toolbar"></div>
             <div class="colony-grid" id="colony-grid"></div>
             <p class="colony-hint" id="colony-hint"></p>
           </main>
