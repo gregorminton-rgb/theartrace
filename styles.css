@@ -1289,3 +1289,36 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .chrono-speed{min-height:44px;max-width:none;padding:6px 8px;font-size:.8rem;border-radius:9px}
 #end-day,.chrono-row .btn.go{min-height:44px;padding:8px 14px;font-size:.85rem;white-space:nowrap}
 @media(max-width:650px){.chrono-auto{min-height:42px;padding:4px 7px;font-size:.71rem}.chrono-auto input{width:20px;height:20px}.chrono-speed{min-height:42px;max-width:86px;font-size:.71rem}.chrono-row .btn.go,#end-day{min-height:42px;padding:6px 9px;font-size:.73rem}}
+
+
+/* State color semantics: GOLD = selected/on, GREEN = constructive actions,
+   RED = errors/destructive danger. All active states use dark readable ink. */
+:root { --state-selected-bg: #ffd75e; --state-selected-edge: #a86f05; --state-selected-ink: #422900; }
+.btn.is-on,
+.trade-auto-btn.is-on,
+.hub-btn.is-active,
+.colony-menu-btn.active,
+.station.active,
+.crop-tile.selected,
+.plot.selected {
+  border-color: var(--state-selected-edge);
+}
+.btn.is-on,
+.trade-auto-btn.is-on,
+.hub-btn.is-active {
+  background: linear-gradient(180deg, #ffe58b, var(--state-selected-bg));
+  color: var(--state-selected-ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,.35);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 3px 0 #a86f05;
+}
+.btn.is-on:hover,.trade-auto-btn.is-on:hover,.hub-btn.is-active:hover {
+  filter: brightness(1.04);
+}
+.colony-menu-btn.active small { color: var(--state-selected-ink); }
+.crop-tile.selected { background: #fff0b9; box-shadow: inset 0 0 0 2px var(--gold-2); }
+.plot.selected { box-shadow: 0 0 0 3px rgba(255,215,94,.5), inset 0 0 0 2px rgba(255,215,94,.3); }
+.auto-check input { accent-color: var(--state-selected-edge); }
+.btn.sell { background: linear-gradient(180deg, #8dcc6c, var(--green)); border-color: #2f6416; color: #fffaf0; }
+.btn:focus-visible,.hub-btn:focus-visible,.plot:focus-visible,.crop-tile:focus-visible {
+  outline: 3px solid var(--gold-2); outline-offset: 3px;
+}
