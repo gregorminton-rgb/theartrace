@@ -435,7 +435,6 @@
       grid.scrollTop = gridScroll;
       el('colony-grid').style.background = colony.bg || '';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
-      el('colony-hint').textContent = crew.multiSelectIds().length > 1 ? 'Selected fields: automation changes apply to all selected fields.' : el('colony-hint').textContent;
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
         : 'Drag a crop plate onto a free plot, or click a plate then a plot.';
@@ -611,15 +610,11 @@
     var total = colonyFields().length;
     var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
     return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
-      '<strong class="colony-multi-count">' + (n ? n + ' of ' + total + ' fields selected' : 'Tap fields to select') + '</strong>' +
-      '<div class="colony-multi-actions">' +
-        '<button class="btn ghost" type="button" data-colony="select-all"' + (total && n !== total ? '' : ' disabled') + '>Select all</button>' +
-        '<button class="btn ghost" type="button" data-colony="select-clear"' + (n ? '' : ' disabled') + '>Clear</button>' +
-      '</div>' +
-      '<div class="colony-multi-actions">' +
-        '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (n && autoN !== n ? '' : ' disabled') + '>Auto on (' + n + ')</button>' +
-        '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (autoN ? '' : ' disabled') + '>Auto off (' + n + ')</button>' +
-      '</div>' +
+      '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
+      '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>All</button>' +
+      '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
+      '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
+      '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
       '</div>';
   }
 
