@@ -1281,3 +1281,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 #colony-field-toolbar .colony-multi>.btn{flex:1 1 0;min-width:0;min-height:40px;padding:5px 3px;font-size:.63rem;white-space:nowrap}
 @media(min-width:650px){#colony-field-toolbar .colony-multi{gap:8px;padding:8px}#colony-field-toolbar .colony-multi>.btn{font-size:.75rem}}
 @media(max-width:380px){#colony-field-toolbar .colony-multi-count{font-size:.64rem}#colony-field-toolbar .colony-multi>.btn{font-size:.57rem}}
+
+/* Accessible, thumb-sized manual and automatic day controls on every screen. */
+.chrono-auto{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:5px 10px;font:700 .83rem var(--sans);letter-spacing:0;text-transform:none;background:var(--paper);border:2px solid var(--line);border-radius:11px;color:var(--ink);cursor:pointer;white-space:nowrap}
+.chrono-auto:has(input:checked){background:#d8edc8;border-color:var(--green);color:#294c19}
+.chrono-auto input{width:22px;height:22px;flex:none;accent-color:var(--green);cursor:pointer}
+.chrono-speed{min-height:44px;max-width:none;padding:6px 8px;font-size:.8rem;border-radius:9px}
+#end-day,.chrono-row .btn.go{min-height:44px;padding:8px 14px;font-size:.85rem;white-space:nowrap}
+@media(max-width:650px){.chrono-auto{min-height:42px;padding:4px 7px;font-size:.71rem}.chrono-auto input{width:20px;height:20px}.chrono-speed{min-height:42px;max-width:86px;font-size:.71rem}.chrono-row .btn.go,#end-day{min-height:42px;padding:6px 9px;font-size:.73rem}}
