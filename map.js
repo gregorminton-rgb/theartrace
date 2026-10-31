@@ -102,7 +102,8 @@
         y: (m0 - merc(lat)) * (H / span)
       };
     }
-    var origin = z > 1 ? base(cx, cy) : null;
+    /* cx/cy are normalized PROJECTED screen coordinates, not longitude/latitude.\n       Feeding them back through base() flips Y and distorts zoom/panning. */
+    var origin = z > 1 ? { x: cx * W, y: cy * H } : null;
     return {
       W: W, H: H, level: level, z: z,
       fromMap: function (x, y) {

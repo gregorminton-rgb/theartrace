@@ -1254,6 +1254,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   #hud .hud-brand { display: none; }
 }
 
+/* Four-player race scoreboard, placed above the game workspace. */
+.race-standings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:8px 12px;background:#392716;color:#fdf0cf;font-family:var(--sans)}
+.race-title{grid-column:1/-1;font-weight:800;font-size:.78rem;letter-spacing:.07em}
+.race-player{display:flex;align-items:center;gap:7px;padding:8px;background:#5a432a;border:1px solid #a98d65;border-radius:10px;min-width:0;flex-wrap:wrap}
+.race-player.is-human{background:#385b33;border-color:#a3cf82}
+.race-rank{font-weight:800}.race-person{flex:1;min-width:64px;font-weight:700;font-size:.8rem;overflow:hidden;text-overflow:ellipsis}
+.race-person small{display:block;opacity:.75;font-weight:400;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.race-player strong{white-space:nowrap}.race-money{font-size:.68rem;opacity:.85}
+@media(max-width:780px){.race-standings{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:6px}.race-player{padding:6px;gap:5px}.race-person{font-size:.76rem}.race-player strong{font-size:.77rem}}
+
 /* Mobile-first plot selection: one toolbar above the field grid. */
 #colony-field-toolbar{flex:0 0 auto;position:sticky;top:0;z-index:3}
 #colony-field-toolbar .colony-multi{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:0}
