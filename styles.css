@@ -1509,3 +1509,13 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-cash,#screen-game #hud-rep{flex:2 1 115px}
 }
 @media(min-width:761px){.colony-workers-mobile{display:none}}
+
+/* Allow translated day-end labels to wrap neatly in the mobile round button. */
+@media(max-width:760px){
+ #screen-game #hud #end-day{
+   display:flex;align-items:center;justify-content:center;
+   text-align:center;white-space:normal;overflow-wrap:normal;
+   word-break:normal;line-height:1.22;max-width:100%;
+   padding:8px 9px;font-size:.79rem;
+ }
+}
