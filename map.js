@@ -1489,8 +1489,20 @@
       if (!rect.width || !rect.height) return;
       var cssW = Math.max(220, Math.round(rect.width));
       var cssH = Math.max(150, Math.round(rect.height || cssW * 0.60));
-      if (cssW === W && cssH === H) return;
-      W = cssW; H = cssH;
+      /* The map must not turn into a tall, squeezed globe on portrait
+         phones. Render a wide plate (at least 1.85:1), and crop its sides
+         inside the viewport. Dragging pans the actual map, not a stretched
+         texture. Desktop uses its natural available dimensions. */
+      var plateW = Math.max(cssW, Math.round(cssH * 1.85));
+      var offset = Math.round((cssW - plateW) / 2);
+      canvasEl.style.width = plateW + 'px';
+      canvasEl.style.height = cssH + 'px';
+      canvasEl.style.maxWidth = 'none';
+      canvasEl.style.position = 'absolute';
+      canvasEl.style.left = offset + 'px';
+      canvasEl.style.top = '0';
+      if (plateW === W && cssH === H) return;
+      W = plateW; H = cssH;
       app.renderer.resize(W, H);
       buildStatic();
       drawRoutes();
