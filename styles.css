@@ -1634,3 +1634,5 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-ui-dialog .colony-modal-content .colony-panel-title{margin-top:0}
  .auction-quiz-prices{grid-template-columns:1fr}
 }
+
+.market-explainer{font:.76rem/1.45 var(--sans);margin:7px 0 10px;color:var(--ink-soft);background:rgba(255,245,219,.65);padding:8px;border-radius:7px}
