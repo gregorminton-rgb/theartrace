@@ -324,30 +324,6 @@ window.ART_IMAGES = {
 
                                        ]
                            },
-                   "unbekannt":  {
-                                     "file":  "images/unbekannt.jpg",
-                                     "width":  1600,
-                                     "height":  1195,
-                                     "bytes":  471816,
-                                     "role":  "city",
-                                     "source":  "Unbekannt.jpg",
-                                     "folder":  "ArtRace3Artwork\\new",
-                                     "ids":  [
-
-                                             ]
-                                 },
-                   "unbekannt2":  {
-                                      "file":  "images/unbekannt2.jpg",
-                                      "width":  1600,
-                                      "height":  1195,
-                                      "bytes":  480271,
-                                      "role":  "city",
-                                      "source":  "Unbekannt2.jpg",
-                                      "folder":  "ArtRace3Artwork\\new",
-                                      "ids":  [
-
-                                              ]
-                                  },
                    "weltkarte":  {
                                      "file":  "images/weltkarte.jpg",
                                      "width":  1600,
