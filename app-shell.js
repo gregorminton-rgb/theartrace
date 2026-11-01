@@ -214,6 +214,13 @@
     if (G.view === 'auction' && A.app.auctionOpenHere && A.app.auctionOpenHere()) {
       stopClock();
       log('Auto day paused for the live auction. Finish bidding, then advance the day manually.');
+      if (A.shell && A.shell.dialog) {
+        var deAuction = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+        A.shell.dialog(deAuction ? 'Automatik pausiert: Auktion' : 'Auto paused: auction',
+          '<p>' + (deAuction ? 'Die Auktion läuft. Du kannst in Ruhe bieten und anschließend die Automatik erneut einschalten.' :
+            'The auction is live. Finish bidding, then switch Auto on again when ready.') + '</p>',
+          [{label:deAuction ? 'Verstanden' : 'OK',primary:true,onClick:closeDialog}]);
+      }
       renderAll();
       return;
     }
