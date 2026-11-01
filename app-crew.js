@@ -179,6 +179,26 @@
     renderColony();
   }
 
+  /* Upgrade every selected field of the same level in one action.
+     Charge only for the fields we can afford; never partly change a field. */
+  function upgradeSelectedFields() {
+    var ids=multiSelectIds(), fields=ids.map(fieldById).filter(Boolean);
+    if (!fields.length) { log('Select fields to upgrade first.'); return; }
+    var level=fields[0].level;
+    if (!fields.every(function(f){return f.level===level;})) {
+      log('Choose fields of the same upgrade level.'); return;
+    }
+    var next=UPGRADES[level];
+    if (!next) { log('Selected fields are fully upgraded.'); return; }
+    var total=next.cost*fields.length;
+    if (G.cash<total) {
+      log('Upgrading '+fields.length+' fields costs '+A.money(total)+'.'); return;
+    }
+    G.cash-=total;
+    fields.forEach(function(f){f.level+=1;});
+    log('Upgraded '+fields.length+' fields to '+next.label+' for '+A.money(total)+'.');
+    renderColony();
+  }
   function selectField(fid) {
     G.selectedFieldId = (G.selectedFieldId === fid) ? null : fid;
     renderColony();
@@ -384,6 +404,8 @@
       assignWorker(parseInt(t.getAttribute('data-field'), 10));
     } else if (action === 'unassign') {
       unassignWorker(parseInt(t.getAttribute('data-field'), 10));
+    } else if (action === 'upgrade-bulk') {
+      upgradeSelectedFields();
     } else if (action === 'upgrade') {
       upgradeField(parseInt(t.getAttribute('data-field'), 10));
     } else if (action === 'endday') {
@@ -591,6 +613,7 @@
     assignWorker: assignWorker,
     unassignWorker: unassignWorker,
     upgradeField: upgradeField,
+    upgradeSelectedFields: upgradeSelectedFields,
     selectField: selectField,
     endColonyDay: endColonyDay,
     colonyAction: colonyAction,
