@@ -209,7 +209,8 @@
     var a = A.artistById[w.artistId];
     /* Catalogue facts: painter, year, kind of picture, and (for the extra
        masters) medium and size. shopInfo falls back to the kind of picture. */
-    var facts = h(w.typeName) + (w.medium ? ' · ' + h(w.medium) : '') +
+    var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
+    var facts = h(translateArt(w.typeName)) + (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
                 (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
     return '<div class="row-main">' + thumb(w, inst.uid) + '<div>' +
            '<span class="title">' + h(w.title) + '</span>' +

@@ -44,6 +44,7 @@
     return 'not yet examined';
   }
 
+  function artText(value) { return window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate(value) : value; }
   function factsRows(w, artist) {
     var rows = [];
     rows.push(['Painter', artist ? artist.name : 'Unknown']);
@@ -128,11 +129,13 @@
 
     var enriched = window.ART_EXTRA_STORIES && window.ART_EXTRA_STORIES[id];
     var extraStory = enriched ? '<section class="av-extra"><h4>' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Hintergrundgeschichte' : 'Behind the painting') + '</h4><p>' + h(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? enriched.de : enriched.en) + '</p><a target="_blank" rel="noopener noreferrer" href="' + h(enriched.source) + '">' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Museumsquelle ansehen' : 'Museum source') + '</a></section>' : '';
-    var story = note.story ? '<p class="av-story">' + h(note.story) + '</p>' : '<p class="av-story">' + h(w.description || '') + '</p>';
-    var aside = note.note ? '<p class="av-note">' + h(note.note) + '</p>' : '';
+    var localized = window.ArtRaceArtI18n;
+    var storyText = localized && localized.translateNote ? localized.translateNote(id,'story',note.story || w.description || '') : (note.story || w.description || '');
+    var story = '<p class="av-story">' + h(storyText) + '</p>';
+    var aside = note.note ? '<p class="av-note">' + h(localized && localized.translateNote ? localized.translateNote(id,'note',note.note) : note.note) + '</p>' : '';
 
     var facts = '<dl class="av-facts">' + factsRows(w, artist).map(function (r) {
-      return '<dt>' + h(r[0]) + '</dt><dd>' + h(r[1]) + '</dd>';
+      return '<dt>' + h(artText(r[0])) + '</dt><dd>' + h(artText(r[1])) + '</dd>';
     }).join('') + '</dl>';
 
     var where = [];
@@ -141,12 +144,13 @@
     if (note.dimensions) where.push(['Original size', note.dimensions]);
     var extra = where.length
       ? '<h4 class="av-sub">The original</h4><dl class="av-facts">' + where.map(function (r) {
-          return '<dt>' + h(r[0]) + '</dt><dd>' + h(r[1]) + '</dd>';
+          return '<dt>' + h(artText(r[0])) + '</dt><dd>' + h(artText(r[1])) + '</dd>';
         }).join('') + '</dl>'
       : '';
 
-    var bio = artist && artist.bio ? '<p class="av-bio">' + h(artist.bio) + '</p>' : '';
-    if (artistNote) bio += '<p class="av-bio av-bio--note">' + h(artistNote) + '</p>';
+    var bioText=artist&&artist.bio ? (localized&&localized.artistBio?localized.artistBio(w.artistId,artist.bio):artist.bio) : '';
+    var bio = bioText ? '<p class="av-bio">' + h(bioText) + '</p>' : '';
+    if (artistNote && !(localized && localized.artistBio && localized.artistBio(w.artistId,'') && window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de')) bio += '<p class="av-bio av-bio--note">' + h(artistNote) + '</p>';
 
     var body = '<div class="av">' +
       '<div class="av-left">' + plate + '<div class="av-zoom-controls"><button type="button" data-artzoom="out" aria-label="Zoom out">−</button><button type="button" data-artzoom="reset">100%</button><button type="button" data-artzoom="in" aria-label="Zoom in">+</button></div>' + story + aside + extraStory + '</div>' +
