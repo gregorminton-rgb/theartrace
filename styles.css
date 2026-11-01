@@ -1766,3 +1766,37 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .city-travel-destinations .dest-row,#colony-dest-list .dest-row{background:linear-gradient(#fff5d6,#e5cd98);border:2px solid #b48c4a;box-shadow:0 3px 0 #96723e;transition:transform .12s,background .12s}
 .city-travel-destinations .dest-row:hover,#colony-dest-list .dest-row:hover{transform:translateY(-2px);background:#fff1b9}
 .city-travel-destinations .dest-row:focus-visible,#colony-dest-list .dest-row:focus-visible{outline:3px solid #256e97;outline-offset:3px}
+
+/* Auction-first layout: inventory/bids before decoration. Scoped to auction view. */
+@media(min-width:761px){
+ #screen-game:has(.auction-view) #main{
+   grid-template-columns:8.5rem minmax(0,1fr) clamp(230px,19vw,320px);
+ }
+ #screen-game:has(.auction-view) #hud{padding:6px 10px;min-height:0;gap:6px;align-items:center}
+ #screen-game:has(.auction-view) #hud .chrono{align-self:center}
+ #screen-game:has(.auction-view) #stage{overflow:hidden;gap:7px}
+ #screen-game:has(.auction-view) .stage-frame{
+   display:block;aspect-ratio:auto;height:clamp(64px,11dvh,125px);
+   min-height:64px;max-height:125px;flex:0 0 auto;
+ }
+ #screen-game:has(.auction-view) #panel-wrap{
+   flex:1 1 auto;height:0;min-height:0;max-height:none;
+ }
+ #screen-game:has(.auction-view) #panel{min-height:0;overflow:auto}
+ #screen-game:has(.auction-view) #market-col{min-width:0}
+ #screen-game:has(.auction-view) .auction-view .scene-strip img{height:62px}
+ #screen-game:has(.auction-view) .auction-view .scene-strip{margin:0 0 8px}
+ #screen-game:has(.auction-view) .auction-view .row{padding-top:9px;padding-bottom:9px}
+}
+@media(max-width:760px){
+ #screen-game:has(.auction-view) .stage-frame{
+   display:none;
+ }
+ #screen-game:has(.auction-view) #stage{gap:4px;min-height:0;overflow:hidden}
+ #screen-game:has(.auction-view) #panel-wrap{flex:1 1 auto;min-height:0;max-height:none}
+ #screen-game:has(.auction-view) #panel{overflow-y:auto;min-height:0}
+ #screen-game:has(.auction-view) .auction-view .scene-strip img{height:62px}
+ #screen-game:has(.auction-view) .auction-view .scene-strip{margin:0 0 8px}
+ #screen-game:has(.auction-view) .auction-view .row{padding:9px 4px}
+ #screen-game:has(.auction-view) .auction-view .row-btns .btn{min-height:42px}
+}
