@@ -649,12 +649,19 @@
     var n = ids.length;
     var total = colonyFields().length;
     var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
+    var selectedFields=ids.map(fieldById).filter(Boolean);
+    var sameLevel=selectedFields.length>0 && selectedFields.every(function(f){return f.level===selectedFields[0].level;});
+    var next=sameLevel?UPGRADES[selectedFields[0].level]:null;
+    var totalCost=next?next.cost*selectedFields.length:0;
+    var upgradeText=selectedFields.length>1 ? 'Upgrade '+selectedFields.length+' fields' : 'Upgrade field';
+    if (next) upgradeText+=' · '+h(next.label)+' · '+A.money(totalCost);
     return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
       '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
       '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>Select all</button>' +
       '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
       '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
       '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
+      '<button class="btn go" type="button" data-colony="upgrade-bulk"' + (!next || G.cash<totalCost ? ' disabled' : '') + '>' + (next?upgradeText:(selectedFields.length&&!sameLevel?'Select same-level fields':'No upgrade available')) + '</button>' +
       '</div>';
   }
 
@@ -663,7 +670,7 @@
     var selectedCount = crew.multiSelectIds().length;
     if (!f) {
       return '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
-        '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to enable or disable automation for the selected fields.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
+        '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to automate or upgrade selected fields of the same level.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
         colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
