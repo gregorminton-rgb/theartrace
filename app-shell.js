@@ -50,7 +50,11 @@
     el('dialog-title').textContent = title;
     el('dialog-body').innerHTML = html;
     el('dialog-actions').innerHTML = (buttons || []).map(function (b, i) {
-      return '<button class="btn' + (b.primary ? ' primary' : '') + '" data-dialog="' + i + '">' + h(b.label) + '</button>';
+      /* Semantic colors: affirmative = green, dismiss/back = yellow. */
+      var label = String(b.label || '').trim();
+      var dismiss = /^(cancel|cancelar|abbrechen|zurück|back|skip|überspringen|no|nein|pass|close|schließen|fertig zurück)$/i.test(label);
+      var tone = b.tone === 'danger' ? ' danger' : (dismiss ? ' cancel' : (b.primary ? ' primary' : ''));
+      return '<button type="button" class="btn' + tone + '" data-dialog="' + i + '">' + h(b.label) + '</button>';
     }).join('');
     dialogHandlers = (buttons || []).map(function (b) { return b.onClick; });
     var dlg = el('overlay').querySelector('.dialog');
