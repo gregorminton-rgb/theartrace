@@ -515,7 +515,7 @@
         '">' + head + info + nums + quiz +
         (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</article>';
     }).join('');
-    return '<section class="auction-view art-market-view">' + head + marketSortControls('auction') + '<div class="art-market-grid">' + rows + '</div></section>';
+    return '<section class="auction-view art-market-view">' + head + '<div class="art-market-grid">' + rows + '</div></section>';
   }
 
   function viewBank() {
