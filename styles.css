@@ -1668,8 +1668,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 /* Desktop travel: let the map occupy the available workspace instead of a small inset. */
 @media(min-width:1000px){
- #screen-game:has(#wm-stage) #main{grid-template-columns:minmax(0,1fr)!important}
- #screen-game:has(#wm-stage) #stage{width:100%;max-width:none;min-width:0}
+ #screen-game:has(#wm-stage) #main{grid-template-columns:8.5rem minmax(0,1fr)!important;min-height:0}
+ #screen-game:has(#wm-stage) #stage{width:100%;max-width:none;min-width:0;min-height:0}
+ #screen-game:has(#wm-stage) .stage-frame{display:none}
+ #screen-game:has(#wm-stage) #panel-wrap{flex:1 1 auto;min-height:0}
+ #screen-game:has(#wm-stage) #panel{min-height:0}
  #screen-game:has(#wm-stage) #panel-wrap{width:100%;max-width:none;min-width:0}
  #screen-game:has(#wm-stage) #market-col{display:none}
  #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{height:clamp(530px,72dvh,970px);min-height:530px;max-height:none}
