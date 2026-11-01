@@ -85,7 +85,10 @@
     if (!main || !backdrop) return;
     /* Reuse exactly the same current-city/voyage image as the former panorama.
        For a split sea voyage the destination is used as the ambient backdrop. */
-    main.style.setProperty('--play-city-art', backdrop.style.backgroundImage || 'none');
+    var scene = backdrop.style.backgroundImage || 'none';
+    main.style.setProperty('--play-city-art', scene);
+    var screen = el('screen-game');
+    if (screen) screen.style.setProperty('--play-city-art', scene);
   }
   function renderBackdrop() {
     var bd = el('backdrop');
