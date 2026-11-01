@@ -1870,3 +1870,55 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #stage .card{background:rgba(255,248,230,.86)}
  #screen-game #main::before{background-size:cover;background-position:center top}
 }
+
+/* Desktop: one genuinely compact HUD row, not a tall dark empty rectangle. */
+@media(min-width:1000px){
+ #screen-game{gap:8px}
+ #screen-game #hud{
+   display:grid;grid-template-columns:auto auto minmax(70px,1fr) minmax(380px,auto);
+   grid-template-areas:"brand balance ticker chrono";
+   align-items:center;column-gap:12px;row-gap:0;
+   padding:5px 12px;min-height:0;border-width:2px;border-radius:11px;
+ }
+ #screen-game #hud .hud-brand{justify-content:center;gap:1px}
+ #screen-game #hud .hud-brand strong{font-size:.91rem;line-height:1.15}
+ #screen-game #hud .hud-name{font-size:.57rem;line-height:1.1}
+ #screen-game #hud-balance{align-self:center;gap:5px;flex-wrap:wrap}
+ #screen-game #hud .hud-chip{font-size:.67rem;padding:4px 7px}
+ #screen-game #hud .chrono{
+   display:flex;flex-direction:row;align-items:center;justify-content:flex-end;
+   gap:10px;min-width:0;align-self:center;
+ }
+ #screen-game #hud .hud-stead{align-items:flex-end;text-align:right;min-width:105px}
+ #screen-game #hud-city{font-size:.83rem;line-height:1.12}
+ #screen-game #hud-sub{font-size:.58rem;line-height:1.1}
+ #screen-game #hud .chrono-row{flex-direction:row;align-items:center;gap:7px}
+ #screen-game #hud .chrono-cal{flex-wrap:nowrap;gap:5px;padding:4px 7px;box-shadow:none}
+ #screen-game #hud .chrono-date b{font-size:.98rem}
+ #screen-game #hud .chrono-date span{font-size:.67rem}
+ #screen-game #hud .chrono-timer{display:none}
+ #screen-game #hud .chrono-auto{white-space:nowrap;font-size:.55rem}
+ #screen-game #hud .chrono-speed{max-width:64px;font-size:.62rem}
+ #screen-game #hud #end-day{align-self:center;min-height:35px;white-space:nowrap;padding:5px 9px;font-size:.72rem}
+ #screen-game #ticker{min-width:0;max-height:36px;overflow:hidden}
+}
+/* Let the city photo actually read through the interface. The former
+   multiple 80-95% opaque paper overlays flattened it almost entirely. */
+@media(min-width:761px){
+ #screen-game #main::before{
+   background-image:linear-gradient(rgba(36,27,13,.08),rgba(36,27,13,.17)),var(--play-city-art,none);
+ }
+ #screen-game #stage .panel{background:rgba(250,239,216,.53);backdrop-filter:blur(1.5px)}
+ #screen-game #stage #panel{background:transparent}
+ #screen-game #stage .card,#screen-game #market-col .card{
+   background:rgba(255,247,228,.69);backdrop-filter:blur(2px)
+ }
+ #screen-game #stage .panel-head,#screen-game #stage .panel-foot{
+   background:rgba(248,232,198,.78)
+ }
+ #screen-game .scene-strip{background:transparent}
+ #screen-game #main .station{background:linear-gradient(rgba(255,249,224,.85),rgba(235,216,175,.85))}
+ #overlay .dialog:not(.dialog--tutorial):not(.dialog--setup){background:rgba(250,241,221,.86)}
+}
+/* Keep the travel map and text-bearing interactive pieces clear and opaque. */
+#screen-game .worldmap--canvas{background:#2079a0;backdrop-filter:none}
