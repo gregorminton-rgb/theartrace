@@ -1,7 +1,26 @@
 /* Occasional, dismissible art-history spotlight during journeys. */
 (function(){
  'use strict';
- var seenDay=-1, dismissTimer=null;
+ var seenDay=-1, dismissTimer=null, bag=[], lastWorkId=null, bagSignature='';
+ /* Shuffle bag: show each available artwork once before reshuffling. */
+ function shuffle(ids){
+  for(var i=ids.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=ids[i];ids[i]=ids[j];ids[j]=t;}
+  return ids;
+ }
+ function nextArtwork(works){
+  var ids=works.map(function(w){return w.id;});
+  var signature=ids.slice().sort().join('|');
+  if(signature!==bagSignature){bag=[];bagSignature=signature;lastWorkId=null;}
+  if(!bag.length){
+   bag=shuffle(ids.slice());
+   if(bag.length>1 && bag[bag.length-1]===lastWorkId){
+    var swap=0;while(swap<bag.length-1&&bag[swap]===lastWorkId)swap++;
+    var t=bag[bag.length-1];bag[bag.length-1]=bag[swap];bag[swap]=t;
+   }
+  }
+  var selected=bag.pop();lastWorkId=selected;
+  return works.filter(function(w){return w.id===selected;})[0];
+ }
  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
  function dismiss(){
   if(dismissTimer){clearTimeout(dismissTimer);dismissTimer=null;}
@@ -10,13 +29,14 @@
  function language(){return window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';}
  function showSpotlight(day){
   var A=window.ArtRace, G=window.ArtRaceGame && window.ArtRaceGame.G;
+  if(day<seenDay){seenDay=-1;bag=[];lastWorkId=null;}
   if(!A||!G||!G.started||G.ended||!G.voyage||day===seenDay||day%7!==0)return;
   if(document.getElementById('overlay') && !document.getElementById('overlay').hidden)return;
   var images=window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images || {};
   var works=(A.works||[]).filter(function(w){return images[w.id] && images[w.id].file;});
   if(!works.length)return;
   seenDay=day;
-  var w=works[Math.floor(day/7)%works.length];
+  var w=nextArtwork(works);
   var artist=A.artistById && A.artistById[w.artistId];
   var de=language();
   var note=de?'Entdecke ein Werk aus der Kunstgeschichte. Tippe auf das Bild, um mehr zu erfahren.':'Discover a work of art history. Tap the picture to learn more.';
