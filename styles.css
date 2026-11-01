@@ -2069,3 +2069,34 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 .btn.primary:active,.btn.cancel:active,.btn.danger:active{transform:translateY(2px);box-shadow:inset 0 2px 0 #ffffff66,0 1px 0 currentColor}
 .btn.primary:focus-visible,.btn.cancel:focus-visible,.btn.danger:focus-visible{outline:3px solid #224d78;outline-offset:3px}
+
+/* Illustrated, tactile menu badges. Phase 1: all seven city navigation icons.
+   Retain native emoji fallback, with consistent frame/light/shadow across OSes. */
+#screen-game #stations .st-ico{display:flex;justify-content:center;align-items:center;margin-bottom:5px;line-height:1}
+#screen-game #stations .icon-art{
+ display:grid;place-items:center;position:relative;isolation:isolate;
+ width:40px;height:40px;flex:0 0 40px;
+ font-size:25px;line-height:1;
+ border:2px solid #775125;border-radius:12px;
+ background:radial-gradient(circle at 32% 20%,#fffbd3 0%,#f4d583 38%,#b87935 100%);
+ box-shadow:inset 0 2px 0 #ffffffba,inset 0 -3px 0 #8a592b55,0 3px 0 #5f411e,0 5px 8px #23170860;
+ text-shadow:0 2px 2px #39220e60;
+ transform:rotate(-3deg);transition:transform .15s,filter .15s;
+}
+#screen-game #stations .icon-art::after{
+ content:"";position:absolute;top:3px;left:7px;width:55%;height:20%;
+ border-radius:50%;background:#fff9d85e;pointer-events:none;
+}
+#screen-game #stations .station:nth-child(even) .icon-art{transform:rotate(3deg)}
+#screen-game #stations .station:hover .icon-art,
+#screen-game #stations .station:focus-visible .icon-art{transform:translateY(-2px) rotate(0deg) scale(1.06);filter:saturate(1.12)}
+#screen-game #stations .station.active .icon-art{border-color:#477322;background:radial-gradient(circle at 30% 20%,#f6ffb9,#bde46b 48%,#589437 100%)}
+#screen-game #stations .icon-art--travel{background:radial-gradient(circle at 30% 15%,#effbff,#a9d9ed 43%,#4d9abd 100%)}
+#screen-game #stations .icon-art--dealer,#screen-game #stations .icon-art--studio{background:radial-gradient(circle at 30% 15%,#fff7e7,#f7c88d 44%,#d98c56 100%)}
+#screen-game #stations .icon-art--portfolio,#screen-game #stations .icon-art--trade{background:radial-gradient(circle at 30% 15%,#fafcd8,#d8e99a 44%,#80a74d 100%)}
+#screen-game #stations .icon-art--auction{background:radial-gradient(circle at 30% 15%,#fff0de,#f6c19a 44%,#ce8469 100%)}
+@media(max-width:760px){
+ #screen-game #main > #stations .station{gap:3px;padding:4px 6px;font-size:.65rem}
+ #screen-game #stations .st-ico{margin:0}
+ #screen-game #stations .icon-art{width:34px;height:34px;flex-basis:34px;border-radius:10px;font-size:21px;box-shadow:inset 0 2px 0 #ffffffa9,0 2px 0 #5f411e}
+}
