@@ -44,6 +44,7 @@
     return 'not yet examined';
   }
 
+  function artText(value) { return window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate(value) : value; }
   function factsRows(w, artist) {
     var rows = [];
     rows.push(['Painter', artist ? artist.name : 'Unknown']);
@@ -132,7 +133,7 @@
     var aside = note.note ? '<p class="av-note">' + h(note.note) + '</p>' : '';
 
     var facts = '<dl class="av-facts">' + factsRows(w, artist).map(function (r) {
-      return '<dt>' + h(r[0]) + '</dt><dd>' + h(r[1]) + '</dd>';
+      return '<dt>' + h(artText(r[0])) + '</dt><dd>' + h(artText(r[1])) + '</dd>';
     }).join('') + '</dl>';
 
     var where = [];
@@ -141,7 +142,7 @@
     if (note.dimensions) where.push(['Original size', note.dimensions]);
     var extra = where.length
       ? '<h4 class="av-sub">The original</h4><dl class="av-facts">' + where.map(function (r) {
-          return '<dt>' + h(r[0]) + '</dt><dd>' + h(r[1]) + '</dd>';
+          return '<dt>' + h(artText(r[0])) + '</dt><dd>' + h(artText(r[1])) + '</dd>';
         }).join('') + '</dl>'
       : '';
 
