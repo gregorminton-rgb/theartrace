@@ -209,6 +209,14 @@
   }
 
   function tickClock() {
+    /* Keep a live sale interactive: automated day advances otherwise close
+       all lots while the player is working through bids and expert quizzes. */
+    if (G.view === 'auction' && A.app.auctionOpenHere && A.app.auctionOpenHere()) {
+      stopClock();
+      log('Auto day paused for the live auction. Finish bidding, then advance the day manually.');
+      renderAll();
+      return;
+    }
     if (G.ended) { stopClock(); return; }
     /* Ashore the colony screen drives the day (its fields and workers), so the
        same interval steps that screen instead of a hidden portrait city. */
@@ -691,7 +699,9 @@
     else if (action === 'examine') act(examine)(uid);
     else if (action === 'restore') act(restoreArtwork)(uid, Math.min(CFG.restorationMaxGain, 1 - (findOwned(uid) || { condition: 1 }).condition));
     else if (action === 'collect') act(collect)(uid);
-    else if (action === 'bid') { act(bidLot)(lot); if(G.lots[lot] && G.lots[lot].leader==='you' && G.lots[lot].quiz && !G.lots[lot].quiz.answered)auctionQuizDialog(lot); }
+    else if (action === 'bid') {
+      if (G.clockWanted && G.view === 'auction') stopClock();
+      act(bidLot)(lot); if(G.lots[lot] && G.lots[lot].leader==='you' && G.lots[lot].quiz && !G.lots[lot].quiz.answered)auctionQuizDialog(lot); }
     else if (action === 'pass') act(passLot)(lot);
     else if (action === 'quiz') act(answerLotQuiz)(lot, choice);
     else if (action === 'borrow') act(borrow)(amount);
