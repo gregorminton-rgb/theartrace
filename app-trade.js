@@ -310,7 +310,7 @@
       var estLo = A.estimateLow(w, inst, city, idx, year);
       var estHi = A.estimateHigh(w, inst, city, idx, year);
       var afford = ask <= G.cash && G.portfolio.length < G.capacity;
-      return '<div class="row' + (afford ? '' : ' dim') + '">' + rowHead(inst) +
+      return '<article class="row art-market-card' + (afford ? '' : ' dim') + '">' + rowHead(inst) +
         '<div class="row-tags">' + condTag(inst) + authTag(inst) + '</div>' +
         '<div class="row-num"><span class="ask">' + A.money(ask) + '</span>' +
         '<span class="est">consignor estimate ' + A.money(estLo) + '–' + A.money(estHi) + '</span></div>' +
@@ -318,7 +318,7 @@
     }).join('');
     return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
       A.pct(CFG.dealerMargin * CFG.dealerPremium) + ' over market value · buy-backs pay ' +
-      A.pct(1 - CFG.dealerSpread) + ' of value.</p>' + rows;
+      A.pct(1 - CFG.dealerSpread) + ' of value.</p><div class="art-market-grid">' + rows + '</div>';
   }
 
   document.addEventListener('change',function(e){
@@ -440,10 +440,10 @@
           '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>';
       else if (open)
         btns = '<span class="tag">bids open on day ' + G.auctionDay + '</span>';
-      return '<div class="row' + cls + '">' + head + info + nums + quiz +
+      return '<article class="row art-market-card' + cls + '">' + head + info + nums + quiz +
         (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</div>';
     }).join('');
-    return '<section class="auction-view">' + head + rows + '</section>';
+    return '<section class="auction-view">' + head + '<div class="art-market-grid">' + rows + '</div></section>';
   }
 
   function viewBank() {
