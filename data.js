@@ -91,7 +91,7 @@ window.ART_DATA = {
                     "startYear":  1925,
                     "targetNetWorth":  1200000,
                     "careerLengthDays":  180,
-                    "startingPortfolioCapacity":  5,
+                    "startingPortfolioCapacity":  6,
                     "extraSlotPrice":  60000,
                     "maxPortfolioCapacity":  12,
                     "dealerMargin":  0.26,

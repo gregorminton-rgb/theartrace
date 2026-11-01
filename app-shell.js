@@ -624,6 +624,9 @@
       if (k === 'v' || k === 'savedAt' || k === 'rng' || k === 'clockTimer') return;
       G[k] = data[k];
     });
+    /* Upgrade existing five-slot careers without removing purchased slots. */
+    G.capacity = Math.min(CFG.maxPortfolioCapacity,
+      Math.max(Number(G.capacity) || 0, CFG.startingPortfolioCapacity + (Number(G.slotsBought) || 0)));
     G.rng = A.makeRng(G.seed);
     if (A.race) A.race.ensure();
     G.clockTimer = null;
