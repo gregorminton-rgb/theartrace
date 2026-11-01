@@ -4,7 +4,7 @@
   var A=window.ArtRace, G=window.ArtRaceGame.G;
   function de(){return !!(window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de');}
   function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function week(){return Math.floor(Math.max(0,G.day)/7);}
+  function week(){return Math.floor(Math.max(0,G.day-1)/7);}
   function place(id) {
     var city=A.cityById&&A.cityById[id], colony=A.colonies&&A.colonies.COLONY_BY_ID&&A.colonies.COLONY_BY_ID[id];
     return city?city.name:colony?colony.label:String(id||'-');
