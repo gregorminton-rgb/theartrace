@@ -313,6 +313,41 @@
       '">' + label + '</span>';
   }
 
+  function marketSortControls(kind) {
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    return '<div class="art-market-toolbar"><label>' + (de ? 'Sortieren nach' : 'Sort by') +
+      ' <select class="art-market-sort" aria-label="' + (de ? 'Kunstwerke sortieren' : 'Sort artwork') + '">' +
+      '<option value="default">' + (de ? 'Standardreihenfolge' : 'Default order') + '</option>' +
+      '<option value="price-asc">' + (de ? 'Preis: aufsteigend' : 'Price: low to high') + '</option>' +
+      '<option value="price-desc">' + (de ? 'Preis: absteigend' : 'Price: high to low') + '</option>' +
+      '<option value="condition-desc">' + (de ? 'Zustand: bester zuerst' : 'Condition: best first') + '</option>' +
+      '<option value="artist">' + (de ? 'Künstler: A–Z' : 'Artist: A–Z') + '</option>' +
+      '<option value="value">' + (de ? 'Preisbewertung: günstig zuerst' : 'Value: best deal first') + '</option>' +
+      '</select></label></div>';
+  }
+  document.addEventListener('change', function(ev) {
+    if (!ev.target || !ev.target.classList.contains('art-market-sort')) return;
+    var wrap = ev.target.closest('.art-market-view'), grid = wrap && wrap.querySelector('.art-market-grid');
+    if (!grid) return;
+    var mode = ev.target.value;
+    var cards = Array.from(grid.querySelectorAll('.art-market-card'));
+    cards.sort(function(a,b) {
+      function n(el,key) { var v=Number(el.dataset[key]);return isFinite(v)?v:0; }
+      var d=0;
+      if (mode==='price-asc') d=n(a,'price')-n(b,'price');
+      else if (mode==='price-desc') d=n(b,'price')-n(a,'price');
+      else if (mode==='condition-desc') d=n(b,'condition')-n(a,'condition');
+      else if (mode==='artist') d=(a.dataset.artist||'').localeCompare(b.dataset.artist||'',undefined,{sensitivity:'base'});
+      else if (mode==='value') {
+        /* Not-yet-published auction estimates remain hidden and sort last. */
+        var va=n(a,'value'),vb=n(b,'value');
+        d=(va<0?Infinity:va)-(vb<0?Infinity:vb);
+      }
+      return d || n(a,'order')-n(b,'order');
+    });
+    cards.forEach(function(card) {grid.appendChild(card);});
+  });
+
   function viewDealer() {
     var offers = G.stock[G.cityId] || [];
     if (!offers.length) return '<p class="empty">The dealer’s shelves are bare until the next restock (day ' +
@@ -326,7 +361,11 @@
       var estLo = A.estimateLow(w, inst, city, idx, year);
       var estHi = A.estimateHigh(w, inst, city, idx, year);
       var afford = ask <= G.cash && G.portfolio.length < G.capacity;
-      return '<article class="row art-market-card' + (afford ? '' : ' dim') + '">' + rowHead(inst) +
+      return '<article class="row art-market-card' + (afford ? '' : ' dim') +
+        '" data-order="' + offers.indexOf(inst) + '" data-price="' + ask +
+        '" data-condition="' + (Number(inst.condition)||0) +
+        '" data-artist="' + h((A.artistById[w.artistId]||{}).name||'') +
+        '" data-value="' + (estLo>0 && estHi>0 ? (ask/((estLo+estHi)/2)).toFixed(5) : '-1') + '">' + rowHead(inst) +
         '<div class="row-tags">' + condTag(inst) + authTag(inst) + '</div>' +
         '<div class="row-num"><span class="ask">' + A.money(ask) + '</span>' +
         priceSignal(ask, estLo, estHi) +
@@ -335,7 +374,7 @@
     }).join('');
     return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
       A.pct(CFG.dealerMargin * CFG.dealerPremium) + ' over market value · buy-backs pay ' +
-      A.pct(1 - CFG.dealerSpread) + ' of value.</p><div class="art-market-grid">' + rows + '</div>';
+      A.pct(1 - CFG.dealerSpread) + ' of value.</p><section class="art-market-view">' + marketSortControls('dealer') + '<div class="art-market-grid">' + rows + '</div></section>';
   }
 
   document.addEventListener('change',function(e){
@@ -458,10 +497,15 @@
           '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>';
       else if (open)
         btns = '<span class="tag">bids open on day ' + G.auctionDay + '</span>';
-      return '<article class="row art-market-card' + cls + '">' + head + info + nums + quiz +
+      return '<article class="row art-market-card' + cls +
+        '" data-order="' + i + '" data-price="' + lot.bid +
+        '" data-condition="' + (Number(lot.inst.condition)||0) +
+        '" data-artist="' + h((a&&a.name)||'') +
+        '" data-value="' + (!open && !quizOpen && lot.low>0 && lot.high>0 ? (lot.bid/((lot.low+lot.high)/2)).toFixed(5) : '-1') +
+        '">' + head + info + nums + quiz +
         (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</div>';
     }).join('');
-    return '<section class="auction-view">' + head + '<div class="art-market-grid">' + rows + '</div></section>';
+    return '<section class="auction-view art-market-view">' + head + marketSortControls('auction') + '<div class="art-market-grid">' + rows + '</div></section>';
   }
 
   function viewBank() {
