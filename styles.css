@@ -1966,3 +1966,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game .art-market-card .btn.buy{min-height:46px}
 }
 @media(max-width:365px){#screen-game .art-market-card .row-main{grid-template-columns:76px minmax(0,1fr)}#screen-game .art-market-card .thumb{width:68px;height:90px}}
+
+/* Art-market price guidance and slimmer desktop market information column. */
+.art-market-card .price-signal{display:inline-flex;align-items:center;max-width:100%;padding:4px 9px;margin:5px 0 3px;border-radius:20px;border:1px solid currentColor;font:800 .72rem var(--sans);letter-spacing:.01em}
+.price-signal--good{background:#dcefd7;color:#285b27}
+.price-signal--fair{background:#e7e2d0;color:#69512a}
+.price-signal--expensive{background:#f8dfd6;color:#933a25}
+@media(min-width:1000px){
+ #screen-game #main{grid-template-columns:8.5rem minmax(0,1fr) clamp(205px,17vw,275px)}
+ #screen-game:has(.auction-view) #main{grid-template-columns:8.5rem minmax(0,1fr) clamp(205px,17vw,275px)}
+ #screen-game #market-col{min-width:0}
+ #screen-game #market-col .card{padding:10px}
+ #screen-game #market-col #market-table{font-size:.79rem}
+}
