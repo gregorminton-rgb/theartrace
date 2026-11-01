@@ -1711,3 +1711,36 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #race-standings .race-self-info strong{font-size:.76rem}
  #screen-game #race-standings .race-self-info small{font-size:.68rem}
 }
+
+/* Illustrated four-page introduction, using the game's existing art and room plates. */
+.hud-help{min-width:32px;font-weight:900;cursor:pointer}
+.dialog.dialog--tutorial{width:min(780px,96vw);max-height:min(94dvh,880px);border-radius:16px;overflow:auto}
+.dialog--tutorial .dialog-head{padding:10px 16px}
+.dialog--tutorial .dialog-head h2{font-size:1rem}
+.dialog--tutorial .dialog-body{padding:0;line-height:1.45}
+.dialog--tutorial .dialog-actions{flex-wrap:wrap;padding:10px 14px;gap:7px}
+.dialog--tutorial .dialog-actions .btn{min-height:40px}
+.tutorial-hero{position:relative;min-height:clamp(190px,32dvh,300px);overflow:hidden;background:#32251b}
+.tutorial-hero>img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
+.tutorial-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(25,14,7,.92),rgba(25,14,7,.05) 75%)}
+.tutorial-hero-title{position:absolute;bottom:15px;left:20px;right:20px;z-index:2;color:#fff4d7;text-shadow:0 2px 7px #100a06;font-size:clamp(1.3rem,3vw,2rem);line-height:1.13;margin:0}
+.tutorial-collage{position:absolute;z-index:1;right:14px;top:12px;display:flex;gap:8px;transform:rotate(4deg)}
+.tutorial-collage img{width:clamp(51px,11vw,88px);height:clamp(72px,15vw,116px);object-fit:cover;border:5px solid #d4ab5d;box-shadow:0 5px 20px #120b04}
+.tutorial-collage img:nth-child(2){transform:translateY(16px) rotate(-8deg)}
+.tutorial-copy{padding:16px 22px 7px;font-size:clamp(.88rem,1.4vw,1.02rem)}
+.tutorial-copy p{margin:0 0 10px}
+.tutorial-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.tutorial-points>span{background:#eee0bc;border:1px solid #b69b68;border-radius:8px;text-align:center;padding:10px 5px;font-size:.83rem}
+.tutorial-points b{display:block;font-size:1.1rem;color:#6c4521}
+.tutorial-progress{display:flex;justify-content:center;gap:7px;padding:4px 0 14px}
+.tutorial-progress span{width:9px;height:9px;border-radius:50%;background:#cdbb9a}
+.tutorial-progress span.active{background:#684224;width:23px;border-radius:9px}
+@media(max-width:760px){
+ .dialog.dialog--tutorial{width:calc(100vw - 16px);max-height:94dvh}
+ .tutorial-hero{min-height:clamp(180px,28dvh,230px)}
+ .tutorial-copy{padding:13px 15px 3px}
+ .tutorial-hero-title{left:14px;bottom:11px}
+ #screen-game #hud-balance .hud-help{display:none}
+ #screen-game #hud.hud-details-open #hud-balance .hud-help{display:flex;align-items:center;justify-content:center;flex:0 0 36px;min-height:34px}
+ .dialog--tutorial .dialog-actions .btn{flex:1 1 auto;font-size:.8rem}
+}

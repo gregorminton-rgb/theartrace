@@ -499,6 +499,7 @@
           renderAll();
           clearSave();
           scheduleSave();
+          if(window.ArtRaceTutorial) window.ArtRaceTutorial.open();
         } }
     ], 'dialog--setup');
   }
