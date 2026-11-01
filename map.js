@@ -1064,8 +1064,9 @@
       var ux = zoomView.cx + (sx - W / 2) / (W * old);
       var uy = zoomView.cy + (sy - H / 2) / (H * old);
       zoomView.z = next;
-      zoomView.cx = ux;
-      zoomView.cy = uy;
+      /* Keep the exact map point under the cursor/finger midpoint stationary. */
+      zoomView.cx = ux - (sx - W / 2) / (W * next);
+      zoomView.cy = uy - (sy - H / 2) / (H * next);
       clampView();
       redrawAll();
     }
@@ -1563,11 +1564,12 @@
 
     /* ---- zoom input: wheel, pinch, drag-to-pan ------------------------ */
     var pointers = new Map();
-    var pinchDist = 0;
+    var pinchDist = 0, pinchMid = null;
     var dragMoved = false;
     function localPoint(e) {
       var r = canvasEl.getBoundingClientRect();
-      return { x: e.clientX - r.left, y: e.clientY - r.top };
+      return { x: (e.clientX - r.left) * (W / (r.width || W)),
+               y: (e.clientY - r.top) * (H / (r.height || H)) };
     }
     function onWheel(e) {
       if (dead) return;
@@ -1581,6 +1583,7 @@
       if (pointers.size === 2) {
         var pts = Array.from(pointers.values());
         pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        pinchMid = {x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
       }
     }
     function onMove(e) {
@@ -1593,10 +1596,11 @@
         var d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
         if (pinchDist > 0 && d > 0) {
           var mx = (pts[0].x + pts[1].x) / 2, my = (pts[0].y + pts[1].y) / 2;
-          /* Dampen abrupt touch-distance changes, especially on small screens. */
-          var ratio = Math.max(0.82, Math.min(1.18, d / pinchDist));
-          zoomAt(Math.pow(ratio, 0.38), mx, my);
+          /* Two-finger translation and scaling share the gesture centroid. */
+          if(pinchMid) panBy(mx-pinchMid.x,my-pinchMid.y);
+          zoomAt(Math.max(0.75,Math.min(1.35,d/pinchDist)),mx,my);
           pinchDist = d;
+          pinchMid = {x:mx,y:my};
         }
         dragMoved = true;
         return;
@@ -1607,7 +1611,7 @@
     }
     function onUp(e) {
       pointers.delete(e.pointerId);
-      if (pointers.size < 2) pinchDist = 0;
+      if (pointers.size < 2) {pinchDist = 0;pinchMid = null;}
     }
     /* a drag that moved must not also count as a tap on a pin */
     function onClickCapture(e) {
