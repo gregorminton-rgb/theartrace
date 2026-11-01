@@ -100,6 +100,7 @@
   function plantCrop(cropId, plotIndex) {
     var crop = T().CROP_BY_ID[cropId];
     if (!crop) return;
+    if (!T().colonyAllowsCrop(G.colonyId,cropId)) { log('This crop is not available on this colony.'); return; }
     if (plotField(plotIndex)) { log('That plot is already planted.'); return; }
     var owned = !!ownedPlot(G.colonyId, plotIndex);
     var land = owned ? 0 : plotPriceFor(crop);
@@ -354,6 +355,7 @@
       renderColony();
     } else if (action === 'arm') {
       var cid = t.getAttribute('data-crop');
+      if (!T().colonyAllowsCrop(G.colonyId,cid)) return;
       G.plantCropId = (G.plantCropId === cid) ? null : cid;
       renderColony();
     } else if (action === 'plant-at') {
