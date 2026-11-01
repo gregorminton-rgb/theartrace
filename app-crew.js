@@ -480,6 +480,7 @@
     G.cash += total;
     G.colonyStats.sold += units;
     G.colonyStats.revenue += total;
+    if (window.ArtRaceMissions) window.ArtRaceMissions.record('trade', units);
     log('Sold ' + units + ' ' + crop.label + ' at the ' + cityLabel(hubId) +
         ' trade desk for ' + A.money(total) + '.');
     return total;

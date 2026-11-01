@@ -102,6 +102,7 @@
     G.reputation = CFG.startingReputation;
     G.capacity = CFG.startingPortfolioCapacity;
     G.portfolio = [];
+    G.missions = { art:0, trade:0, artDone:0, tradeDone:0 };
     G.stock = {};
     G.restockDay = {};
     G.lots = [];
@@ -228,6 +229,7 @@
     here.splice(i, 1);
     rep(CFG.reputationPerPurchase);
     G.stats.buys += 1;
+    if (window.ArtRaceMissions) window.ArtRaceMissions.record('art', 1);
     log('Bought ' + A.work(inst.defId).title + ' for ' + A.money(price) + '.');
     checkEnd();
   }
@@ -653,6 +655,7 @@
       if (lot.quiz) { lot.quiz.round = 1; lot.quiz.basePrice = total; lot.quiz.results = []; lot.quiz.savedAmount = 0; }
       rep(CFG.reputationPerAuctionWin);
       G.stats.hammer += 1;
+      if (window.ArtRaceMissions) window.ArtRaceMissions.record('art', 1);
       log('Hammer! ' + A.work(inst.defId).title + ' for ' + A.money(lot.bid) +
           ' + ' + A.pct(CFG.auctionCommission) + ' commission = ' + A.money(total) + '.' +
           ' Three expert quiz rounds: correct −20%, wrong +10% of the original total.');

@@ -86,6 +86,7 @@
     G.cash += total;
     G.colonyStats.sold += units;
     G.colonyStats.revenue += total;
+    if (window.ArtRaceMissions) window.ArtRaceMissions.record('trade', units);
     log('Sold ' + units + ' ' + crop.label + ' at the ' + A.city(hub).name + ' dock for ' + A.money(total) + '.');
     checkEnd();
   }
@@ -101,6 +102,7 @@
     G.cash += total;
     G.colonyStats.sold += units;
     G.colonyStats.revenue += total;
+    if (window.ArtRaceMissions) window.ArtRaceMissions.record('trade', units);
     log('Sold ' + units + ' ' + crop.label + ' at ' + A.city(G.cityId).name + ' for ' + A.money(total) + '.');
     checkEnd();
   }
