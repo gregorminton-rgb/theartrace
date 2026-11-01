@@ -32,6 +32,7 @@
     var s=state(),german=de();
     function card(kind,title,description) {
       return '<section style="margin:0 0 14px;padding:12px;border:1px solid #b99a62;border-radius:10px">' +
+        '<img src="images/mission-'+(kind==='art'?'art-collector':'spice-trader')+'.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'" style="display:block;width:100%;max-height:240px;object-fit:cover;border-radius:8px;margin-bottom:10px">' +
         '<strong>'+title+'</strong><p>'+description+'</p><p><b>'+s[kind]+' / '+goals[kind]+'</b> · '+
         (german?'Belohnung: ':'Reward: ')+'<b>+'+A.money(rewards[kind])+'</b></p>'+
         '<progress max="'+goals[kind]+'" value="'+s[kind]+'" style="width:100%"></progress>'+
