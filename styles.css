@@ -1677,3 +1677,37 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game:has(#wm-stage) #market-col{display:none}
  #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{height:clamp(530px,72dvh,970px);min-height:530px;max-height:none}
 }
+
+/* Single visual HUD group, with optional details on small screens. */
+#hud-more{display:none}
+@media(max-width:760px){
+ #screen-game{gap:3px}
+ #screen-game #hud{background:#634625;border:2px solid #8c6b42;border-radius:14px 14px 0 0;box-shadow:none;margin-bottom:0;padding:7px 9px 5px;gap:3px}
+ #screen-game #hud .chrono{gap:4px;order:0}
+ #screen-game #hud .hud-stead{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 8px}
+ #screen-game #hud-city{grid-column:1;font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #screen-game #hud-sub{grid-column:1;grid-row:2;font-size:.60rem;opacity:.85;text-align:left}
+ #hud-more{display:flex;grid-column:2;grid-row:1/3;align-items:center;gap:4px;background:rgba(255,241,207,.12);color:#fff1d5;border:1px solid #b9955d;border-radius:8px;padding:7px 9px;min-height:34px;font:700 .7rem var(--sans);cursor:pointer}
+ #screen-game #hud .chrono-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}
+ #screen-game #hud .chrono-cal{grid-column:1;display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:4px 7px;border:1px solid #a88652;border-radius:8px;background:#fff8ea}
+ #screen-game #hud .chrono-date{flex:1 0 auto;min-width:0}
+ #screen-game #hud .chrono-date b{font-size:.94rem}
+ #screen-game #hud .chrono-date span{font-size:.7rem}
+ #screen-game #hud #end-day{grid-column:2;grid-row:1;min-height:37px;min-width:100px;padding:5px 9px;font-size:.75rem;line-height:1.1}
+ #screen-game #hud .chrono-auto,#screen-game #hud .chrono-speed{display:none}
+ #screen-game #hud-balance{display:flex;order:2;gap:5px;margin:0;min-height:0}
+ #screen-game #hud-balance .language-switch,#screen-game #hud-music,#screen-game #hud-rep,#screen-game #hud-goal{display:none}
+ #screen-game #hud #hud-cash{display:inline-flex;flex:0 1 auto;width:auto;min-height:26px;font-size:.72rem;padding:2px 8px;background:rgba(255,242,210,.10);border:1px solid #947347;border-radius:7px;color:#ffedc7}
+ #screen-game #ticker{display:none}
+ #screen-game #hud.hud-details-open .chrono-auto{display:flex;min-height:36px}
+ #screen-game #hud.hud-details-open .chrono-speed{display:block;width:85px;min-height:36px}
+ #screen-game #hud.hud-details-open #hud-balance .language-switch,#screen-game #hud.hud-details-open #hud-music,#screen-game #hud.hud-details-open #hud-rep{display:flex;flex:1 1 auto;width:auto;min-height:34px}
+ #screen-game #hud.hud-details-open #hud-balance{flex-wrap:wrap}
+ #screen-game #hud.hud-details-open #hud-cash{min-height:34px}
+ #screen-game #hud.hud-details-open #ticker{display:block}
+ #screen-game #race-standings{background:#634625;border:2px solid #8c6b42;border-top:1px solid #947347;border-radius:0 0 14px 14px;padding:4px 7px 6px;margin-top:-3px}
+ #screen-game #race-standings .race-self-trigger{background:transparent;border:0;border-radius:7px;padding:3px 6px;min-height:32px;box-shadow:none}
+ #screen-game #race-standings .race-self-avatar{font-size:.95rem}
+ #screen-game #race-standings .race-self-info strong{font-size:.76rem}
+ #screen-game #race-standings .race-self-info small{font-size:.68rem}
+}
