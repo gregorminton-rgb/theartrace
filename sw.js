@@ -1,6 +1,6 @@
 // Offline support for The Great Art Race.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'artrace-v4-20261101-weekly1';
+const CACHE_VERSION = 'artrace-v5-20261101-travelauto1';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
