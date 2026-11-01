@@ -173,8 +173,8 @@
       return (G.stock[city]||[]).some(function(p){return p.defId===id;});
     }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});
   }
-  function freeWork(allowOffer) {
-    var choices=A.works.filter(function(w){return !ownedWork(w.id) && (allowOffer||!offeredWork(w.id));});
+  function freeWork(temporary) {
+    var choices=A.works.filter(function(w){return !ownedWork(w.id) && !offeredWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
     return choices.length?G.rng.weighted(choices,function(x){return 11-x.rarity;}):null;
   }
   /* Old saves may contain duplicated listings; never sell an already-owned original. */
@@ -186,7 +186,7 @@
     if (G.reputation >= CFG.reputationForPremiumStock) size += 1;   // premium stock
     var offers = [];
     for (var i = 0; i < size; i++) {
-      var w = freeWork(false);
+      var w = freeWork(offers.map(function(p){return p.defId;}));
       if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.15, 0.15), 0.05, 1);
       var fake = G.rng.chance(fakeChance(w));
@@ -562,7 +562,7 @@
     var city = A.city(G.cityId);
     var lots = [];
     for (var i = 0; i < CFG.auctionLotCount; i++) {
-      var w = freeWork(false);
+      var w = freeWork(lots.map(function(p){return p.inst.defId;}));
       if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.2, 0.1), 0.05, 1);
       var inst = makeInstance(w, cond, G.rng.chance(fakeChance(w)), city.name + ' auction lot');
