@@ -276,9 +276,10 @@
     if (view === 'trade' && !TRADE_HUB_IDS[c.id]) view = 'dealer';
     G.view = view;
 
-    var head = '<div class="panel-head"><h2>' + h(VIEW_TITLES[view]) + '</h2>' +
+    var head = '<div class="panel-head' + (view === 'auction' ? ' auction-panel-head' : '') + '"><h2>' + h(VIEW_TITLES[view]) + '</h2>' +
                '<span class="panel-sub">' + h(c.name) + ' · ' + A.money(G.cash) + ' in hand · ' +
-               G.portfolio.length + '/' + G.capacity + ' crates</span></div>';
+               G.portfolio.length + '/' + G.capacity + ' crates</span>' +
+               (view === 'auction' ? sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') : '') + '</div>';
     var body = '';
     if (view === 'dealer') body = viewDealer();
     else if (view === 'portfolio') body = viewPortfolio();
@@ -449,8 +450,7 @@
   }
 
   function viewAuction() {
-    var head = sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') +
-      '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
+    var head = '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
       'Catalogue on view') + ' · hammer on day ' + G.auctionDay + ' · buyer\u2019s premium ' +
       A.pct(CFG.auctionCommission) + ' · increment ' + A.pct(CFG.auctionIncrementRatio) + '.</p>';
     if (!auctionListUp())
