@@ -409,6 +409,8 @@
   function renderColony() {
     var colony = COLONY_BY_ID[G.colonyId];
     if (!colony) return;
+    if (G.colonyMenu === 'lager') G.colonyMenu = 'handel';
+    if (G.colonyMenu === 'arbeiter') G.colonyMenu = 'plantage';
     el('colony-title').textContent = colony.label;
     el('colony-sub').textContent = colony.sub;
     /* the date lives in the top-right calendar of this bar, not in the cash chip */
@@ -433,8 +435,6 @@
     /* Show/hide views */
     show(el('colony-view-plantage'), G.colonyMenu === 'plantage');
     show(el('colony-view-handel'), G.colonyMenu === 'handel');
-    show(el('colony-view-lager'), G.colonyMenu === 'lager');
-    show(el('colony-view-arbeiter'), G.colonyMenu === 'arbeiter');
     show(el('colony-view-reise'), G.colonyMenu === 'reise');
     
     /* The chart is mounted on demand: the stage has to be visible before the
@@ -484,15 +484,7 @@
       el('colony-handel-content').innerHTML = colonyTradeHTML();
     }
     
-    /* Render lager view */
-    if (G.colonyMenu === 'lager') {
-      el('colony-lager-content').innerHTML = colonyWarehouseHTML();
-    }
-    
-    /* Render arbeiter view */
-    if (G.colonyMenu === 'arbeiter') {
-      el('colony-arbeiter-content').innerHTML = colonyWorkersHTML();
-    }
+
   }
 
   function cropThumb(crop, cls) {
@@ -753,7 +745,7 @@
         '<button class="link-btn" type="button" data-colony="ship-clear" data-crop="' + s.cropId + '">cancel</button></div>';
     }).join('') : '<div class="ship-row is-empty">No ship at sea.</div>';
 
-    return '<h3 class="colony-warehouse-title">Ship the harvest</h3>' +
+    return colonyWarehouseHTML() + '<h3 class="colony-warehouse-title">Ship the harvest</h3>' +
       '<div class="trade-head">' +
         '<span class="trade-head-meta">Ashore: <b>' + onQuay + '</b> crate(s) · freight ' +
           A.money(crew.SHIP_FEE_PER_CRATE) + '/crate · crossing ' + days + ' day(s) to ' +
@@ -776,12 +768,17 @@
   }
 
   function colonyWarehouseHTML() {
-    var ids = CROPS.map(function (c) { return c.id; }).filter(function (k) { return (G.goods[k] || 0) > 0; });
-    var head = '<h4 class="colony-warehouse-title">Colonial warehouse</h4>';
-    if (!ids.length) return head + '<p class="colony-note">Empty. Harvest a ripe field, then sell at the London or New York trade desk.</p>';
-    return head + ids.map(function (k) {
-      var c = CROP_BY_ID[k];
-      return '<div class="colony-warehouse-row">' + cropThumb(c) + '<span>' + h(c.label) + '</span><b>' + G.goods[k] + '</b></div>';
+    /* The trade tab displays stock from the currently visited colony, not G.goods
+       (the older aggregate inventory used by the deleted Store tab). */
+    var stock=crew.colonyStock();
+    var ids=CROPS.map(function(c){return c.id;}).filter(function(id){return stock[id]>0;});
+    var count=crew.colonyUnits();
+    var head='<h4 class="colony-warehouse-title">Warehouse · '+count+' crate(s) ashore</h4>';
+    if (!ids.length) return head+'<p class="colony-note">No harvested goods yet. Harvest fields to fill the warehouse.</p>';
+    return head+ids.map(function(id){
+      var crop=CROP_BY_ID[id];
+      return '<div class="colony-warehouse-row">'+cropThumb(crop)+
+        '<span>'+h(crop.label)+'</span><b>'+stock[id]+' crate(s)</b></div>';
     }).join('');
   }
 
