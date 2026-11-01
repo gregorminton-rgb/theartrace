@@ -61,6 +61,7 @@
     var tier=A.artTier(w);
     rows.push([window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Wertklasse':'Score class',tier.grade+' · ×'+tier.multiplier+' '+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Zustandspunkte':'condition points')]);
     rows.push(['Rarity', new Array((w.rarity || 0) + 1).join('◆') + ' (' + (w.rarity || 0) + '/10)']);
+    rows.push([window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Handelsorte':'Market cities',A.artMarketCities(w).map(function(id){var c=A.cityById[id];return c?c.name:id;}).join(', ')]);
     if (w.isMasterpiece) rows.push(['Note', 'a known masterpiece']);
     if (w.hasKnownForgery) rows.push(['Note', 'forgeries of this work circulate']);
     return rows;
