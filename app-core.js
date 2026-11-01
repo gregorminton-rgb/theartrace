@@ -596,7 +596,21 @@
     var lot = G.lots[index];
     if (!lot) { log('This auction lot is no longer available.'); return; }
     if (lot.closed) { log('This lot has already been sold. Choose another open lot.'); return; }
-    if (G.portfolio.length >= G.capacity) { log('No crate space left for an auction win.'); return; }
+    if (G.portfolio.length >= G.capacity) {
+      var deRoom = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+      var fullMessage = deRoom
+        ? 'Deine Kunstsammlung ist voll (' + G.portfolio.length + ' von ' + G.capacity + ' Plätzen). Verkaufe ein Gemälde oder kaufe bei der Bank einen weiteren Sammlungsplatz für ' + A.money(CFG.extraSlotPrice) + '.'
+        : 'Your art storage is full (' + G.portfolio.length + ' of ' + G.capacity + ' slots). Sell a painting or buy another storage slot at the bank for ' + A.money(CFG.extraSlotPrice) + '.';
+      log(fullMessage);
+      if (A.shell && A.shell.dialog) A.shell.dialog(
+        deRoom ? 'Kein Platz für weitere Gemälde' : 'No room for another painting',
+        '<p>' + fullMessage + '</p><p>' + (deRoom
+          ? 'Dein Gebot wurde nicht abgegeben. Die Auktion bleibt geöffnet.'
+          : 'No bid was placed. The auction remains open.') + '</p>',
+        [{label:deRoom ? 'Verstanden' : 'OK',primary:true,onClick:function(){A.shell.closeDialog();}}]
+      );
+      return;
+    }
     var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
     var nextBid = lot.bid + step;
     var nextTotal = Math.round(nextBid * (1 + CFG.auctionCommission));
