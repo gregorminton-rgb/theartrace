@@ -1665,3 +1665,12 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .race-detail-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;font-weight:700}
 .race-detail-player dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;margin:10px 0 0;font-size:.82rem}
 .race-detail-player dt{opacity:.75}.race-detail-player dd{margin:0;text-align:right;font-weight:700}
+
+/* Desktop travel: let the map occupy the available workspace instead of a small inset. */
+@media(min-width:1000px){
+ #screen-game:has(#wm-stage) #main{grid-template-columns:minmax(0,1fr)!important}
+ #screen-game:has(#wm-stage) #stage{width:100%;max-width:none;min-width:0}
+ #screen-game:has(#wm-stage) #panel-wrap{width:100%;max-width:none;min-width:0}
+ #screen-game:has(#wm-stage) #market-col{display:none}
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{height:clamp(530px,72dvh,970px);min-height:530px;max-height:none}
+}
