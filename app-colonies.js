@@ -78,7 +78,15 @@
     guatemala: ['kakao','kaffee'],
     jamaica: ['kaffee','tabak'],
     trinidad: ['kakao','kaffee'],
-    ceylon: ['tee','stoffe']
+    ceylon: ['tee','stoffe'],
+    kuba: ['tabak','kaffee'],
+    brazil: ['kaffee','kakao'],
+    bengalen: ['stoffe','tee'],
+    goldcoast: ['kakao','stoffe'],
+    indien: ['tee','stoffe'],
+    indonesien: ['kaffee','tee'],
+    australien: ['stoffe','tee'],
+    rio: ['kaffee','kakao']
   };
   function colonyAllowsCrop(colonyId,cropId){
     return !!(COLONY_CROP_IDS[colonyId] && COLONY_CROP_IDS[colonyId].indexOf(cropId)!==-1);
@@ -496,7 +504,7 @@
     var available = COLONY_CROP_IDS[G.colonyId] || [];
     var cards = CROPS.filter(function(c){return available.indexOf(c.id)!==-1;}).map(function (c) {
       var indicative = cropPrice(c, 'london');
-      return '<div class="crop-tile' + (G.plantCropId === c.id ? ' selected' : '') + '" draggable="true"' +
+      return '<button type="button" class="crop-tile' + (G.plantCropId === c.id ? ' selected' : '') + '" aria-pressed="' + (G.plantCropId === c.id ? 'true' : 'false') + '" draggable="true"' +
         ' data-drag-crop="' + c.id + '" data-colony="arm" data-crop="' + c.id + '"' +
         ' title="Drag onto a free plot, or click then click a plot">' +
         cropThumb(c) +
@@ -504,7 +512,7 @@
         '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
         '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
         '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
-        '</div>';
+        '</button>';
     }).join('');
     return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' +
       '<p class="colony-note">Drag a plate onto a plot to lay out a field. That plot is then yours — and only there can the overseer take over.</p>' + cards;
