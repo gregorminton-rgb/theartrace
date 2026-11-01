@@ -2234,3 +2234,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game .auction-view .art-market-card.row{grid-template-columns:minmax(0,35%) minmax(0,1fr);column-gap:8px}
  #screen-game .auction-view .art-market-card .thumb{min-height:150px}
 }
+
+/* Modal chrome: inset the colored header/body/footer inside the gold keyline.
+   The outer dialog owns the frame; content must never paint over that line. */
+.dialog{box-sizing:border-box;padding:8px;overflow-x:hidden}
+.dialog::before{inset:7px;z-index:2;border-radius:2px}
+.dialog-head,.dialog-body,.dialog-actions{
+ position:relative;box-sizing:border-box;width:100%;max-width:100%;min-width:0;
+}
+.dialog-head{border-radius:2px 2px 0 0}
+.dialog-actions{border-radius:0 0 2px 2px}
+.dialog-body{overflow-wrap:break-word}
+.dialog-body > *{max-width:100%;box-sizing:border-box}
+.dialog-body .form,.dialog-body .race-setup{min-width:0;max-width:100%;box-sizing:border-box}
