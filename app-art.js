@@ -80,6 +80,13 @@
     return pictureFor(alias[city.id] || city.id);
   }
 
+  function syncPlayAreaBackground() {
+    var main = el('main'), backdrop = el('backdrop');
+    if (!main || !backdrop) return;
+    /* Reuse exactly the same current-city/voyage image as the former panorama.
+       For a split sea voyage the destination is used as the ambient backdrop. */
+    main.style.setProperty('--play-city-art', backdrop.style.backgroundImage || 'none');
+  }
   function renderBackdrop() {
     var bd = el('backdrop');
     /* At sea the picture shows the destination, never the port left behind;
@@ -115,12 +122,13 @@
         bd.style.backgroundImage = kpic ? 'url("' + kpic.file + '")' : 'none';
         el('backdrop-caption').textContent = 'Sailing to ' + colony.label;
       }
+      syncPlayAreaBackground();
       return;
     }
     var c = A.city(G.cityId);
     /* Ashore the current place is a plantation, not a city: there is no
        city plate to show, so the last port's backdrop stays put. */
-    if (!c) return;
+    if (!c) { syncPlayAreaBackground(); return; }
     var pic = cityPicture(c);
     /* background-image/-color are set separately on purpose: the `background`
        shorthand would wipe the background-size/position from styles.css. */
@@ -136,6 +144,7 @@
         rgb(c.theme) + ' 45%,' + rgb(c.ground) + ' 120%)';
       el('backdrop-caption').textContent = c.name + ' — ' + c.description + ' · no picture imported yet';
     }
+    syncPlayAreaBackground();
   }
   A.art = { thumb: thumb, pictureFor: pictureFor, cityPicture: cityPicture,
             renderBackdrop: renderBackdrop, IMAGES: IMAGES };
