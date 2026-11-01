@@ -30,17 +30,24 @@
   function open() {
     if (!G.started || !A.shell || !A.shell.dialog) return;
     var s=state(),german=de();
+    var totalEarned=0, totalCompleted=0;
+    ['art','trade'].forEach(function(kind){totalEarned+=s[kind+'Done']*rewards[kind];totalCompleted+=s[kind+'Done'];});
     function card(kind,title,description) {
       return '<section style="margin:0 0 14px;padding:12px;border:1px solid #b99a62;border-radius:10px">' +
         '<img src="images/mission-'+(kind==='art'?'art-collector':'spice-trader')+'.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'" style="display:block;width:100%;max-height:240px;object-fit:cover;border-radius:8px;margin-bottom:10px">' +
         '<strong>'+title+'</strong><p>'+description+'</p><p><b>'+s[kind]+' / '+goals[kind]+'</b> · '+
         (german?'Belohnung: ':'Reward: ')+'<b>+'+A.money(rewards[kind])+'</b></p>'+
         '<progress max="'+goals[kind]+'" value="'+s[kind]+'" style="width:100%"></progress>'+
-        '<small style="display:block;margin-top:6px">'+(german?'Erledigt: ':'Completed: ')+s[kind+'Done']+'</small></section>';
+        '<div class="mission-reward-history" style="margin-top:9px;padding:9px;border-radius:7px;background:rgba(128,96,43,.09)">'+
+          '<strong>'+(german?'Bisherige Belohnungen':'Reward history')+'</strong><div>'+
+          (german?'Abgeschlossen: ':'Completed: ')+s[kind+'Done']+' × '+A.money(rewards[kind])+'</div><div><b>'+
+          (german?'Insgesamt erhalten: ':'Total received: ')+A.money(s[kind+'Done']*rewards[kind])+'</b></div></div></section>';
     }
     A.shell.dialog(german?'Deine Aufträge':'Your missions',
       '<p>'+(german?'Ohne Zeitlimit. Beide Aufträge kannst du immer wieder erledigen; das Geld erhältst du sofort.':
         'No time limit. Repeat both missions and receive cash immediately.')+'</p>'+
+      '<p class="mission-reward-total"><b>'+(german?'Alle Aufträge bisher: ':'All missions so far: ')+totalCompleted+
+      (german?' abgeschlossen · ':' completed · ')+(german?'insgesamt ':'total ')+A.money(totalEarned)+'</b></p>'+
       card('art',german?'🖼️ Kunstsammler':'🖼️ Art collector',
         german?'Kaufe oder ersteigere 2 Gemälde.':'Buy or win 2 paintings.')+
       card('trade',german?'🚢 Gewürzhändler':'🚢 Colonial trader',
