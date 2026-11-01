@@ -594,8 +594,9 @@
       return;
     }
     var lot = G.lots[index];
-    if (!lot || lot.closed) return;
-    if (G.portfolio.length >= G.capacity) { log('No crate space left for a auction win.'); return; }
+    if (!lot) { log('This auction lot is no longer available.'); return; }
+    if (lot.closed) { log('This lot has already been sold. Choose another open lot.'); return; }
+    if (G.portfolio.length >= G.capacity) { log('No crate space left for an auction win.'); return; }
     var step = Math.max(1, Math.round(lot.bid * CFG.auctionIncrementRatio));
     var nextBid = lot.bid + step;
     var nextTotal = Math.round(nextBid * (1 + CFG.auctionCommission));
