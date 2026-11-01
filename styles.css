@@ -2291,3 +2291,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:34px;padding:4px 7px}
  #colony #colony-missions,#colony #colony-weekly{min-height:32px}
 }
+
+/* Revised plantation scenery: image belongs in the HEADER, never behind fields.
+   Keep the field board and the work area solid enough for visual inspection. */
+#colony .colony-screen::before{content:none}
+#colony .colony-content{background:rgba(229,214,178,.93)}
+#colony .colony-bar{
+ background-image:linear-gradient(90deg,rgba(60,38,18,.84),rgba(65,39,18,.66)),var(--colony-scene-art,none);
+ background-size:cover;background-position:center 46%;background-repeat:no-repeat;
+}
+#colony .colony-grid{background-size:auto;background-position:initial;background-repeat:initial}
+#colony .plot--empty{background:rgba(242,234,216,.36)}
+#colony .plot--planted{background:rgba(255,248,232,.88);backdrop-filter:none}
+#colony .colony-stack{background:rgba(255,249,233,.97)}
+/* The travel map itself is a transparent Pixi canvas over its host.
+   Place a very subtle photo ON THE HOST so it shows through the sea,
+   without washing out the colored coastlines, labels and pins. */
+#screen-game #wm-stage.worldmap--canvas,#colony #colony-wm-stage.worldmap--canvas{
+ background-image:linear-gradient(rgba(20,72,102,.84),rgba(20,84,113,.83)),var(--play-city-art,none);
+ background-position:center;background-size:cover;background-repeat:no-repeat;
+}
+#screen-game:has(#wm-stage) #panel-wrap{background-image:none}
