@@ -2036,3 +2036,36 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 @media(min-width:761px) and (max-width:1050px){
  .colony-view--plantage .colony-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 }
+
+/* Unified action language for the whole game: GREEN confirms/proceeds,
+   YELLOW cancels/goes back, RED signals irreversible danger. */
+:root{
+ --action-green-top:#9ce35b;
+ --action-green-bottom:#438b27;
+ --action-green-edge:#28601d;
+ --action-yellow-top:#ffeb8d;
+ --action-yellow-bottom:#e5b742;
+ --action-yellow-edge:#9a6e19;
+}
+.btn.primary,.dialog-actions .btn.primary,.dialog--setup .dialog-actions .btn.primary{
+ background:linear-gradient(180deg,var(--action-green-top),var(--action-green-bottom));
+ border-color:var(--action-green-edge);color:#143b0d;
+ text-shadow:0 1px 0 #d5ffaeaa;
+ box-shadow:inset 0 2px 0 #ffffff85,0 3px 0 var(--action-green-edge),0 6px 12px #36220a30;
+}
+.btn.cancel,.dialog-actions .btn.cancel,.dialog--setup .dialog-actions .btn.cancel{
+ background:linear-gradient(180deg,var(--action-yellow-top),var(--action-yellow-bottom));
+ border-color:var(--action-yellow-edge);color:#493108;text-shadow:0 1px 0 #fff7c688;
+ box-shadow:inset 0 2px 0 #ffffffa0,0 3px 0 var(--action-yellow-edge),0 6px 12px #36220a24;
+}
+.btn.danger,.dialog-actions .btn.danger{
+ background:linear-gradient(180deg,#fc967c,#d8523b);
+ border-color:#922b21;color:#fff9f1;
+ box-shadow:inset 0 2px 0 #ffffff70,0 3px 0 #922b21;
+}
+.dialog--setup .dialog-actions .btn:not(.primary):not(.cancel):not(.danger){
+ background:linear-gradient(180deg,#f7e9c9,#e4cfaa);
+ border-color:#a3814e;color:#493108;
+}
+.btn.primary:active,.btn.cancel:active,.btn.danger:active{transform:translateY(2px);box-shadow:inset 0 2px 0 #ffffff66,0 1px 0 currentColor}
+.btn.primary:focus-visible,.btn.cancel:focus-visible,.btn.danger:focus-visible{outline:3px solid #224d78;outline-offset:3px}
