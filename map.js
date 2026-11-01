@@ -1069,6 +1069,7 @@
       setLabels: setLabels,
       setLevel: setLevel,
       resetZoom: resetZoom,
+      getView: function(){return {level:api.level,z:zoomView.z,cx:zoomView.cx,cy:zoomView.cy};},
       refresh: refresh,
       destroy: destroy
     };
@@ -1080,8 +1081,13 @@
     /* Start mobile viewers closer to the land, without changing viewport size.
        Pinch, drag, wheel and the Europe/World selector retain their controls. */
     function defaultZoom(){return window.matchMedia && window.matchMedia('(max-width: 760px)').matches ? 1.35 : 1;}
-    var zoomView = { z: defaultZoom(), cx: 0.5, cy: 0.5 };
+    var saved = opts.initialView;
+    var zoomView = saved && saved.level === api.level &&
+      isFinite(saved.z) && isFinite(saved.cx) && isFinite(saved.cy) ?
+      { z: saved.z, cx: saved.cx, cy: saved.cy } :
+      { z: defaultZoom(), cx: 0.5, cy: 0.5 };
     var ZMIN = 1, ZMAX = 6;
+    clampView();
 
     /* keep the view centre inside the plate, so the zoom never shows
        empty space beyond the map edge */
