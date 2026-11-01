@@ -174,7 +174,7 @@
     }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});
   }
   function freeWork(temporary) {
-    var choices=A.works.filter(function(w){return !ownedWork(w.id) && !offeredWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
+    var choices=A.works.filter(function(w){return !ownedWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
     return choices.length?G.rng.weighted(choices,function(x){return 11-x.rarity;}):null;
   }
   /* Old saves may contain duplicated listings; never sell an already-owned original. */
