@@ -102,6 +102,7 @@
     G.reputation = CFG.startingReputation;
     G.capacity = CFG.startingPortfolioCapacity;
     G.portfolio = [];
+    G.weeklySeen = 0;
     G.missions = { art:0, trade:0, artDone:0, tradeDone:0 };
     G.stock = {};
     G.restockDay = {};
@@ -452,12 +453,7 @@
     log('Arrived in ' + to.name + ' on day ' + G.day + '.');
     restockIfNeeded();
     syncAuction();
-    /* Auto-day is a "carry me across" switch, so docking switches it off; the
-       player wanted the crossing, not the days spent standing in the new
-       port. The colony branch above stops the clock for the same reason.
-       stopClock() also clears the interval, so the tick that landed here can
-       never roll one further day into the arrival. */
-    stopClock();
+    /* Keep the player's Auto choice when docking in a regular city. */
   }
 
   /* The one passage rule for every crossing: city to city, city to plantation,
@@ -827,8 +823,7 @@
       G.history.unshift({ day: G.day, headline: ev.headline, body: ev.body, ends: ev.endDay,
                           category: ev.category, scope: ev.scope, multiplier: ev.multiplier });
       log('NEWS: ' + ev.headline + ' (' + A.pct(ev.multiplier - 1) + ', until day ' + ev.endDay + ')');
-      /* Player must be able to respond to market-changing news. */
-      if (G.clockWanted && A.shell && A.shell.stopClock) A.shell.stopClock();
+      /* Ordinary news is informational and must not silently switch Auto off. */
     }
 
     restockIfNeeded();
