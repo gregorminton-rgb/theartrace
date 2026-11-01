@@ -2201,3 +2201,36 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .dialog--tutorial .tutorial-collage{right:5px;top:5px;max-width:47%;padding:3px;gap:4px}
  .dialog--tutorial .tutorial-collage img{border-width:2px;max-width:calc(50% - 2px);max-height:76px}
 }
+
+/* Auction lots: framed painting occupies the whole left column; the title,
+   tags, prices and actions stack tightly in the right column. */
+#screen-game .auction-view .art-market-card.row{
+ display:grid;grid-template-columns:minmax(0,37%) minmax(0,1fr);
+ grid-template-rows:repeat(5,auto);align-content:start;
+ column-gap:10px;row-gap:5px;padding:10px;
+}
+#screen-game .auction-view .art-market-card .row-main{display:contents}
+#screen-game .auction-view .art-market-card .row-main > div:not(.thumb){
+ grid-column:2;grid-row:1;min-width:0;align-self:start
+}
+#screen-game .auction-view .art-market-card .thumb{
+ grid-column:1;grid-row:1 / span 5;width:100%;height:100%;min-height:175px;
+ max-width:none;align-self:stretch;box-sizing:border-box;
+}
+#screen-game .auction-view .art-market-card .row-tags,
+#screen-game .auction-view .art-market-card .row-num,
+#screen-game .auction-view .art-market-card .auction-quiz-inline,
+#screen-game .auction-view .art-market-card .row-btns{grid-column:2;min-width:0;margin:0}
+#screen-game .auction-view .art-market-card .row-tags{grid-row:2}
+#screen-game .auction-view .art-market-card .row-num{grid-row:3;align-self:start}
+#screen-game .auction-view .art-market-card .auction-quiz-inline{grid-row:4}
+#screen-game .auction-view .art-market-card .row-btns{grid-row:5}
+#screen-game .auction-view .art-market-card .row-num .est{display:block}
+@media(max-width:760px){
+ #screen-game .auction-view .art-market-card.row{grid-template-columns:minmax(0,38%) minmax(0,1fr);column-gap:10px;row-gap:4px;padding:9px}
+ #screen-game .auction-view .art-market-card .thumb{min-height:170px}
+}
+@media(max-width:365px){
+ #screen-game .auction-view .art-market-card.row{grid-template-columns:minmax(0,35%) minmax(0,1fr);column-gap:8px}
+ #screen-game .auction-view .art-market-card .thumb{min-height:150px}
+}
