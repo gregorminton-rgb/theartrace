@@ -82,7 +82,8 @@
     var searchCount=24;
     for(var k=0;k<searchCount;k++){
       var w=A.works[Math.floor(rand(p,k+17)*A.works.length)];
-      if(!w)continue;
+      if(!w || (A.app&&A.app.ownedWork&&A.app.ownedWork(w.id)))continue;
+      if(possibilities.some(function(q){return q.id===w.id;}))continue;
       var inst={condition:Math.max(.55,Math.min(1,w.typicalCondition||.8)),
         authenticity:'Unexamined',isFake:false};
       var idx=A.sliceIndex(G.market,c,A.workEpoch(w));
@@ -117,9 +118,31 @@
     if (!isFinite(condition)) condition = 0;
     return condition >= .90 ? 3 : condition >= .80 ? 2 : 1;
   }
-  function collectionPoints(portfolio) {
-    return (portfolio || []).reduce(function(sum, inst){ return sum + artworkPoints(inst); }, 0);
+  function collectionBreakdown(portfolio) {
+    var base=0, bonus=0, groups={}, catalogue={};
+    A.works.forEach(function(w){catalogue[w.artistId]=(catalogue[w.artistId]||0)+1;});
+    (portfolio||[]).forEach(function(inst){
+      var w=A.work(inst.defId);if(!w)return;
+      if(!groups[w.artistId])groups[w.artistId]={works:{},points:0};
+      /* A duplicate in a legacy save never counts as a second original. */
+      if(groups[w.artistId].works[inst.defId])return;
+      groups[w.artistId].works[inst.defId]=true;
+      var pts=artworkPoints(inst);
+      groups[w.artistId].points+=pts;base+=pts;
+    });
+    var sets=[];
+    Object.keys(groups).forEach(function(id){
+      var group=groups[id],held=Object.keys(group.works).length, total=catalogue[id]||0;
+      var factor=total>=3&&held>=total?2:(total>=2&&held>=2?1.3:1);
+      if(factor>1) {
+        var gain=Math.round(group.points*(factor-1)*10)/10;
+        bonus+=gain;
+        sets.push({artistId:id,held:held,total:total,bonus:gain,factor:factor});
+      }
+    });
+    return {base:base,bonus:Math.round(bonus*10)/10,total:Math.round((base+bonus)*10)/10,sets:sets};
   }
+  function collectionPoints(portfolio){return collectionBreakdown(portfolio).total;}
   function standings(){
     ensure();
     return [{id:0,name:G.name||'Player',type:'human',pictures:G.portfolio.length,points:collectionPoints(G.portfolio),
@@ -183,5 +206,5 @@
     if(target && document.getElementById('race-standings') && document.getElementById('race-standings').contains(target))openRaceDetails();
   });
   A.escapeRace=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-  A.race={init:init,ensure:ensure,advance:advance,standings:standings,draw:draw,artworkPoints:artworkPoints,collectionPoints:collectionPoints};
+  A.race={init:init,ensure:ensure,advance:advance,standings:standings,draw:draw,artworkPoints:artworkPoints,collectionPoints:collectionPoints,collectionBreakdown:collectionBreakdown};
 })(window);
