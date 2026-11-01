@@ -1758,3 +1758,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 @media (max-width:760px){
  .city-travel-destinations,#colony-dest-list{display:grid;grid-template-columns:minmax(0,1fr);max-height:none;overflow:visible}
 }
+
+/* Bright illustrated travel UI; destinations feel like tactile game pieces. */
+.worldmap--canvas{border:3px solid #ad8747;border-radius:14px;box-shadow:0 0 0 2px #624725,0 6px 18px #1e281b55;background:#2079a0}
+.wm-legend{border-radius:12px;background:rgba(42,63,49,.91);border:1px solid #dbbe79;box-shadow:0 3px 0 #283a2c}
+.wm-level{border-radius:9px;font-weight:800;border:2px solid #c6a467}
+.city-travel-destinations .dest-row,#colony-dest-list .dest-row{background:linear-gradient(#fff5d6,#e5cd98);border:2px solid #b48c4a;box-shadow:0 3px 0 #96723e;transition:transform .12s,background .12s}
+.city-travel-destinations .dest-row:hover,#colony-dest-list .dest-row:hover{transform:translateY(-2px);background:#fff1b9}
+.city-travel-destinations .dest-row:focus-visible,#colony-dest-list .dest-row:focus-visible{outline:3px solid #256e97;outline-offset:3px}

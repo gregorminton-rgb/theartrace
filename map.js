@@ -50,7 +50,7 @@
          Window chosen so all six European cities sit clear of the frame. */
       lonSpan: 36,
       sea: ['#1b6c94', '#0f4a70', '#093352'],
-      land: '#d8b47a', coast: '#4e2f10',
+      land: '#a8ba78', coast: '#4e5930',
       city: '#8a2525', trade: '#b3872c', colony: '#9e2a2b',
       ocean: [['ATLANTIC  OCEAN', -18, 42], ['MEDITERRANEAN', 16, 37],
               ['BLACK  SEA', 34, 43]],
@@ -60,7 +60,7 @@
       id: 'world',
       lat0: 76, lat1: -56, cell: 20, lon0: 0,
       sea: ['#1f7396', '#114d6e', '#0a3450'],
-      land: '#d4a86a', coast: '#5a3a16',
+      land: '#b4c582', coast: '#52633a',
       city: '#1a2b3c', trade: '#b3872c', colony: '#9e2a2b',
       ocean: [['ATLANTIC  OCEAN', -32, 8], ['PACIFIC  OCEAN', -140, 0],
               ['INDIAN  OCEAN', 78, -22]],
@@ -169,9 +169,14 @@
       [-62, -4, 11, 5], [22, 0, 7, 5], [114, 0, 3.5, 2.5], [102, 0, 2.5, 3.5],
       [-88, 15, 3.5, 2], [-3, 7, 4, 2.5], [-72, -8, 4, 3]
     ] },
+    { color: 0x78a660, blobs: [            /* green temperate valleys */
+      [8, 49, 8, 3.5], [18, 46, 7, 3], [23, 54, 9, 4], [-3, 53, 4, 4],
+      [8, 58, 5, 3], [14, 61, 4, 2], [27, 57, 5, 3], [11, 42, 3, 3]
+    ] },
     { color: 0xf6f3e8, blobs: [            /* snow and ice */
       [-42, 72, 11, 5], [-100, 70, 14, 4.5], [100, 70, 22, 4.5],
-      [-150, 64, 5, 2.5], [20, 68, 5, 2.5], [85, 32, 7, 2]
+      [-150, 64, 5, 2.5], [20, 68, 5, 2.5], [85, 32, 7, 2],
+      [9, 65, 4, 4], [19, 67, 5, 4], [9, 46.7, 2.9, 1.1], [79, 30, 10, 2]
     ] }
   ];
 
@@ -780,8 +785,8 @@
     }
 
     var terrain = new PIXI.Graphics();
-    /* terrain zones are only drawn on the world plate; Europe stays a clean base */
-    if (lv.id === 'world') {
+    /* Draw the same biomes on both maps so Europe no longer looks flat. */
+    {
       for (var z = 0; z < TERRAIN.length; z++) {
         terrain.beginFill(TERRAIN[z].color, 1);
         for (var b = 0; b < TERRAIN[z].blobs.length; b++) {
@@ -792,7 +797,41 @@
     }
     /* the base tone is visible; the terrain zones are clipped to it */
     g.addChild(fill);
+    /* Land-only mask: biome blobs must not paint over surrounding seas. */
+    var terrainMask = new PIXI.Graphics();
+    for (r = 0; r < RINGS.length; r++) {
+      if (!visibleRing(cam, RINGS[r])) continue;
+      terrainMask.beginFill(0xffffff, 1);
+      terrainMask.drawPolygon(flatten(toPixels(cam, RINGS[r])));
+      terrainMask.endFill();
+    }
+    g.addChild(terrainMask);
+    terrain.mask = terrainMask;
     g.addChild(terrain);
+    /* Playful hand-drawn mountain crests and snowy ridges.
+       Map coordinates preserve their positions through zoom and pan. */
+    var relief = new PIXI.Graphics();
+    var ranges = [
+      [9.5,46.7,7], [11.6,47.4,6], [8.3,46.1,5],  /* Alps */
+      [7.8,61.5,7], [11,64,7], [15,67,6],         /* Norway */
+      [-3.7,57,5], [-4.5,56.6,4],                 /* Highlands */
+      [-107,39,8], [-112,44,7], [-71,-33,8],      /* Rockies / Andes */
+      [86,28,8], [79,32,7], [44,42,5], [15,43,4] /* Himalaya / Caucasus / Balkans */
+    ];
+    ranges.forEach(function(v){
+      var p=cam.fromMap((v[0]+180)/360,(v[1]+90)/180);
+      if(p.x < -20 || p.x > cam.W+20 || p.y < -20 || p.y > cam.H+20)return;
+      var sz=Math.max(3.5,Math.min(13,v[2]*Math.sqrt(cam.z)));
+      relief.lineStyle(1,0x51614b,0.8);
+      relief.beginFill(0x738876,0.94);
+      relief.drawPolygon([p.x-sz,p.y+sz*.65,p.x,p.y-sz,p.x+sz,p.y+sz*.65]);
+      relief.endFill();
+      relief.lineStyle(0);
+      relief.beginFill(0xf8faf4,0.98);
+      relief.drawPolygon([p.x-sz*.36,p.y-sz*.14,p.x,p.y-sz,p.x+sz*.4,p.y-sz*.11,p.x+sz*.08,p.y-sz*.27,p.x-sz*.06,p.y-sz*.17]);
+      relief.endFill();
+    });
+    g.addChild(relief);
 
     /* coastline ink, a faint highlight and lakes sit above the zones; they go
        in their own child, since a Graphics draws its own geometry before its
