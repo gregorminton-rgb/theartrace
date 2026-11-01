@@ -2234,3 +2234,23 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game .auction-view .art-market-card.row{grid-template-columns:minmax(0,35%) minmax(0,1fr);column-gap:8px}
  #screen-game .auction-view .art-market-card .thumb{min-height:150px}
 }
+
+/* Modal chrome: inset the colored header/body/footer inside the gold keyline.
+   The outer dialog owns the frame; content must never paint over that line. */
+.dialog{
+ box-sizing:border-box;padding:9px;overflow-x:hidden;
+ /* The inset frame is painted by the dialog itself, not a positioned pseudo-element
+    whose bottom can end early when long mission dialogs scroll. */
+ box-shadow:0 24px 60px rgba(0,0,0,.55),
+            inset 0 0 0 7px var(--card),
+            inset 0 0 0 8px var(--gold);
+}
+.dialog::before{content:none}
+.dialog-head,.dialog-body,.dialog-actions{
+ position:relative;box-sizing:border-box;width:100%;max-width:100%;min-width:0;
+}
+.dialog-head{border-radius:2px 2px 0 0}
+.dialog-actions{border-radius:0 0 2px 2px}
+.dialog-body{overflow-wrap:break-word}
+.dialog-body > *{max-width:100%;box-sizing:border-box}
+.dialog-body .form,.dialog-body .race-setup{min-width:0;max-width:100%;box-sizing:border-box}
