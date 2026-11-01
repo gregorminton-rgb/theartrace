@@ -2254,3 +2254,40 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog-body{overflow-wrap:break-word}
 .dialog-body > *{max-width:100%;box-sizing:border-box}
 .dialog-body .form,.dialog-body .race-setup{min-width:0;max-width:100%;box-sizing:border-box}
+
+/* Colony landscapes: show the existing imported artwork behind the desk. */
+#colony .colony-screen{position:relative;isolation:isolate;background:transparent}
+#colony .colony-screen::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background-image:linear-gradient(rgba(241,227,194,.46),rgba(224,207,169,.58)),var(--colony-scene-art,none);
+ background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+#colony .colony-screen > *{position:relative;z-index:1}
+#colony .colony-content{background:transparent}
+#colony .colony-grid{background-repeat:no-repeat}
+#colony .plot--empty{background-color:rgba(245,236,207,.25)}
+#colony .plot--planted{background-color:rgba(255,248,232,.58)}
+
+/* The travel map keeps its legible geography; a faint atmospheric image
+   surrounds the map, never masks the colored routes or selectable pins. */
+#screen-game:has(#wm-stage) #panel-wrap{
+ background-image:linear-gradient(rgba(242,229,195,.74),rgba(242,229,195,.81)),var(--play-city-art,none);
+ background-size:cover;background-position:center;border-radius:12px;
+}
+#screen-game:has(#wm-stage) #wm-stage{box-shadow:0 0 0 2px rgba(98,71,37,.8),0 5px 18px rgba(30,40,27,.35)}
+
+/* Missions control: align with adjacent HUD actions, with a visible focus area. */
+#screen-game #hud-missions,#screen-game #hud-weekly{
+ display:inline-flex;align-items:center;justify-content:center;
+ align-self:center;vertical-align:middle;box-sizing:border-box;
+ min-height:34px;line-height:1.1;margin:0;white-space:nowrap;cursor:pointer;
+}
+#colony .colony-bar-stats{align-items:center}
+#colony #colony-missions,#colony #colony-weekly{
+ display:inline-flex;align-items:center;justify-content:center;
+ align-self:center;min-height:34px;line-height:1.1;margin:0;cursor:pointer;
+}
+@media(max-width:760px){
+ #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:34px;padding:4px 7px}
+ #colony #colony-missions,#colony #colony-weekly{min-height:32px}
+}
