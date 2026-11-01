@@ -129,8 +129,10 @@
 
     var enriched = window.ART_EXTRA_STORIES && window.ART_EXTRA_STORIES[id];
     var extraStory = enriched ? '<section class="av-extra"><h4>' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Hintergrundgeschichte' : 'Behind the painting') + '</h4><p>' + h(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? enriched.de : enriched.en) + '</p><a target="_blank" rel="noopener noreferrer" href="' + h(enriched.source) + '">' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Museumsquelle ansehen' : 'Museum source') + '</a></section>' : '';
-    var story = note.story ? '<p class="av-story">' + h(note.story) + '</p>' : '<p class="av-story">' + h(w.description || '') + '</p>';
-    var aside = note.note ? '<p class="av-note">' + h(note.note) + '</p>' : '';
+    var localized = window.ArtRaceArtI18n;
+    var storyText = localized && localized.translateNote ? localized.translateNote(id,'story',note.story || w.description || '') : (note.story || w.description || '');
+    var story = '<p class="av-story">' + h(storyText) + '</p>';
+    var aside = note.note ? '<p class="av-note">' + h(localized && localized.translateNote ? localized.translateNote(id,'note',note.note) : note.note) + '</p>' : '';
 
     var facts = '<dl class="av-facts">' + factsRows(w, artist).map(function (r) {
       return '<dt>' + h(artText(r[0])) + '</dt><dd>' + h(artText(r[1])) + '</dd>';
