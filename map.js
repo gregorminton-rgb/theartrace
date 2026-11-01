@@ -1038,7 +1038,10 @@
     var dead = false;
     var cam = null;
     /* zoom state: factor z, and the plate point (0..1) held at the centre */
-    var zoomView = { z: 1, cx: 0.5, cy: 0.5 };
+    /* Start mobile viewers closer to the land, without changing viewport size.
+       Pinch, drag, wheel and the Europe/World selector retain their controls. */
+    function defaultZoom(){return window.matchMedia && window.matchMedia('(max-width: 760px)').matches ? 1.35 : 1;}
+    var zoomView = { z: defaultZoom(), cx: 0.5, cy: 0.5 };
     var ZMIN = 1, ZMAX = 6;
 
     /* keep the view centre inside the plate, so the zoom never shows
@@ -1068,7 +1071,7 @@
     }
 
     function resetZoom() {
-      zoomView.z = 1;
+      zoomView.z = defaultZoom();
       zoomView.cx = 0.5;
       zoomView.cy = 0.5;
       if (W && H) redrawAll();
