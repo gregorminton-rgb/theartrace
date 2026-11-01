@@ -338,17 +338,20 @@
     var Map = window.ArtRaceMap;
     var rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
-    var cx = (ev.clientX - rect.left) / rect.width;
-    var cy = (ev.clientY - rect.top) / rect.height;
-    var best = null, bestD = Infinity;
-    PLACES.forEach(function (p) {
-      var q = Map.project(p.mapX, p.mapY);
-      if (q.x < -0.05 || q.x > 1.05 || q.y < -0.05 || q.y > 1.05) return;
-      var d = Math.sqrt((q.x - cx) * (q.x - cx) + (q.y - cy) * (q.y - cy));
-      if (d < bestD) { bestD = d; best = p; }
+    var x=ev.clientX-rect.left,y=ev.clientY-rect.top;
+    var best=null,bestD=Infinity;
+    PLACES.forEach(function(p){
+      var q=Map.project(p.mapX,p.mapY);
+      if(q.x<0||q.x>1||q.y<0||q.y>1)return;
+      var dx=q.x*rect.width-x,dy=q.y*rect.height-y;
+      var d=Math.hypot(dx,dy);
+      if(d<bestD){bestD=d;best=p;}
     });
-    /* 4.5% of the plate: about a fingertip at phone size */
-    if (best && bestD <= 0.045) {
+    /* Finger-sized screen-space hit area; unlike normalized plate distance,
+       this remains predictable on tall phones and ultra-wide monitors. */
+    var touch=ev.pointerType==='touch'||window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+    var radius=touch?30:18;
+    if(best&&bestD<=radius){
       G.mapPick = { x: best.mapX, y: best.mapY };
       /* a colony is off the Europe plate: show the world so the new line is
          actually on screen */
