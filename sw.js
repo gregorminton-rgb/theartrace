@@ -1,8 +1,9 @@
 // Offline support for The Great Art Race.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'artrace-v18-20261101-auctionnosort1';
-const CORE_CACHE = `${CACHE_VERSION}-core`;
-const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const CACHE_VERSION = 'artrace-v17-20261101-quizde1';
+const AUCTION_CACHE_SUFFIX = '-auctionnosort1';
+const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
+const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 
 // Small code and core assets are cached on install so the game runs offline.
 const CORE_ASSETS = [
