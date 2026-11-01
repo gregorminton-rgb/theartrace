@@ -1638,3 +1638,30 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .market-explainer{font:.76rem/1.45 var(--sans);margin:7px 0 10px;color:var(--ink-soft);background:rgba(255,245,219,.65);padding:8px;border-radius:7px}
 
 .crop-market-change{display:inline-block;font-size:.74rem;font-weight:700;white-space:nowrap}.crop-market-change.gain{color:#246b32}.crop-market-change.loss{color:#9b3030}.trade-price .crop-market-change{display:block;margin-top:3px}
+
+/* Four players in a modal; only one's own compact score above the map on phones. */
+.race-self-trigger{display:none}
+.race-desktop-rows{display:contents}
+@media(max-width:780px){
+ .race-standings{display:block;padding:4px 8px}
+ .race-desktop-rows{display:none}
+ .race-self-trigger{width:100%;display:flex;align-items:center;gap:9px;text-align:left;background:#385b33;color:#fdf0cf;border:1px solid #a3cf82;border-radius:9px;padding:6px 10px;min-height:43px;cursor:pointer}
+ .race-self-avatar{font-size:1.1rem;line-height:1}
+ .race-self-info{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+ .race-self-info strong{font-size:.79rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .race-self-info small{font-size:.72rem;white-space:nowrap}
+ .race-self-chevron{font-size:1.1rem}
+ /* Override older width-based map-height rules, which made the mobile map too shallow. */
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{height:clamp(410px,70dvh,760px);min-height:410px;max-height:none}
+}
+@media(max-width:780px) and (orientation:landscape){
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{height:clamp(260px,74dvh,550px);min-height:260px}
+}
+.dialog.race-details-dialog{width:min(640px,calc(100vw - 16px));max-height:90dvh}
+.race-details-dialog .dialog-body{padding:12px;overflow:auto}
+.race-details-intro{font-size:.82rem;line-height:1.4;margin-bottom:12px}
+.race-detail-player{border:1px solid #b79b70;border-radius:10px;padding:11px;margin:0 0 10px;background:#f6e9ce}
+.race-detail-player.is-human{border-color:#6b9b63;background:#e6efdf}
+.race-detail-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;font-weight:700}
+.race-detail-player dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;margin:10px 0 0;font-size:.82rem}
+.race-detail-player dt{opacity:.75}.race-detail-player dd{margin:0;text-align:right;font-weight:700}

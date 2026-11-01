@@ -130,18 +130,58 @@
         net:p.cash};
     })).sort(function(a,b){return b.points-a.points || b.pictures-a.pictures || b.net-a.net;});
   }
+  function isGerman(){return !!(window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de');}
+  function safe(value){return A.escapeRace(value==null?'':String(value));}
+  function placeName(id){
+    var c=A.cityById && A.cityById[id];
+    return c ? c.name : String(id||'–');
+  }
+  function fullStandingsHTML(){
+    var de=isGerman(),rows=standings();
+    return '<div class="race-details-intro">'+(de?'Rangfolge nach Sammlungspunkten. Bei Gleichstand entscheiden Gemäldeanzahl und Bargeld.':'Ranked by collection points; painting count and cash break ties.')+'</div>'+
+      rows.map(function(p,i){
+        var source=p.type==='human'?G:(G.rivals||[]).filter(function(r){return r.id===p.id;})[0]||{};
+        var journey=source.travelDays>0?(de?'Unterwegs · noch '+source.travelDays+' Tage':'Travelling · '+source.travelDays+' days remaining'):(de?'Am Standort':'At location');
+        return '<section class="race-detail-player'+(p.type==='human'?' is-human':'')+'">'+
+          '<div class="race-detail-heading"><strong>'+(i+1)+'. '+safe(p.name)+'</strong><span>'+p.points+' ★ · '+p.pictures+' 🖼️</span></div>'+
+          '<dl><dt>'+(de?'Spieler':'Player')+'</dt><dd>'+(p.type==='human'?(de?'Du':'You'):(de?'Computer':'Computer'))+'</dd>'+
+          '<dt>'+(de?'Aufenthaltsort':'Location')+'</dt><dd>'+safe(placeName(p.city))+'</dd>'+
+          '<dt>'+(de?'Status':'Status')+'</dt><dd>'+safe(journey)+'</dd>'+
+          '<dt>'+(de?'Sammlungspunkte':'Collection points')+'</dt><dd>'+p.points+'</dd>'+
+          '<dt>'+(de?'Gemälde':'Paintings')+'</dt><dd>'+p.pictures+'</dd>'+
+          '<dt>'+(de?'Bargeld':'Cash')+'</dt><dd>'+A.money(p.cash)+'</dd>'+
+          '<dt>'+(de?'Lagerkapazität':'Crate capacity')+'</dt><dd>'+Number(source.capacity||0)+'</dd>'+
+          '<dt>'+(de?'Ansehen':'Reputation')+'</dt><dd>'+Number(source.reputation||0)+'</dd>'+
+          '<dt>'+(de?'Plantagen/Felder':'Plantations / fields')+'</dt><dd>'+p.colonies+'</dd></dl></section>';
+      }).join('');
+  }
+  function openRaceDetails(){
+    if(!A.shell || !A.shell.dialog)return;
+    var de=isGerman();
+    A.shell.dialog(de?'Alle vier Spieler':'All four players',fullStandingsHTML(),
+      [{label:de?'Schließen':'Close',primary:true,onClick:function(){A.shell.closeDialog();}}],'race-details-dialog');
+  }
   function draw() {
     var root=document.getElementById('race-standings');
     if(!root || !G.started)return;
-    var rows=standings();
-    root.innerHTML='<div class="race-title">Art Race · Day '+Math.min(G.day,G.careerDays)+' / '+G.careerDays+'</div>'+
-      rows.map(function(p,i){
+    var rows=standings(),self=rows.filter(function(p){return p.type==='human';})[0];
+    var rank=rows.indexOf(self)+1, de=isGerman();
+    root.innerHTML='<button class="race-self-trigger" type="button" aria-label="'+
+      (de?'Alle vier Spieler und Rangliste anzeigen':'View all four players and standings')+'">'+
+      '<span class="race-self-avatar">♟</span><span class="race-self-info"><strong>'+safe(self.name)+
+      '</strong><small>'+(de?'Platz ':'Rank ')+rank+'/4 · '+self.points+' ★ · '+self.pictures+
+      ' 🖼️</small></span><span class="race-self-chevron">⌄</span></button>'+
+      '<div class="race-desktop-rows">'+rows.map(function(p,i){
         return '<div class="race-player'+(p.type==='human'?' is-human':'')+'">'+
-          '<span class="race-rank">'+(i+1)+'.</span><span class="race-person">'+A.escapeRace(p.name)+
-          '<small>'+A.escapeRace(p.city)+'</small></span><strong>'+p.points+' ★ <small>('+p.pictures+' 🖼️)</small></strong>'+
+          '<span class="race-rank">'+(i+1)+'.</span><span class="race-person">'+safe(p.name)+
+          '<small>'+safe(placeName(p.city))+'</small></span><strong>'+p.points+' ★ <small>('+p.pictures+' 🖼️)</small></strong>'+
           '<span class="race-money">'+A.money(p.cash)+'</span></div>';
-      }).join('');
+      }).join('')+'</div>';
   }
+  document.addEventListener('click',function(ev){
+    var target=ev.target.closest('.race-self-trigger');
+    if(target && document.getElementById('race-standings') && document.getElementById('race-standings').contains(target))openRaceDetails();
+  });
   A.escapeRace=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
   A.race={init:init,ensure:ensure,advance:advance,standings:standings,draw:draw,artworkPoints:artworkPoints,collectionPoints:collectionPoints};
 })(window);
