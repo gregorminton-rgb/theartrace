@@ -105,8 +105,11 @@
       'What medium was it painted in?':'Mit welcher Technik wurde es gemalt?',
       'What kind of picture is it?':'Um welche Bildgattung handelt es sich?'
     })[question]||question;
+    /* Quiz options remain in their original order and language in the save.
+       Translate only the visible labels; correctness is checked by index. */
+    var translateAnswer=window.ArtRaceArtI18n&&window.ArtRaceArtI18n.translate;
     var buttons=q.options.map(function(option,choice){
-      return {label:String(option),onClick:function(){
+      return {label:String(de&&translateAnswer?translateAnswer(option):option),onClick:function(){
         act(answerLotQuiz)(index,choice);
         auctionQuizDialog(index);
       }};
