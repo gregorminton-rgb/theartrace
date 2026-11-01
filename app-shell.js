@@ -650,7 +650,8 @@
 
     if (t.hasAttribute('data-colony')) {
       colonyAction(t.getAttribute('data-colony'), t); scheduleSave();
-      if(colonyDetailsType)colonyDetailsDialog(colonyDetailsType);
+      if(colonyDetailsType==='crop' && t.getAttribute('data-colony')==='arm') { colonyDetailsType=null; closeDialog(); }
+        else if(colonyDetailsType)colonyDetailsDialog(colonyDetailsType);
       return;
     }
     if (t.hasAttribute('data-place')) { showPlace(t.getAttribute('data-place')); return; }
