@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#3d7a2e" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
-<link rel="stylesheet" href="styles.css?v=20261101-DESKTOPMAPFIX1" />
+<link rel="stylesheet" href="styles.css?v=20261101-COMPACTHUD1" />
 <link rel="stylesheet" href="language.css?v=20261031-LANGMENU1" />
 </head>
 <body>
@@ -61,6 +61,7 @@
         <div class="hud-stead">
           <span id="hud-city">Gallery in Amsterdam</span>
           <span id="hud-sub">Netherlands &middot; Europe</span>
+          <button type="button" id="hud-more" aria-expanded="false" aria-controls="hud-balance ticker cal-auto cal-speed">☰ <span>Details</span></button>
         </div>
         <div class="chrono-row">
           <div class="chrono-cal" id="calendar">
@@ -79,6 +80,7 @@
         </div>
       </div>
     </header>
+    <script>document.addEventListener('click',function(ev){var b=ev.target.closest('#hud-more');if(!b)return;var hud=document.getElementById('hud');if(!hud)return;var open=hud.classList.toggle('hud-details-open');b.setAttribute('aria-expanded',String(open));b.querySelector('span').textContent=open?'Weniger':'Details';});</script>
 
     <section id="race-standings" class="race-standings" aria-label="Four player standings"></section>
     <div id="main">
