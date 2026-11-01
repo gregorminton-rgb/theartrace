@@ -163,6 +163,21 @@
     };
   }
 
+  /* One physical original per work id, shared by player and all three rivals. */
+  function ownedWork(id) {
+    if (G.portfolio.some(function(p){return p.defId===id;})) return true;
+    return (G.rivals||[]).some(function(r){return (r.portfolio||[]).some(function(p){return p.defId===id;});});
+  }
+  function offeredWork(id) {
+    return Object.keys(G.stock||{}).some(function(city){
+      return (G.stock[city]||[]).some(function(p){return p.defId===id;});
+    }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});
+  }
+  function freeWork(temporary) {
+    var choices=A.works.filter(function(w){return !ownedWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
+    return choices.length?G.rng.weighted(choices,function(x){return 11-x.rarity;}):null;
+  }
+  /* Old saves may contain duplicated listings; never sell an already-owned original. */
   /* Dealer stock: rarity makes a piece rarer on the shelf, condition jitters
    * around the artwork's m_TypicalCondition. */
   function stockCity(cityId) {
@@ -171,7 +186,8 @@
     if (G.reputation >= CFG.reputationForPremiumStock) size += 1;   // premium stock
     var offers = [];
     for (var i = 0; i < size; i++) {
-      var w = G.rng.weighted(A.works, function (x) { return 11 - x.rarity; });
+      var w = freeWork(offers.map(function(p){return p.defId;}));
+      if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.15, 0.15), 0.05, 1);
       var fake = G.rng.chance(fakeChance(w));
       var inst = makeInstance(w, cond, fake, c.name + ' dealer stock');
@@ -215,6 +231,7 @@
     var i = -1;
     here.forEach(function (o, n) { if (o.uid === uid) i = n; });
     if (i < 0) return;
+    if (ownedWork(here[i].defId)) { here.splice(i,1); log('This original is already owned and has been removed from the dealer shelf.'); return; }
     if (G.portfolio.length >= G.capacity) {
       log('No free crate space — buy a slot at the bank for ' + A.money(CFG.extraSlotPrice) + '.');
       return;
@@ -545,7 +562,8 @@
     var city = A.city(G.cityId);
     var lots = [];
     for (var i = 0; i < CFG.auctionLotCount; i++) {
-      var w = G.rng.weighted(A.works, function (x) { return 11 - x.rarity; });
+      var w = freeWork(lots.map(function(p){return p.inst.defId;}));
+      if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.2, 0.1), 0.05, 1);
       var inst = makeInstance(w, cond, G.rng.chance(fakeChance(w)), city.name + ' auction lot');
       var idx = A.sliceIndex(G.market, city, A.workEpoch(w));
@@ -605,6 +623,7 @@
     var lot = G.lots[index];
     if (!lot) { log('This auction lot is no longer available.'); return; }
     if (lot.closed) { log('This lot has already been sold. Choose another open lot.'); return; }
+    if (ownedWork(lot.inst.defId)) { lot.closed=true; log('This original is already in a collection; the duplicate lot was withdrawn.'); return; }
     if (G.portfolio.length >= G.capacity) {
       var deRoom = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
       var fullMessage = deRoom
@@ -948,7 +967,7 @@
       bidLot: bidLot, passLot: passLot, buySlot: buySlot, answerLotQuiz: answerLotQuiz,
       restore: restore, collect: collect, examine: examine, repay: repay,
       /* auction calendar — app-trade.js reads these instead of guessing */
-      auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
+      ownedWork: ownedWork, auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
       daysToAuction: daysToAuction, saleLeadDays: saleLeadDays
     }
   };
