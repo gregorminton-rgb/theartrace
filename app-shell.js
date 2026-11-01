@@ -270,6 +270,18 @@
     '</div>';
   }
 
+  function warnCareerEnd() {
+    if (!G.started || G.ended || G.day !== G.careerDays - 5) return;
+    stopClock();
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    dialog(de ? 'Endspurt! Nur noch fünf Tage' : 'Final stretch! Just five days left',
+      '<p>' + (de
+        ? 'Die große Kunstauswertung beginnt in <strong>5 Tagen</strong>. Nutze die letzten Spieltage, um deine Sammlung zu vervollständigen, Gemälde zu kaufen und wichtige Restaurierungen abzuschließen.'
+        : 'The final art race results are just <strong>5 days</strong> away. Use the remaining days to complete your collection, buy paintings and finish important restorations.') + '</p>',
+      [{label:de?'Weiter sammeln':'Keep collecting',primary:true,onClick:closeDialog}],
+      'career-finale-warning');
+  }
+
   function endGame() {
     if (G.ended) return;
     G.ended = true;
@@ -801,7 +813,7 @@
   }
   boot();
 
-  A.shell = { stopClock: stopClock, resumeClock: resumeClockIfWanted, endGame: endGame,
+  A.shell = { warnCareerEnd: warnCareerEnd, stopClock: stopClock, resumeClock: resumeClockIfWanted, endGame: endGame,
               startClock: startClock, setSpeed: setClockSpeed, paintClock: paintClockUi,
               dialog: dialog, closeDialog: closeDialog };
   window.ArtRaceApp = { G: G, app: A.app, shared: A.shared, game: A };
