@@ -510,24 +510,26 @@
     /* the colony screen replaces this panel entirely, so a colony passage
        never shows a banner here — and the day clock keeps running. */
     var away = !!G.voyage && !G.voyage.colonyId;
-    var rows = A.cities.filter(function (c) { return c.id !== G.cityId; }).map(function (c) {
-      var price = A.ticketPrice(from, c);
-      var days = A.ticketDays(from, c);
-      var goods = ['Dealer'];
-      if (c.hasAuctionHouse) goods.push('Auction');
-      if (c.hasBank) goods.push('Bank');
-      if (c.hasRestorationStudio) goods.push('Studio');
-      if (c.hasExpertOffice) goods.push('Expert');
-      var hot = A.EPOCHS.filter(function (e) { return c.favouriteEpochs.indexOf(e) >= 0; }).join(', ');
-      var blocked = away || price > G.cash;
-      return '<div class="row' + (blocked ? ' dim' : '') + '">' +
-        '<div class="row-main"><div><span class="title">' + h(c.name) + '</span>' +
-        '<span class="credit">' + h(c.country) + ' · ' + h(c.regionName) + ' · wealth ' + c.wealth + '/10 · ' +
-        h(goods.join(' + ')) + '</span>' +
-        '<span class="prov">collects ' + h(hot || 'no particular school') + (c.bohemianEpochs.length ? ' · bohemian: ' + h(c.bohemianEpochs.join(', ')) : '') + '</span></div></div>' +
-        '<div class="row-num"><span class="ask">' + A.money(price) + '</span>' +
-        '<span class="est">' + days + ' day(s) ' + (days <= 4 ? 'by rail' : 'at sea') + ' · ' + A.distance(from, c).toFixed(2) + ' units</span></div>' +
-        '<button class="btn go" data-action="travel" data-city="' + c.id + '"' + (blocked ? ' disabled' : '') + '>Travel</button></div>';
+    var de=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+    var destinations=A.colonies.travelDestinations(G.cityId);
+    var rows=destinations.map(function(d){
+      var target=d.city||A.colonies.COLONY_BY_ID[d.colonyId];
+      var price=A.ticketPrice(from,target),days=A.ticketDays(from,target);
+      return {destination:d,target:target,price:price,days:days};
+    }).sort(function(a,b){return a.days-b.days||a.price-b.price;}).map(function(item){
+      var d=item.destination,price=item.price,days=item.days;
+      var colony=d.kind==='colony',blocked=away||price>G.cash;
+      var kind=colony?(de?'Kolonie · Anbau':'Colony · Farming'):(d.kind==='trade'?(de?'Stadt · Handel':'City · Trade'):(de?'Stadt':'City'));
+      var special=colony ? (de?'Anbau: ':'Produce: ')+
+        ((A.colonies.COLONY_CROP_IDS||{})[d.colonyId]||[]).map(function(id){
+          var crop=A.colonies.CROP_BY_ID[id];return crop?crop.label:id;
+        }).join(', ') : d.sub;
+      return '<button type="button" class="dest-row'+(blocked?' is-poor':'')+
+        '" data-action="travel" data-city="'+h(d.colonyId||d.slug)+'"'+(blocked?' disabled aria-disabled="true"':'')+'>'+
+        '<span class="dest-name">'+h(d.label)+'</span><span class="dest-kind">'+h(kind)+'</span>'+
+        '<span class="dest-sub">'+h(special)+'</span>'+
+        '<span class="dest-meta">'+A.money(price)+' · '+days+'d</span>'+
+        '<span class="dest-leg" aria-hidden="true">'+days+'d · '+A.money(price)+'</span></button>';
     }).join('');
     return renderWorldMap() +
       (away ? '' :

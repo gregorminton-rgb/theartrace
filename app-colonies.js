@@ -246,14 +246,17 @@
     return rows.map(function (d) {
       var price = d.price;
       var days = d.days;
-      var kind = d.kind === 'colony' ? 'Colony' : d.kind === 'trade' ? 'Trade' : 'City';
+      var de=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+      var kind=d.kind==='colony'?(de?'Kolonie · Anbau':'Colony · Farming'):(d.kind==='trade'?(de?'Stadt · Handel':'City · Trade'):(de?'Stadt':'City'));
+      var cropIds=(COLONY_CROP_IDS[d.colonyId]||[]);
+      var sub=d.kind==='colony'?(de?'Anbau: ':'Produce: ')+cropIds.map(function(id){return (CROP_BY_ID[id]||{}).label||id;}).join(', '):d.sub;
       var poor = price > G.cash;
       var disabled = poor ? ' disabled aria-disabled="true" title="Not enough cash"' : '';
       return '<button type="button" class="dest-row' + (poor ? ' is-poor' : '') + '" data-colony="depart" data-dest="' + h(d.slug) + '"' +
         ' data-price="' + price + '" data-days="' + days + '"' + disabled + '>' +
         '<span class="dest-name">' + h(d.label) + '</span>' +
         '<span class="dest-kind">' + kind + '</span>' +
-        '<span class="dest-sub">' + h(d.sub || '') + '</span>' +
+        '<span class="dest-sub">' + h(sub || '') + '</span>' +
         '<span class="dest-meta">' + A.money(price) + ' · ' + days + 'd</span>' +
         '<span class="dest-leg" aria-hidden="true">' + days + 'd · ' + A.money(price) + '</span>' +
         '</button>';
@@ -295,22 +298,19 @@
      colony, with the price and duration the chart distance implies. The
      current colony, and any art city that doubles as a colony, are excluded
      by id so the list never offers a trip to where the player already is. */
-  function colonyDestinations() {
-    var here = G.colonyId;
-    var out = [];
-    A.cities.forEach(function (c) {
-      if (c.id === here) return;
-      out.push({ slug: c.id, label: c.name, sub: c.country + ' · ' + c.regionName,
-                 kind: TRADE_HUB_IDS[c.id] ? 'trade' : 'city', city: c, colonyId: null,
-                 mapX: c.mapX, mapY: c.mapY });
+  function travelDestinations(originId) {
+    var out=[];
+    A.cities.forEach(function(c){
+      if(c.id!==originId)out.push({slug:c.id,label:c.name,sub:c.country+' · '+c.regionName,
+        kind:TRADE_HUB_IDS[c.id]?'trade':'city',city:c,colonyId:null,mapX:c.mapX,mapY:c.mapY});
     });
-    COLONIES.forEach(function (c) {
-      if (c.id === here || A.city(c.id)) return;
-      out.push({ slug: 'colony-' + c.id, label: c.label, sub: c.sub, kind: 'colony',
-                 city: null, colonyId: c.id, mapX: c.mapX, mapY: c.mapY });
+    COLONIES.forEach(function(c){
+      if(c.id!==originId && !A.city(c.id))out.push({slug:'colony-'+c.id,label:c.label,
+        sub:c.sub,kind:'colony',city:null,colonyId:c.id,mapX:c.mapX,mapY:c.mapY});
     });
     return out;
   }
+  function colonyDestinations(){return travelDestinations(G.colonyId);}
 
   /* Leaves the plantation for another colony or a city. The passage is a
      normal voyage, so the chart animates it and the days tick by exactly as
@@ -768,7 +768,7 @@
     TRADE_HUB_IDS: TRADE_HUB_IDS, TRADE_HUB_MULT: TRADE_HUB_MULT,
     cropPrice: cropPrice, cropPriceOnDay: cropPriceOnDay, cropThumb: cropThumb, hash2: hash2,
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
-    colonyDestinations: colonyDestinations, departFromColony: departFromColony,
+    travelDestinations: travelDestinations, colonyDestinations: colonyDestinations, departFromColony: departFromColony,
     colonyTravelRowsHTML: colonyTravelRowsHTML, openColonyTravel: openColonyTravel,
     bindDestHover: bindDestHover,
     /* the colony's own quay and standing orders (owned by app-crew.js, which
