@@ -819,6 +819,8 @@
     if (A.race) A.race.advance();
     if (!silent && CFG.logDailyMoves) log('Day ' + G.day + ' opened.');
     arriveIfDue();
+    if (!silent && G.started && !G.ended && G.day === G.careerDays - 5 &&
+        A.shell && A.shell.warnCareerEnd) A.shell.warnCareerEnd();
     checkEnd();
     if (typeof window !== 'undefined' && window.dispatchEvent && typeof CustomEvent !== 'undefined') {
       window.dispatchEvent(new CustomEvent('artrace-day-advanced', {detail:{day:G.day}}));
@@ -833,7 +835,12 @@
        you may want to spend every last dollar on one more picture.
        G.ended is set here, not only in the end-of-career dialog, so a headless
        harness without app-shell.js can still see that the race is over. */
-    if (G.day > G.careerDays) { G.ended = true; endGame(); }
+    if (G.day >= G.careerDays) {
+      /* The shell sets G.ended itself. Do not set it first: endGame() guards
+         against duplicate invocations and would otherwise silently return. */
+      if (A.shell && A.shell.endGame) A.shell.endGame();
+      else G.ended = true; /* headless simulation / unit harness */
+    }
   }
   /* =====================================================================
    * RENDER
