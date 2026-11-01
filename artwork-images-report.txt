@@ -1,5 +1,5 @@
-artwork images : 75/75 works in images/art/
-total size     : 9,4 MB (masters were 242,1 MB)
+artwork images : 105/105 works in images/art/
+total size     : 13,3 MB (masters were 349,8 MB)
 not mapped     : 
 scene plates   : 6
 images/scenes/auktion1.jpg   <- Auktion1.jpg
@@ -17,8 +17,16 @@ mucha_seasons_posters          alias    <- Alfons Mucha – Die Jahreszeiten (Fa
 mucha_gismonda                 quote    <- Alfons Mucha – Gismonda (1894).jpg
 mucha_slav_epic_note           alias    <- Alfons Mucha – Slawisches Epos Die Apotheose der Slawen (ca 1910–1928).jpg
 pissarro_boulevard_montmartre  alias    <- Camille Pissarro – Boulevard Montmartre bei Nacht (1897).jpg
+pissarro_red_roofs             alias    <- Camille Pissarro – Die roten Dächer (1877).jpg
+pissarro_hoarfrost             alias    <- Camille Pissarro – Raureif (1873).jpg
+caravaggio_bacchus             alias    <- Caravaggio – Bacchus (ca 1595–1597).jpg
+caravaggio_calling_of_saint_matthew alias    <- Caravaggio – Die Berufung des Matthäus (ca. 1599–1600).jpg
+friedrich_monk_by_the_sea      alias    <- Caspar David Friedrich – Der Mönch am Meer (ca. 1808–1810).jpg
 friedrich_wanderer             alias    <- Caspar David Friedrich – Der Wanderer über dem Nebelmeer (1818).jpg
+friedrich_chalk_cliffs         alias    <- Caspar David Friedrich – Kreidefelsen auf Rügen (ca. 1818).jpg
 lorrain_queen_of_sheba         alias    <- Claude Lorrain – Die Einschiffung der Königin von Saba (1648).jpg
+lorrain_marriage_of_isaac_and_rebekah alias    <- Claude Lorrain – Landschaft mit der Hochzeit von Isaak und Rebekka (1648).jpg
+lorrain_seaport_at_sunset      alias    <- Claude Lorrain – Seehafen bei Sonnenuntergang (1639).jpg
 monet_haystack                 alias    <- Claude Monet – Heuhaufen (Heuschober, ca. 1891).jpg
 monet_impression_variant       quote    <- Claude Monet – Impression, Sonnenaufgang (1872).jpg
 monet_water_lilies             alias    <- Claude Monet – Seerosen (ca. 1916).jpg
@@ -31,22 +39,36 @@ degas_little_dancer            alias    <- Edgar Degas – Kleine vierzehnjähri
 manet_folies_bergere           alias    <- Édouard Manet – Bar in den Folies-Bergère (1882).jpg
 manet_peonies                  alias    <- Édouard Manet – Das Frühstück im Grünen (1863).jpg
 manet_olympia_study            alias    <- Édouard Manet – Olympia (Studie, ca. 1863).jpg
+munch_sick_child               alias    <- Edvard Munch – Das kranke Kind (1885–1886).jpg
 munch_the_scream               alias    <- Edvard Munch – Der Schrei (1893).jpg
+munch_madonna                  alias    <- Edvard Munch – Madonna (1894–1895).jpg
+schiele_self_portrait_physalis alias    <- Egon Schiele – Selbstbildnis mit Lampionfrucht (1912).jpg
+schiele_seated_woman           alias    <- Egon Schiele – Sitzende Frau mit angezogenem Knie (1917).jpg
 schiele_death_and_maiden       alias    <- Egon Schiele – Tod und Mädchen (1915).jpg
+leger_mechanic                 alias    <- Fernand Léger – Der Mechaniker (Le Mécanicien, 1920).jpg
+leger_city                     alias    <- Fernand Léger – Die Stadt (La Ville, 1919).jpg
 leger_nudes_in_the_forest      alias    <- Fernand Léger – Nackte Männer im Wald (1910).jpg
 goya_the_colossus              alias    <- Francisco de Goya – Der 3. Mai 1808 (1814).jpg
 goya_sleep_of_reason           alias    <- Francisco de Goya – Der Schlaf der Vernunft gebiert Ungeheuer (1799).jpg
 goya_maja_study                alias    <- Francisco de Goya – La Maja (Studie, ca. 1797).jpg
 marc_blue_horse                alias    <- Franz Marc – Blaues Pferd I (1911).jpg
+marc_yellow_cow                alias    <- Franz Marc – Die gelbe Kuh (1911).jpg
+marc_fate_of_the_animals       alias    <- Franz Marc – Tierschicksale (1913).jpg
 munter_flowers_still_life      alias    <- Gabriele Münter – Blumen (ca. 1910).jpg
 munter_jawlensky               alias    <- Gabriele Münter – Jawlensky und Erbslöh (ca. 1909).jpg
 munter_boating                 alias    <- Gabriele Münter – Kahnfahrt (1910).jpg
+seurat_bathers_at_asnieres     alias    <- Georges Seurat – Badende bei Asnières (1884).jpg
+seurat_circus                  alias    <- Georges Seurat – Der Zirkus (1891).jpg
 seurat_grande_jatte            alias    <- Georges Seurat – Ein Sonntagnachmittag auf der Insel La Grande Jatte (1884).jpg
 klimt_adele_study              alias    <- Gustav Klimt – Adele (Studie, ca. 1903).jpg
 klimt_the_kiss_study           alias    <- Gustav Klimt – Der Kuss (190708).jpg
 klimt_tree_of_life             alias    <- Gustav Klimt – Lebensbaum (ca. 1905).jpg
 toulouse_moulin_rouge          alias    <- Henri de Toulouse-Lautrec – Im Moulin Rouge (1892).jpg
+toulouse_dance_at_moulin_rouge alias    <- Henri de Toulouse-Lautrec – Im Moulin Rouge Der Tanz (ca 1890).jpg
+toulouse_jane_avril            alias    <- Henri de Toulouse-Lautrec – Jane Avril (1893).jpg
+matisse_red_studio             alias    <- Henri Matisse - Das rote Atelier (1911).jpg
 matisse_the_dance              alias    <- Henri Matisse – Der Tanz (1910).jpg
+matisse_woman_with_a_hat       alias    <- Henri Matisse – Frau mit Hut (La femme au chapeau, 1905).jpg
 vermeer_pearl_earring_copy     alias    <- Jan Vermeer – Das Mädchen mit dem Perlenohrring.jpg
 watteau_harlequin_study        alias    <- Jean-Antoine Watteau – Der Harlekin (ca. 1718).jpg
 watteau_cythera_reduction      alias    <- Jean-Antoine Watteau – Einschiffung nach Kythera (ca. 1717).jpg
@@ -59,9 +81,15 @@ vermeer_music_lesson_study     alias    <- Johannes Vermeer – Die Musikstunde 
 hokusai_great_wave             alias    <- Katsushika Hokusai – Die große Welle vor Kanagawa (ca. 1831).jpg
 hokusai_red_fuji               alias    <- Katsushika Hokusai – Roter Fuji (ca. 1831).jpg
 hokusai_sketchbook             alias    <- Katsushika Hokusai – Skizzenbuch (ca. 1814).jpg
+leonardo_lady_with_an_ermine   alias    <- Leonardo da Vinci – Dame mit dem Hermelin (ca. 1489–1490).jpg
+leonardo_virgin_of_the_rocks   alias    <- Leonardo da Vinci – Felsgrottenmadonna (ca. 1483 und 1486).jpg
 leonardo_mona_lisa             alias    <- Leonardo da Vinci – Mona Lisa.jpg
+chagall_birthday               alias    <- Marc Chagall – Der Geburtstag (1915).jpg
 chagall_i_and_the_village      alias    <- Marc Chagall – Ich und das Dorf (1911).jpg
+chagall_paris_through_the_window alias    <- Marc Chagall – Paris durch das Fenster (1913).jpg
 caravaggio_judith              alias    <- Michelangelo Merisi da Caravaggio – Judith und Holofernes.jpg
+picasso_old_guitarist          alias    <- Pablo Picasso - Der alte Gitarrist (1903).png
+picasso_three_musicians        alias    <- Pablo Picasso - Drei Musikanten (1921).png
 picasso_demoiselles            alias    <- Pablo Picasso – Les Demoiselles d’Avignon (1907).jpg
 cezanne_apples_oranges         alias    <- Paul Cézanne – Äpfel und Orangen (ca. 1899).jpg
 cezanne_card_players           alias    <- Paul Cézanne – Die Kartenspieler (ca. 1892).jpg
@@ -81,7 +109,9 @@ botticelli_dante_comedy        alias    <- Sandro Botticellis „Illustration zu
 van_gogh_starry_night_study    alias    <- Vincent van Gogh – Die Sternennacht.jpg
 van_gogh_irises                alias    <- Vincent van Gogh – Schwertlilien (ca. 1889).jpg
 van_gogh_sunflowers            alias    <- Vincent van Gogh – Sonnenblumen (ca. 1888 bis 1889).jpg
+kandinsky_yellow_red_blue      alias    <- Wassily Kandinsky – Gelb-Rot-Blau (1925).jpg
 kandinsky_improvisation_26     alias    <- Wassily Kandinsky – Improvisation 26 (1912).jpg
+kandinsky_composition_vii      alias    <- Wassily Kandinsky – Komposition VII (1913).jpg
 turner_temeraire               alias    <- William Turner – Die „Fighting Temeraire“ (1838).jpg
 turner_rain_steam_speed        alias    <- William Turner – Regen, Dampf und Geschwindigkeit – Die Great Western Railway (1844).jpg
 turner_venice_laguna           alias    <- William Turner – Venedig von der Lagune aus (ca. 1840).jpg

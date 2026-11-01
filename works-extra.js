@@ -1,13 +1,10 @@
 /* =========================================================================
- * works-extra.js — painters and pictures the web build adds to the export.
+ * works-extra.js — additional painters and their complete three-work sets.
  *
- * data.js carries the generated catalogue:
- * twenty painters, three works each. The art folder
- * holds fifteen further master plates
- * whose painters simply do not exist in that export. None of them is
- * discarded: every plate becomes a first-class artwork with its own painter,
- * so it shows up in dealer stock, auction lots and the price band exactly like
- * an exported one.
+ * data.js carries twenty painters with three works each. This file adds
+ * fifteen painters with three works each: 35 painters and 105 works in total.
+ * Keep exactly three distinct works per painter for the collection logic.
+ * Every work participates in dealer stock, auction lots and the price band.
  *
  * Every record carries the catalogue facts the game shows next to a picture:
  * year (yearCreated), painter (artistId -> artists[].name) and kind of picture
@@ -135,6 +132,246 @@
   ];
 
   global.ART_RACE_EXTRA_WORKS = [
+    {
+      id: 'pissarro_red_roofs', title: 'The Red Roofs',
+      description: 'The Red Roofs, 1877 - Camille Pissarro.',
+      artistId: 'pissarro', yearCreated: 1877, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '54.5 x 65.5 cm',
+      basePrice: 30000, rarity: 6, rarityMultiplier: 2.0, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.78, homeCityId: 'paris'
+    },
+    {
+      id: 'pissarro_hoarfrost', title: 'Hoarfrost',
+      description: 'Hoarfrost, 1873 - Camille Pissarro.',
+      artistId: 'pissarro', yearCreated: 1873, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '65.5 x 93.2 cm',
+      basePrice: 28000, rarity: 6, rarityMultiplier: 2.0, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.76, homeCityId: 'paris'
+    },
+    {
+      id: 'caravaggio_bacchus', title: 'Bacchus',
+      description: 'Bacchus, circa 1595-1597 - Caravaggio.',
+      artistId: 'caravaggio', yearCreated: 1596, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '95 x 85 cm',
+      basePrice: 78000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.56, homeCityId: 'roma'
+    },
+    {
+      id: 'caravaggio_calling_of_saint_matthew', title: 'The Calling of Saint Matthew',
+      description: 'The Calling of Saint Matthew, 1599-1600 - Caravaggio.',
+      artistId: 'caravaggio', yearCreated: 1600, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '322 x 340 cm',
+      basePrice: 96000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.54, homeCityId: 'roma'
+    },
+    {
+      id: 'friedrich_monk_by_the_sea', title: 'The Monk by the Sea',
+      description: 'The Monk by the Sea, 1808-1810 - Caspar David Friedrich.',
+      artistId: 'friedrich', yearCreated: 1810, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '110 x 171.5 cm',
+      basePrice: 48000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.64, homeCityId: 'berlin'
+    },
+    {
+      id: 'friedrich_chalk_cliffs', title: 'Chalk Cliffs on Rugen',
+      description: 'Chalk Cliffs on Rugen, circa 1818 - Caspar David Friedrich.',
+      artistId: 'friedrich', yearCreated: 1818, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '90.5 x 71 cm',
+      basePrice: 46000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.66, homeCityId: 'berlin'
+    },
+    {
+      id: 'lorrain_marriage_of_isaac_and_rebekah', title: 'Landscape with the Marriage of Isaac and Rebekah',
+      description: 'Landscape with the Marriage of Isaac and Rebekah, 1648 - Claude Lorrain.',
+      artistId: 'lorrain', yearCreated: 1648, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '149.1 x 196.9 cm',
+      basePrice: 42000, rarity: 7, rarityMultiplier: 2.2, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.55, homeCityId: 'paris'
+    },
+    {
+      id: 'lorrain_seaport_at_sunset', title: 'Seaport at Sunset',
+      description: 'Seaport at Sunset, 1639 - Claude Lorrain.',
+      artistId: 'lorrain', yearCreated: 1639, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '137 x 103 cm',
+      basePrice: 38000, rarity: 7, rarityMultiplier: 2.2, isMasterpiece: false,
+      hasKnownForgery: true, typicalCondition: 0.54, homeCityId: 'paris'
+    },
+    {
+      id: 'munch_sick_child', title: 'The Sick Child',
+      description: 'The Sick Child, 1885-1886 - Edvard Munch.',
+      artistId: 'munch', yearCreated: 1886, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '119.5 x 118.5 cm',
+      basePrice: 74000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.60, homeCityId: 'berlin'
+    },
+    {
+      id: 'munch_madonna', title: 'Madonna',
+      description: 'Madonna, circa 1894 - Edvard Munch.',
+      artistId: 'munch', yearCreated: 1894, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '90.5 x 70.5 cm',
+      basePrice: 78000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.62, homeCityId: 'berlin'
+    },
+    {
+      id: 'schiele_self_portrait_physalis', title: 'Self-Portrait with Chinese Lantern Plant',
+      description: 'Self-Portrait with Chinese Lantern Plant, 1912 - Egon Schiele.',
+      artistId: 'schiele', yearCreated: 1912, type: 0, typeName: 'Painting',
+      medium: 'Oil and opaque colour on wood', dimensions: '32.2 x 39.8 cm',
+      basePrice: 70000, rarity: 8, rarityMultiplier: 2.6, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.70, homeCityId: 'wien'
+    },
+    {
+      id: 'schiele_seated_woman', title: 'Seated Woman with Bent Knees',
+      description: 'Seated Woman with Bent Knees, 1917 - Egon Schiele.',
+      artistId: 'schiele', yearCreated: 1917, type: 2, typeName: 'Drawing',
+      medium: 'Gouache, watercolour and black crayon on paper', dimensions: '46 x 30.5 cm',
+      basePrice: 58000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: false,
+      hasKnownForgery: true, typicalCondition: 0.66, homeCityId: 'wien'
+    },
+    {
+      id: 'leger_mechanic', title: 'The Mechanic',
+      description: 'The Mechanic, 1920 - Fernand Leger.',
+      artistId: 'leger', yearCreated: 1920, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '116 x 88.8 cm',
+      basePrice: 56000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.72, homeCityId: 'paris'
+    },
+    {
+      id: 'leger_city', title: 'The City',
+      description: 'The City, 1919 - Fernand Leger.',
+      artistId: 'leger', yearCreated: 1919, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '231.1 x 298.4 cm',
+      basePrice: 66000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.70, homeCityId: 'paris'
+    },
+    {
+      id: 'marc_yellow_cow', title: 'Yellow Cow',
+      description: 'Yellow Cow, 1911 - Franz Marc.',
+      artistId: 'marc', yearCreated: 1911, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '140.5 x 189.2 cm',
+      basePrice: 68000, rarity: 8, rarityMultiplier: 2.6, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.70, homeCityId: 'muenchen'
+    },
+    {
+      id: 'marc_fate_of_the_animals', title: 'Fate of the Animals',
+      description: 'Fate of the Animals, 1913 - Franz Marc.',
+      artistId: 'marc', yearCreated: 1913, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '195 x 263.5 cm',
+      basePrice: 72000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.58, homeCityId: 'muenchen'
+    },
+    {
+      id: 'seurat_bathers_at_asnieres', title: 'Bathers at Asnieres',
+      description: 'Bathers at Asnieres, 1884 - Georges Seurat.',
+      artistId: 'seurat', yearCreated: 1884, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '201 x 300 cm',
+      basePrice: 102000, rarity: 9, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.66, homeCityId: 'paris'
+    },
+    {
+      id: 'seurat_circus', title: 'The Circus',
+      description: 'The Circus, 1890-1891 - Georges Seurat.',
+      artistId: 'seurat', yearCreated: 1891, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '185.5 x 152.5 cm',
+      basePrice: 92000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.64, homeCityId: 'paris'
+    },
+    {
+      id: 'toulouse_dance_at_moulin_rouge', title: 'At the Moulin Rouge: The Dance',
+      description: 'At the Moulin Rouge: The Dance, 1890 - Henri de Toulouse-Lautrec.',
+      artistId: 'toulouse_lautrec', yearCreated: 1890, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '115.6 x 149.9 cm',
+      basePrice: 42000, rarity: 7, rarityMultiplier: 2.3, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.68, homeCityId: 'paris'
+    },
+    {
+      id: 'toulouse_jane_avril', title: 'Jane Avril',
+      description: 'Jane Avril, 1893 - Henri de Toulouse-Lautrec.',
+      artistId: 'toulouse_lautrec', yearCreated: 1893, type: 3, typeName: 'Print',
+      medium: 'Colour lithograph poster on paper', dimensions: 'approx. 130 x 95 cm; varies by impression',
+      basePrice: 28000, rarity: 6, rarityMultiplier: 2.0, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.62, homeCityId: 'paris'
+    },
+    {
+      id: 'matisse_red_studio', title: 'The Red Studio',
+      description: 'The Red Studio, 1911 - Henri Matisse.',
+      artistId: 'matisse', yearCreated: 1911, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '181 x 219.1 cm',
+      basePrice: 108000, rarity: 9, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.74, homeCityId: 'paris'
+    },
+    {
+      id: 'matisse_woman_with_a_hat', title: 'Woman with a Hat',
+      description: 'Woman with a Hat, 1905 - Henri Matisse.',
+      artistId: 'matisse', yearCreated: 1905, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '80.7 x 59.7 cm',
+      basePrice: 92000, rarity: 9, rarityMultiplier: 2.8, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.72, homeCityId: 'paris'
+    },
+    {
+      id: 'leonardo_lady_with_an_ermine', title: 'Lady with an Ermine',
+      description: 'Lady with an Ermine, circa 1489-1491 - Leonardo da Vinci.',
+      artistId: 'leonardo', yearCreated: 1490, type: 0, typeName: 'Painting',
+      medium: 'Oil on walnut panel', dimensions: '54.8 x 40.3 cm',
+      basePrice: 132000, rarity: 10, rarityMultiplier: 3.2, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.70, homeCityId: 'firenze'
+    },
+    {
+      id: 'leonardo_virgin_of_the_rocks', title: 'Virgin of the Rocks',
+      description: 'Virgin of the Rocks, 1483-1486, Louvre version - Leonardo da Vinci.',
+      artistId: 'leonardo', yearCreated: 1486, type: 0, typeName: 'Painting',
+      medium: 'Oil on panel, transferred to canvas', dimensions: '199.5 x 122 cm',
+      basePrice: 140000, rarity: 10, rarityMultiplier: 3.3, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.66, homeCityId: 'firenze'
+    },
+    {
+      id: 'chagall_birthday', title: 'The Birthday',
+      description: 'The Birthday, 1915 - Marc Chagall.',
+      artistId: 'chagall', yearCreated: 1915, type: 0, typeName: 'Painting',
+      medium: 'Oil on cardboard', dimensions: '80.5 x 99.5 cm',
+      basePrice: 62000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.72, homeCityId: 'paris'
+    },
+    {
+      id: 'chagall_paris_through_the_window', title: 'Paris through the Window',
+      description: 'Paris through the Window, 1913 - Marc Chagall.',
+      artistId: 'chagall', yearCreated: 1913, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '136 x 141.9 cm',
+      basePrice: 64000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.70, homeCityId: 'paris'
+    },
+    {
+      id: 'picasso_old_guitarist', title: 'The Old Guitarist',
+      description: 'The Old Guitarist, late 1903-early 1904 - Pablo Picasso.',
+      artistId: 'picasso', yearCreated: 1904, type: 0, typeName: 'Painting',
+      medium: 'Oil on panel', dimensions: '122.9 x 82.6 cm',
+      basePrice: 118000, rarity: 9, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.70, homeCityId: 'paris'
+    },
+    {
+      id: 'picasso_three_musicians', title: 'Three Musicians',
+      description: 'Three Musicians, 1921, MoMA version - Pablo Picasso.',
+      artistId: 'picasso', yearCreated: 1921, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '200.7 x 222.9 cm',
+      basePrice: 126000, rarity: 10, rarityMultiplier: 3.2, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.76, homeCityId: 'paris'
+    },
+    {
+      id: 'kandinsky_yellow_red_blue', title: 'Yellow-Red-Blue',
+      description: 'Yellow-Red-Blue, 1925 - Wassily Kandinsky.',
+      artistId: 'kandinsky', yearCreated: 1925, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '128 x 201.5 cm',
+      basePrice: 62000, rarity: 8, rarityMultiplier: 2.5, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.76, homeCityId: 'muenchen'
+    },
+    {
+      id: 'kandinsky_composition_vii', title: 'Composition VII',
+      description: 'Composition VII, 1913 - Wassily Kandinsky.',
+      artistId: 'kandinsky', yearCreated: 1913, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '200 x 300 cm',
+      basePrice: 68000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.70, homeCityId: 'muenchen'
+    },
     {
       id: 'pissarro_boulevard_montmartre', title: 'Boulevard Montmartre at night',
       description: 'Boulevard Montmartre at night, 1897 - Camille Pissarro.',

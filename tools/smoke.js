@@ -59,6 +59,8 @@ try { eval(read('data.js')); } catch (e) { WScript.Echo('LOAD FAIL data.js: ' + 
 try { eval(read('cities-extra.js')); } catch (e) { WScript.Echo('LOAD FAIL cities-extra.js: ' + e.message); WScript.Quit(1); }
 try { eval(read('works-extra.js')); } catch (e) { WScript.Echo('LOAD FAIL works-extra.js: ' + e.message); WScript.Quit(1); }
 try { eval(read('engine.js')); } catch (e) { WScript.Echo('LOAD FAIL engine.js: ' + e.message); WScript.Quit(1); }
+try { eval(read('artwork-images.js')); } catch (e) { WScript.Echo('LOAD FAIL artwork-images.js: ' + e.message); WScript.Quit(1); }
+try { eval(read('art-notes.js')); } catch (e) { WScript.Echo('LOAD FAIL art-notes.js: ' + e.message); WScript.Quit(1); }
 try { eval(read('app-state.js')); } catch (e) { WScript.Echo('LOAD FAIL app-state.js: ' + e.message); WScript.Quit(1); }
 try { eval(read('app-crew.js')); } catch (e) { WScript.Echo('LOAD FAIL app-crew.js: ' + e.message); WScript.Quit(1); }
 try { eval(read('app-colonies.js')); } catch (e) { WScript.Echo('LOAD FAIL app-colonies.js: ' + e.message); WScript.Quit(1); }
@@ -92,8 +94,40 @@ function runToArrival() {
   while (G.voyage && guard++ < 90) days(1);
   return guard < 90;
 }
-check('engine loaded', A.works.length === 75 && A.cities.length >= 13,
-      'works=' + A.works.length + ' cities=' + A.cities.length);
+check('engine loaded', A.works.length === 105 && A.artists.length === 35 && A.cities.length >= 13,
+      'works=' + A.works.length + ' artists=' + A.artists.length + ' cities=' + A.cities.length);
+var artistCounts = {}, workIds = {}, imageFiles = {}, uniqueWorks = true, completeImages = true;
+var imageMap = window.ART_ARTWORK_IMAGES.images;
+for (var wi = 0; wi < A.works.length; wi++) {
+  var work = A.works[wi], picture = imageMap[work.id];
+  if (workIds[work.id]) uniqueWorks = false;
+  workIds[work.id] = true;
+  artistCounts[work.artistId] = (artistCounts[work.artistId] || 0) + 1;
+  if (!picture || imageFiles[picture.file] || picture.width > 900 || picture.width <= 0 || picture.height <= 0 ||
+      !fso.FileExists(fso.BuildPath(fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName)), picture.file))) {
+    completeImages = false;
+  }
+  if (picture) imageFiles[picture.file] = true;
+}
+check('unique work ids', uniqueWorks);
+check('one web-sized image per work', completeImages && Object.keys(imageMap).length === 105 &&
+      window.ART_ARTWORK_IMAGES.meta.count === 105);
+check('all works belong to registered artists', Object.keys(artistCounts).length === A.artists.length);
+for (var ai = 0; ai < A.artists.length; ai++) {
+  check('three works for ' + A.artists[ai].id, artistCounts[A.artists[ai].id] === 3);
+}
+var extraFacts = window.ART_RACE_EXTRA_WORKS.every(function(work) {
+  return !!(work.medium && work.dimensions && work.description && A.artistById[work.artistId]);
+});
+check('extra works have catalogue facts', extraFacts);
+var sourcedNotes = A.works.filter(function(work) {
+  var note = window.ART_RACE_NOTES.works[work.id];
+  return note && note.source && note.museum && note.story && note.note;
+});
+check('30 additions have historical notes and sources', sourcedNotes.length === 30);
+check('all additional artists have biographies and notes', window.ART_RACE_EXTRA_ARTISTS.every(function(artist) {
+  return !!(artist.bio && artist.birthYear && artist.deathYear && window.ART_RACE_NOTES.artists[artist.id]);
+}));
 check('new game starts', G.day === 1 && !G.ended, 'city=' + G.cityId);
 
 /* every colony must be reachable and open its screen */

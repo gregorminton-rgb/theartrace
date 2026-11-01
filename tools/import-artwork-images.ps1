@@ -13,6 +13,8 @@
 #                                 highest rarity, then closest year
 #
 # Masters are only read, never modified. Re-running is idempotent.
+# Also reads local additions from images/artworks when that folder exists;
+# -AdditionalSource can select a different folder. Both sets form one manifest.
 #
 # Usage:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-artwork-images.ps1
@@ -21,7 +23,8 @@
 param(
     [string]$Source   = 'D:\Projekte\Ren\ArtRace3Artwork\Bilder',
     [int]   $MaxWidth = 900,
-    [int]   $Quality  = 80
+    [int]   $Quality  = 80,
+    [string]$AdditionalSource = (Join-Path (Split-Path -Parent $PSScriptRoot) 'images\artworks')
 )$ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
@@ -155,6 +158,38 @@ $titleAliasesRaw = @{
     'Judith und Holofernes'               = 'caravaggio_judith'
     'Les Demoiselles dAvignon'            = 'picasso_demoiselles'
     'Improvisation 26'                    = 'kandinsky_improvisation_26'
+
+    # Two more works for each of the fifteen additional painters.
+    'Die roten Dacher' = 'pissarro_red_roofs'
+    'Raureif' = 'pissarro_hoarfrost'
+    'Bacchus' = 'caravaggio_bacchus'
+    'Die Berufung des Matthaus' = 'caravaggio_calling_of_saint_matthew'
+    'Der Monch am Meer' = 'friedrich_monk_by_the_sea'
+    'Kreidefelsen auf Rugen' = 'friedrich_chalk_cliffs'
+    'Landschaft mit der Hochzeit von Isaak und Rebekka' = 'lorrain_marriage_of_isaac_and_rebekah'
+    'Seehafen bei Sonnenuntergang' = 'lorrain_seaport_at_sunset'
+    'Das kranke Kind' = 'munch_sick_child'
+    'Madonna' = 'munch_madonna'
+    'Selbstbildnis mit Lampionfrucht' = 'schiele_self_portrait_physalis'
+    'Sitzende Frau mit angezogenem Knie' = 'schiele_seated_woman'
+    'Der Mechaniker' = 'leger_mechanic'
+    'Die Stadt' = 'leger_city'
+    'Die gelbe Kuh' = 'marc_yellow_cow'
+    'Tierschicksale' = 'marc_fate_of_the_animals'
+    'Badende bei Asnieres' = 'seurat_bathers_at_asnieres'
+    'Der Zirkus' = 'seurat_circus'
+    'Im Moulin Rouge Der Tanz' = 'toulouse_dance_at_moulin_rouge'
+    'Jane Avril' = 'toulouse_jane_avril'
+    'Das rote Atelier' = 'matisse_red_studio'
+    'Frau mit Hut' = 'matisse_woman_with_a_hat'
+    'Dame mit dem Hermelin' = 'leonardo_lady_with_an_ermine'
+    'Felsgrottenmadonna' = 'leonardo_virgin_of_the_rocks'
+    'Der Geburtstag' = 'chagall_birthday'
+    'Paris durch das Fenster' = 'chagall_paris_through_the_window'
+    'Der alte Gitarrist' = 'picasso_old_guitarist'
+    'Drei Musikanten' = 'picasso_three_musicians'
+    'Gelb-Rot-Blau' = 'kandinsky_yellow_red_blue'
+    'Komposition VII' = 'kandinsky_composition_vii'
 
     # Delivery of 24.10.2026
     'Primavera-Detail'                    = 'botticelli_primavera_detail'
@@ -343,7 +378,12 @@ $log       = @()
 $unmatched = @()
 $scenes    = @()
 $missing   = @()
-$plates    = @(Get-ChildItem -LiteralPath $Source -File |
+$sourceFolders = @($Source)
+if ($AdditionalSource -and (Test-Path -LiteralPath $AdditionalSource)) {
+    $sourceFolders += $AdditionalSource
+}
+$sourceFolders = @($sourceFolders | ForEach-Object { (Resolve-Path -LiteralPath $_).Path } | Select-Object -Unique)
+$plates    = @(Get-ChildItem -LiteralPath $sourceFolders -File |
     Where-Object { $_.Extension -in '.jpg', '.jpeg', '.png' } | Sort-Object Name)
 $srcBytes  = ($plates | ForEach-Object { $_.Length } | Measure-Object -Sum).Sum
 
@@ -453,6 +493,7 @@ $payload = [ordered]@{
         quality   = $Quality
         count     = $manifest.Count
         folder    = $Source
+        sourceFolders = $sourceFolders
         note      = 'Auction/scene plates in the folder are exported to images/scenes and shown as UI art.'
     }
     images = $manifest
