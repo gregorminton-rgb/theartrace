@@ -370,7 +370,7 @@
         '<div class="row-num"><span class="ask">' + A.money(ask) + '</span>' +
         priceSignal(ask, estLo, estHi) +
         '<span class="est">consignor estimate ' + A.money(estLo) + '–' + A.money(estHi) + '</span></div>' +
-        '<button class="btn buy" data-action="buy" data-uid="' + inst.uid + '"' + (afford ? '' : ' disabled') + '>Buy</button></div>';
+        '<button class="btn buy" data-action="buy" data-uid="' + inst.uid + '"' + (afford ? '' : ' disabled') + '>Buy</button></article>';
     }).join('');
     return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
       A.pct(CFG.dealerMargin * CFG.dealerPremium) + ' over market value · buy-backs pay ' +
@@ -503,7 +503,7 @@
         '" data-artist="' + h((a&&a.name)||'') +
         '" data-value="' + (!open && !quizOpen && lot.low>0 && lot.high>0 ? (lot.bid/((lot.low+lot.high)/2)).toFixed(5) : '-1') +
         '">' + head + info + nums + quiz +
-        (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</div>';
+        (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</article>';
     }).join('');
     return '<section class="auction-view art-market-view">' + head + marketSortControls('auction') + '<div class="art-market-grid">' + rows + '</div></section>';
   }
