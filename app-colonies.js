@@ -478,7 +478,7 @@
       grid.innerHTML = colonyGridHTML();
       grid.scrollTop = gridScroll;
       grid.style.background = colony.bg || '';
-      grid.style.backgroundImage = colonyPicture ? 'linear-gradient(rgba(73,66,40,.21),rgba(73,66,40,.30)),url("'+colonyPicture.file.replace(/["\\]/g,'')+'")' : (colony.bg || '');
+      grid.style.backgroundImage = colony.bg || 'none';
       grid.style.backgroundSize = 'cover';
       grid.style.backgroundPosition = 'center';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
