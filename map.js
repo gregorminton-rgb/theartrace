@@ -1392,7 +1392,7 @@
         var q = pins[i];
         var here = !!q.L.here;
         var kind = q.L.kind;
-        var r = here ? 4.6 : (kind === 'city' || kind === 'trade') ? 3.4 : 2.9;
+        var r = here ? 8 : kind === 'trade' ? 7 : kind === 'colony' ? 7 : 6;
         var col = here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
@@ -1407,16 +1407,29 @@
           ring.isPulse = true;
           pinLayer.addChild(ring);
         }
+        /* A soft surrounding disc makes tiny destinations legible on busy land. */
+        var halo = new PIXI.Graphics();
+        halo.beginFill(0x081a27, 0.68);
+        halo.drawCircle(0, 0, r + 4);
+        halo.endFill();
+        halo.position.set(q.x, q.y);
+        pinLayer.addChild(halo);
         var g = new PIXI.Graphics();
         g.beginFill(col, 1);
         g.lineStyle(1.5, 0xf8f0dc, 0.95);
-        g.drawCircle(0, 0, r);
+        if(kind === 'colony' && !here) {
+          g.drawRoundedRect(-r, -r, r*2, r*2, 3);
+        } else if(kind === 'trade' && !here) {
+          g.drawPolygon([0,-r,r,0,0,r,-r,0]);
+        } else {
+          g.drawCircle(0, 0, r);
+        }
         g.endFill();
         g.lineStyle(0.7, 0x32240f, 0.65);
         g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
-        boxes.push([q.x - r - 2, q.y - r - 2, (r + 2) * 2, (r + 2) * 2]);
+        boxes.push([q.x - r - 5, q.y - r - 5, (r + 5) * 2, (r + 5) * 2]);
       }
 
       for (i = 0; i < pins.length; i++) {
@@ -1424,7 +1437,7 @@
         var onLand = isLand(o.L.x, o.L.y);
         var isCity = o.L.kind === 'city' || o.L.kind === 'trade';
         var text = new PIXI.Text(o.L.label, {
-          fontFamily: FONT, fontSize: o.L.kind === 'colony' ? 9.5 : 10, fontWeight: '600',
+          fontFamily: FONT, fontSize: o.L.kind === 'colony' ? 11.5 : 12, fontWeight: '600',
           fill: o.L.here ? 0xff8b6e : (onLand ? 0x2e2212 : 0xe8f0f7),
           stroke: onLand ? 0xf6eedc : 0x082236,
           strokeThickness: 3
