@@ -115,6 +115,7 @@
     G.colonyId = null;
     G.colonyReturnCityId = null;
     G.voyage = null;
+    G.travelAuto = false;
     G.mapPick = null;
     G.fields = [];
     G.goods = {};
@@ -453,7 +454,11 @@
     log('Arrived in ' + to.name + ' on day ' + G.day + '.');
     restockIfNeeded();
     syncAuction();
-    /* Keep the player's Auto choice when docking in a regular city. */
+    /* Travel-only Auto ends at the destination; explicitly activated Auto persists. */
+    if (G.travelAuto) {
+      G.travelAuto = false;
+      if (A.shell && A.shell.stopClock) A.shell.stopClock();
+    }
   }
 
   /* The one passage rule for every crossing: city to city, city to plantation,
@@ -467,6 +472,12 @@
     if (price > G.cash) { log('The passage to ' + (to.name || to.label) + ' costs ' + A.money(price) + '.'); return false; }
     G.cash -= price;
     beginVoyage(to, days, price, 0, 0, forceColonyId || null, from);
+    /* A journey advances automatically even when the calendar was not manually enabled. */
+    if (!G.clockWanted) {
+      G.travelAuto = true;
+      G.clockWanted = true;
+      if (A.shell && A.shell.startClock) A.shell.startClock();
+    }
     checkEnd();
     return true;
   }

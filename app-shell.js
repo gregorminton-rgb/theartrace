@@ -186,6 +186,7 @@
   function stopClock() {
     if (G.clockTimer) { clearInterval(G.clockTimer); G.clockTimer = null; }
     G.clockWanted = false;
+    G.travelAuto = false;
     paintClockUi();
   }
 
@@ -629,6 +630,7 @@
     /* a restored page does not silently start spending days: the clock is
        off until the player ticks Auto again */
     G.clockWanted = false;
+    G.travelAuto = false;
     G.ended = false;
     G.started = true;
   }
@@ -778,6 +780,7 @@
     var id = ev.target.id;
     if (id === 'cal-auto' || id === 'colony-cal-auto') {
       if (ev.target.checked && G.started && !G.ended) {
+        G.travelAuto = false; // Explicitly enabling Auto means keep running in the city.
         G.clockWanted = true;
         startClock();
       } else {

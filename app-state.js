@@ -41,7 +41,8 @@
     stats: { buys: 0, sells: 0, hammer: 0, bestProfit: 0, worstProfit: 0, forgery: 0 },
     view: 'dealer',
     clockTimer: null,
-    clockWanted: false,         // the player wants the calendar running (paused ashore)
+    clockWanted: false,
+    travelAuto: false,       // true only for automatic travel, not manually requested Auto         // the player wants the calendar running (paused ashore)
     clockSpeed: 1600,           // ms per day for the auto calendar (langsam/normal/schnell)
     colonyId: null,            // colony id while the colony screen is open
     mapPick: null,             // { x, y } of the place picked on the travel chart
