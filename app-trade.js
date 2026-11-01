@@ -535,7 +535,7 @@
       (away ? '' :
       '<p class="note">Tickets cost ' + A.money(CFG.baseTicketPrice) + ' + ' +
       A.money(CFG.ticketPricePerDistance) + ' per map unit · ' + CFG.crateHandlingFee +
-      ' freight per crate · a long ride can knock a painting about. Click a pin or a city on the chart for its picture.</p>' + rows);
+      ' freight per crate · a long ride can knock a painting about. Click a pin or a city on the chart for its picture.</p><div class="dest-list city-travel-destinations">' + rows + '</div>');
   }
 
   function viewReport() {
