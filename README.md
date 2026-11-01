@@ -5,6 +5,8 @@ of forgeries and the bank. Travel between European, colonial and trade cities,
 run plantations and colonies for raw goods, and build your reputation on the
 auction floor.
 
+Collect 105 artworks by 35 artists, with exactly three distinct works per artist.
+
 Plain HTML, CSS and JavaScript. No build step, no backend.
 
 ## ▶️ Play now

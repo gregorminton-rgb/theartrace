@@ -15,3 +15,5 @@ _syntax*.txt
 __pycache__/
 # Local backups, not part of the game
 _backup_auktion/
+# Full-resolution local masters; web-sized copies live in images/art/
+images/artworks/

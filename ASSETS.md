@@ -27,6 +27,15 @@ plays. They are kept in the repository but are not loaded.
 - `images/` (city and scene pictures) and `images/art/` (artwork pictures)
   were created with AI image tools by the author and processed with the
   scripts in `tools/`.
+- `images/art/` contains 105 registered artwork images: three works for each of
+  35 artists. Web copies are JPEGs, at most 900 pixels wide, quality 80.
+- Full-resolution additions in `images/artworks/` remain local and are ignored
+  by Git. The artwork importer combines them with its `-Source` folder;
+  `-AdditionalSource` overrides the local additions folder. Originals are
+  never modified. `works-extra.js` holds catalogue facts and `art-notes.js`
+  records historical context and reference URLs for the additions. Dates,
+  dimensions and museum locations describe the referenced historical works,
+  not the AI-generated game images or their pixel dimensions.
 - `images/scenes/` contains auction-room plates derived from the same images.
 - Painting titles and artist names refer to historical works and are used
   descriptively.

@@ -13,6 +13,186 @@
   'use strict';
 
   var NOTES = {
+    pissarro_red_roofs: {
+      museum: 'Musee d\'Orsay, Paris',
+      story: 'Painted in 1877, this winter view near Pontoise places red roofs among bare branches. Pissarro builds the landscape from interlocking patches of colour rather than a single dominant subject.',
+      note: 'The full title is The Red Roofs, Corner of a Village, Winter.',
+      source: 'https://www.musee-orsay.fr/en'
+    },
+    pissarro_hoarfrost: {
+      museum: 'Musee d\'Orsay, Paris',
+      story: 'A figure carrying a bundle crosses a frost-covered field. The 1873 painting uses slanting shadows and muted earth colours to suggest the cold light of a winter morning.',
+      note: 'The French title is Gelee blanche. It was shown at the first Impressionist exhibition in 1874.',
+      source: 'https://www.musee-orsay.fr/en'
+    },
+    caravaggio_bacchus: {
+      museum: 'Uffizi Gallery, Florence',
+      story: 'A young Bacchus offers a cup of wine across a table of fruit. Painted around 1595-1597, the image brings a classical god into the immediate world of an ordinary model.',
+      note: 'The fruit and wine combine sensory pleasure with signs of ripeness and decay.',
+      source: 'https://www.uffizi.it/en/artworks/bacchus'
+    },
+    caravaggio_calling_of_saint_matthew: {
+      museum: 'Contarelli Chapel, San Luigi dei Francesi, Rome',
+      story: 'Christ enters a room of men counting money. His pointing hand and a strong diagonal beam of light turn a familiar interior into a moment of revelation.',
+      note: 'Painted in 1599-1600, the work remains in the chapel for which it was commissioned.',
+      source: 'https://www.sanluigideifrancesi.org/'
+    },
+    friedrich_monk_by_the_sea: {
+      museum: 'Alte Nationalgalerie, Berlin',
+      story: 'A solitary monk stands before a vast sea and sky. Friedrich strips away the usual landscape landmarks, making the contrast between the small figure and open space the subject.',
+      note: 'Painted in 1808-1810 and exhibited with The Abbey in the Oakwood.',
+      source: 'https://www.smb.museum/en/museums-institutions/alte-nationalgalerie/home/'
+    },
+    friedrich_chalk_cliffs: {
+      museum: 'Kunst Museum Winterthur, Reinhart am Stadtgarten',
+      story: 'Three figures look through white cliffs towards the sea. The composition combines close, precarious ground with a distant horizon and is associated with Friedrich\'s 1818 journey to Rugen.',
+      note: 'The landscape is a composed vision rather than a literal view from one identifiable cliff.',
+      source: 'https://www.kmw.ch/'
+    },
+    lorrain_marriage_of_isaac_and_rebekah: {
+      museum: 'National Gallery, London',
+      story: 'Dancers and musicians gather beside a river in a broad pastoral landscape. Claude uses trees, buildings and warm distance to give the biblical celebration an ideal setting.',
+      note: 'Painted in 1648, also known as The Mill. Its companion is The Embarkation of the Queen of Sheba.',
+      source: 'https://www.nationalgallery.org.uk/paintings/claude-landscape-with-the-marriage-of-isaac-and-rebekah'
+    },
+    lorrain_seaport_at_sunset: {
+      museum: 'Louvre Museum, Paris',
+      story: 'Ships and classical architecture frame the low sun in an imagined harbour. The scene turns the activities of a port into an exploration of luminous distance.',
+      note: 'Catalogue reference: the Louvre seaport of 1639. Claude painted several related harbour compositions.',
+      source: 'https://collections.louvre.fr/en/'
+    },
+    munch_sick_child: {
+      museum: 'National Museum, Oslo',
+      story: 'A pale child rests against a pillow beside a grieving woman. Munch repeatedly scraped and reworked the surface, making the image feel like a memory that cannot settle.',
+      note: 'Catalogue reference: the original 1885-1886 painting. Munch later returned to the subject in paintings and prints.',
+      source: 'https://www.nasjonalmuseet.no/en/collection/object/NG.M.00839'
+    },
+    munch_madonna: {
+      museum: 'National Museum, Oslo',
+      story: 'A woman with closed eyes emerges from flowing dark forms beneath a red halo. Munch joins devotional associations with a deliberately unconventional, sensual figure.',
+      note: 'Catalogue reference: the National Museum painting dated 1894. Other painted versions and lithographs have different dimensions.',
+      source: 'https://www.nasjonalmuseet.no/en/collection/object/NG.M.00841'
+    },
+    schiele_self_portrait_physalis: {
+      museum: 'Leopold Museum, Vienna',
+      story: 'Schiele turns an angular face towards the viewer beside the bright pods of a Chinese lantern plant. The small 1912 panel gives his gaze an unusually concentrated presence.',
+      note: 'Also called Self-Portrait with Physalis. The plant provides a vivid counterpoint to the dark clothing.',
+      source: 'https://www.leopoldmuseum.org/en/collection'
+    },
+    schiele_seated_woman: {
+      museum: 'National Gallery Prague',
+      story: 'A seated woman raises one knee beneath her tilted head. Angular outlines and patches of colour make the informal pose into an intense study of body and expression.',
+      note: 'A 1917 work on paper, not an oil painting. The English title is also given as Seated Woman with Bent Knee.',
+      source: 'https://www.ngprague.cz/en'
+    },
+    leger_mechanic: {
+      museum: 'National Gallery of Canada, Ottawa',
+      story: 'The worker\'s rounded limbs and firm outlines echo the machinery of the modern world. Leger gives an everyday figure the solidity and scale of a monument.',
+      note: 'Catalogue reference: the 1920 painting in Ottawa. The French title is Le Mecanicien.',
+      source: 'https://www.gallery.ca/collection/artwork/the-mechanic'
+    },
+    leger_city: {
+      museum: 'Philadelphia Museum of Art',
+      story: 'Signs, stairs, figures and coloured planes overlap in a compressed urban panorama. Leger makes the modern city a structure of movement rather than a view from one fixed position.',
+      note: 'Painted in 1919; French title: La Ville.',
+      source: 'https://www.philamuseum.org/'
+    },
+    marc_yellow_cow: {
+      museum: 'Solomon R. Guggenheim Museum, New York',
+      story: 'A yellow cow leaps across a landscape of bright, angular colour. Marc uses the animal and its surroundings to suggest a joyful world beyond naturalistic appearances.',
+      note: 'Painted in 1911. Colour carries symbolic and emotional meaning in Marc\'s work.',
+      source: 'https://www.guggenheim.org/artwork/2760'
+    },
+    marc_fate_of_the_animals: {
+      museum: 'Kunstmuseum Basel',
+      story: 'Animals are caught among slashing lines and fractured trees. The 1913 painting turns a forest into a scene of violent disruption.',
+      note: 'Part of the painting was damaged by fire in 1916. Paul Klee restored the damaged area using restrained brown tones.',
+      source: 'https://kunstmuseumbasel.ch/en/collection'
+    },
+    seurat_bathers_at_asnieres: {
+      museum: 'National Gallery, London',
+      story: 'Men and boys rest beside the Seine against a distant industrial skyline. Seurat gives this suburban scene a monumental stillness and carefully balanced arrangement.',
+      note: 'Completed in 1884, before the fully developed pointillism of A Sunday on La Grande Jatte.',
+      source: 'https://www.nationalgallery.org.uk/paintings/georges-seurat-bathers-at-asnieres'
+    },
+    seurat_circus: {
+      museum: 'Musee d\'Orsay, Paris',
+      story: 'A performer balances on a running horse while spectators form ordered rows around the ring. Curving lines and luminous colour turn the circus into a system of rhythms.',
+      note: 'Seurat\'s last major painting, begun in 1890 and left unfinished at his death in 1891.',
+      source: 'https://www.musee-orsay.fr/en'
+    },
+    toulouse_dance_at_moulin_rouge: {
+      museum: 'Philadelphia Museum of Art',
+      story: 'Dancers practise on the floor of the Moulin Rouge while fashionable spectators watch. Lautrec combines the performance with a sharp observation of the surrounding crowd.',
+      note: 'The 1890 dance scene is distinct from At the Moulin Rouge, the later group around a table already in this catalogue.',
+      source: 'https://www.philamuseum.org/'
+    },
+    toulouse_jane_avril: {
+      museum: 'Impressions in several museum collections, including the Musee Toulouse-Lautrec, Albi',
+      story: 'The dancer Jane Avril becomes a sweeping silhouette in this 1893 lithographic poster. Lautrec uses a bold outline and an unusual cropped foreground to make an instantly recognisable advertisement.',
+      note: 'Catalogue reference: the 1893 poster. Multiple impressions survive; sheet dimensions vary with trimming and state.',
+      source: 'https://www.musee-toulouse-lautrec.com/'
+    },
+    matisse_red_studio: {
+      museum: 'Museum of Modern Art, New York',
+      story: 'Matisse floods his studio with a field of red, leaving furniture and objects picked out by slender outlines. The paintings within the painting retain their own contrasting colours.',
+      note: 'Painted in 1911; French title: L\'Atelier rouge.',
+      source: 'https://www.moma.org/collection/works/78389'
+    },
+    matisse_woman_with_a_hat: {
+      museum: 'San Francisco Museum of Modern Art',
+      story: 'Matisse paints his wife Amelie with patches of green, orange, pink and blue. Colour shapes the face and clothing without following their expected local appearance.',
+      note: 'Shown at the 1905 Salon d\'Automne, where the radical colour of Matisse and his peers helped give rise to the name Fauves.',
+      source: 'https://www.sfmoma.org/artwork/91.161/'
+    },
+    leonardo_lady_with_an_ermine: {
+      museum: 'Princes Czartoryski Museum, Krakow',
+      story: 'Cecilia Gallerani turns while holding an ermine whose movement echoes her own. Leonardo links face, hands and animal in a closely observed court portrait.',
+      note: 'Usually dated around 1489-1491. The sitter was associated with the court of Ludovico Sforza in Milan.',
+      source: 'https://mnk.pl/en/branch/the-princes-czartoryski-museum'
+    },
+    leonardo_virgin_of_the_rocks: {
+      museum: 'Louvre Museum, Paris',
+      story: 'Mary, the two infants and an angel form a unified group in a shadowy rocky landscape. Gestures and soft transitions of light connect the figures without a rigid architectural setting.',
+      note: 'Catalogue reference: the Louvre version, begun in 1483 and transferred from panel to canvas. Often dated 1483-1486; the Louvre gives a broader range of circa 1483-1494. The London version is a separate painting.',
+      source: 'https://collections.louvre.fr/en/ark:/53355/cl010062373'
+    },
+    chagall_birthday: {
+      museum: 'Museum of Modern Art, New York',
+      story: 'A man bends impossibly through the air to kiss a woman carrying flowers. Chagall transforms a domestic room into a space governed by affection rather than gravity.',
+      note: 'Painted in 1915, the year Chagall married Bella Rosenfeld. The support is cardboard.',
+      source: 'https://www.moma.org/collection/'
+    },
+    chagall_paris_through_the_window: {
+      museum: 'Solomon R. Guggenheim Museum, New York',
+      story: 'The Eiffel Tower, a cat, a parachutist and a two-faced figure share a colourful view of Paris. The window connects observed city life with memory and fantasy.',
+      note: 'Painted in 1913 during Chagall\'s first period in Paris.',
+      source: 'https://www.guggenheim.org/artwork/793'
+    },
+    picasso_old_guitarist: {
+      museum: 'Art Institute of Chicago',
+      story: 'An elderly musician bends over a guitar in a nearly monochrome blue setting. The warm instrument provides the strongest colour contrast to his elongated body.',
+      note: 'Painted in late 1903-early 1904 during Picasso\'s Blue Period, on a wooden panel.',
+      source: 'https://www.artic.edu/artworks/28067/the-old-guitarist'
+    },
+    picasso_three_musicians: {
+      museum: 'Museum of Modern Art, New York',
+      story: 'Three theatrical musicians are assembled from interlocking, flat coloured shapes. The apparently cut-paper construction is painted in oil.',
+      note: 'Catalogue reference: the MoMA version of 1921. Picasso also painted a separate version now in Philadelphia.',
+      source: 'https://www.moma.org/collection/works/78630'
+    },
+    kandinsky_yellow_red_blue: {
+      museum: 'Centre Pompidou, Paris',
+      story: 'Large fields of yellow, red and blue interact with arcs, grids and floating geometric forms. Kandinsky builds movement from colour and shape rather than recognisable objects.',
+      note: 'Painted in 1925 during his Bauhaus years; German title: Gelb-Rot-Blau.',
+      source: 'https://www.centrepompidou.fr/en/'
+    },
+    kandinsky_composition_vii: {
+      museum: 'Tretyakov Gallery, Moscow',
+      story: 'A dense current of colour, curves and diagonals fills the canvas. Preparatory studies connect the abstraction with themes of flood, resurrection and renewal.',
+      note: 'The large oil painting was completed in 1913. It is distinct from its many preparatory drawings and watercolours.',
+      source: 'https://www.tretyakovgallery.ru/en/'
+    },
     /* ---------------- Renaissance ---------------- */
     botticelli_dante_comedy: {
       museum: 'Kupferstichkabinett, Berlin (and other sheets)',
