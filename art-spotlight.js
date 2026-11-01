@@ -1,4 +1,4 @@
-/* Occasional, dismissible art-history spotlight during journeys. */
+/* Dismissible art-history spotlight, in cities, colonies and on journeys. */
 (function(){
  'use strict';
  var seenDay=-1, dismissTimer=null, bag=[], lastWorkId=null, bagSignature='';
@@ -30,7 +30,7 @@
  function showSpotlight(day){
   var A=window.ArtRace, G=window.ArtRaceGame && window.ArtRaceGame.G;
   if(day<seenDay){seenDay=-1;bag=[];lastWorkId=null;}
-  if(!A||!G||!G.started||G.ended||!G.voyage||day===seenDay||day%7!==0)return;
+  if(!A||!G||!G.started||G.ended||day===seenDay||day%7!==0)return;
   if(document.getElementById('overlay') && !document.getElementById('overlay').hidden)return;
   var images=window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images || {};
   var works=(A.works||[]).filter(function(w){return images[w.id] && images[w.id].file;});
@@ -45,7 +45,7 @@
   panel.id='art-spotlight';panel.className='art-spotlight';
   panel.setAttribute('role','status');
   panel.innerHTML='<button type="button" class="art-spotlight-close" aria-label="'+(de?'Schließen':'Close')+'">×</button>'+
-   '<div class="art-spotlight-label">'+(de?'Kunstwerk auf Reisen':'Art on your journey')+'</div>'+
+   '<div class="art-spotlight-label">'+(de?'Kunstwerk des Tages':'Artwork of the day')+'</div>'+
    '<button type="button" class="art-spotlight-picture" aria-label="'+(de?'Kunstwerk ansehen':'View artwork')+'"><img src="'+esc(images[w.id].file)+'" alt="'+esc(w.title)+'"></button>'+
    '<div class="art-spotlight-copy"><strong>'+esc(w.title)+'</strong><span>'+esc(artist?artist.name:'')+' · '+esc(w.yearCreated)+' · '+esc(A.workEpoch?A.workEpoch(w):'')+'</span><small>'+note+'</small></div>';
   document.body.appendChild(panel);
@@ -55,6 +55,11 @@
   });
   dismissTimer=setTimeout(dismiss,7000);
  }
- window.addEventListener('artrace-day-advanced',function(ev){showSpotlight(ev.detail&&ev.detail.day);});
+ /* Every ended day closes the previous day's artwork, even on a colony
+    or while a dialog is open. A new spotlight belongs only to the new day. */
+ window.addEventListener('artrace-day-advanced',function(ev){
+  dismiss();
+  showSpotlight(ev.detail && ev.detail.day);
+ });
  window.addEventListener('pagehide',dismiss);
 })();
