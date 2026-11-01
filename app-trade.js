@@ -377,7 +377,9 @@
         '<span class="est">consignor estimate ' + A.money(estLo) + '–' + A.money(estHi) + '</span></div>' +
         '<button class="btn buy" data-action="buy" data-uid="' + inst.uid + '"' + (afford ? '' : ' disabled') + '>Buy</button></article>';
     }).join('');
-    return '<p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
+    var deScarcity=window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de';
+    var scarcity=deScarcity?'Wertklassen: A ×5 (nur 1 Stadt), B ×4 (2), C ×3 (4), D ×2 (7), E ×1 (alle Städte). Reisen lohnt sich für seltene Kunst.':'Artwork classes: A ×5 (1 city), B ×4 (2), C ×3 (4), D ×2 (7), E ×1 (all cities). Travel to find valuable art.';
+    return '<p class="note">'+scarcity+'</p><p class="note">Restocks every ' + CFG.dealerRestockDays + ' days · gallery markup ' +
       A.pct(CFG.dealerMargin * CFG.dealerPremium) + ' over market value · buy-backs pay ' +
       A.pct(1 - CFG.dealerSpread) + ' of value.</p><section class="art-market-view">' + marketSortControls('dealer') + '<div class="art-market-grid">' + rows + '</div></section>';
   }
@@ -466,16 +468,18 @@
       var quizOpen = lot.leader === 'you' && lot.quiz && !lot.quiz.answered;
       var w = A.work(lot.inst.defId);
       var a = A.artistById[w.artistId];
+      var tier=A.artTier(w);
+      var tierLabel=(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★';
       /* While the expert question is open, the row must not show the answer:
          year, medium and kind of picture stay hidden, and the picture does not open. */
       var info = open
         ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
           '<span class="title">' + h(w.title) + '</span>' +
-          '<span class="credit">' + h(a ? a.name : 'Unknown') + '</span></div></div>'
+          '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span></div></div>'
         : quizOpen
           ? '<div class="row-main">' + thumb(w, lot.inst.uid, true) + '<div>' +
             '<span class="title">' + h(w.title) + '</span>' +
-            '<span class="credit">' + h(a ? a.name : 'Unknown') + '</span>' +
+            '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span>' +
             '<span class="prov">' + h(lot.inst.provenance) + '</span></div></div>' +
             '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
             '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>'
