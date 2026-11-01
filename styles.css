@@ -2146,3 +2146,35 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .wm-legend .wm-key{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:999px;background:linear-gradient(180deg,#fff4d2,#e8cf97);border:1px solid #916832;color:#49351c;font-weight:800;box-shadow:inset 0 1px 0 #fff8e7,0 2px 0 #826133}
 .wm-legend .wm-key::before{display:none}
 @media(max-width:760px){.wm-legend .wm-key{padding:3px 5px;font-size:.65rem;gap:3px}}
+
+/* Introduction: artwork must stay inside its own thin inner picture frame,
+   not simply within the outer dialog. */
+.dialog--tutorial .dialog-body{box-sizing:border-box;min-width:0;overflow-x:hidden;padding:12px 14px 0}
+.dialog--tutorial .tutorial-hero{
+ box-sizing:border-box;width:100%;max-width:100%;min-width:0;
+ border:2px solid #b99a62;border-radius:10px;
+ overflow:hidden;isolation:isolate;
+}
+.dialog--tutorial .tutorial-hero>img{
+ display:block;box-sizing:border-box;max-width:100%;max-height:100%;
+ object-fit:cover;object-position:center;
+}
+.dialog--tutorial .tutorial-collage{
+ box-sizing:border-box;max-width:52%;right:12px;top:12px;gap:6px;
+ transform:none;overflow:hidden;padding:6px;
+}
+.dialog--tutorial .tutorial-collage img{
+ box-sizing:border-box;flex:0 1 auto;min-width:0;max-width:calc(50% - 3px);
+ height:auto;max-height:110px;aspect-ratio:3/4;
+ transform:none!important;border-width:3px;border-radius:3px;
+}
+.dialog--tutorial .tutorial-copy,.dialog--tutorial .tutorial-points{box-sizing:border-box;max-width:100%;min-width:0}
+.dialog--tutorial .tutorial-copy img,.dialog--tutorial .tutorial-copy svg{
+ display:block;max-width:100%;height:auto;object-fit:contain;
+}
+@media(max-width:760px){
+ .dialog--tutorial .dialog-body{padding:8px 9px 0}
+ .dialog--tutorial .tutorial-hero{border-radius:8px}
+ .dialog--tutorial .tutorial-collage{right:5px;top:5px;max-width:47%;padding:3px;gap:4px}
+ .dialog--tutorial .tutorial-collage img{border-width:2px;max-width:calc(50% - 2px);max-height:76px}
+}
