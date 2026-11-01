@@ -1470,6 +1470,32 @@
           g.drawCircle(0, 0, r);
         }
         g.endFill();
+        /* Sticker-style travel tokens: illustrated motif, specular highlight,
+           dark outline. Their hit-testing remains based on the existing pins. */
+        g.lineStyle(1,0xffffff,0.6);
+        g.moveTo(-r*.48,-r*.42);g.lineTo(-r*.1,-r*.65);
+        g.lineStyle(0);
+        if (kind === 'colony' && !here) {
+          /* Two playful leaves over a planter. */
+          g.beginFill(0xf8e3a3,1);
+          g.drawRoundedRect(-r*.49,r*.19,r*.98,r*.34,1);
+          g.endFill();
+          g.lineStyle(1.3,0xf7f6d4,1);g.moveTo(0,r*.21);g.lineTo(0,-r*.42);
+          g.lineStyle(0);g.beginFill(0xd6f58b,1);
+          g.drawEllipse(-r*.24,-r*.28,r*.32,r*.19);
+          g.drawEllipse(r*.25,-r*.40,r*.29,r*.18);g.endFill();
+        } else if (kind === 'trade' && !here) {
+          /* A coin embossed with a bright money mark. */
+          g.beginFill(0xffe39a,1);g.drawCircle(0,0,r*.54);g.endFill();
+          g.lineStyle(1.4,0x865018,1);g.drawCircle(0,0,r*.54);
+          g.moveTo(-r*.25,-r*.2);g.lineTo(r*.24,-r*.2);
+          g.moveTo(-r*.25,r*.16);g.lineTo(r*.24,r*.16);g.lineStyle(0);
+        } else {
+          /* Mini art frame: the collection cities are miniature galleries. */
+          g.beginFill(0xffdf87,1);g.drawRoundedRect(-r*.49,-r*.42,r*.98,r*.84,1);g.endFill();
+          g.beginFill(0x6cadbe,1);g.drawRect(-r*.32,-r*.25,r*.64,r*.5);g.endFill();
+          g.beginFill(0xe6f7cc,1);g.drawPolygon([-r*.3,r*.22,0,-r*.11,r*.3,r*.22]);g.endFill();
+        }
         g.lineStyle(0.7, 0x32240f, 0.65);
         g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
