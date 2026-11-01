@@ -1922,3 +1922,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 /* Keep the travel map and text-bearing interactive pieces clear and opaque. */
 #screen-game .worldmap--canvas{background:#2079a0;backdrop-filter:none}
+
+/* Desktop header: use the same current city artwork as the game stage. */
+@media(min-width:1000px){
+ #screen-game #hud{
+   background-image:linear-gradient(90deg,rgba(246,225,183,.77),rgba(236,210,163,.60)),var(--play-city-art,none);
+   background-position:center center;background-size:cover;background-repeat:no-repeat;
+   color:#3d2818;border-color:#9d7746;box-shadow:0 3px 12px rgba(45,30,16,.20);
+ }
+ #screen-game #hud .hud-brand strong{color:#533416;text-shadow:0 1px 0 rgba(255,251,236,.8)}
+ #screen-game #hud .hud-name,#screen-game #hud-city,#screen-game #hud-sub{color:#382718;text-shadow:0 1px 2px rgba(255,248,227,.9)}
+ #screen-game #hud .hud-chip,#screen-game #hud .language-switch{background:rgba(255,245,220,.84);color:#49321c;border-color:#aa8950}
+ #screen-game #hud #ticker{background:rgba(255,247,223,.78);border-radius:7px;color:#47301b}
+ #screen-game #hud .chrono-cal{background:rgba(255,250,236,.87);border-radius:10px}
+ #screen-game #hud .chrono-speed,#screen-game #hud .chrono-auto{background:rgba(255,249,232,.93);color:#322315}
+}
