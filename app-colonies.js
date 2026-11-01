@@ -86,12 +86,12 @@
   var CROP_BY_ID = {};
   CROPS.forEach(function (c) { CROP_BY_ID[c.id] = c; });
 
-  /* Each trade hub pays its own premium by commodity. */
+  /* Distinct regional demand: the best hub may pay 50%+ above the weakest.
+     Base multipliers do not alter harvest yields or freight costs. */
   var TRADE_HUB_MULT = {
-    london:  { kakao: 1.00, tee: 1.18, kaffee: 1.02, tabak: 1.12, stoffe: 1.06 },
-    newyork: { kakao: 1.06, tee: 1.02, kaffee: 1.18, tabak: 1.00, stoffe: 1.14 },
-    /* Tokio pays for what the archipelago does not grow: tobacco, textiles, cocoa */
-    tokio:   { kakao: 1.22, tee: 0.96, kaffee: 1.08, tabak: 1.26, stoffe: 1.18 }
+    london:  { kakao: 1.05, tee: 1.45, kaffee: 0.90, tabak: 1.12, stoffe: 0.90 },
+    newyork: { kakao: 1.35, tee: 0.90, kaffee: 1.50, tabak: 0.90, stoffe: 1.25 },
+    tokio:   { kakao: 1.60, tee: 1.00, kaffee: 1.00, tabak: 1.55, stoffe: 1.55 }
   };
 
   /* The four colonies you can actually sail to (each carries its own plate). */
@@ -157,8 +157,17 @@
   }
   function cropPriceOnDay(crop, hubId, day) {
     var mult = (TRADE_HUB_MULT[hubId] || {})[crop.id] || 1;
-    var wave = 0.8 + 0.4 * Math.sin(day * 0.17 + (hash2(crop.id + ':' + hubId) % 1000) * 0.01);
-    return Math.round(crop.base * mult * wave);
+    /* Two commodity cycles: strong but smooth day-to-day movements.
+       The rare three-day demand rush is abrupt and can roughly double
+       yesterday's price. All hubs use the same daily pricing function,
+       including auto-sale on a shipment's arrival day. */
+    var seed = hash2(crop.id + ':' + hubId);
+    var phase = (seed % 1000) * 0.01;
+    var wave = 1.02 + 0.43 * Math.sin(day * 0.13 + phase)
+                    + 0.22 * Math.sin(day * 0.037 + phase * 1.7);
+    var rushDay = (day + (seed % 59)) % 59;
+    var demandRush = rushDay < 3 ? 1.85 : 1;
+    return Math.max(1, Math.round(crop.base * mult * Math.max(0.35, wave) * demandRush));
   }
 
   function cropPrice(crop,hubId){return cropPriceOnDay(crop,hubId,G.day);}
