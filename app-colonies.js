@@ -72,6 +72,17 @@
     { id: 'tabak',  label: 'Tobacco',  slug: 'tabak',  days: 16, cost: 1000, base: 3000 },
     { id: 'stoffe', label: 'Textiles', slug: 'stoffe', days: 20, cost: 1500, base: 4600 }
   ];
+  /* Two historically characteristic tradable goods per location.
+     Existing fields and harvested inventory remain untouched in saved games. */
+  var COLONY_CROP_IDS = {
+    guatemala: ['kakao','kaffee'],
+    jamaica: ['kaffee','tabak'],
+    trinidad: ['kakao','kaffee'],
+    ceylon: ['tee','stoffe']
+  };
+  function colonyAllowsCrop(colonyId,cropId){
+    return !!(COLONY_CROP_IDS[colonyId] && COLONY_CROP_IDS[colonyId].indexOf(cropId)!==-1);
+  }
   var CROP_BY_ID = {};
   CROPS.forEach(function (c) { CROP_BY_ID[c.id] = c; });
 
@@ -434,6 +445,7 @@
     
     /* Render plantage view (only when visible) */
     if (G.colonyMenu === 'plantage') {
+      if(G.plantCropId && !colonyAllowsCrop(G.colonyId,G.plantCropId))G.plantCropId=null;
       el('colony-field-toolbar').innerHTML = colonyMultiBarHTML();
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
@@ -472,7 +484,8 @@
   }
 
   function colonyPaletteHTML() {
-    var cards = CROPS.map(function (c) {
+    var available = COLONY_CROP_IDS[G.colonyId] || [];
+    var cards = CROPS.filter(function(c){return available.indexOf(c.id)!==-1;}).map(function (c) {
       var indicative = cropPrice(c, 'london');
       return '<div class="crop-tile' + (G.plantCropId === c.id ? ' selected' : '') + '" draggable="true"' +
         ' data-drag-crop="' + c.id + '" data-colony="arm" data-crop="' + c.id + '"' +
@@ -484,7 +497,7 @@
         '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
         '</div>';
     }).join('');
-    return '<h3 class="colony-panel-title">Crops</h3>' +
+    return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' +
       '<p class="colony-note">Drag a plate onto a plot to lay out a field. That plot is then yours — and only there can the overseer take over.</p>' + cards;
   }
 
@@ -751,6 +764,7 @@
   /* ---------- borrowed by the other app-*.js modules ---------------------- */
   A.colonies = window.ArtRaceColonies = {
     CROPS: CROPS, CROP_BY_ID: CROP_BY_ID, COLONIES: COLONIES, COLONY_BY_ID: COLONY_BY_ID,
+    COLONY_CROP_IDS: COLONY_CROP_IDS, colonyAllowsCrop: colonyAllowsCrop,
     TRADE_HUB_IDS: TRADE_HUB_IDS, TRADE_HUB_MULT: TRADE_HUB_MULT,
     cropPrice: cropPrice, cropPriceOnDay: cropPriceOnDay, cropThumb: cropThumb, hash2: hash2,
     sailToColony: sailToColony, sailBack: sailBack, openColony: openColony,
