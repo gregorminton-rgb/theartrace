@@ -148,8 +148,9 @@
         }).join('') + '</dl>'
       : '';
 
-    var bio = artist && artist.bio ? '<p class="av-bio">' + h(artist.bio) + '</p>' : '';
-    if (artistNote) bio += '<p class="av-bio av-bio--note">' + h(artistNote) + '</p>';
+    var bioText=artist&&artist.bio ? (localized&&localized.artistBio?localized.artistBio(w.artistId,artist.bio):artist.bio) : '';
+    var bio = bioText ? '<p class="av-bio">' + h(bioText) + '</p>' : '';
+    if (artistNote && !(localized && localized.artistBio && localized.artistBio(w.artistId,'') && window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de')) bio += '<p class="av-bio av-bio--note">' + h(artistNote) + '</p>';
 
     var body = '<div class="av">' +
       '<div class="av-left">' + plate + '<div class="av-zoom-controls"><button type="button" data-artzoom="out" aria-label="Zoom out">−</button><button type="button" data-artzoom="reset">100%</button><button type="button" data-artzoom="in" aria-label="Zoom in">+</button></div>' + story + aside + extraStory + '</div>' +
