@@ -1800,3 +1800,35 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game:has(.auction-view) .auction-view .row{padding:9px 4px}
  #screen-game:has(.auction-view) .auction-view .row-btns .btn{min-height:42px}
 }
+
+/* Unified illustrated background across ALL city views: artwork behind the
+   work surface, never a tall panorama stealing the usable viewport. */
+#screen-game #main{position:relative;isolation:isolate}
+#screen-game #main::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background-image:linear-gradient(rgba(248,239,215,.68),rgba(248,239,215,.78)),var(--play-city-art,none);
+ background-size:cover;background-position:center;background-repeat:no-repeat;
+ opacity:1;border-radius:12px;
+}
+#screen-game #main > *{position:relative;z-index:1;min-width:0}
+#screen-game #stage{min-height:0}
+#screen-game #stage .stage-frame{display:none!important}
+#screen-game #stage #panel-wrap{flex:1 1 auto;min-height:0;max-height:none;height:0}
+#screen-game #stage .panel{min-height:0;background:rgba(255,249,235,.94)}
+#screen-game #panel{min-height:0;overflow-y:auto}
+#screen-game #market-col .card{background:rgba(255,249,235,.94)}
+#screen-game #stations{background:rgba(248,239,215,.25);border-radius:10px}
+#screen-game #main .station{background:linear-gradient(180deg,rgba(255,250,230,.97),rgba(231,211,172,.96))}
+@media(min-width:761px){
+ #screen-game #stage{overflow:hidden;gap:7px}
+ #screen-game #stage .panel{display:flex;flex-direction:column}
+ #screen-game #stage #panel-wrap{overflow:hidden}
+ #screen-game #stage .panel-foot{flex:0 0 auto}
+}
+@media(max-width:760px){
+ #screen-game #main::before{background-position:center top;background-attachment:scroll}
+ #screen-game #stage #panel-wrap{flex:1 1 auto;height:auto;min-height:0}
+ #screen-game #stage .panel{background:rgba(255,249,235,.94)}
+}
+/* Travel canvas must remain fully opaque, with its own illustrated sea and land. */
+#screen-game .worldmap--canvas{background-color:#2079a0}
