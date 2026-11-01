@@ -183,8 +183,6 @@
       <span class="colony-menu-label">Plantation menu</span>
       <button class="colony-menu-btn active" type="button" data-colony="menu" data-menu="plantage"><span class="colony-menu-ico"><span class="icon-art icon-art--plantage" aria-hidden="true">🌱</span></span><b>Crops</b><small>Sow fields</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="handel"><span class="colony-menu-ico"><span class="icon-art icon-art--handel" aria-hidden="true">💰</span></span><b>Trade</b><small>Ship the harvest</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="lager"><span class="colony-menu-ico"><span class="icon-art icon-art--lager" aria-hidden="true">📦</span></span><b>Store</b><small>Supplies &amp; crates</small></button>
-      <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="arbeiter"><span class="colony-menu-ico"><span class="icon-art icon-art--arbeiter" aria-hidden="true">👷</span></span><b>Workers</b><small>Hire &amp; assign</small></button>
       <button class="colony-menu-btn" type="button" data-colony="menu" data-menu="reise"><span class="colony-menu-ico"><span class="icon-art icon-art--reise" aria-hidden="true">🚂</span></span><b>Travel</b><small>World map</small></button>
     </nav>
     <div class="colony-content" id="colony-content">
@@ -210,20 +208,6 @@
       <!-- HANDEL view -->
       <div class="colony-view colony-view--handel" id="colony-view-handel" hidden>
         <div class="colony-trade-panel" id="colony-handel-content"></div>
-      </div>
-      <!-- LAGER view -->
-      <div class="colony-view colony-view--lager" id="colony-view-lager" hidden>
-        <div class="colony-simple-panel">
-          <h2>Store</h2>
-          <div id="colony-lager-content"></div>
-        </div>
-      </div>
-      <!-- ARBEITER view -->
-      <div class="colony-view colony-view--arbeiter" id="colony-view-arbeiter" hidden>
-        <div class="colony-simple-panel">
-          <h2>Workers</h2>
-          <div id="colony-arbeiter-content"></div>
-        </div>
       </div>
       <!-- REISE view: the same chart the travel panel draws -->
       <div class="colony-view colony-view--reise" id="colony-view-reise" hidden>
@@ -255,8 +239,8 @@
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261101-TRAVELAUTO1"></script>
-<script src="app-crew.js?v=20261101-BULKUPGRADE1"></script>
-<script src="app-colonies.js?v=20261101-BULKUPGRADE1"></script>
+<script src="app-crew.js?v=20261101-THREETABS1"></script>
+<script src="app-colonies.js?v=20261101-THREETABS1"></script>
 <script src="app-core.js?v=20261101-ARTSETS1"></script>
 <script src="art-notes.js?v=20261102-ARTISTTRIOS1"></script>
 <script src="app-art.js?v=20261101-DESKTOPHUDART2"></script>

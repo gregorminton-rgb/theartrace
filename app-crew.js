@@ -371,7 +371,8 @@
 
   function colonyAction(action, t) {
     if (action === 'menu') {
-      G.colonyMenu = t.getAttribute('data-menu');
+      var menu=t.getAttribute('data-menu');
+      G.colonyMenu=menu==='lager'?'handel':menu==='arbeiter'?'plantage':menu;
       renderColony();
     } else if (action === 'arm') {
       var cid = t.getAttribute('data-crop');
