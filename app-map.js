@@ -81,6 +81,7 @@
     if (id !== 'europe' && id !== 'world') return;
     if (G.mapLevel === id) return;
     G.mapLevel = id;
+    rememberedMapView = null;
     if (worldMap) worldMap.setLevel(id);
     renderAll();
   }
@@ -117,6 +118,9 @@
 
   /* ---- the live chart ------------------------------------------------ */
   var worldMap = null;
+  /* A day advance re-renders panel.innerHTML and destroys its canvas. Keep
+     camera state outside the Pixi instance so the voyage remains in frame. */
+  var rememberedMapView = null;
   A.mapView = { get: function () { return worldMap; }, render: renderWorldMap,
                  sync: syncWorldMap, setLevel: setMapLevel, levelFor: levelForPlace,
                  /* pick a place by id instead of by pixel: the chart's own
@@ -277,6 +281,7 @@
     if (!worldMap) {
       worldMap = Map.mount(stage, {
         level: G.mapLevel || 'world',
+        initialView: rememberedMapView,
         getSelection: function () { return G.mapHover ? null : (G.mapPick || null); }
       });
       if (!worldMap) {
@@ -327,6 +332,7 @@
 
   function destroyWorldMap() {
     if (worldMap) {
+      if (worldMap.getView) rememberedMapView = worldMap.getView();
       worldMap.destroy();
       worldMap = null;
     }
