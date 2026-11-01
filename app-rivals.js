@@ -78,7 +78,7 @@
     var reserve=daysLeft>40?2700:daysLeft>12?1000:0;
     if(p.cash<=reserve+200)return;
     var possibilities=[];
-    var c=city(p),yr=A.app&&A.app.dateOf?A.app.dateOf(G.day).year:1925+Math.floor((G.day-1)/365);
+    var c=city(p),yr=A.CFG.startYear+Math.floor((G.day-1)/365);
     var ownedByArtist={};
     p.portfolio.forEach(function(inst){var work=A.work(inst.defId);if(work)ownedByArtist[work.artistId]=(ownedByArtist[work.artistId]||0)+1;});
     var searchCount=24;
