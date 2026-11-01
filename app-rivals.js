@@ -72,30 +72,36 @@
   }
   function buy(p) {
     if(p.travelDays||p.portfolio.length>=p.capacity)return;
-    /* Keep money for operating the plantation early; buy aggressively at the
-       end because victory is based on the NUMBER of pictures, not wealth. */
+    /* Keep money for operations early; acquire artworks steadily but not daily.
+       Competition is judged by condition points and artist-set bonuses. */
     var daysLeft=G.careerDays-G.day;
-    var reserve=daysLeft>40?3000:daysLeft>12?1200:0;
+    var reserve=daysLeft>40?2700:daysLeft>12?1000:0;
     if(p.cash<=reserve+200)return;
     var possibilities=[];
-    var c=city(p),yr=1925+Math.floor((G.day-1)/365);
+    var c=city(p),yr=A.app&&A.app.dateOf?A.app.dateOf(G.day).year:1925+Math.floor((G.day-1)/365);
+    var ownedByArtist={};
+    p.portfolio.forEach(function(inst){var work=A.work(inst.defId);if(work)ownedByArtist[work.artistId]=(ownedByArtist[work.artistId]||0)+1;});
     var searchCount=24;
     for(var k=0;k<searchCount;k++){
       var w=A.works[Math.floor(rand(p,k+17)*A.works.length)];
-      if(!w || (A.app&&A.app.ownedWork&&A.app.ownedWork(w.id)))continue;
+      if(!w || w.yearCreated>yr || (A.app&&A.app.ownedWork&&A.app.ownedWork(w.id)))continue;
       if(possibilities.some(function(q){return q.id===w.id;}))continue;
       var inst={condition:Math.max(.55,Math.min(1,w.typicalCondition||.8)),
         authenticity:'Unexamined',isFake:false};
       var idx=A.sliceIndex(G.market,c,A.workEpoch(w));
       var ask=A.dealerAsk(w,inst,c,idx,yr,p.reputation,1);
       if(ask>p.cash-reserve)continue;
-      possibilities.push({id:w.id,price:ask,condition:inst.condition});
+      var pts=inst.condition>=.90?3:inst.condition>=.80?2:1;
+      var setFit=ownedByArtist[w.artistId]||0;
+      /* A matching artist is attractive, but not worth any price. */
+      var score=(pts + (setFit>=2?1.2:setFit===1?.6:0))*1600/Math.max(400,ask);
+      possibilities.push({id:w.id,price:ask,condition:inst.condition,score:score});
     }
-    possibilities.sort(function(a,b){return a.price-b.price;});
+    possibilities.sort(function(a,b){return b.score-a.score || a.price-b.price;});
     if(!possibilities.length)return;
     /* Never create more than one purchase per daily turn; AI uses the
        gallery price and shares the market with the human player. */
-    if(daysLeft>25 && G.day%3!==p.id%3)return;
+    if(daysLeft>25 && G.day%2!==p.id%2)return;
     var chosen=possibilities[0];
     p.cash-=chosen.price;
     p.portfolio.push({uid:p.nextUid++,defId:chosen.id,purchasePrice:chosen.price,
