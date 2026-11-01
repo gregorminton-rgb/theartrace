@@ -413,6 +413,11 @@
     if (G.colonyMenu === 'arbeiter') G.colonyMenu = 'plantage';
     el('colony-title').textContent = colony.label;
     el('colony-sub').textContent = colony.sub;
+    /* Use the imported colony picture behind the plantation, with a subtle
+       veil so the plots and their controls stay readable. */
+    var colonyPicture=pictureFor(colony.pic);
+    var colonyScreen=document.querySelector('#colony .colony-screen');
+    if(colonyScreen)colonyScreen.style.setProperty('--colony-scene-art',colonyPicture?'url("'+colonyPicture.file.replace(/["\\]/g,'')+'")':'none');
     /* the date lives in the top-right calendar of this bar, not in the cash chip */
     el('colony-cash').textContent = 'Cash ' + A.money(G.cash) + ' · ' + colonyFields().length + ' field(s)';
     el('colony-warehouse').textContent = 'Ashore ' + crew.colonyUnits() + ' crate(s)';
@@ -472,7 +477,10 @@
       var gridScroll = grid.scrollTop;
       grid.innerHTML = colonyGridHTML();
       grid.scrollTop = gridScroll;
-      el('colony-grid').style.background = colony.bg || '';
+      grid.style.background = colony.bg || '';
+      grid.style.backgroundImage = colonyPicture ? 'linear-gradient(rgba(73,66,40,.21),rgba(73,66,40,.30)),url("'+colonyPicture.file.replace(/["\\]/g,'')+'")' : (colony.bg || '');
+      grid.style.backgroundSize = 'cover';
+      grid.style.backgroundPosition = 'center';
       el('colony-inspector').innerHTML = colonyInspectorHTML();
       el('colony-hint').textContent = G.plantCropId
         ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
