@@ -297,6 +297,22 @@
     if (A.mapView && A.mapView.sync) A.mapView.sync();
   }
 
+  /* Compare asking prices with the existing city/date/condition estimate.
+     This is a guide, not an authenticity guarantee or a profit forecast. */
+  function priceSignal(price, low, high) {
+    if (!(high > 0) || !(low > 0)) return '';
+    var mid = (low + high) / 2;
+    var ratio = price / mid;
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var grade = ratio < .8 ? 'good' : ratio > 1.2 ? 'expensive' : 'fair';
+    var label = grade === 'good' ? (de ? 'Günstig' : 'Good price')
+      : grade === 'expensive' ? (de ? 'Teuer' : 'Expensive')
+      : (de ? 'Marktüblich' : 'Fair price');
+    return '<span class="price-signal price-signal--' + grade + '" title="' +
+      (de ? 'Vergleich mit dem Mittelwert der Schätzung' : 'Compared with the midpoint of the estimate') +
+      '">' + label + '</span>';
+  }
+
   function viewDealer() {
     var offers = G.stock[G.cityId] || [];
     if (!offers.length) return '<p class="empty">The dealer’s shelves are bare until the next restock (day ' +
@@ -313,6 +329,7 @@
       return '<article class="row art-market-card' + (afford ? '' : ' dim') + '">' + rowHead(inst) +
         '<div class="row-tags">' + condTag(inst) + authTag(inst) + '</div>' +
         '<div class="row-num"><span class="ask">' + A.money(ask) + '</span>' +
+        priceSignal(ask, estLo, estHi) +
         '<span class="est">consignor estimate ' + A.money(estLo) + '–' + A.money(estHi) + '</span></div>' +
         '<button class="btn buy" data-action="buy" data-uid="' + inst.uid + '"' + (afford ? '' : ' disabled') + '>Buy</button></div>';
     }).join('');
@@ -421,6 +438,7 @@
             '<span class="tag">reserve ' + A.money(lot.reserve) + '</span></div>';
       var head = '';
       var nums = '<div class="row-num"><span class="ask">bid ' + A.money(lot.bid) + '</span>' +
+        (open ? '' : priceSignal(lot.bid, lot.low, lot.high)) +
         (open ? '' : '<span class="est">estimate ' + A.money(lot.low) + '–' + A.money(lot.high) + '</span>') +
         '<span class="est">' + (lot.closed ? (lot.leader === 'you' ? 'HAMMERED TO YOU' : 'sold to the room')
           : rivalCount() + ' bidders in the room') + '</span></div>';
