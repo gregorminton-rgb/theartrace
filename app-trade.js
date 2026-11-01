@@ -443,7 +443,7 @@
       return '<div class="row' + cls + '">' + head + info + nums + quiz +
         (btns ? '<div class="row-btns">' + btns + '</div>' : '') + '</div>';
     }).join('');
-    return head + rows;
+    return '<section class="auction-view">' + head + rows + '</section>';
   }
 
   function viewBank() {
