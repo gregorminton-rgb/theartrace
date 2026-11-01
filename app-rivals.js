@@ -84,7 +84,7 @@
     var searchCount=24;
     for(var k=0;k<searchCount;k++){
       var w=A.works[Math.floor(rand(p,k+17)*A.works.length)];
-      if(!w || w.yearCreated>yr || (A.app&&A.app.ownedWork&&A.app.ownedWork(w.id)))continue;
+      if(!w || w.yearCreated>yr || !A.artAvailableInCity(w,p.cityId) || (A.app&&A.app.ownedWork&&A.app.ownedWork(w.id)))continue;
       if(possibilities.some(function(q){return q.id===w.id;}))continue;
       var inst={condition:Math.max(.55,Math.min(1,w.typicalCondition||.8)),
         authenticity:'Unexamined',isFake:false};
@@ -94,7 +94,7 @@
       var pts=inst.condition>=.90?3:inst.condition>=.80?2:1;
       var setFit=ownedByArtist[w.artistId]||0;
       /* A matching artist is attractive, but not worth any price. */
-      var score=(pts + (setFit>=2?1.2:setFit===1?.6:0))*1600/Math.max(400,ask);
+      var score=(pts*A.artTier(w).multiplier + (setFit>=2?1.2:setFit===1?.6:0))*1600/Math.max(400,ask);
       possibilities.push({id:w.id,price:ask,condition:inst.condition,score:score});
     }
     possibilities.sort(function(a,b){return b.score-a.score || a.price-b.price;});
@@ -122,7 +122,9 @@
   function artworkPoints(inst) {
     var condition = Number(inst && inst.condition);
     if (!isFinite(condition)) condition = 0;
-    return condition >= .90 ? 3 : condition >= .80 ? 2 : 1;
+    var base=condition >= .90 ? 3 : condition >= .80 ? 2 : 1;
+    var work=inst&&A.work(inst.defId);
+    return base*(work?A.artTier(work).multiplier:1);
   }
   function collectionBreakdown(portfolio) {
     var base=0, bonus=0, groups={}, catalogue={};

@@ -173,8 +173,9 @@
       return (G.stock[city]||[]).some(function(p){return p.defId===id;});
     }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});
   }
-  function freeWork(temporary) {
-    var choices=A.works.filter(function(w){return !ownedWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
+  function freeWork(temporary,cityId) {
+    var year=dateOf(G.day).year;
+    var choices=A.works.filter(function(w){return w.yearCreated<=year && A.artAvailableInCity(w,cityId) && !ownedWork(w.id) && !(temporary||[]).some(function(id){return id===w.id;});});
     return choices.length?G.rng.weighted(choices,function(x){return 11-x.rarity;}):null;
   }
   /* Old saves may contain duplicated listings; never sell an already-owned original. */
@@ -186,7 +187,7 @@
     if (G.reputation >= CFG.reputationForPremiumStock) size += 1;   // premium stock
     var offers = [];
     for (var i = 0; i < size; i++) {
-      var w = freeWork(offers.map(function(p){return p.defId;}));
+      var w = freeWork(offers.map(function(p){return p.defId;}),cityId);
       if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.15, 0.15), 0.05, 1);
       var fake = G.rng.chance(fakeChance(w));
@@ -561,8 +562,10 @@
   function drawAuction() {
     var city = A.city(G.cityId);
     var lots = [];
-    for (var i = 0; i < CFG.auctionLotCount; i++) {
-      var w = freeWork(lots.map(function(p){return p.inst.defId;}));
+    /* Smaller sales: two or three original works, never a crowded catalogue. */
+    var lotLimit=Math.min(CFG.auctionLotCount,2+G.rng.int(0,1));
+    for (var i = 0; i < lotLimit; i++) {
+      var w = freeWork(lots.map(function(p){return p.inst.defId;}),city.id);
       if (!w) break;
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.2, 0.1), 0.05, 1);
       var inst = makeInstance(w, cond, G.rng.chance(fakeChance(w)), city.name + ' auction lot');
