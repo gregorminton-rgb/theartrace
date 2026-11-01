@@ -190,7 +190,9 @@
   }
 
   function renderTicker() {
-    el('ticker-text').textContent = G.log.length ? G.log[0].text : 'Welcome to the trade.';
+    // Older saves may still contain the former startup diagnostic.
+    var entry = G.log.filter(function (item) { return !/^Seed \d+\b/.test(item.text); })[0];
+    el('ticker-text').textContent = entry ? entry.text : 'Welcome to the trade.';
   }
 
   /* ---------- shared row markup ---------------------------------------- */
@@ -625,12 +627,11 @@
       ['Warehouse', G.portfolio.length + ' crate(s) · ' + A.money(held)],
       ['Reputation', Math.round(G.reputation) + ' · slots bought ' + G.slotsBought],
       ['Deals', st.buys + ' bought · ' + st.sells + ' sold · ' + st.hammer + ' hammer wins'],
-      ['Best flip', A.money(st.bestProfit) + ' · worst ' + A.money(st.worstProfit)],
-      ['Seed', G.seed + ' (' + G.difficulty + ')']
+      ['Best flip', A.money(st.bestProfit) + ' · worst ' + A.money(st.worstProfit)]
     ].map(function (r) {
       return '<div class="stat"><span>' + h(r[0]) + '</span><b>' + h(r[1]) + '</b></div>';
     }).join('');
-    var journal = G.log.slice(0, 25).map(function (l) {
+    var journal = G.log.filter(function (item) { return !/^Seed \d+\b/.test(item.text); }).slice(0, 25).map(function (l) {
       return '<li><em>day ' + l.day + '</em> ' + h(l.text) + '</li>';
     }).join('');
     return '<div class="stats">' + rows + '</div><h3 class="jhead">Journal</h3><ul class="journal">' + journal + '</ul>';

@@ -135,7 +135,6 @@
         ' and ' + G.careerDays + ' days to fill the crates.');
     log('Goal: earn the most collection points when the ' + G.careerDays +
         '-day career ends — condition below 80%: 1 point, 80–89%: 2, 90%+: 3 per painting. Starting crates ' + G.capacity + ' of ' + CFG.maxPortfolioCapacity + '.');
-    log('Seed ' + G.seed + ' · ' + G.difficulty + ' · ' + A.DURATIONS[opts.durationIndex || 1].label + ' career.');
   }
 
   /* ---------- instance factories --------------------------------------- */
