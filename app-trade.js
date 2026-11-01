@@ -210,7 +210,8 @@
     /* Catalogue facts: painter, year, kind of picture, and (for the extra
        masters) medium and size. shopInfo falls back to the kind of picture. */
     var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
-    var facts = h(translateArt(w.typeName)) + (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
+    var tier=A.artTier(w);
+    var facts = '<strong>'+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★</strong> · '+h(translateArt(w.typeName)) + (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
                 (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
     return '<div class="row-main">' + thumb(w, inst.uid) + '<div>' +
            '<span class="title">' + h(w.title) + '</span>' +
