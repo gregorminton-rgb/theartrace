@@ -373,6 +373,8 @@
     if (action === 'menu') {
       var menu=t.getAttribute('data-menu');
       G.colonyMenu=menu==='lager'?'handel':menu==='arbeiter'?'plantage':menu;
+      var colonyContent=document.getElementById('colony-content');
+      if(colonyContent)colonyContent.scrollTop=0;
       renderColony();
     } else if (action === 'arm') {
       var cid = t.getAttribute('data-crop');
