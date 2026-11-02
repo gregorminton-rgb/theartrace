@@ -2391,3 +2391,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog--tutorial .tutorial-tier-art span{color:#f4e4c4}
 .dialog--tutorial .tutorial-tier-card{min-width:0;gap:5px}
 @media(max-width:480px){.dialog--tutorial .tutorial-tier-art{height:67px}.dialog--tutorial .tutorial-tier-letter{font-size:1rem}.dialog--tutorial .tutorial-tier-multi{font-size:.76rem}}
+
+/* Readable location/view titles across gallery, travel office, auction etc.
+   Remove the green drop-shadow on white letters and give the header a
+   consistent warm paper surface with dark, high-contrast type. */
+#screen-game #stage .panel-head,
+#screen-game #panel-head{
+ background:linear-gradient(180deg,rgba(250,235,202,.96),rgba(224,197,149,.94));
+ color:#382613;
+ border-bottom:2px solid #a47b43;
+}
+#screen-game #stage .panel-head h2,
+#screen-game #panel-head h2{
+ color:#382613;
+ text-shadow:none;
+ font-weight:800;
+}
+#screen-game #stage .panel-head .panel-sub,
+#screen-game #panel-head .panel-sub{
+ color:#62472a;
+ text-shadow:none;
+}
