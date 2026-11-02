@@ -492,8 +492,10 @@
     if (price > G.cash) { log('The passage to ' + (to.name || to.label) + ' costs ' + A.money(price) + '.'); return false; }
     G.cash -= price;
     beginVoyage(to, days, price, 0, 0, forceColonyId || null, from);
-    /* A journey advances automatically even when the calendar was not manually enabled. */
-    if (!G.clockWanted) {
+    /* Only passages longer than three days enable travel automation by default.
+       On shorter journeys the player advances days manually unless Auto was
+       already explicitly switched on. */
+    if (days > 3 && !G.clockWanted) {
       G.travelAuto = true;
       G.clockWanted = true;
       if (A.shell && A.shell.startClock) A.shell.startClock();
