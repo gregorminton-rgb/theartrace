@@ -2448,3 +2448,25 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  }
  #colony .colony-menu-btn b{max-width:100%;overflow-wrap:break-word;text-align:center}
 }
+
+/* Regression fix: removing the ticker also removes its reserved grid track. */
+#screen-game #hud{
+ grid-template-columns:auto minmax(0,1fr) auto;
+ grid-template-areas:"brand balance chrono";
+}
+#screen-game #hud #ticker{display:none!important}
+@media(min-width:1000px){
+ #screen-game #hud{
+  grid-template-columns:auto minmax(0,1fr) minmax(360px,auto);
+  grid-template-areas:"brand balance chrono";
+ }
+}
+@media(max-width:760px){
+ #screen-game #hud{
+  display:flex;flex-direction:column;align-items:stretch;
+  grid-template-areas:none;
+ }
+ #screen-game #hud .hud-brand{order:0;min-width:0}
+ #screen-game #hud .chrono{order:1;min-width:0;width:100%}
+ #screen-game #hud-balance{order:2;min-width:0;width:100%}
+}

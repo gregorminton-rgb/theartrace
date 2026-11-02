@@ -399,6 +399,7 @@
     tiles.forEach(function(tile){tile.hidden=epoch!=='all'&&tile.dataset.epoch!==epoch;grid.appendChild(tile);});
   });
   function viewPortfolio() {
+    var de=!!(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de');
     if (!G.portfolio.length) return '<p class="empty">No crates yet. Buy something at the dealer, or take a chance at the auction.</p>';
     var city = A.city(G.cityId);
     var year = dateOf(G.day).year;
