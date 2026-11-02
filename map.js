@@ -1144,11 +1144,13 @@
     var gridLayer = new PIXI.Container();
     var landLayer = new PIXI.Container();
     var decoLayer = new PIXI.Container();
+    var ambientLayer = new PIXI.Container();
+    ambientLayer.eventMode = 'none';
     var routeLayer = new PIXI.Container();
     var vesselLayer = new PIXI.Container();
     var pinLayer = new PIXI.Container();
     var labelLayer = new PIXI.Container();
-    app.stage.addChild(seaLayer, gridLayer, landLayer, decoLayer,
+    app.stage.addChild(seaLayer, gridLayer, landLayer, decoLayer, ambientLayer,
                        routeLayer, vesselLayer, pinLayer, labelLayer);
 
     function setVoyages(list) {
@@ -1191,6 +1193,82 @@
       }
     }
 
+
+    /* Decorative wildlife lives in map coordinates, so it pans and zooms with
+       the chart but never captures city taps or route clicks. */
+    var animals = [];
+    var stillMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    function animalShape(kind) {
+      var g = new PIXI.Graphics();
+      if (kind === 'penguin') {
+        g.beginFill(0x1b2730); g.drawEllipse(0, 0, 9, 15); g.endFill();
+        g.beginFill(0xf7f1de); g.drawEllipse(0, 3, 5.5, 10); g.endFill();
+        g.beginFill(0x1b2730);
+        g.drawEllipse(-10, 1, 3, 9); g.drawEllipse(10, 1, 3, 9); g.endFill();
+        g.beginFill(0xd88d34); g.drawPolygon([-4,14,0,11,4,14,0,17]); g.endFill();
+        g.beginFill(0xd88d34); g.drawEllipse(-5,16,4,2);g.drawEllipse(5,16,4,2);g.endFill();
+        g.beginFill(0xffffff);g.drawCircle(-3,-8,2);g.drawCircle(3,-8,2);g.endFill();
+        g.beginFill(0x16232a);g.drawCircle(-3,-8,0.9);g.drawCircle(3,-8,0.9);g.endFill();
+      } else if (kind === 'whale') {
+        g.beginFill(0x24495a);g.drawEllipse(0,0,24,11);
+        g.drawPolygon([18,-3,34,-16,33,15,18,4]);g.endFill();
+        g.beginFill(0x80b7bf);g.drawEllipse(-8,5,13,4);g.endFill();
+        g.beginFill(0x24495a);g.drawPolygon([-1,0,8,15,-8,9]);g.endFill();
+        g.beginFill(0xf8f3dc);g.drawCircle(-15,-3,1.8);g.endFill();
+        g.lineStyle(2,0xc0e7e8,0.75);g.moveTo(-2,-12);g.lineTo(-5,-20);g.moveTo(-2,-12);g.lineTo(3,-21);
+      } else if (kind === 'elephant') {
+        g.beginFill(0x85877c);g.drawRoundedRect(-23,-15,37,26,9);g.drawCircle(14,-10,13);
+        g.drawRoundedRect(-19,5,8,19,3);g.drawRoundedRect(2,5,8,19,3);
+        g.drawRoundedRect(20,-3,7,25,3);g.endFill();
+        g.beginFill(0x9b9e92);g.drawEllipse(11,-4,10,13);g.endFill();
+        g.beginFill(0x1d2724);g.drawCircle(20,-13,1.7);g.endFill();
+        g.lineStyle(2,0xe6dbc0);g.moveTo(24,0);g.lineTo(30,9);
+      }
+      return g;
+    }
+    function drawWildlife() {
+      clear(ambientLayer);
+      animals.length=0;
+      if (!cam || api.level !== 'world') return;
+      var entries=[
+        {kind:'penguin',lon:-65,lat:68,size:0.59,phase:0},
+        {kind:'penguin',lon:-56,lat:67,size:0.48,phase:2},
+        {kind:'penguin',lon:-58,lat:-49,size:0.65,phase:1},
+        {kind:'penguin',lon:-51,lat:-50,size:0.5,phase:3},
+        {kind:'whale',lon:-150,lat:-18,size:0.83,phase:0},
+        {kind:'elephant',lon:20,lat:-9,size:0.67,phase:0},
+        {kind:'elephant',lon:28,lat:-13,size:0.49,phase:2}
+      ];
+      entries.forEach(function(a){
+        var pos=cam.fromMap((a.lon+180)/360,(a.lat+90)/180);
+        var shape=animalShape(a.kind);
+        shape.position.set(pos.x,pos.y);
+        shape.scale.set(a.size * Math.min(1.25,Math.max(0.65,cam.W/850)));
+        shape.eventMode='none';
+        ambientLayer.addChild(shape);
+        animals.push({sprite:shape,x:pos.x,y:pos.y,base:shape.scale.x,kind:a.kind,phase:a.phase});
+      });
+    }
+    function moveWildlife(now) {
+      if (stillMotion) return;
+      animals.forEach(function(a){
+        var t=now/1000+a.phase;
+        if(a.kind==='whale'){
+          var cycle=(t%12+12)%12;
+          var jump=cycle<3.2?Math.sin(cycle/3.2*Math.PI):0;
+          a.sprite.position.set(a.x+Math.sin(t*0.4)*5,a.y-jump*23);
+          a.sprite.rotation=jump*0.45;
+          a.sprite.alpha=cycle<3.6?1:0.36;
+        } else if(a.kind==='penguin'){
+          a.sprite.position.set(a.x+Math.sin(t*0.5)*5,a.y+Math.abs(Math.sin(t*2))*2);
+          a.sprite.rotation=Math.sin(t*2)*0.07;
+        } else {
+          a.sprite.position.set(a.x+Math.sin(t*0.22)*6,a.y+Math.sin(t*0.9));
+          a.sprite.rotation=Math.sin(t*0.35)*0.025;
+        }
+      });
+    }
+
     /* ---- the static plate, rebuilt on resize or level change ---------- */
     function buildStatic() {
       var lv = LEVELS[api.level] || LEVELS.world;
@@ -1204,6 +1282,7 @@
       landLayer.addChild(drawLand(lv, cam));
       decoLayer.addChild(drawCompassRose(cam));
       decoLayer.addChild(drawScaleBar(cam));
+      drawWildlife();
       decoLayer.addChild(drawCartouche(lv, cam));
       (lv.ocean || []).forEach(function (o) {
         decoLayer.addChild(seaLabel(cam, o[0], o[1], o[2]));
@@ -1579,6 +1658,7 @@
       if (dead || !cam) return;
       var now = performance.now();
       placeVessels(now, false);
+      moveWildlife(now);
       for (var i = 0; i < pinLayer.children.length; i++) {
         var c = pinLayer.children[i];
         if (c.isPulse) {
