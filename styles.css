@@ -2312,3 +2312,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  background-position:center;background-size:cover;background-repeat:no-repeat;
 }
 #screen-game:has(#wm-stage) #panel-wrap{background-image:none}
+
+/* Shared score comparison and weekly trend charts. */
+.race-chart-card{margin:13px 0;padding:13px;border:1px solid #bea16b;border-radius:12px;background:rgba(251,241,219,.85)}
+.race-chart-card h3{margin:0 0 12px!important;font-size:.83rem;letter-spacing:.04em!important;text-transform:none!important}
+.race-chart-row{display:grid;grid-template-columns:minmax(65px,110px) minmax(0,1fr) 64px;align-items:center;gap:9px;margin:9px 0;font:.78rem var(--sans)}
+.race-chart-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.race-chart-row b{text-align:right;white-space:nowrap}
+.race-chart-track{height:15px;border-radius:999px;overflow:hidden;background:#e4d2ac}
+.race-chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#517d87,#2c5d72)}
+.race-chart-fill.is-player{background:linear-gradient(90deg,#e1b955,#a46b27)}
+.race-trend{display:block;width:100%;max-height:210px}
+.race-trend-key{display:flex;flex-wrap:wrap;gap:6px 13px;margin-top:8px;font:.7rem var(--sans)}
+.race-trend-key span{display:inline-flex;align-items:center;gap:5px}
+.race-trend-key i{display:inline-block;width:9px;height:9px;border-radius:50%}
+@media(max-width:460px){.race-chart-card{padding:10px}.race-chart-row{grid-template-columns:72px minmax(0,1fr) 55px;gap:6px;font-size:.68rem}}
