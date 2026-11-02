@@ -21,7 +21,10 @@ function example(grade){
 function classTable(){
  var grades=['A','B','C','D','E'];
  return '<div class="tutorial-tier-grid">'+grades.map(function(g,i){
-  return '<div class="tutorial-tier-card tutorial-tier-'+g.toLowerCase()+'"><strong class="tutorial-tier-letter">'+g+'</strong>'+
+  var artwork=example(g);
+  return '<div class="tutorial-tier-card tutorial-tier-'+g.toLowerCase()+'">'+
+   '<div class="tutorial-tier-art">'+(artwork?'<img src="'+esc(artwork.file)+'" alt="'+esc(artwork.w.title)+'" loading="lazy">':'<span aria-hidden="true">🖼️</span>')+'</div>'+
+   '<strong class="tutorial-tier-letter">'+g+'</strong>'+
    '<span class="tutorial-tier-multi">×'+(5-i)+'</span></div>';
  }).join('')+'</div>';
 }
