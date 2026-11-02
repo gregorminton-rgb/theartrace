@@ -198,11 +198,47 @@ pairs.push(
  ['🌱 Colonies','🌱 Kolonien'],['🖼️ Art-trade cities','🖼️ Kunsthandelsstädte'],['🪙 Trade cities','🪙 Handelsstädte'],
  ['Your player name','Dein Spielername']
 );
+pairs.push(
+["Sugar & coffee island","Zucker- und Kaffeeinsel"],
+["Cocoa & coffee island","Kakao- und Kaffeeinsel"],
+["Cocoa & coffee colony","Kakao- und Kaffeekolonie"],
+["Tea highlands","Teehochland"],
+["Sugar & tobacco island","Zucker- und Tabakinsel"],
+["Sugar & coffee coast","Zucker- und Kaffeeküste"],
+["Jute & indigo delta","Jute- und Indigodelta"],
+["Cocoa hinterland","Kakao-Hinterland"],
+["Cotton, indigo & tea","Baumwolle, Indigo und Tee"],
+["Spice islands & coffee","Gewürzinseln und Kaffee"],
+["Wool stations & vineyards","Schaffarmen und Weinberge"],
+["Coffee hills & sugar coast","Kaffeehügel und Zuckerküste"],
+["Upgrade field","Feld verbessern"],
+["Fully upgraded","Vollständig verbessert"],
+["No upgrade available","Keine Verbesserung verfügbar"],
+["Select same-level fields","Felder gleicher Stufe auswählen"],
+["Select all","Alle auswählen"],
+["Clear","Auswahl aufheben"],
+["Auto on","Automatik an"],
+["Auto off","Automatik aus"],
+["Multiple fields","Mehrere Felder"],
+["Field details","Felddetails"],
+["Irrigation","Bewässerung"],
+["Fertiliser","Düngung"],
+["Storage shed","Lagerschuppen"],
+["Yes, sail","Ja, in See stechen"],
+["Travel time","Reisedauer"],
+["Fare","Fahrpreis"],
+["Cash afterwards","Verbleibendes Bargeld"]
+);
 var map=Object.create(null),reverse=Object.create(null);
 pairs.forEach(function(p){map[p[0]]=p[1];if(!(p[1] in reverse))reverse[p[1]]=p[0];});
 var originals=new WeakMap(), rendered=new WeakMap(),mutating=false;
 function dynamicText(text){
  return text
+ .replace(/^Yes, travel to (.+)$/,'Ja, reisen nach $1')
+ .replace(/^Yes, sail to (.+)$/,'Ja, segeln nach $1')
+ .replace(/^Travel to (.+)\?$/,'Reise nach $1?')
+ .replace(/^Upgrade (\d+) fields$/,'$1 Felder verbessern')
+ .replace(/^(\d+)\/(\d+) selected$/,'$1/$2 ausgewählt')
  .replace(/^Continue — day (\d+) of (\d+)/,'Fortsetzen — Tag $1 von $2')
  .replace(/^Pictures (\d+) \/ (\d+)/,'Gemälde $1 / $2')
  .replace(/^Goal: earn the most collection points when the (\d+)-day career ends — condition below 80%: 1 point, 80–89%: 2, 90%\+: 3 per painting\. Starting crates (\d+) of (\d+)\.$/,'Ziel: Sammle bis zum Ende der $1-tägigen Karriere die meisten Sammlungspunkte. Zustand unter 80 %: 1 Punkt, 80–89 %: 2, ab 90 %: 3 Punkte je Gemälde. Startkapazität: $2 von $3 Kisten.')
