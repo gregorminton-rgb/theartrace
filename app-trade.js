@@ -440,24 +440,26 @@
                         .map(function (x) { return x.name; });
     return names.join(', ');
   }
+  function auctionCountdown() {
+    var days=daysToAuction();
+    var de=!!(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de');
+    if(days<=0)return de?'Auktion ist heute':'Auction starts today';
+    if(days===1)return de?'Auktion beginnt morgen':'Auction starts tomorrow';
+    return de?'Auktion beginnt in '+days+' Tagen':'Auction starts in '+days+' days';
+  }
   function auctionClosedNote() {
     var c = A.city(G.cityId);
     if (!c.hasAuctionHouse)
       return '<p class="empty">No auction house in ' + h(c.name) +
              '. The rooms are in ' + h(nextAuctionCity()) + '.</p>';
-    var days = daysToAuction();
-    if (days > 0)
-      return '<p class="empty">The room is dark: the hammer falls in ' + days + ' day(s), on day ' +
-             G.auctionDay + '. Travel on and come back then — bids are only taken on the sale day.</p>';
-    if (days === 0)
-      return '<p class="empty">To-day is the sale: the catalogue is being hung. Come back in a moment.</p>';
-    return '<p class="empty">The hammer has fallen. The next sale in ' + h(c.name) + ' is on day ' +
-           G.auctionDay + '.</p>';
+    var days=daysToAuction();
+    if(days>0)return '<p class="empty">'+auctionCountdown()+'.</p>';
+    return '<p class="empty">'+auctionCountdown()+'.</p>';
   }
 
   function viewAuction() {
     var head = '<p class="note">' + (auctionOpenHere() ? 'Sale in progress' :
-      'Catalogue on view') + ' · hammer on day ' + G.auctionDay + ' · buyer\u2019s premium ' +
+      'Catalogue on view') + ' · ' + auctionCountdown() + ' · buyer\u2019s premium ' +
       A.pct(CFG.auctionCommission) + ' · increment ' + A.pct(CFG.auctionIncrementRatio) + '.</p>';
     if (!auctionListUp())
       return auctionClosedNote();
@@ -509,7 +511,7 @@
         btns = '<button class="btn bid" data-action="bid" data-lot="' + i + '">Bid + ' + A.money(step) + '</button>' +
           '<button class="btn" data-action="pass" data-lot="' + i + '">Pass</button>';
       else if (open)
-        btns = '<span class="tag">bids open on day ' + G.auctionDay + '</span>';
+        btns = '<span class="tag">' + auctionCountdown() + '</span>';
       return '<article class="row art-market-card' + cls +
         '" data-order="' + i + '" data-price="' + lot.bid +
         '" data-condition="' + (Number(lot.inst.condition)||0) +
