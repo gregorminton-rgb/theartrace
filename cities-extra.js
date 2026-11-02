@@ -15,6 +15,16 @@
 (function (global) {
   'use strict';
 
+  /* Keep legacy city id 'firenze' for saved games and artwork references,
+     but its real location and public identity are Venice. */
+  var formerFlorence=(global.ART_DATA.cities||[]).filter(function(c){return c.id==='firenze';})[0];
+  if(formerFlorence){
+    formerFlorence.name='Venedig';
+    formerFlorence.mapX=(12.3155+180)/360;
+    formerFlorence.mapY=(45.4408+90)/180;
+    formerFlorence.description='Venetian lagoon galleries, maritime collectors and the historic art market.';
+  }
+
   global.ART_RACE_EXTRA_CITIES = [
     {
       id: 'lissabon',
