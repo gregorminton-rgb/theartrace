@@ -1544,7 +1544,7 @@
         var q = pins[i];
         var here = !!q.L.here;
         var kind = q.L.kind;
-        var r = here ? 8 : kind === 'trade' ? 7 : kind === 'colony' ? 7 : 6;
+        var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 15 : 14;
         var col = here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
@@ -1562,7 +1562,7 @@
         /* A soft surrounding disc makes tiny destinations legible on busy land. */
         var halo = new PIXI.Graphics();
         halo.beginFill(0x081a27, 0.68);
-        halo.drawCircle(0, 0, r + 4);
+        halo.drawCircle(0, 0, r + 3);
         halo.endFill();
         halo.position.set(q.x, q.y);
         pinLayer.addChild(halo);
@@ -1603,8 +1603,10 @@
           g.beginFill(0x6cadbe,1);g.drawRect(-r*.32,-r*.25,r*.64,r*.5);g.endFill();
           g.beginFill(0xe6f7cc,1);g.drawPolygon([-r*.3,r*.22,0,-r*.11,r*.3,r*.22]);g.endFill();
         }
-        g.lineStyle(0.7, 0x32240f, 0.65);
-        g.drawCircle(0, 0, r + 1);
+        g.lineStyle(1, 0x32240f, 0.65);
+        if (kind === 'colony' && !here) g.drawRoundedRect(-r-1,-r-1,r*2+2,r*2+2,4);
+        else if(kind === 'trade' && !here) g.drawPolygon([0,-r-1,r+1,0,0,r+1,-r-1,0]);
+        else g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
         boxes.push([q.x - r - 5, q.y - r - 5, (r + 5) * 2, (r + 5) * 2]);
@@ -1622,8 +1624,8 @@
         });
         var tw = text.width, th = text.height;
         var cands = isCity
-          ? [[7, -6 - th], [-7 - tw, -6 - th], [-tw / 2, -th - 11], [-tw / 2, 8], [7, -th / 2]]
-          : [[7, -th / 2], [-7 - tw, -th / 2], [-tw / 2, -th - 7], [-tw / 2, 7]];
+          ? [[20, -12 - th], [-20 - tw, -12 - th], [-tw / 2, -th - 21], [-tw / 2, 21], [20, -th / 2]]
+          : [[20, -th / 2], [-20 - tw, -th / 2], [-tw / 2, -th - 20], [-tw / 2, 20]];
         var placed = null;
         for (var c = 0; c < cands.length && !placed; c++) {
           var bx = o.x + cands[c][0], by = o.y + cands[c][1];
