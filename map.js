@@ -1544,7 +1544,9 @@
         var q = pins[i];
         var here = !!q.L.here;
         var kind = q.L.kind;
-        var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 15 : 14;
+        var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 18 : 14;
+        var cropBadge = kind === 'colony' && q.L.crops && q.L.crops.length === 2;
+        var badgeW = cropBadge ? 58 : r*2;
         var col = here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
@@ -1562,14 +1564,17 @@
         /* A soft surrounding disc makes tiny destinations legible on busy land. */
         var halo = new PIXI.Graphics();
         halo.beginFill(0x081a27, 0.68);
-        halo.drawCircle(0, 0, r + 3);
+        if(cropBadge)halo.drawRoundedRect(-badgeW/2-3,-r-3,badgeW+6,r*2+6,8);
+        else halo.drawCircle(0, 0, r + 3);
         halo.endFill();
         halo.position.set(q.x, q.y);
         pinLayer.addChild(halo);
         var g = new PIXI.Graphics();
         g.beginFill(col, 1);
         g.lineStyle(1.5, 0xf8f0dc, 0.95);
-        if(kind === 'colony' && !here) {
+        if(cropBadge) {
+          g.drawRoundedRect(-badgeW/2, -r, badgeW, r*2, 7);
+        } else if(kind === 'colony' && !here) {
           g.drawRoundedRect(-r, -r, r*2, r*2, 3);
         } else if(kind === 'trade' && !here) {
           g.drawPolygon([0,-r,r,0,0,r,-r,0]);
@@ -1582,11 +1587,11 @@
         g.lineStyle(1,0xffffff,0.6);
         g.moveTo(-r*.48,-r*.42);g.lineTo(-r*.1,-r*.65);
         g.lineStyle(0);
-        if (kind === 'colony' && !here) {
-          /* Two playful leaves over a planter. */
-          g.beginFill(0xf8e3a3,1);
-          g.drawRoundedRect(-r*.49,r*.19,r*.98,r*.34,1);
-          g.endFill();
+        if(cropBadge) {
+          /* Two actual crops: one pictogram per half, sourced from colony rules. */
+          g.lineStyle(1,0xffeac9,.55);g.moveTo(0,-r+5);g.lineTo(0,r-5);g.lineStyle(0);
+        } else if (kind === 'colony' && !here) {
+          g.beginFill(0xf8e3a3,1);g.drawRoundedRect(-r*.49,r*.19,r*.98,r*.34,1);g.endFill();
           g.lineStyle(1.3,0xf7f6d4,1);g.moveTo(0,r*.21);g.lineTo(0,-r*.42);
           g.lineStyle(0);g.beginFill(0xd6f58b,1);
           g.drawEllipse(-r*.24,-r*.28,r*.32,r*.19);
@@ -1604,12 +1609,23 @@
           g.beginFill(0xe6f7cc,1);g.drawPolygon([-r*.3,r*.22,0,-r*.11,r*.3,r*.22]);g.endFill();
         }
         g.lineStyle(1, 0x32240f, 0.65);
-        if (kind === 'colony' && !here) g.drawRoundedRect(-r-1,-r-1,r*2+2,r*2+2,4);
+        if(cropBadge)g.drawRoundedRect(-badgeW/2-1,-r-1,badgeW+2,r*2+2,7);
+        else if (kind === 'colony' && !here) g.drawRoundedRect(-r-1,-r-1,r*2+2,r*2+2,4);
         else if(kind === 'trade' && !here) g.drawPolygon([0,-r-1,r+1,0,0,r+1,-r-1,0]);
         else g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
-        boxes.push([q.x - r - 5, q.y - r - 5, (r + 5) * 2, (r + 5) * 2]);
+        if(cropBadge){
+          var cropIcons={kakao:'🫘',kaffee:'☕',tee:'🍃',tabak:'🍂',stoffe:'🧵'};
+          q.L.crops.forEach(function(id,j){
+            var symbol=new PIXI.Text(cropIcons[id]||'🌱',{
+              fontFamily:'Arial, sans-serif',fontSize:21,align:'center'
+            });
+            symbol.anchor.set(.5);symbol.position.set(q.x+(j===0?-badgeW/4:badgeW/4),q.y);
+            symbol.eventMode='none';pinLayer.addChild(symbol);
+          });
+        }
+        boxes.push([q.x - badgeW/2 - 5, q.y - r - 5, badgeW + 10, (r + 5) * 2]);
       }
 
       for (i = 0; i < pins.length; i++) {
