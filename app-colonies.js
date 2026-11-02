@@ -175,7 +175,10 @@
                     + 0.22 * Math.sin(day * 0.037 + phase * 1.7);
     var rushDay = (day + (seed % 59)) % 59;
     var demandRush = rushDay < 3 ? 1.85 : 1;
-    return Math.max(1, Math.round(crop.base * mult * Math.max(0.35, wave) * demandRush));
+    /* Scale the market quote once, so manual and automated sales, displays
+       and historical charts all agree on the same difficulty-adjusted price. */
+    var level=A.DIFFICULTY[G.difficulty] || A.DIFFICULTY.Easy;
+    return Math.max(1, Math.round(crop.base * mult * Math.max(0.35, wave) * demandRush * level.tradeIncome));
   }
 
   function cropPrice(crop,hubId){return cropPriceOnDay(crop,hubId,G.day);}

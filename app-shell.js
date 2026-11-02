@@ -485,12 +485,12 @@
     }).join('');
     var diffOpts = ['Easy', 'Normal', 'Hard'].map(function (d) {
       var v = A.DIFFICULTY[d];
-      /* No money target any more: difficulty only moves the starting purse,
-         the expert fees and the size of the auction crowd. */
-      return '<option value="' + d + '"' + (d === 'Normal' ? ' selected' : '') + '>' +
-        d + ' — start ' + A.money(CFG.startingMoney * v.startingMoney) +
-        ', rivals ' + (v.rivals >= 0 ? '+' : '') + v.rivals +
-        ', fees ×' + v.fee + '</option>';
+      /* Existing economy is Easy; higher levels narrow commodity income. */
+      var german=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
+      var label=d==='Easy'?(german?'Leicht':'Easy'):d==='Normal'?(german?'Mittel':'Medium'):(german?'Schwer':'Hard');
+      return '<option value="' + d + '"' + (d === 'Easy' ? ' selected' : '') + '>' +
+        label + ' · ' + (german?'Startgeld ':'Starting cash ')+A.money(CFG.startingMoney * v.startingMoney) +
+        ' · ' + (german?'Warenpreise ':'Commodity prices ')+Math.round(v.tradeIncome*100)+' %</option>';
     }).join('');
     var durOpts = A.DURATIONS.map(function (d, i) {
       return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
@@ -510,7 +510,7 @@
         '<option value="en"' + (!window.ArtRaceLanguage || window.ArtRaceLanguage.get()==='en' ? ' selected' : '') + '>English</option>' +
         '<option value="de"' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de' ? ' selected' : '') + '>Deutsch</option>' +
       '</select></label>' +
-      '<label>Difficulty<select id="f-diff">' + diffOpts + '</select></label>' +
+      '<label>'+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Schwierigkeit':'Difficulty')+'<select id="f-diff">' + diffOpts + '</select></label>' +
       '<label>Career length<select id="f-dur">' + durOpts + '</select></label>' +
       '<label>Starting city<select id="f-city">' + cityOpts + '</select></label>' +
       '</div>' +

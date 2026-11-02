@@ -225,12 +225,12 @@
 
   /* ---------- difficulty (NewGameSetup.cs) ---------------------------- */
   var DIFFICULTY = {
-    Easy:   { startingMoney: 1.5, target: 0.75, fee: 0.75, rivals: -1, label: 'Easy',
-              summary: 'More starting cash, a smaller fortune to raise and fewer rivals bidding against you.' },
-    Normal: { startingMoney: 1.0, target: 1.0,  fee: 1.0,  rivals: 0,  label: 'Normal',
-              summary: 'The market as authored: fair prices, fair rivals, no favours.' },
-    Hard:   { startingMoney: 0.7, target: 1.3,  fee: 1.25, rivals: 2,  label: 'Hard',
-              summary: 'Thin starting cash, a bigger fortune to raise, dearer experts and a crowded auction room.' }
+    Easy:   { startingMoney: 1.0, target: 1.0, fee: 1.0, rivals: 0, tradeIncome: 1.0, label: 'Easy',
+              summary: 'Current economy and full commodity sale prices.' },
+    Normal: { startingMoney: 0.9, target: 1.0, fee: 1.05, rivals: 0, tradeIncome: 0.86, label: 'Normal',
+              summary: 'A little less starting cash and 14% lower commodity prices.' },
+    Hard:   { startingMoney: 0.8, target: 1.0, fee: 1.1, rivals: 0, tradeIncome: 0.73, label: 'Hard',
+              summary: 'Tighter starting cash and 27% lower commodity prices, but normal game rules.' }
   };
   var DURATIONS = [
     { days: 90,  label: 'short' },
