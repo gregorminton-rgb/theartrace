@@ -373,11 +373,8 @@
     if (action === 'menu') {
       var menu=t.getAttribute('data-menu');
       G.colonyMenu=menu==='lager'?'handel':menu==='arbeiter'?'plantage':menu;
-      /* A single scrolling panel is shared by the colony tabs. Returning to
-         fields must show the worker/hire controls at the top, not the former
-         scroll position of another tab. */
-      var content=document.getElementById('colony-content');
-      if(content)content.scrollTop=0;
+      var colonyContent=document.getElementById('colony-content');
+      if(colonyContent)colonyContent.scrollTop=0;
       renderColony();
     } else if (action === 'arm') {
       var cid = t.getAttribute('data-crop');

@@ -406,8 +406,8 @@
 
   function openColony() {
     show(el('colony'), true);
-    var content=el('colony-content');
-    if(content)content.scrollTop=0;
+    var colonyContent=el('colony-content');
+    if(colonyContent)colonyContent.scrollTop=0;
     renderColony();
   }
 
