@@ -1551,7 +1551,7 @@
         var col = here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
-          : kind === 'colony' ? hex(lv.colony) : 0x3f7d44;
+          : kind === 'colony' ? 0x657b61 : 0x3f7d44;
 
         if (here) {
           var ring = new PIXI.Graphics();
@@ -1565,14 +1565,14 @@
         /* A soft surrounding disc makes tiny destinations legible on busy land. */
         var halo = new PIXI.Graphics();
         halo.beginFill(0x081a27, 0.68);
-        if(cropBadge)halo.drawRoundedRect(-badgeW/2-3,-badgeH/2-3,badgeW+6,badgeH+6,8);
+        if(cropBadge){halo.clear();halo.beginFill(0x263d34,0.54);halo.drawRoundedRect(-badgeW/2-2,-badgeH/2-2,badgeW+4,badgeH+4,8);halo.endFill();}
         else halo.drawCircle(0, 0, r + 3);
         halo.endFill();
         halo.position.set(q.x, q.y);
         pinLayer.addChild(halo);
         var g = new PIXI.Graphics();
         g.beginFill(col, 1);
-        g.lineStyle(1.5, 0xf8f0dc, 0.95);
+        g.lineStyle(1.5, cropBadge ? 0xdce6c6 : 0xf8f0dc, 0.95);
         if(cropBadge) {
           g.drawRoundedRect(-badgeW/2, -badgeH/2, badgeW, badgeH, 7);
         } else if(kind === 'colony' && !here) {
