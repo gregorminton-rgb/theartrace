@@ -88,7 +88,7 @@
        own path, but the module API is also called directly (headless tools). */
     G.ended = false;
     G.name = opts.name || 'Henry';
-    G.difficulty = opts.difficulty || 'Normal';
+    G.difficulty = A.DIFFICULTY[opts.difficulty] ? opts.difficulty : 'Easy';
     G.seed = (opts.seed | 0) || (Math.floor(Math.random() * 1e9) + 1);
     G.rng = A.makeRng(G.seed);
     G.careerDays = A.DURATIONS[opts.durationIndex || 1].days;
