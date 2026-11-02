@@ -790,9 +790,25 @@
     log('Lot ' + (index + 1) + ' sold to the room for ' + A.money(lot.bid) + '.');
   }
 
+  function cityHotelRate(cityId) {
+    var city=A.city(cityId);
+    if(!city)return 0;
+    var premium=(A.works||[]).some(function(w){
+      return A.artTier&&A.artAvailableInCity&&A.artTier(w).grade==='A'&&A.artAvailableInCity(w,cityId);
+    });
+    return premium?240:80;
+  }
+  A.cityHotelRate=cityHotelRate;
+
   /* ---------- the clock ------------------------------------------------ */
   function advanceDay(silent) {
     G.day += 1;
+    /* Hotel is charged only while resident in a city, never at sea or on a plantation. */
+    if(G.started&&!G.voyage&&!G.colonyId&&A.city(G.cityId)){
+      var hotel=cityHotelRate(G.cityId);
+      G.cash-=hotel;
+      if(!silent)log('Hotel in '+A.city(G.cityId).name+': '+A.money(hotel)+' per day.');
+    }
 
     if (G.loan > 0) {
       var interest = Math.round(G.loan * CFG.dailyLoanInterest);
@@ -927,6 +943,15 @@
     el('hud-sub').textContent = colony
       ? 'Colony' + (colony.sub ? ' · ' + colony.sub : '')
       : (c ? c.country + ' · ' + c.regionName : 'Under way');
+    var hotelLabel=el('hud-hotel');
+    if(hotelLabel){
+      var showHotel=!!(G.started && c && !G.voyage && !colony);
+      hotelLabel.hidden=!showHotel;
+      if(showHotel){
+        var de=!!(window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de');
+        hotelLabel.textContent=(de?'Hotel / Tag: ':'Hotel / day: ')+A.money(cityHotelRate(c.id));
+      }
+    }
     el('hud-cash').textContent = 'Cash ' + A.money(G.cash);
     el('hud-rep').textContent = 'Reputation ' + Math.round(G.reputation) + ' · debt ' + A.money(G.loan);
     /* The career is a race for pictures, so the chip counts crates:
