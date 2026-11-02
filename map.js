@@ -1226,10 +1226,19 @@
       }
       return g;
     }
+    function iceShelf() {
+      var p=cam.fromMap((-55+180)/360,(-50+90)/180),k=Math.min(1.25,Math.max(.65,cam.W/850));
+      var g=new PIXI.Graphics();g.eventMode='none';
+      g.beginFill(0xf3f9ee,.96);
+      g.drawPolygon([-76,8,-55,-9,-23,-15,8,-8,35,-16,70,0,78,14,42,20,-25,20,-70,16].map(function(v,i){return (i%2?p.y:p.x)+v*k;}));g.endFill();
+      g.lineStyle(2*k,0x9bd9e6,.9);g.moveTo(p.x-72*k,p.y+15*k);g.lineTo(p.x+45*k,p.y+17*k);
+      return g;
+    }
     function drawWildlife() {
       clear(ambientLayer);
       animals.length=0;
       if (!cam || api.level !== 'world') return;
+      ambientLayer.addChild(iceShelf());
       var entries=[
         {kind:'penguin',lon:-65,lat:68,size:0.59,phase:0},
         {kind:'penguin',lon:-56,lat:67,size:0.48,phase:2},
@@ -1241,12 +1250,13 @@
       ];
       entries.forEach(function(a){
         var pos=cam.fromMap((a.lon+180)/360,(a.lat+90)/180);
-        var shape=animalShape(a.kind);
+        var shape=animalShape(a.kind),spray=null;
+        if(a.kind==='whale'){spray=new PIXI.Graphics();spray.eventMode='none';ambientLayer.addChild(spray);}
         shape.position.set(pos.x,pos.y);
         shape.scale.set(a.size * Math.min(1.25,Math.max(0.65,cam.W/850)));
         shape.eventMode='none';
         ambientLayer.addChild(shape);
-        animals.push({sprite:shape,x:pos.x,y:pos.y,base:shape.scale.x,kind:a.kind,phase:a.phase});
+        animals.push({sprite:shape,spray:spray,x:pos.x,y:pos.y,base:shape.scale.x,kind:a.kind,phase:a.phase,south:a.lat<0});
       });
     }
     function moveWildlife(now) {
@@ -1254,14 +1264,32 @@
       animals.forEach(function(a){
         var t=now/1000+a.phase;
         if(a.kind==='whale'){
-          var cycle=(t%12+12)%12;
-          var jump=cycle<3.2?Math.sin(cycle/3.2*Math.PI):0;
-          a.sprite.position.set(a.x+Math.sin(t*0.4)*5,a.y-jump*23);
-          a.sprite.rotation=jump*0.45;
-          a.sprite.alpha=cycle<3.6?1:0.36;
+          var cycle=((t%12)+12)%12,progress=(cycle-1.2)/3.6;
+          var jump=cycle>=1.2&&cycle<=4.8?Math.sin(Math.PI*progress):0;
+          var dive=cycle>4.8&&cycle<7?Math.sin(Math.PI*(cycle-4.8)/2.2):0;
+          var dx=(cycle<7?cycle*9:63-(cycle-7)*4)-31;
+          a.sprite.position.set(a.x+dx,a.y-34*jump+23*dive);
+          a.sprite.rotation=jump*(progress<.5?-.46:.5)+dive*.32;
+          a.sprite.alpha=cycle>5.8&&cycle<8?0:1;
+          if(a.spray){
+            a.spray.clear();
+            var power=Math.max(0,1-Math.abs(cycle-5)/.85, (1-Math.abs(cycle-1.2)/.5)*.45);
+            if(power>0){
+              a.spray.lineStyle(2,0xd8faff,power);
+              for(var k=0;k<7;k++){
+                var angle=-2.8+k*.42;
+                a.spray.moveTo(a.x+dx,a.y+6);
+                a.spray.lineTo(a.x+dx+Math.cos(angle)*(7+20*power),a.y+6+Math.sin(angle)*(7+20*power));
+              }
+              a.spray.beginFill(0xe8ffff,.65*power);
+              a.spray.drawEllipse(a.x+dx,a.y+8,28*power,5*power);a.spray.endFill();
+            }
+          }
         } else if(a.kind==='penguin'){
-          a.sprite.position.set(a.x+Math.sin(t*0.5)*5,a.y+Math.abs(Math.sin(t*2))*2);
-          a.sprite.rotation=Math.sin(t*2)*0.07;
+          var beat=t*(a.south?3.3:2.3),hop=a.south?Math.pow(Math.max(0,Math.sin(beat)),2)*9:Math.abs(Math.sin(beat))*3;
+          a.sprite.position.set(a.x+Math.sin(t*.5)*(a.south?12:6),a.y-hop);
+          a.sprite.rotation=Math.sin(beat)*(a.south?.25:.12);
+          a.sprite.scale.x=a.base*(Math.sin(t*.6)>0?-1:1);
         } else {
           a.sprite.position.set(a.x+Math.sin(t*0.22)*6,a.y+Math.sin(t*0.9));
           a.sprite.rotation=Math.sin(t*0.35)*0.025;
