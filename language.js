@@ -229,11 +229,42 @@ pairs.push(
 ["Fare","Fahrpreis"],
 ["Cash afterwards","Verbleibendes Bargeld"]
 );
+pairs.push(
+["My gallery","Meine Galerie"],
+["Tap a painting to enlarge","Bild antippen, um es zu vergrößern"],
+["Sort artwork","Kunstwerke sortieren"],
+["Read the journal","Tagebuch lesen"],
+["New career","Neue Karriere"],
+["Zoom out","Verkleinern"],
+["Zoom in","Vergrößern"],
+["The collection","Die Sammlung"],
+["Pictures held","Gemälde im Besitz"],
+["Market value of the collection","Sammlungswert"],
+["Paid for it all","Gesamter Kaufpreis"],
+["Crate slots bought","Gekaufte Lagerplätze"],
+["Best / worst flip","Bester / schlechtester Verkauf"],
+["Forgeries passed on","Weiterverkaufte Fälschungen"],
+["By epoch","Nach Epoche"],
+["Net worth","Gesamtvermögen"],
+["Cash on hand","Bargeld"],
+["Title","Titel"],
+["Epoch","Epoche"],
+["All","Alle"],
+["Sort","Sortieren"],
+["Fully restored","Vollständig restauriert"]
+);
 var map=Object.create(null),reverse=Object.create(null);
 pairs.forEach(function(p){map[p[0]]=p[1];if(!(p[1] in reverse))reverse[p[1]]=p[0];});
 var originals=new WeakMap(), rendered=new WeakMap(),mutating=false;
 function dynamicText(text){
  return text
+ .replace(/^Bid \+ (.+)$/,'Gebot + $1')
+ .replace(/^Expert (.+)$/,'Gutachten $1')
+ .replace(/^Restore (.+)$/,'Restaurieren $1')
+ .replace(/^Restoring: (.+) → (.+) when ready$/,'Restaurierung: $1 → $2 nach Fertigstellung')
+ .replace(/^(.+) → (.+) in (\d+) day\(s\)$/,'$1 → $2 in $3 Tagen')
+ .replace(/^(\d+) of (\d+) max$/,'$1 von maximal $2')
+ .replace(/^(\d+)\/(\d+) crates$/,'$1/$2 Kisten')
  .replace(/^Yes, travel to (.+)$/,'Ja, reisen nach $1')
  .replace(/^Yes, sail to (.+)$/,'Ja, segeln nach $1')
  .replace(/^Travel to (.+)\?$/,'Reise nach $1?')
