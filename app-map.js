@@ -133,11 +133,18 @@
                  clear: function () { clearPreview(); },
                  places: function () { return PLACES.map(function (p) { return p.slug; }); } };
 
+  function cityArtGrade(cityId) {
+    var grades=['A','B','C','D','E'];
+    var works=A.works||[];
+    for(var i=0;i<grades.length;i++)if(works.some(function(w){return A.artTier(w).grade===grades[i]&&A.artAvailableInCity(w,cityId);})){return grades[i];}
+    return 'E';
+  }
   function mapPlaces() {
     return PLACES.map(function (p) {
       return {
         slug: p.slug, label: p.label, x: p.mapX, y: p.mapY, kind: p.kind,
         crops: p.colonyId ? (A.colonies.COLONY_CROP_IDS[p.colonyId] || []).slice(0,2) : null,
+        artGrade: p.city ? cityArtGrade(p.city.id) : null,
         here: !!(p.city && p.city.id === G.cityId)
       };
     });
