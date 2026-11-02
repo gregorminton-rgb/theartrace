@@ -2354,3 +2354,26 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .dialog--tutorial .tutorial-tier-card small{font-size:.55rem}
  .dialog--tutorial .tutorial-example-art,.dialog--tutorial .tutorial-example-art img{height:105px;max-height:105px}
 }
+
+/* Six short tutorial pages; navigation stays at exactly the same screen position. */
+#overlay .dialog.dialog--tutorial{
+ display:flex;flex-direction:column;box-sizing:border-box;
+ height:min(720px,calc(100dvh - 20px));max-height:calc(100dvh - 20px);
+ overflow:hidden;
+}
+#overlay .dialog--tutorial .dialog-head,
+#overlay .dialog--tutorial .dialog-actions{flex:0 0 auto;min-height:0}
+#overlay .dialog--tutorial .dialog-body{
+ flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;
+ overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+}
+#overlay .dialog--tutorial .tutorial-hero{min-height:clamp(130px,23dvh,210px)}
+#overlay .dialog--tutorial .tutorial-example-art,
+#overlay .dialog--tutorial .tutorial-example-art img{height:122px;max-height:122px}
+#overlay .dialog--tutorial .tutorial-progress{padding:4px 0 8px}
+@media(max-width:480px){
+ #overlay .dialog.dialog--tutorial{height:calc(100dvh - 18px)}
+ #overlay .dialog--tutorial .tutorial-hero{min-height:145px}
+ #overlay .dialog--tutorial .tutorial-example-art,
+ #overlay .dialog--tutorial .tutorial-example-art img{height:100px;max-height:100px}
+}
