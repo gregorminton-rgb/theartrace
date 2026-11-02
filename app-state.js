@@ -35,6 +35,7 @@
     auctionDay: 0,
     nextUid: 1,
     log: [],
+    raceSnapshots: [],
     history: [],          // events that already ran, for the news archive
     slotsBought: 0,
     debtSince: -1,        // day the current debt was taken
