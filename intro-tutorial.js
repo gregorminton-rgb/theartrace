@@ -34,6 +34,27 @@ function exampleCards(){
    '<strong>'+points+' ★</strong></div></div>';
  }).join('')+'</div>';
 }
+function artistSetExamples(){
+ var A=window.ArtRace,images=window.ART_ARTWORK_IMAGES&&window.ART_ARTWORK_IMAGES.images||{};
+ var works=A&&A.works||[],groups={};
+ works.forEach(function(w){
+  var img=images[w.id];
+  if(!img||!img.file)return;
+  (groups[w.artistId]||(groups[w.artistId]=[])).push({title:w.title,file:img.file});
+ });
+ var ids=Object.keys(groups).filter(function(id){return groups[id].length>=3;});
+ var picasso=ids.filter(function(id){return /picasso/i.test(id);})[0];
+ var chosen=groups[picasso||ids[0]]||[];
+ var artist=picasso?'Picasso':(A&&A.artists&&A.artists.filter(function(a){return a.id===ids[0];})[0]||{}).name||ids[0]||copy('Künstler','Artist');
+ return '<div class="tutorial-set-visual">'+[2,3].map(function(count){
+  return '<div class="tutorial-set-example"><div class="tutorial-set-paintings">'+chosen.slice(0,count).map(function(w){
+   return '<img src="'+esc(w.file)+'" alt="'+esc(w.title)+'" loading="lazy">';
+  }).join('')+'</div><strong>'+esc(artist)+' · '+count+' '+copy('Werke','works')+'</strong>'+
+   '<span>'+(count===2?'+30 %':'×2')+'</span><small>'+
+   (count===2?copy('Künstler-Set','Artist set'):copy('Vollständiges Set','Complete set'))+
+   '</small></div>';
+ }).join('')+'</div>';
+}
 function render(){
  var A=window.ArtRace,G=window.ArtRaceGame&&window.ArtRaceGame.G;
  if(!A||!A.shell||!G||!G.started)return;
@@ -59,8 +80,7 @@ function render(){
  ];
  var item=cards[page],image=photo(item.scene);
  var extra=item.scoring?classTable():item.examples?exampleCards():
-  item.set?'<div class="tutorial-set-visual"><div><strong>2 🖼️</strong><span>+30 %</span><small>'+copy('Künstler-Set','Artist set')+'</small></div>'+
-  '<div><strong>3 🖼️</strong><span>×2</span><small>'+copy('Vollständiges Set','Complete set')+'</small></div></div>':'';
+  item.set?artistSetExamples():'';
  var html='<div class="tutorial-hero">'+(image?'<img src="'+esc(image)+'" alt="" loading="eager">':'')+
   '<h3 class="tutorial-hero-title">'+esc(item.title)+'</h3></div>'+
   '<div class="tutorial-copy"><p>'+esc(item.text)+'</p>'+extra+
