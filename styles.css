@@ -2437,3 +2437,14 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 #screen-game #ticker,#screen-game #hud.hud-details-open #ticker{display:none!important}
 #screen-game #hud{grid-template-areas:"brand balance chrono";}
 @media(max-width:760px){#screen-game #hud{grid-template-areas:none}}
+
+/* Mobile colony dock: three tabs must occupy all available width.
+   Previously fixed-width tabs left a large empty dark-brown band. */
+@media(max-width:760px){
+ #colony .colony-menu{box-sizing:border-box;width:100%;justify-content:stretch;overflow-x:hidden;gap:4px}
+ #colony .colony-menu>.colony-menu-btn{
+  box-sizing:border-box;flex:1 1 0;min-width:0;max-width:none;
+  padding:4px 2px;white-space:normal;
+ }
+ #colony .colony-menu-btn b{max-width:100%;overflow-wrap:break-word;text-align:center}
+}
