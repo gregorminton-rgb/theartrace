@@ -2474,3 +2474,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Colony uses the same live music toggle as the city HUD. */
 #colony #colony-music{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:34px;font-size:1.05rem;cursor:pointer}
 #colony #colony-music.is-on{background:#f0d997;border-color:#ad7c37;color:#4b3317}
+
+/* Arrival / accommodation: quiet readable card over the existing city or colony art. */
+.arrival-accommodation{width:min(540px,92%);margin:clamp(15px,7vh,90px) auto;padding:clamp(20px,4vw,42px);text-align:center;color:#443322;background:rgba(255,248,226,.87);border:2px solid #b49a70;border-radius:16px;box-shadow:0 12px 36px rgba(35,21,7,.24)}
+.arrival-accommodation h3{font-size:clamp(1.2rem,2.6vw,1.8rem);margin:9px 0 18px}
+.arrival-accommodation-icon{font-size:2rem}.arrival-accommodation strong{display:block;font-size:clamp(1.9rem,5vw,3rem);color:#604a2b;margin:8px 0}
+#colony-view-unterkunft{min-height:55vh;padding:12px;background:transparent}
+@media(max-width:760px){#colony .colony-menu>.colony-menu-btn{min-width:0;flex:1 1 0;padding-inline:1px;font-size:.53rem}}

@@ -441,7 +441,7 @@
       stopClock();
       G.colonyReturnCityId = G.cityId;
       G.colonyId = v.colonyId;
-      G.colonyMenu = 'plantage';
+      G.colonyMenu = 'unterkunft';
       G.selectedFieldId = null;
       G.plantCropId = null;
       log('Arrived at ' + v.toName + ' on day ' + G.day + '.');
@@ -470,6 +470,7 @@
       p.provenance += ' -> ' + to.name + ' (day ' + G.day + ')';
     });
     log('Arrived in ' + to.name + ' on day ' + G.day + '.');
+    G.view = 'accommodation';
     restockIfNeeded();
     syncAuction();
     /* Travel-only Auto ends at the destination; explicitly activated Auto persists. */
@@ -799,15 +800,16 @@
     return premium?240:80;
   }
   A.cityHotelRate=cityHotelRate;
+  A.colonyHotelRate=function(){return 35;};
 
   /* ---------- the clock ------------------------------------------------ */
   function advanceDay(silent) {
     G.day += 1;
     /* Hotel is charged only while resident in a city, never at sea or on a plantation. */
-    if(G.started&&!G.voyage&&!G.colonyId&&A.city(G.cityId)){
-      var hotel=cityHotelRate(G.cityId);
+    if(G.started&&!G.voyage&&(G.colonyId||A.city(G.cityId))){
+      var hotel=G.colonyId?A.colonyHotelRate():cityHotelRate(G.cityId);
       G.cash-=hotel;
-      if(!silent)log('Hotel in '+A.city(G.cityId).name+': '+A.money(hotel)+' per day.');
+      if(!silent)log('Unterkunft in '+(G.colonyId?'Kolonie':A.city(G.cityId).name)+': '+A.money(hotel)+' pro Tag.');
     }
 
     if (G.loan > 0) {
@@ -915,7 +917,7 @@
    * RENDER
    * ===================================================================== */
   var VIEW_TITLES = {
-    dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
+    accommodation: 'Unterkunft', dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
     bank: 'Bank', studio: 'Restoration studio', travel: 'Travel office', trade: 'Trade desk', report: 'Career report'
   };
 
