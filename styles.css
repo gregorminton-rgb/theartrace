@@ -2470,3 +2470,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud .chrono{order:1;min-width:0;width:100%}
  #screen-game #hud-balance{order:2;min-width:0;width:100%}
 }
+
+/* Colony uses the same live music toggle as the city HUD. */
+#colony #colony-music{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:34px;font-size:1.05rem;cursor:pointer}
+#colony #colony-music.is-on{background:#f0d997;border-color:#ad7c37;color:#4b3317}
