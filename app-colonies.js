@@ -656,15 +656,18 @@
     var sameLevel=selectedFields.length>0 && selectedFields.every(function(f){return f.level===selectedFields[0].level;});
     var next=sameLevel?UPGRADES[selectedFields[0].level]:null;
     var totalCost=next?next.cost*selectedFields.length:0;
-    var upgradeText=selectedFields.length>1 ? 'Upgrade '+selectedFields.length+' fields' : 'Upgrade field';
-    if (next) upgradeText+=' · '+h(next.label)+' · '+A.money(totalCost);
+    var german=window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de';
+    var upgradeText=german?(selectedFields.length>1?selectedFields.length+' Felder verbessern':'Feld verbessern'):(selectedFields.length>1?'Upgrade '+selectedFields.length+' fields':'Upgrade field');
+    var upgradeStage=next?(german?({'Irrigation':'Bewässerung','Fertiliser':'Düngung','Storage shed':'Lagerschuppen'}[next.label]||next.label):next.label):'';
+    var upgradeLabel=next?'<span class="colony-upgrade-main">'+h(upgradeText)+'</span><span class="colony-upgrade-meta">'+h(upgradeStage)+' · '+A.money(totalCost)+'</span>':
+      (selectedFields.length&&!sameLevel?(german?'Felder gleicher Stufe wählen':'Select same-level fields'):(german?'Keine Verbesserung möglich':'No upgrade available'));
     return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
       '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
       '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>Select all</button>' +
       '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
       '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
       '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
-      '<button class="btn go" type="button" data-colony="upgrade-bulk"' + (!next || G.cash<totalCost ? ' disabled' : '') + '>' + (next?upgradeText:(selectedFields.length&&!sameLevel?'Select same-level fields':'No upgrade available')) + '</button>' +
+      '<button class="btn go" type="button" data-colony="upgrade-bulk"' + (!next || G.cash<totalCost ? ' disabled' : '') + '>' + upgradeLabel + '</button>' +
       '</div>';
   }
 
