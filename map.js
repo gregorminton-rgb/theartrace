@@ -1546,7 +1546,7 @@
         var kind = q.L.kind;
         var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 18 : 14;
         var cropBadge = kind === 'colony' && q.L.crops && q.L.crops.length === 2;
-        var artBadge = (kind === 'city' || kind === 'trade') && !!q.L.artGrade;
+        var artBadge = (kind === 'city' || kind === 'trade') && !!q.L.artStars;
         var badgeW = cropBadge ? 58 : r*2;
         var badgeH = cropBadge ? 30 : r*2;
         var col = artBadge ? 0x8c805c : here ? 0xd4452f
@@ -1620,8 +1620,13 @@
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
         if(artBadge){
-          var gradeText=new PIXI.Text(q.L.artGrade,{fontFamily:FONT,fontSize:17,fontWeight:'bold',fill:0x44351e});
-          gradeText.anchor.set(.5);gradeText.position.set(q.x,q.y);gradeText.eventMode='none';pinLayer.addChild(gradeText);
+          var stars=q.L.artStars;
+          var starText=new PIXI.Text(Array(stars+1).join('★'),{
+            fontFamily:'Arial, sans-serif',fontSize:stars===3?10:stars===2?13:19,
+            fontWeight:'bold',fill:0x5a4421,align:'center'
+          });
+          starText.anchor.set(.5);starText.position.set(q.x,q.y);
+          starText.eventMode='none';pinLayer.addChild(starText);
         }
         if(cropBadge){
           var cropIcons={kakao:'🫘',kaffee:'☕',tee:'🍃',tabak:'🍂',stoffe:'🧵'};
