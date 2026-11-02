@@ -173,13 +173,16 @@
   }
 
   function updateToggle() {
-    var btn = document.getElementById('hud-music');
-    if (!btn) return;
     var on = shouldSound();
-    btn.classList.toggle('is-on', on);
-    btn.textContent = on ? '\u266B' : '\u266A';
-    btn.title = on ? 'Music on \u2014 click to mute' : 'Music off \u2014 click to turn on';
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    ['hud-music','colony-music'].forEach(function(id){
+      var btn=document.getElementById(id);
+      if(!btn)return;
+      btn.classList.toggle('is-on',on);
+      btn.textContent=on?'\u266B':'\u266A';
+      btn.title=on?'Music on \u2014 click to mute':'Music off \u2014 click to turn on';
+      btn.setAttribute('aria-label',on?'Mute music':'Play music');
+      btn.setAttribute('aria-pressed',on?'true':'false');
+    });
   }
 
   function toggle() {
@@ -225,4 +228,7 @@
 
   var btn = document.getElementById('hud-music');
   if (btn) btn.addEventListener('click', toggle);
+  var colonyBtn=document.getElementById('colony-music');
+  if(colonyBtn)colonyBtn.addEventListener('click',toggle);
+  updateToggle();
 })();
