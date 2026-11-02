@@ -2384,3 +2384,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog--tutorial .tutorial-set-paintings img{display:block;min-width:0;flex:1 1 0;width:0;height:100%;object-fit:contain;background:#332820;border:2px solid #b08a52;border-radius:4px;box-sizing:border-box}
 .dialog--tutorial .tutorial-set-example>strong{font-size:.78rem;text-align:center}
 @media(max-width:480px){.dialog--tutorial .tutorial-set-paintings{height:83px;gap:3px}.dialog--tutorial .tutorial-set-paintings img{border-width:1px}}
+
+/* Each A–E tutorial tier shows an actual catalogue painting. */
+.dialog--tutorial .tutorial-tier-art{width:100%;height:94px;display:grid;place-items:center;overflow:hidden;background:#30251e;border-radius:5px}
+.dialog--tutorial .tutorial-tier-art img{display:block;width:100%;height:100%;object-fit:contain}
+.dialog--tutorial .tutorial-tier-art span{color:#f4e4c4}
+.dialog--tutorial .tutorial-tier-card{min-width:0;gap:5px}
+@media(max-width:480px){.dialog--tutorial .tutorial-tier-art{height:67px}.dialog--tutorial .tutorial-tier-letter{font-size:1rem}.dialog--tutorial .tutorial-tier-multi{font-size:.76rem}}
