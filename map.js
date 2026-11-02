@@ -1556,7 +1556,7 @@
 
         if (here) {
           var ring = new PIXI.Graphics();
-          ring.beginFill(0x8d2222, 0.20);
+          ring.beginFill(artBadge ? 0xd9c38c : 0x8d2222, 0.20);
           ring.drawCircle(0, 0, r + 6);
           ring.endFill();
           ring.position.set(q.x, q.y);
@@ -1565,7 +1565,7 @@
         }
         /* A soft surrounding disc makes tiny destinations legible on busy land. */
         var halo = new PIXI.Graphics();
-        halo.beginFill(0x081a27, 0.68);
+        halo.beginFill(artBadge ? 0x544731 : 0x081a27, artBadge ? 0.58 : 0.68);
         if(cropBadge){halo.clear();halo.beginFill(0x263d34,0.54);halo.drawRoundedRect(-badgeW/2-2,-badgeH/2-2,badgeW+4,badgeH+4,8);halo.endFill();}
         else halo.drawCircle(0, 0, r + 3);
         halo.endFill();
