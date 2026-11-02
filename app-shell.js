@@ -310,6 +310,7 @@
       epochs[e] = (epochs[e] || 0) + 1;
     });
     var count = G.portfolio.length;
+    if(window.ArtRaceWeekly)window.ArtRaceWeekly.capture(true);
     var raceBoard = A.race ? A.race.standings() : [];
     var winner = raceBoard.length && raceBoard[0].type === 'human';
     var rivalSummary = raceBoard.length ? '<h3>' + (winner ? 'You won the art race!' : 'Final standings') + '</h3>' +
@@ -321,6 +322,7 @@
     var shown = G.portfolio.slice().sort(function (a, b) { return valueOf(b) - valueOf(a); });
     var lines = [
       rivalSummary,
+      (window.ArtRaceWeekly && raceBoard.length ? window.ArtRaceWeekly.visuals(raceBoard) : ''),
       count
         ? 'You end the race with <b>' + count + '</b> picture' + (count === 1 ? '' : 's') +
           ' in the crates.'

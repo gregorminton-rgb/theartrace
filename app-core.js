@@ -112,6 +112,7 @@
     G.nextUid = 1;
     G.log = [];
     G.history = [];
+    G.raceSnapshots = [];
     G.colonyId = null;
     G.colonyReturnCityId = null;
     G.voyage = null;
