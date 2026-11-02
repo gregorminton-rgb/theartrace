@@ -1546,9 +1546,10 @@
         var kind = q.L.kind;
         var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 18 : 14;
         var cropBadge = kind === 'colony' && q.L.crops && q.L.crops.length === 2;
+        var artBadge = (kind === 'city' || kind === 'trade') && !!q.L.artGrade;
         var badgeW = cropBadge ? 58 : r*2;
         var badgeH = cropBadge ? 30 : r*2;
-        var col = here ? 0xd4452f
+        var col = artBadge ? 0x8c805c : here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
           : kind === 'colony' ? 0x657b61 : 0x3f7d44;
@@ -1588,7 +1589,9 @@
         g.lineStyle(1,0xffffff,0.6);
         g.moveTo(-r*.48,-r*.42);g.lineTo(-r*.1,-r*.65);
         g.lineStyle(0);
-        if(cropBadge) {
+        if(artBadge) {
+          g.beginFill(0xf3e8c9,1);g.drawRoundedRect(-r*.68,-r*.62,r*1.36,r*1.24,4);g.endFill();
+        } else if(cropBadge) {
           /* Two actual crops: one pictogram per half, sourced from colony rules. */
           g.lineStyle(1,0xffeac9,.55);g.moveTo(0,-badgeH/2+5);g.lineTo(0,badgeH/2-5);g.lineStyle(0);
         } else if (kind === 'colony' && !here) {
@@ -1616,6 +1619,10 @@
         else g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
+        if(artBadge){
+          var gradeText=new PIXI.Text(q.L.artGrade,{fontFamily:FONT,fontSize:17,fontWeight:'bold',fill:0x44351e});
+          gradeText.anchor.set(.5);gradeText.position.set(q.x,q.y);gradeText.eventMode='none';pinLayer.addChild(gradeText);
+        }
         if(cropBadge){
           var cropIcons={kakao:'🫘',kaffee:'☕',tee:'🍃',tabak:'🍂',stoffe:'🧵'};
           q.L.crops.forEach(function(id,j){
