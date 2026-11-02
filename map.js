@@ -1631,7 +1631,9 @@
 
       for (i = 0; i < pins.length; i++) {
         var o = pins[i];
-        var onLand = isLand(o.L.x, o.L.y);
+        /* Island colony pins can lie just offshore in the coastline mask. Keep their
+           names styled like the other colonies regardless of that mask. */
+        var onLand = o.L.kind === 'colony' || isLand(o.L.x, o.L.y);
         var isCity = o.L.kind === 'city' || o.L.kind === 'trade';
         var text = new PIXI.Text(o.L.label, {
           fontFamily: FONT, fontSize: o.L.kind === 'colony' ? 11.5 : 12, fontWeight: '600',
