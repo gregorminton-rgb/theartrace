@@ -528,7 +528,7 @@
             rivalNames: [el('f-ai-1').value, el('f-ai-2').value, el('f-ai-3').value]
           });
           G.ended = false;
-          G.view = 'dealer';
+          G.view = 'accommodation';
           closeDialog();
           el('screen-title').hidden = true;
           el('screen-game').hidden = false;
