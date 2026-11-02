@@ -98,6 +98,7 @@
     G.cash = Math.round(CFG.startingMoney * diff.startingMoney);
     G.day = 1;
     G.cityId = opts.cityId || 'amsterdam';
+    G.view = 'accommodation';
     G.loan = 0;
     G.reputation = CFG.startingReputation;
     G.capacity = CFG.startingPortfolioCapacity;

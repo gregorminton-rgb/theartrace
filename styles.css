@@ -2500,3 +2500,12 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  background:radial-gradient(circle at 30% 15%,#fff9e5,#e9d39e 44%,#a88b56 100%);
 }
 @media(max-width:760px){.arrival-accommodation{width:min(218px,calc(100% - 16px));margin:8px 8px 0 auto;padding:9px 11px}}
+
+/* The plantation dashboard needs an opaque work surface, but the arrival
+   accommodation tab must show the colony artwork across its full backdrop. */
+#colony .colony-screen:has(#colony-view-unterkunft:not([hidden]))::before{
+ content:"";background-image:linear-gradient(rgba(241,227,194,.13),rgba(224,207,169,.22)),var(--colony-scene-art,none);
+ background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+#colony .colony-screen:has(#colony-view-unterkunft:not([hidden])) .colony-content{background:transparent}
+#colony .colony-screen:has(#colony-view-unterkunft:not([hidden])) .colony-view--unterkunft{background:transparent}
