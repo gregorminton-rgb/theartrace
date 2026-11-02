@@ -943,6 +943,15 @@
     el('hud-sub').textContent = colony
       ? 'Colony' + (colony.sub ? ' · ' + colony.sub : '')
       : (c ? c.country + ' · ' + c.regionName : 'Under way');
+    var hotelLabel=el('hud-hotel');
+    if(hotelLabel){
+      var showHotel=!!(G.started && c && !G.voyage && !colony);
+      hotelLabel.hidden=!showHotel;
+      if(showHotel){
+        var de=!!(window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de');
+        hotelLabel.textContent=(de?'Hotel / Tag: ':'Hotel / day: ')+A.money(cityHotelRate(c.id));
+      }
+    }
     el('hud-cash').textContent = 'Cash ' + A.money(G.cash);
     el('hud-rep').textContent = 'Reputation ' + Math.round(G.reputation) + ' · debt ' + A.money(G.loan);
     /* The career is a race for pictures, so the chip counts crates:
