@@ -137,6 +137,7 @@
     return PLACES.map(function (p) {
       return {
         slug: p.slug, label: p.label, x: p.mapX, y: p.mapY, kind: p.kind,
+        crops: p.colonyId ? (A.colonies.COLONY_CROP_IDS[p.colonyId] || []).slice(0,2) : null,
         here: !!(p.city && p.city.id === G.cityId)
       };
     });
