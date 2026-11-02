@@ -2509,3 +2509,9 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 #colony .colony-screen:has(#colony-view-unterkunft:not([hidden])) .colony-content{background:transparent}
 #colony .colony-screen:has(#colony-view-unterkunft:not([hidden])) .colony-view--unterkunft{background:transparent}
+
+/* Desktop opening artwork: lower the title card so the painting is visible. */
+@media(min-width:761px){
+ #screen-title .title-canvas{display:flex;align-items:flex-end;justify-content:center;padding:4vh 4vw 6vh}
+ #screen-title .title-placard{width:min(34em,85%);padding:1.5em 1.8em 1.2em}
+}
