@@ -2481,3 +2481,22 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .arrival-accommodation-icon{font-size:2rem}.arrival-accommodation strong{display:block;font-size:clamp(1.9rem,5vw,3rem);color:#604a2b;margin:8px 0}
 #colony-view-unterkunft{min-height:55vh;padding:12px;background:transparent}
 @media(max-width:760px){#colony .colony-menu>.colony-menu-btn{min-width:0;flex:1 1 0;padding-inline:1px;font-size:.53rem}}
+
+/* Accommodation is a quiet corner detail, not a centered modal.
+   Keep the destination panorama clearly visible. */
+.arrival-accommodation{
+ box-sizing:border-box;width:min(250px,calc(100% - 20px));max-width:250px;
+ margin:12px 12px 0 auto;padding:12px 14px;text-align:left;
+ background:rgba(255,248,226,.84);border:1px solid #b49a70;
+ border-radius:11px;box-shadow:0 3px 13px rgba(35,21,7,.15);
+}
+.arrival-accommodation h3{font-size:.96rem;line-height:1.2;margin:0 0 8px}
+.arrival-accommodation>p{font-size:.77rem;margin:5px 0}
+.arrival-accommodation strong{font-size:1.45rem;margin:2px 0;line-height:1.2}
+.arrival-accommodation-icon{font-size:1.1rem;float:right;margin-left:5px}
+.arrival-accommodation .note{font-size:.68rem;line-height:1.35}
+#colony-view-unterkunft{min-height:55vh;padding:0}
+#screen-game #stations .icon-art--accommodation,.colony-menu .icon-art--accommodation{
+ background:radial-gradient(circle at 30% 15%,#fff9e5,#e9d39e 44%,#a88b56 100%);
+}
+@media(max-width:760px){.arrival-accommodation{width:min(218px,calc(100% - 16px));margin:8px 8px 0 auto;padding:9px 11px}}
