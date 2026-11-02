@@ -1547,6 +1547,7 @@
         var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 18 : 14;
         var cropBadge = kind === 'colony' && q.L.crops && q.L.crops.length === 2;
         var badgeW = cropBadge ? 58 : r*2;
+        var badgeH = cropBadge ? 30 : r*2;
         var col = here ? 0xd4452f
           : kind === 'trade' ? hex(lv.trade)
           : kind === 'city' ? hex(lv.city)
@@ -1564,7 +1565,7 @@
         /* A soft surrounding disc makes tiny destinations legible on busy land. */
         var halo = new PIXI.Graphics();
         halo.beginFill(0x081a27, 0.68);
-        if(cropBadge)halo.drawRoundedRect(-badgeW/2-3,-r-3,badgeW+6,r*2+6,8);
+        if(cropBadge)halo.drawRoundedRect(-badgeW/2-3,-badgeH/2-3,badgeW+6,badgeH+6,8);
         else halo.drawCircle(0, 0, r + 3);
         halo.endFill();
         halo.position.set(q.x, q.y);
@@ -1573,7 +1574,7 @@
         g.beginFill(col, 1);
         g.lineStyle(1.5, 0xf8f0dc, 0.95);
         if(cropBadge) {
-          g.drawRoundedRect(-badgeW/2, -r, badgeW, r*2, 7);
+          g.drawRoundedRect(-badgeW/2, -badgeH/2, badgeW, badgeH, 7);
         } else if(kind === 'colony' && !here) {
           g.drawRoundedRect(-r, -r, r*2, r*2, 3);
         } else if(kind === 'trade' && !here) {
@@ -1589,7 +1590,7 @@
         g.lineStyle(0);
         if(cropBadge) {
           /* Two actual crops: one pictogram per half, sourced from colony rules. */
-          g.lineStyle(1,0xffeac9,.55);g.moveTo(0,-r+5);g.lineTo(0,r-5);g.lineStyle(0);
+          g.lineStyle(1,0xffeac9,.55);g.moveTo(0,-badgeH/2+5);g.lineTo(0,badgeH/2-5);g.lineStyle(0);
         } else if (kind === 'colony' && !here) {
           g.beginFill(0xf8e3a3,1);g.drawRoundedRect(-r*.49,r*.19,r*.98,r*.34,1);g.endFill();
           g.lineStyle(1.3,0xf7f6d4,1);g.moveTo(0,r*.21);g.lineTo(0,-r*.42);
@@ -1609,7 +1610,7 @@
           g.beginFill(0xe6f7cc,1);g.drawPolygon([-r*.3,r*.22,0,-r*.11,r*.3,r*.22]);g.endFill();
         }
         g.lineStyle(1, 0x32240f, 0.65);
-        if(cropBadge)g.drawRoundedRect(-badgeW/2-1,-r-1,badgeW+2,r*2+2,7);
+        if(cropBadge)g.drawRoundedRect(-badgeW/2-1,-badgeH/2-1,badgeW+2,badgeH+2,7);
         else if (kind === 'colony' && !here) g.drawRoundedRect(-r-1,-r-1,r*2+2,r*2+2,4);
         else if(kind === 'trade' && !here) g.drawPolygon([0,-r-1,r+1,0,0,r+1,-r-1,0]);
         else g.drawCircle(0, 0, r + 1);
@@ -1625,7 +1626,7 @@
             symbol.eventMode='none';pinLayer.addChild(symbol);
           });
         }
-        boxes.push([q.x - badgeW/2 - 5, q.y - r - 5, badgeW + 10, (r + 5) * 2]);
+        boxes.push([q.x - badgeW/2 - 5, q.y - badgeH/2 - 5, badgeW + 10, badgeH + 10]);
       }
 
       for (i = 0; i < pins.length; i++) {
