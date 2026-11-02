@@ -561,8 +561,8 @@
   function drawAuction() {
     var city = A.city(G.cityId);
     var lots = [];
-    /* Smaller sales: two or three original works, never a crowded catalogue. */
-    var lotLimit=Math.min(CFG.auctionLotCount,2+G.rng.int(0,1));
+    /* A sale offers two works, at most; scarce catalogues can contain fewer. */
+    var lotLimit=2;
     for (var i = 0; i < lotLimit; i++) {
       var w = freeWork(lots.map(function(p){return p.inst.defId;}),city.id);
       if (!w) break;
@@ -571,8 +571,16 @@
       var idx = A.sliceIndex(G.market, city, A.workEpoch(w));
       var mv = A.marketValue(w, inst, city, idx, dateOf(G.day).year);
       var best = 0;
+      var difficulty = G.difficulty === 'Hard' ? 'Hard' : G.difficulty === 'Normal' ? 'Normal' : 'Easy';
       for (var r = 0; r < rivalCount(); r++) {
-        var ceiling = mv * (0.7 + aggression() * G.rng.range(0.35, 1.15));
+        /* The room bids to individual price limits, not infinite wealth.
+           Medium and Hard bring a firmer market; an occasional determined
+           collector pushes farther without making every auction unwinnable. */
+        var pressure = difficulty === 'Hard' ? 1.28 : difficulty === 'Normal' ? 1.13 : 1;
+        var ceiling = mv * (0.7 + aggression() * G.rng.range(0.35, 1.15)) * pressure;
+        if (difficulty !== 'Easy' && G.rng.chance(difficulty === 'Hard' ? 0.16 : 0.08)) {
+          ceiling *= difficulty === 'Hard' ? 1.18 : 1.10;
+        }
         best = Math.max(best, ceiling);
       }
       lots.push({
