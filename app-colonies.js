@@ -224,7 +224,7 @@
     }
     G.colonyId = null;
     G.colonyReturnCityId = null;
-    G.colonyMenu = 'plantage';
+    G.colonyMenu = 'unterkunft';
     G.selectedFieldId = null;
     crew.multiSelect.ids = {};
     G.plantCropId = null;
@@ -443,6 +443,7 @@
     });
     
     /* Show/hide views */
+    show(el('colony-view-unterkunft'), G.colonyMenu === 'unterkunft');
     show(el('colony-view-plantage'), G.colonyMenu === 'plantage');
     show(el('colony-view-handel'), G.colonyMenu === 'handel');
     show(el('colony-view-reise'), G.colonyMenu === 'reise');
