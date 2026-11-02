@@ -63,7 +63,7 @@
     return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="' + stageId + '">' +
       '<div class="wm-legend">' +
       '<span class="wm-key wm-key--colony">🌱 Colonies</span>' +
-      '<span class="wm-key wm-key--city">🖼️ Art-trade cities</span>' +
+      '<span class="wm-key wm-key--city">🖼️ Kunststädte: A–E = beste verfügbare Klasse</span>' +
       '<span class="wm-key wm-key--trade">🪙 Trade cities</span>' +
       '<span class="wm-levels">' +
       '<button type="button" class="wm-level' + (lv === 'europe' ? ' is-on' : '') +
