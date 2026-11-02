@@ -2431,3 +2431,9 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #colony-field-toolbar .colony-multi>.btn{min-height:40px;white-space:normal;padding:6px 4px}
  #colony-field-toolbar .colony-multi>.btn[data-colony="upgrade-bulk"]{grid-column:1/-1;min-width:0;min-height:48px}
 }
+
+/* The rolling log ticker is not navigation; keep it out of the game header.
+   The underlying journal and game messages remain available elsewhere. */
+#screen-game #ticker,#screen-game #hud.hud-details-open #ticker{display:none!important}
+#screen-game #hud{grid-template-areas:"brand balance chrono";}
+@media(max-width:760px){#screen-game #hud{grid-template-areas:none}}
