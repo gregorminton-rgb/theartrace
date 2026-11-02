@@ -118,28 +118,33 @@
       (change>=0?'+':'')+change.toFixed(1)+'% '+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'seit gestern':'vs yesterday')+'</span>';
   }
   function renderMarket() {
-    var c = A.city(G.cityId);
-    /* Ashore there is no city market to quote: the table keeps the last port's
-       figures rather than blanking out or throwing. */
-    if (!c) return;
-    var rows = A.EPOCHS.map(function (e) {
-      var i = A.sliceIndex(G.market, c, e);
-      var ch = A.dailyChange(G.market, c, e);
-      var arrow = ch > 0.004 ? '▲' : (ch < -0.004 ? '▼' : '■');
-      var cls = ch > 0.004 ? 'up' : (ch < -0.004 ? 'down' : 'flat');
-      var fav = c.favouriteEpochs.indexOf(e) >= 0 ? ' fav' : (c.bohemianEpochs.indexOf(e) >= 0 ? ' boh' : '');
-      return '<tr class="' + cls + fav + '"><td>' + h(e) + '</td>' +
-             '<td class="num">' + (i >= 1 ? '+' : '−') + Math.abs((i - 1) * 100).toFixed(1) + '%</td>' +
-             '<td class="num">' + (ch >= 0 ? '+' : '') + (ch * 100).toFixed(1) + '%</td>' +
-             '<td class="arrow">' + arrow + '</td></tr>';
+    var de=!!(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de');
+    var hubs=['london','newyork','tokio'];
+    var names={london:de?'London':'London',newyork:de?'New York':'New York',tokio:de?'Tokio':'Tokyo'};
+    var currentHub=hubs.indexOf(G.cityId)!==-1?G.cityId:null;
+    var rows=CROPS.map(function(crop){
+      /* Display the actual sale price. Outside an exchange show the best of
+         the three trade hubs, explicitly naming the destination. */
+      var hub=currentHub;
+      if(!hub)hub=hubs.reduce(function(best,id){
+        return cropPrice(crop,id)>cropPrice(crop,best)?id:best;
+      },hubs[0]);
+      var price=cropPrice(crop,hub);
+      var previous=A.colonies.cropPriceOnDay(crop,hub,G.day-1);
+      var change=previous>0?(price/previous-1)*100:0;
+      var cls=change>0.05?'up':change<-.05?'down':'flat';
+      var arrow=change>0.05?'▲':change<-.05?'▼':'■';
+      var label=de?({kakao:'Kakao',tee:'Tee',kaffee:'Kaffee',tabak:'Tabak',stoffe:'Stoffe'}[crop.id]||crop.label):crop.label;
+      return '<tr class="'+cls+'"><td>'+h(label)+(currentHub?'':'<small style="display:block;font-size:.68em;opacity:.8">'+h(names[hub])+'</small>')+'</td>'+
+        '<td class="num">'+A.money(price)+'</td>'+
+        '<td class="num">'+(change>=0?'+':'')+change.toFixed(1)+'%</td>'+
+        '<td class="arrow">'+arrow+'</td></tr>';
     }).join('');
-    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
-    var hint = document.getElementById('market-explainer');
-    if(hint) hint.innerHTML = de
-      ? '<strong>Was bedeuten die Indizes?</strong> 1,000 = normales Preisniveau · 1,200 = etwa 20 % höher · 0,800 = etwa 20 % niedriger. „Tag“ zeigt die Änderung seit gestern. Niedrige Werte können günstige Kaufgelegenheiten sein, hohe Werte gute Verkaufsgelegenheiten. Nachrichten können diese Werte vorübergehend verändern.'
-      : '<strong>How do market indices work?</strong> 1.000 = normal price level · 1.200 = about 20% higher · 0.800 = about 20% lower. “Day” shows the change since yesterday. Low indices may offer buying opportunities; high indices may favor selling. News can temporarily shift the market.';
-    el('market-table').innerHTML = '<thead><tr><th>Epoch</th><th class="num">Index</th>' +
-      '<th class="num">Day</th><th></th></tr></thead><tbody>' + rows + '</tbody>';
+    var hint=document.getElementById('market-explainer');
+    if(hint)hint.textContent=currentHub
+      ? (de?'Aktuelle Verkaufspreise je Kiste in '+names[currentHub]+'. Änderung seit gestern.':'Current sale price per crate in '+names[currentHub]+'. Change since yesterday.')
+      : (de?'Bester aktueller Verkaufspreis je Kiste aus London, New York und Tokio. Der Handelsort steht unter der Ware; Verkauf nur dort. Änderung seit gestern.':'Best current sale price per crate across London, New York and Tokyo. Exchange shown below each good; sell there. Daily change.');
+    el('market-table').innerHTML='<thead><tr><th>'+(de?'Ware':'Good')+'</th><th class="num">'+(de?'Preis':'Price')+'</th><th class="num">'+(de?'Tag':'Day')+'</th><th></th></tr></thead><tbody>'+rows+'</tbody>';
   }
 
   function renderNews() {
