@@ -2327,3 +2327,30 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .race-trend-key span{display:inline-flex;align-items:center;gap:5px}
 .race-trend-key i{display:inline-block;width:9px;height:9px;border-radius:50%}
 @media(max-width:460px){.race-chart-card{padding:10px}.race-chart-row{grid-template-columns:72px minmax(0,1fr) 55px;gap:6px;font-size:.68rem}}
+
+/* Tutorial: readable class comparison and two LARGE, separate art examples. */
+.dialog--tutorial .tutorial-tier-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:9px 0 12px}
+.dialog--tutorial .tutorial-score-key{font-size:.77rem;margin-bottom:6px;color:#634a30}
+.dialog--tutorial .tutorial-tier-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 3px;background:#f7ead2;border:1px solid #c3a77c;border-radius:8px;text-align:center}
+.dialog--tutorial .tutorial-tier-letter{font:700 1.3rem var(--serif);color:#704b22}
+.dialog--tutorial .tutorial-tier-multi{font-weight:700;color:#9a6527}
+.dialog--tutorial .tutorial-tier-score{font-size:.72rem;white-space:nowrap}
+.dialog--tutorial .tutorial-tier-card small{font-size:.63rem}
+.dialog--tutorial .tutorial-tier-a{background:#f5e5b8;border-color:#a4772e}
+.dialog--tutorial .tutorial-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:12px 0}
+.dialog--tutorial .tutorial-example{display:flex;flex-direction:column;min-width:0;background:#f4e6ca;border:1px solid #b59459;border-radius:9px;overflow:hidden}
+.dialog--tutorial .tutorial-example-art{height:138px;display:grid;place-items:center;background:#382d25}
+.dialog--tutorial .tutorial-example-art img{width:100%;height:100%;max-height:138px;object-fit:contain}
+.dialog--tutorial .tutorial-example-caption{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:8px 10px}
+.dialog--tutorial .tutorial-example-caption strong{color:#81521c}
+.dialog--tutorial .tutorial-set-visual{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.dialog--tutorial .tutorial-set-visual>div{display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px;background:#f5e7cb;border:1px solid #b9985c;border-radius:10px}
+.dialog--tutorial .tutorial-set-visual strong{font-size:1.4rem}
+.dialog--tutorial .tutorial-set-visual span{font-weight:800;color:#85501d;font-size:1.3rem}
+@media(max-width:480px){
+ .dialog--tutorial .tutorial-tier-grid{gap:3px}
+ .dialog--tutorial .tutorial-tier-card{padding:7px 1px}
+ .dialog--tutorial .tutorial-tier-score{font-size:.56rem}
+ .dialog--tutorial .tutorial-tier-card small{font-size:.55rem}
+ .dialog--tutorial .tutorial-example-art,.dialog--tutorial .tutorial-example-art img{height:105px;max-height:105px}
+}
