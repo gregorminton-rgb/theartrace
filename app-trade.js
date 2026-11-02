@@ -289,7 +289,8 @@
                G.portfolio.length + '/' + G.capacity + ' Artwork slots</span>' +
                (view === 'auction' ? sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') : '') + '</div>';
     var body = '';
-    if (view === 'dealer') body = viewDealer();
+    if (view === 'accommodation') body = '<div class="arrival-accommodation"><span class="arrival-accommodation-icon">🏨</span><h3>Willkommen in '+h(c.name)+'</h3><p>Unterkunft pro Nacht</p><strong>'+A.money(A.cityHotelRate(c.id))+'</strong><p class="note">Die Kosten werden für jeden Aufenthaltstag automatisch abgebucht.</p></div>';
+    else if (view === 'dealer') body = viewDealer();
     else if (view === 'portfolio') body = viewPortfolio();
     else if (view === 'auction') body = viewAuction();
     else if (view === 'bank') body = viewBank();
