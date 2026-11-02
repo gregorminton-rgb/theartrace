@@ -16,7 +16,7 @@
     started: false,
     ended: false,
     name: 'Henry',
-    difficulty: 'Normal',
+    difficulty: 'Easy',
     seed: 0,
     rng: null,
     careerDays: CFG.careerLengthDays,
