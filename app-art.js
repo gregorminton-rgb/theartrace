@@ -67,6 +67,8 @@
 
   function pictureFor(slug) {
     if (!slug) return null;
+    /* Legacy Firenze id now represents Venice across all city previews. */
+    if (slug === 'firenze') slug = 'venedig';
     if (IMAGES[slug]) return IMAGES[slug];
     /* tolerate a master called "NewYork.jpg" for the id "newyork" */
     var want = bareSlug(slug);
