@@ -155,6 +155,7 @@
       </div>
       <div class="colony-bar-stats">
         <button class="language-switch" type="button" data-change-language aria-label="Change language">EN</button>
+        <button class="colony-chip hud-music" id="colony-music" type="button" aria-label="Music" aria-pressed="false" title="Music">&#9834;</button>
         <button class="colony-chip" id="colony-weekly" type="button">📅 Woche</button>
         <button class="colony-chip" id="colony-missions" type="button">📜 Aufträge</button>
          <span class="colony-chip" id="colony-cash">Cash $0</span>
@@ -236,7 +237,7 @@
      build: the chart is a Pixi scene, and nothing is fetched from a CDN. -->
 <script src="world-geo.js?v=20261102-SEA2"></script>
 <script src="vendor/pixi.min.js"></script>
-<script src="map.js?v=20261102-CROPPINS1"></script>
+<script src="map.js?v=20261102-CROPSLIM2"></script>
 <!-- load order matters: app-state.js owns G, app-core.js publishes ArtRace.shared,
      then the colony modules publish their tables for the views -->
 <script src="app-state.js?v=20261102-VISUALSTATS1"></script>
@@ -254,7 +255,7 @@
 <script src="app-shell.js?v=20261102-ARTSLOTS1"></script>
 <script src="app-missions.js?v=20261101-REWARDHISTORY1"></script>
 <script src="app-weekly.js?v=20261102-VISUALSTATS1"></script>
- <script src="app-audio.js?v=20261102-SEA2"></script>
+ <script src="app-audio.js?v=20261102-COLONYMUSIC1"></script>
 <script src="language.js?v=20261102-ARTSLOTS1"></script>
 <script src="art-spotlight.js?v=20261101-DAYSPOTLIGHT1"></script>
 <script src="intro-tutorial.js?v=20261102-TIERPICTURES1"></script>
