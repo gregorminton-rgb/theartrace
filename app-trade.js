@@ -268,7 +268,7 @@
       G.view = 'portfolio';
       el('panel').innerHTML = '<div class="panel-head"><h2>' + h(VIEW_TITLES.portfolio) + '</h2>' +
         '<span class="panel-sub">at sea · ' + A.money(G.cash) + ' in hand · ' +
-        G.portfolio.length + '/' + G.capacity + ' crates</span></div>' + viewPortfolio();
+        G.portfolio.length + '/' + G.capacity + ' Artwork slots</span></div>' + viewPortfolio();
       el('panel-hint').textContent = 'Trade and travel open again once you are back in a port.';
       if (A.mapView && A.mapView.sync) A.mapView.sync();
       return;
@@ -281,7 +281,7 @@
 
     var head = '<div class="panel-head' + (view === 'auction' ? ' auction-panel-head' : '') + '"><h2>' + h(VIEW_TITLES[view]) + '</h2>' +
                '<span class="panel-sub">' + h(c.name) + ' · ' + A.money(G.cash) + ' in hand · ' +
-               G.portfolio.length + '/' + G.capacity + ' crates</span>' +
+               G.portfolio.length + '/' + G.capacity + ' Artwork slots</span>' +
                (view === 'auction' ? sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') : '') + '</div>';
     var body = '';
     if (view === 'dealer') body = viewDealer();
@@ -620,11 +620,11 @@
       ['Career', 'day ' + G.day + ' of ' + G.careerDays + ' · ' + dateOf(G.day).year],
       ['Base', A.city(G.cityId).name],
       /* Same score as the end-of-career dialog: pictures, not dollars. */
-      ['Pictures held', G.portfolio.length + ' of ' + G.capacity + ' crates'],
+      ['Pictures held', G.portfolio.length + ' / ' + G.capacity + ' Artwork slots'],
       ['Collection value', A.money(held)],
       ['Net worth', A.money(netWorth())],
       ['Cash', A.money(G.cash) + ' · debt ' + A.money(G.loan)],
-      ['Warehouse', G.portfolio.length + ' crate(s) · ' + A.money(held)],
+      ['Warehouse', G.portfolio.length + ' paintings · ' + A.money(held)],
       ['Reputation', Math.round(G.reputation) + ' · slots bought ' + G.slotsBought],
       ['Deals', st.buys + ' bought · ' + st.sells + ' sold · ' + st.hammer + ' hammer wins'],
       ['Best flip', A.money(st.bestProfit) + ' · worst ' + A.money(st.worstProfit)]
