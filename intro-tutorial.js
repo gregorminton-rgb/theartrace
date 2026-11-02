@@ -8,20 +8,9 @@ function copy(a,b){return de()?a:b;}
 var scenes={};
 (window.ART_RACE_SCENE_PLATES||[]).forEach(function(s){scenes[s.id]=s.file;});
 function photo(id){return scenes[id]||'';}
-function artworkFiles(){
- var images=window.ART_ARTWORK_IMAGES&&window.ART_ARTWORK_IMAGES.images||{};
- var works=window.ArtRace&&window.ArtRace.works||[];
- var chosen=[];
- for(var i=0;i<works.length&&chosen.length<3;i++){
-  var f=images[works[i].id]&&images[works[i].id].file;
-  if(f&&chosen.indexOf(f)<0)chosen.push(f);
- }
- return chosen;
-}
 function render(){
  var A=window.ArtRace, G=window.ArtRaceGame&&window.ArtRaceGame.G;
  if(!A||!A.shell||!G||!G.started)return;
- var art=artworkFiles();
  var cards=[
  {scene:'gallery_dream',title:copy('Werde der erfolgreichste Kunstsammler','Become the most successful art collector'),
   text:copy('Kaufe Gemälde, entdecke Galerien und Auktionen und reise zu neuen Kunstmärkten. Du trittst gegen drei Kunsthändler an.','Collect paintings, discover galleries and auctions, and travel to new art markets. You compete against three rival dealers.'),
@@ -36,9 +25,9 @@ function render(){
   text:copy('Sieh dir dein erstes Gemälde an, besuche die Weltkarte und prüfe danach deine Sammlung. Du kannst jederzeit frei weiterspielen.','Explore your first artwork, visit the world map, and check your collection. You are always free to play your own way.'),
   tip:copy('Viel Erfolg beim Sammeln!','Good luck collecting!')}
  ];
- var item=cards[page],image=photo(item.scene),imgs=art.map(function(f){return '<img src="'+esc(f)+'" alt="'+copy('Gemäldeausschnitt','Artwork detail')+'" loading="lazy">';}).join('');
+ var item=cards[page],image=photo(item.scene);
  var html='<div class="tutorial-hero">'+(image?'<img src="'+esc(image)+'" alt="" loading="eager">':'')+
-   '<div class="tutorial-collage" aria-hidden="true">'+imgs+'</div><h3 class="tutorial-hero-title">'+esc(item.title)+'</h3></div>'+
+   '<h3 class="tutorial-hero-title">'+esc(item.title)+'</h3></div>'+
    '<div class="tutorial-copy"><p>'+esc(item.text)+'</p>'+
    (item.points?'<div class="tutorial-points"><span><b>1 ★</b>'+copy('unter 80 %','below 80%')+'</span><span><b>2 ★</b>80–89 %</span><span><b>3 ★</b>'+copy('ab 90 %','90% and above')+'</span></div>':'')+
    '<p><strong>'+esc(item.tip)+'</strong></p></div>'+
