@@ -1622,12 +1622,29 @@
         pinLayer.addChild(g);
         if(artBadge){
           var stars=q.L.artStars;
-          var starText=new PIXI.Text(Array(stars+1).join('★'),{
-            fontFamily:'Arial, sans-serif',fontSize:stars===3?12:stars===2?16:23,
-            fontWeight:'bold',fill:0x362407,stroke:0xfff7d9,strokeThickness:1.6,align:'center'
-          });
-          starText.anchor.set(.5);starText.position.set(q.x,q.y);
-          starText.eventMode='none';pinLayer.addChild(starText);
+          if (stars === 3) {
+            /* A triangular arrangement fits three larger stars inside the badge:
+               one at the top, two at the bottom. */
+            [[0,-8],[-8,5],[8,5]].forEach(function (offset) {
+              var star=new PIXI.Text('★',{
+                fontFamily:'Arial, sans-serif',fontSize:16,
+                fontWeight:'bold',fill:0x362407,stroke:0xfff7d9,
+                strokeThickness:1.5,align:'center'
+              });
+              star.anchor.set(.5);
+              star.position.set(q.x+offset[0],q.y+offset[1]);
+              star.eventMode='none';
+              pinLayer.addChild(star);
+            });
+          } else {
+            var starText=new PIXI.Text(Array(stars+1).join('★'),{
+              fontFamily:'Arial, sans-serif',fontSize:stars===2?16:23,
+              fontWeight:'bold',fill:0x362407,stroke:0xfff7d9,
+              strokeThickness:1.6,align:'center'
+            });
+            starText.anchor.set(.5);starText.position.set(q.x,q.y);
+            starText.eventMode='none';pinLayer.addChild(starText);
+          }
         }
         if(cropBadge){
           var cropIcons={kakao:'🫘',kaffee:'☕',tee:'🍃',tabak:'🍂',stoffe:'🧵'};
@@ -1671,9 +1688,9 @@
           if (!clash) placed = { x: bx, y: by, box: box };
         }
         if (!placed) {
-          /* Do not pile labels on top of each other on the dense world view.
-             The marker remains tappable, and every city is in the list. */
-          if (api.level === 'world' && !o.L.here) continue;
+          /* Keep every destination named even on the dense world overview.
+             Prefer a collision-free candidate above; if none fits, fall back
+             to a position above the marker instead of hiding the label. */
           placed = { x: o.x - tw / 2, y: o.y - th - 12,
                      box: [o.x - tw / 2 - 2, o.y - th - 13, tw + 4, th + 2] };
         }
