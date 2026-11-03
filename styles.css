@@ -2580,34 +2580,65 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 
-/* Mobile plantation: the bottom menu must use its reserved height exactly.
-   Its old content-box height PLUS vertical padding left a brown tail below
-   the crop/menu buttons. No additional blank spacer below the scroll area. */
+/* Mobile colony dock: correct the actual positioning regression.
+   "#colony .colony-screen > *" (scenery stacking) overrode the earlier
+   .colony-menu {position:fixed}, turning the dock into a normal-flow top menu
+   while its reserved bottom space remained as an empty brown strip.
+   Override that selector explicitly and match the space reserved for the dock. */
 @media(max-width:760px){
  #colony .colony-screen{
    box-sizing:border-box;
+   height:100dvh;
+   min-height:0;
    padding-bottom:calc(var(--station-bar-h) + env(safe-area-inset-bottom));
  }
  #colony .colony-content{
    flex:1 1 auto;
    min-height:0;
+   overflow-y:auto;
+   overflow-x:hidden;
    padding-bottom:0;
    margin-bottom:0;
  }
- #colony .colony-menu{
+ #colony .colony-screen > .colony-menu{
+   position:fixed;
+   top:auto;
+   bottom:0;
+   left:0;
+   right:0;
+   z-index:40;
    box-sizing:border-box;
+   display:flex;
+   flex-direction:row;
+   flex-wrap:nowrap;
+   align-items:stretch;
+   justify-content:stretch;
+   width:100%;
    height:calc(var(--station-bar-h) + env(safe-area-inset-bottom));
    min-height:0;
-   padding:2px 4px env(safe-area-inset-bottom);
-   align-items:stretch;
+   padding:3px 5px calc(3px + env(safe-area-inset-bottom));
    gap:4px;
+   overflow-x:hidden;
+   overflow-y:hidden;
  }
- #colony .colony-menu>.colony-menu-btn{
+ #colony .colony-screen > .colony-menu > .colony-menu-btn{
    box-sizing:border-box;
-   min-height:0;
-   height:100%;
-   margin:0;
-   padding:2px 1px;
+   display:flex;
+   flex:1 1 0;
+   align-self:stretch;
    justify-content:center;
+   align-items:center;
+   min-width:0;
+   min-height:0;
+   height:auto;
+   margin:0;
+   padding:3px 2px;
+   gap:2px;
+ }
+ #colony .colony-menu .colony-menu-ico{
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   margin:0;
  }
 }
