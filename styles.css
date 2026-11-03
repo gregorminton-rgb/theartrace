@@ -2515,3 +2515,66 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-title .title-canvas{display:flex;align-items:flex-end;justify-content:center;padding:4vh 4vw 6vh}
  #screen-title .title-placard{width:min(34em,85%);padding:1.5em 1.8em 1.2em}
 }
+
+
+/* Mobile travel office: reclaim screen height for the world map.
+   Keep important actions visible; the Details button still exposes extras. */
+@media(max-width:760px){
+ #screen-game:has(#wm-stage) #hud{
+   padding:4px 7px 3px;gap:2px;border-radius:9px 9px 0 0;
+ }
+ #screen-game:has(#wm-stage) #hud .chrono{gap:2px}
+ #screen-game:has(#wm-stage) #hud .hud-stead{
+   grid-template-columns:minmax(0,1fr) auto;gap:0 6px;
+ }
+ #screen-game:has(#wm-stage) #hud-city{font-size:.83rem;line-height:1.07}
+ #screen-game:has(#wm-stage) #hud-sub{font-size:.57rem;line-height:1.1}
+ #screen-game:has(#wm-stage) #hud-hotel{display:none}
+ #screen-game:has(#wm-stage) #hud-more{min-height:29px;padding:4px 7px}
+ #screen-game:has(#wm-stage) #hud .chrono-row{gap:4px}
+ #screen-game:has(#wm-stage) #hud .chrono-cal{min-height:30px;padding:2px 6px}
+ #screen-game:has(#wm-stage) #hud .chrono-date b{font-size:.91rem}
+ #screen-game:has(#wm-stage) #hud #end-day{min-height:34px;min-width:94px;padding:4px 7px;font-size:.72rem}
+ #screen-game:has(#wm-stage) #hud-balance{gap:4px}
+ #screen-game:has(#wm-stage) #hud #hud-cash{min-height:26px;padding:2px 6px}
+ #screen-game:has(#wm-stage) #hud #hud-weekly,
+ #screen-game:has(#wm-stage) #hud #hud-missions{min-height:26px;padding:2px 6px;font-size:.65rem}
+ #screen-game:has(#wm-stage) #race-standings{padding:1px 6px 3px}
+ #screen-game:has(#wm-stage) #race-standings .race-self-trigger{min-height:26px;padding:2px 5px}
+ #screen-game:has(#wm-stage) #panel-head{
+   padding:5px 9px 4px;display:flex;flex-wrap:wrap;
+   align-items:baseline;gap:2px 8px;
+ }
+ #screen-game:has(#wm-stage) #panel-head h2{font-size:1.18rem;line-height:1.08}
+ #screen-game:has(#wm-stage) #panel-head .panel-sub{
+   font-size:.57rem;line-height:1.2;letter-spacing:.045em;
+   min-width:0;overflow-wrap:anywhere;
+ }
+ #screen-game:has(#wm-stage) #panel{padding:2px 4px}
+ #screen-game:has(#wm-stage) #panel-foot{padding:4px 8px;font-size:.61rem;line-height:1.2}
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+   height:clamp(470px,calc(100dvh - 270px),760px);
+   min-height:470px;max-height:none;margin-bottom:4px;
+ }
+ #wm-stage .wm-legend,#colony-wm-stage .wm-legend{
+   top:5px;left:5px;right:5px;max-width:none;
+   display:flex;align-items:center;justify-content:flex-start;
+   flex-wrap:wrap;gap:3px 5px;padding:4px 5px;
+   border-radius:9px;
+ }
+ #wm-stage .wm-legend .wm-key,#colony-wm-stage .wm-legend .wm-key{
+   padding:2px 5px;font-size:.57rem;line-height:1.15;letter-spacing:0;
+   white-space:nowrap;
+ }
+ #wm-stage .wm-levels,#colony-wm-stage .wm-levels{
+   display:flex;gap:3px;margin-left:auto;padding-left:5px;
+ }
+ #wm-stage .wm-level,#colony-wm-stage .wm-level{
+   min-height:28px;padding:3px 6px;font-size:.61rem;letter-spacing:0;
+ }
+}
+@media(max-width:760px) and (orientation:landscape){
+ #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
+   height:clamp(280px,72dvh,530px);min-height:280px;
+ }
+}

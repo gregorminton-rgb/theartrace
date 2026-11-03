@@ -62,9 +62,9 @@
     var lv = G.mapLevel || 'world';
     return '<div class="worldmap' + (hasCanvas ? ' worldmap--canvas' : ' no-map') + '" id="' + stageId + '">' +
       '<div class="wm-legend">' +
-      '<span class="wm-key wm-key--colony">🌱 Colonies</span>' +
-      '<span class="wm-key wm-key--city">🖼️ Kunststädte: A–E = beste verfügbare Klasse</span>' +
-      '<span class="wm-key wm-key--trade">🪙 Trade cities</span>' +
+      '<span class="wm-key wm-key--colony">🌱 Kolonien</span>' +
+      '<span class="wm-key wm-key--city">★ Kunststädte: 1–3 Sterne</span>' +
+      '<span class="wm-key wm-key--trade">🪙 Handel</span>' +
       '<span class="wm-levels">' +
       '<button type="button" class="wm-level' + (lv === 'europe' ? ' is-on' : '') +
       '" data-map-level="europe">Europa</button>' +
@@ -133,19 +133,36 @@
                  clear: function () { clearPreview(); },
                  places: function () { return PLACES.map(function (p) { return p.slug; }); } };
 
-  /* City quality reflects actual market access, not an arbitrary letter.
-     The highest rating requires both an auction room and A-class works. */
-  function cityArtStars(city) {
-    var hasA=(A.works||[]).some(function(w){return A.artTier(w).grade==='A'&&A.artAvailableInCity(w,city.id);});
-    var hasB=(A.works||[]).some(function(w){return A.artTier(w).grade==='B'&&A.artAvailableInCity(w,city.id);});
-    return hasA&&city.hasAuctionHouse?3:(hasA||hasB||city.hasAuctionHouse?2:1);
+  /* A relative guide to art-market opportunities. The former B-class rule
+     promoted almost every city. Score real catalogue access and auction rooms,
+     then deliberately reserve most map markers for the one-star tier.
+     This does not change artwork availability or auction mechanics. */
+  function cityStarRatings() {
+    var ranked = A.cities.map(function (city) {
+      var score = city.hasAuctionHouse ? 8 : 0;
+      (A.works || []).forEach(function (work) {
+        if (!A.artAvailableInCity(work, city.id)) return;
+        var grade = A.artTier(work).grade;
+        if (grade === 'A') score += 5;
+        else if (grade === 'B') score += 2;
+        else if (grade === 'C') score += 1;
+      });
+      return { id: city.id, score: score };
+    });
+    ranked.sort(function (a, b) { return b.score - a.score || a.id.localeCompare(b.id); });
+    var three = Math.max(1, Math.floor(ranked.length * .20));
+    var two = Math.max(1, Math.floor(ranked.length * .25));
+    var ratings = {};
+    ranked.forEach(function (entry, i) { ratings[entry.id] = i < three ? 3 : i < three + two ? 2 : 1; });
+    return ratings;
   }
   function mapPlaces() {
+    var stars = cityStarRatings();
     return PLACES.map(function (p) {
       return {
         slug: p.slug, label: p.label, x: p.mapX, y: p.mapY, kind: p.kind,
         crops: p.colonyId ? (A.colonies.COLONY_CROP_IDS[p.colonyId] || []).slice(0,2) : null,
-        artStars: p.city ? cityArtStars(p.city) : null,
+        artStars: p.city ? stars[p.city.id] : null,
         here: !!(p.city && p.city.id === G.cityId)
       };
     });

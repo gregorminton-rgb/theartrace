@@ -1547,6 +1547,7 @@
         var r = here ? 16 : kind === 'trade' ? 15 : kind === 'colony' ? 18 : 14;
         var cropBadge = kind === 'colony' && q.L.crops && q.L.crops.length === 2;
         var artBadge = (kind === 'city' || kind === 'trade') && !!q.L.artStars;
+        if (artBadge) r = 18; /* leave room for three legible stars */
         var badgeW = cropBadge ? 58 : r*2;
         var badgeH = cropBadge ? 30 : r*2;
         var col = artBadge ? 0x8c805c : here ? 0xd4452f
@@ -1578,7 +1579,7 @@
           g.drawRoundedRect(-badgeW/2, -badgeH/2, badgeW, badgeH, 7);
         } else if(kind === 'colony' && !here) {
           g.drawRoundedRect(-r, -r, r*2, r*2, 3);
-        } else if(kind === 'trade' && !here) {
+        } else if(kind === 'trade' && !here && !artBadge) {
           g.drawPolygon([0,-r,r,0,0,r,-r,0]);
         } else {
           g.drawCircle(0, 0, r);
@@ -1615,15 +1616,15 @@
         g.lineStyle(1, 0x32240f, 0.65);
         if(cropBadge)g.drawRoundedRect(-badgeW/2-1,-badgeH/2-1,badgeW+2,badgeH+2,7);
         else if (kind === 'colony' && !here) g.drawRoundedRect(-r-1,-r-1,r*2+2,r*2+2,4);
-        else if(kind === 'trade' && !here) g.drawPolygon([0,-r-1,r+1,0,0,r+1,-r-1,0]);
+        else if(kind === 'trade' && !here && !artBadge) g.drawPolygon([0,-r-1,r+1,0,0,r+1,-r-1,0]);
         else g.drawCircle(0, 0, r + 1);
         g.position.set(q.x, q.y);
         pinLayer.addChild(g);
         if(artBadge){
           var stars=q.L.artStars;
           var starText=new PIXI.Text(Array(stars+1).join('★'),{
-            fontFamily:'Arial, sans-serif',fontSize:stars===3?10:stars===2?13:19,
-            fontWeight:'bold',fill:0x5a4421,align:'center'
+            fontFamily:'Arial, sans-serif',fontSize:stars===3?12:stars===2?16:23,
+            fontWeight:'bold',fill:0x362407,stroke:0xfff7d9,strokeThickness:1.6,align:'center'
           });
           starText.anchor.set(.5);starText.position.set(q.x,q.y);
           starText.eventMode='none';pinLayer.addChild(starText);
@@ -1670,6 +1671,9 @@
           if (!clash) placed = { x: bx, y: by, box: box };
         }
         if (!placed) {
+          /* Do not pile labels on top of each other on the dense world view.
+             The marker remains tappable, and every city is in the list. */
+          if (api.level === 'world' && !o.L.here) continue;
           placed = { x: o.x - tw / 2, y: o.y - th - 12,
                      box: [o.x - tw / 2 - 2, o.y - th - 13, tw + 4, th + 2] };
         }
