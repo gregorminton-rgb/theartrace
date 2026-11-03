@@ -2578,3 +2578,36 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    height:clamp(280px,72dvh,530px);min-height:280px;
  }
 }
+
+
+/* Mobile plantation: the bottom menu must use its reserved height exactly.
+   Its old content-box height PLUS vertical padding left a brown tail below
+   the crop/menu buttons. No additional blank spacer below the scroll area. */
+@media(max-width:760px){
+ #colony .colony-screen{
+   box-sizing:border-box;
+   padding-bottom:calc(var(--station-bar-h) + env(safe-area-inset-bottom));
+ }
+ #colony .colony-content{
+   flex:1 1 auto;
+   min-height:0;
+   padding-bottom:0;
+   margin-bottom:0;
+ }
+ #colony .colony-menu{
+   box-sizing:border-box;
+   height:calc(var(--station-bar-h) + env(safe-area-inset-bottom));
+   min-height:0;
+   padding:2px 4px env(safe-area-inset-bottom);
+   align-items:stretch;
+   gap:4px;
+ }
+ #colony .colony-menu>.colony-menu-btn{
+   box-sizing:border-box;
+   min-height:0;
+   height:100%;
+   margin:0;
+   padding:2px 1px;
+   justify-content:center;
+ }
+}
