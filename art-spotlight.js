@@ -53,11 +53,15 @@
   panel.querySelector('.art-spotlight-picture').addEventListener('click',function(){
    dismiss(); if(A.artView&&A.artView.open)A.artView.open(w.id,null);
   });
-  dismissTimer=setTimeout(dismiss,7000);
+  dismissTimer=setTimeout(dismiss,12000);
  }
  /* Every ended day closes the previous day's artwork, even on a colony
     or while a dialog is open. A new spotlight belongs only to the new day. */
  window.addEventListener('artrace-day-advanced',function(ev){
+  /* Auto travel advances many days in seconds. Do not erase an open artwork
+     spotlight on each tick; let its 12-second timer or close button dismiss it. */
+  var G=window.ArtRaceGame && window.ArtRaceGame.G;
+  if(G && G.travelAuto && document.getElementById('art-spotlight'))return;
   dismiss();
   showSpotlight(ev.detail && ev.detail.day);
  });
