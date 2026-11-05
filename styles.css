@@ -2712,7 +2712,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1 1 280px;
+  flex: 1 1 auto;
 }
 
 .hotel-icon {
@@ -2754,10 +2754,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 .hotel-rate-box {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 12px;
   text-align: right;
   flex: 0 0 auto;
+}
+
+.hotel-rate-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .hotel-rate-label {
@@ -3164,15 +3170,67 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 @media (max-width: 760px) {
+  .hotel-view {
+    padding: 8px 10px 16px;
+    gap: 8px;
+  }
   .hotel-welcome-card {
     flex-direction: column;
     align-items: stretch;
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  .hotel-welcome-main {
+    flex: 0 0 auto;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .hotel-icon {
+    font-size: 1.8rem;
+    margin-top: 2px;
+  }
+  .hotel-welcome-main h3 {
+    font-size: 0.98rem;
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+  .hotel-meta {
+    font-size: 0.72rem;
+    margin: 0 0 4px;
+  }
+  .hotel-fac-row {
+    gap: 4px;
+  }
+  .hotel-fac-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
   }
   .hotel-rate-box {
-    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     text-align: left;
-    border-top: 1px dotted #cbb389;
-    padding-top: 8px;
+    border-top: 1px dashed #d5c19c;
+    padding-top: 5px;
+    margin-top: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .hotel-rate-details {
+    align-items: flex-start;
+  }
+  .hotel-rate-box strong {
+    font-size: 1.18rem;
+    margin: 0;
+    line-height: 1;
+  }
+  .hotel-rate-label {
+    font-size: 0.68rem;
+  }
+  .hotel-rate-note {
+    font-size: 0.62rem;
   }
   .hotel-auctions-grid {
     grid-template-columns: 1fr;

@@ -405,9 +405,11 @@
         '</div>' +
       '</div>' +
       '<div class="hotel-rate-box">' +
-        '<span class="hotel-rate-label">' + (de ? 'Wohnkosten / Nacht' : 'Upkeep / night') + '</span>' +
+        '<div class="hotel-rate-details">' +
+          '<span class="hotel-rate-label">' + (de ? 'Wohnkosten / Nacht' : 'Upkeep / night') + '</span>' +
+          '<span class="hotel-rate-note">' + (de ? 'Täglich automatisch abgebucht' : 'Deducted daily automatically') + '</span>' +
+        '</div>' +
         '<strong>' + A.money(rate) + '</strong>' +
-        '<span class="hotel-rate-note">' + (de ? 'Täglich automatisch abgebucht' : 'Deducted daily automatically') + '</span>' +
       '</div>' +
     '</div>';
 
