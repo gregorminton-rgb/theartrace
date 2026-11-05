@@ -301,7 +301,7 @@
 
     el('panel').innerHTML = head + body;
     var hint = el('panel-hint');
-    hint.textContent = view === 'accommodation' ? (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Dein Hotel und Stadtübersicht. Plane deine Reisen nach den kommenden Kunstauktionen.' : 'Your hotel and city overview. Plan your journeys around upcoming art auctions.') :
+    hint.textContent = view === 'accommodation' ? (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Dein Stadthaus und Stadtübersicht. Plane deine Reisen nach den kommenden Kunstauktionen.' : 'Your townhouse and city overview. Plan your journeys around upcoming art auctions.') :
       view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
       view === 'auction' ? 'Bid until the room stops you, then settle the commission.' :
       view === 'trade' ? 'Sell the colonial harvest — London and New York pay different rates.' :
@@ -381,15 +381,15 @@
 
     var hotelHead = '<div class="hotel-welcome-card">' +
       '<div class="hotel-welcome-main">' +
-        '<span class="hotel-icon" aria-hidden="true">🏨</span>' +
+        '<span class="hotel-icon" aria-hidden="true">🏠</span>' +
         '<div>' +
-          '<h3>' + (de ? 'Hotel & Residenz ' + h(c.name) : 'Hotel & Residence ' + h(c.name)) + '</h3>' +
+          '<h3>' + (de ? 'Stadthaus & Residenz ' + h(c.name) : 'Townhouse & Residence ' + h(c.name)) + '</h3>' +
           '<p class="hotel-meta">' + h(c.country) + ' · ' + h(c.regionName) + '</p>' +
           (facHtml ? '<div class="hotel-fac-row">' + facHtml + '</div>' : '') +
         '</div>' +
       '</div>' +
       '<div class="hotel-rate-box">' +
-        '<span class="hotel-rate-label">' + (de ? 'Unterkunft / Nacht' : 'Room rate / night') + '</span>' +
+        '<span class="hotel-rate-label">' + (de ? 'Wohnkosten / Nacht' : 'Upkeep / night') + '</span>' +
         '<strong>' + A.money(rate) + '</strong>' +
         '<span class="hotel-rate-note">' + (de ? 'Täglich automatisch abgebucht' : 'Deducted daily automatically') + '</span>' +
       '</div>' +

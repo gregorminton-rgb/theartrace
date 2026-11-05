@@ -1042,7 +1042,7 @@
    * RENDER
    * ===================================================================== */
   var VIEW_TITLES = {
-    accommodation: 'Unterkunft', dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
+    accommodation: 'Townhouse', dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
     bank: 'Bank', studio: 'Restoration studio', travel: 'Travel office', trade: 'Trade desk', report: 'Career report'
   };
 

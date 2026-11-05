@@ -27,7 +27,7 @@ var pairs=[
 ['New Game','Neues Spiel'],['Continue','Fortsetzen'],['How to Play','Spielanleitung'],['Data Source','Datenquelle'],
 ['Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.','Kaufe günstig in Amsterdam. Verkaufe teuer in Berlin. Hüte dich vor Fälschungen.'],
 ['A hand-built art trading game · version 1.0','Ein handgefertigtes Kunsthandelsspiel · Version 1.0'],
-['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
+['Townhouse','Stadthaus'],['Town Home','Stadthaus'],['Townhome','Stadthaus'],['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
 ['Market indices','Marktindizes'],['News','Nachrichten'],['End day','Tag beenden'],['Cash','Bargeld'],['Reputation','Ansehen'],['Goal','Ziel'],
 ['Music','Musik'],['Gallery in Amsterdam','Galerie in Amsterdam'],['Day speed','Tagesgeschwindigkeit'],['Let days pass automatically','Tage automatisch verstreichen lassen'],
 ['slow','langsam'],['normal','normal'],['fast','schnell'],['Plantation menu','Plantagenmenü'],['Crops','Feldfrüchte'],['Sow fields','Felder bestellen'],
