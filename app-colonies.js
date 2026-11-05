@@ -531,14 +531,35 @@
     var idle = colonyIdle();
     var maxed = hired >= MAX_COLONY_WORKERS;
     var afford = G.cash >= WORKER_HIRE_COST;
-    return '<h3 class="colony-panel-title">Workers</h3>' +
+    var fields = colonyFields();
+    var totalFields = fields.length;
+    var autoN = fields.filter(function (x) { return crew.fieldAutoOn(x); }).length;
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+
+    var title = german ? 'Arbeitskräfte & Automatik' : 'Workers & Automation';
+    var hiredLabel = german ? 'eingestellt' : 'hired';
+    var workingLabel = german ? 'im Einsatz' : 'working';
+    var idleLabel = german ? 'frei' : 'idle';
+    var hireBtn = (german ? 'Einstellen · ' : 'Hire · ') + A.money(WORKER_HIRE_COST);
+    var autoLabel = autoN + '/' + totalFields + ' ' + (german ? 'automatisiert' : 'automated');
+    var autoOnText = german ? 'Alle AN' : 'All ON';
+    var autoOffText = german ? 'Alle AUS' : 'All OFF';
+
+    return '<h3 class="colony-panel-title">' + title + '</h3>' +
       '<div class="colony-workers-row">' +
         '<div class="colony-workers-totals">' +
-          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
-          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
-          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
+          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">' + hiredLabel + '</span>' +
+          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">' + workingLabel + '</span>' +
+          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">' + idleLabel + '</span>' +
         '</div>' +
-        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire · ' + A.money(WORKER_HIRE_COST) + '</button>' +
+        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>' + hireBtn + '</button>' +
+      '</div>' +
+      '<div class="colony-auto-row">' +
+        '<span class="colony-auto-badge">🌱 ' + autoLabel + '</span>' +
+        '<div class="colony-auto-btns">' +
+          '<button class="btn' + (totalFields > 0 && autoN === totalFields ? ' active' : '') + '" type="button" data-colony="auto-all" data-on="1"' + (!totalFields || autoN === totalFields ? ' disabled' : '') + '>' + autoOnText + '</button>' +
+          '<button class="btn ghost" type="button" data-colony="auto-all" data-on="0"' + (!autoN ? ' disabled' : '') + '>' + autoOffText + '</button>' +
+        '</div>' +
       '</div>';
   }
 
