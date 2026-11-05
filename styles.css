@@ -2642,3 +2642,465 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    margin:0;
  }
 }
+
+/* =========================================================================
+ * Hotel & City Overview (Start-Seite der Stadt) & Auction Schedule System
+ * ========================================================================= */
+.hotel-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 14px 24px;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.hotel-welcome-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 248, 228, 0.94);
+  border: 1.5px solid #bba16b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 14px rgba(35, 21, 7, 0.12);
+}
+
+.hotel-welcome-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+.hotel-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.hotel-welcome-main h3 {
+  margin: 0 0 3px;
+  font-size: 1.15rem;
+  color: #3b2813;
+}
+
+.hotel-meta {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  color: #6e583c;
+}
+
+.hotel-fac-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hotel-fac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #ede0c2;
+  color: #4b3517;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #d0bc93;
+}
+
+.hotel-rate-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.hotel-rate-label {
+  font-size: 0.73rem;
+  color: #6e583c;
+}
+
+.hotel-rate-box strong {
+  font-size: 1.45rem;
+  color: #553b1b;
+  line-height: 1.15;
+  margin: 2px 0;
+}
+
+.hotel-rate-note {
+  font-size: 0.68rem;
+  color: #8c7353;
+}
+
+/* Live Auction Alert Cards */
+.hotel-live-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid #8e2b17;
+  background: linear-gradient(135deg, rgba(255, 237, 230, 0.95), rgba(255, 219, 204, 0.95));
+  box-shadow: 0 4px 16px rgba(142, 43, 23, 0.18);
+}
+
+.hotel-live-card--hanging {
+  border-color: #a4762c;
+  background: linear-gradient(135deg, rgba(255, 248, 226, 0.95), rgba(250, 235, 196, 0.95));
+}
+
+.hotel-live-icon {
+  font-size: 1.8rem;
+  flex: 0 0 auto;
+}
+
+.hotel-live-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hotel-live-text h4 {
+  margin: 0 0 2px;
+  font-size: 0.92rem;
+  color: #63190a;
+}
+
+.hotel-live-card--hanging .hotel-live-text h4 {
+  color: #5c3f11;
+}
+
+.hotel-live-text p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #4b3620;
+}
+
+/* Upcoming Auctions Section */
+.hotel-auctions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hotel-section-head h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: #3b2813;
+}
+
+.hotel-section-head p.note {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: #644f33;
+}
+
+.hotel-auctions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.hotel-auction-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: rgba(255, 252, 242, 0.93);
+  border: 1.5px solid #cdb58a;
+  border-radius: 11px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 3px 10px rgba(35, 21, 7, 0.08);
+}
+
+.hotel-auction-card:hover {
+  transform: translateY(-2px);
+  border-color: #8c6729;
+  box-shadow: 0 6px 18px rgba(35, 21, 7, 0.16);
+}
+
+.hotel-auction-card.is-here {
+  border-color: #2e7d32;
+  background: rgba(246, 255, 246, 0.94);
+}
+
+.hotel-auction-card.is-today {
+  border-color: #b71c1c;
+  box-shadow: 0 0 0 1px #b71c1c, 0 4px 14px rgba(183, 28, 28, 0.18);
+}
+
+.hotel-auction-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hotel-auction-city {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  color: #302010;
+}
+
+.hotel-loc-badge {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #eee3cb;
+  color: #553c1c;
+  font-weight: 600;
+}
+
+.hotel-loc-badge--here {
+  background: #d4edd5;
+  color: #1e5e22;
+  border: 1px solid #84c887;
+}
+
+.hotel-timing-badge {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1dfbc;
+  color: #533a18;
+  white-space: nowrap;
+}
+
+.hotel-timing-badge--soon {
+  background: #fedfb2;
+  color: #824706;
+}
+
+.hotel-timing-badge--today {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.hotel-auction-card-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+
+.hotel-auc-thumbs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hotel-auc-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #a88854;
+  background: #f5eedc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.hotel-auc-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hotel-auction-card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hotel-auc-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #402d18;
+}
+
+.hotel-auc-hint {
+  font-size: 0.72rem;
+  color: #7b6447;
+}
+
+.hotel-auction-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hotel-auction-card-foot .btn {
+  flex: 1 1 auto;
+}
+
+/* Auction Preview Dialog */
+.dialog.auc-preview-dialog {
+  max-width: 640px;
+  width: min(640px, 94vw);
+}
+
+.auc-preview-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted #cbb389;
+}
+
+.auc-preview-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #553c1e;
+  line-height: 1.35;
+}
+
+.auc-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.auc-preview-item {
+  background: rgba(255, 251, 240, 0.95);
+  border: 1.5px solid #c7ab77;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(35, 21, 7, 0.06);
+}
+
+.auc-preview-item-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.auc-preview-art-thumb {
+  width: 82px;
+  height: 82px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #8e6d3a;
+  background: #eee4ce;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.auc-preview-art-thumb:hover {
+  transform: scale(1.04);
+}
+
+.auc-preview-art-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auc-preview-art-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.auc-preview-lot-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8c672b;
+  letter-spacing: 0.04em;
+}
+
+.auc-preview-title {
+  margin: 1px 0 3px;
+  font-size: 0.98rem;
+  color: #382410;
+  line-height: 1.2;
+}
+
+.auc-preview-author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5c4426;
+}
+
+.auc-preview-facts {
+  font-size: 0.75rem;
+  color: #796144;
+  margin: 2px 0 4px;
+}
+
+.auc-preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.auc-preview-prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(244, 234, 210, 0.75);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.auc-preview-price-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.auc-price-lbl {
+  font-size: 0.7rem;
+  color: #6e5535;
+}
+
+.auc-price-val {
+  font-size: 0.92rem;
+  color: #3f2b15;
+}
+
+.auc-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .hotel-welcome-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hotel-rate-box {
+    align-items: flex-start;
+    text-align: left;
+    border-top: 1px dotted #cbb389;
+    padding-top: 8px;
+  }
+  .hotel-auctions-grid {
+    grid-template-columns: 1fr;
+  }
+  .auc-preview-prices {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

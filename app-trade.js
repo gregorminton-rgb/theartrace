@@ -289,7 +289,7 @@
                G.portfolio.length + '/' + G.capacity + ' Artwork slots</span>' +
                (view === 'auction' ? sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') : '') + '</div>';
     var body = '';
-    if (view === 'accommodation') body = '<div class="arrival-accommodation"><span class="arrival-accommodation-icon">🏨</span><h3>Willkommen in '+h(c.name)+'</h3><p>Unterkunft pro Nacht</p><strong>'+A.money(A.cityHotelRate(c.id))+'</strong><p class="note">Die Kosten werden für jeden Aufenthaltstag automatisch abgebucht.</p></div>';
+    if (view === 'accommodation') body = viewAccommodation(c);
     else if (view === 'dealer') body = viewDealer();
     else if (view === 'portfolio') body = viewPortfolio();
     else if (view === 'auction') body = viewAuction();
@@ -301,7 +301,8 @@
 
     el('panel').innerHTML = head + body;
     var hint = el('panel-hint');
-    hint.textContent = view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
+    hint.textContent = view === 'accommodation' ? (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Dein Hotel und Stadtübersicht. Plane deine Reisen nach den kommenden Kunstauktionen.' : 'Your hotel and city overview. Plan your journeys around upcoming art auctions.') :
+      view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
       view === 'auction' ? 'Bid until the room stops you, then settle the commission.' :
       view === 'trade' ? 'Sell the colonial harvest — London and New York pay different rates.' :
       view === 'dealer' ? 'A gallery is the fast, expensive way to buy — auction rooms are cheaper, if you can wait for the hammer.' : '';
@@ -360,6 +361,130 @@
     });
     cards.forEach(function(card) {grid.appendChild(card);});
   });
+
+    function viewAccommodation(c) {
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var rate = A.cityHotelRate(c.id);
+    var schedule = (A.app && A.app.getAuctionSchedule) ? A.app.getAuctionSchedule() : (G.auctionSchedule || []);
+    var upcoming = schedule.filter(function (auc) { return auc.day >= G.day && !auc.completed; });
+    upcoming.sort(function (a, b) { return a.day - b.day; });
+
+    var facilities = [];
+    if (c.hasAuctionHouse) facilities.push({ icon: '🏛️', label: de ? 'Auktionshaus' : 'Auction House' });
+    if (c.hasBank) facilities.push({ icon: '🏦', label: de ? 'Bank' : 'Bank' });
+    if (c.hasRestorationStudio) facilities.push({ icon: '🎨', label: de ? 'Restaurierungsatelier' : 'Restoration Studio' });
+    if (TRADE_HUB_IDS[c.id]) facilities.push({ icon: '💰', label: de ? 'Warenbörse' : 'Commodity Exchange' });
+
+    var facHtml = facilities.map(function (f) {
+      return '<span class="hotel-fac-badge"><span aria-hidden="true">' + f.icon + '</span> ' + h(f.label) + '</span>';
+    }).join('');
+
+    var hotelHead = '<div class="hotel-welcome-card">' +
+      '<div class="hotel-welcome-main">' +
+        '<span class="hotel-icon" aria-hidden="true">🏨</span>' +
+        '<div>' +
+          '<h3>' + (de ? 'Hotel & Residenz ' + h(c.name) : 'Hotel & Residence ' + h(c.name)) + '</h3>' +
+          '<p class="hotel-meta">' + h(c.country) + ' · ' + h(c.regionName) + '</p>' +
+          (facHtml ? '<div class="hotel-fac-row">' + facHtml + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="hotel-rate-box">' +
+        '<span class="hotel-rate-label">' + (de ? 'Unterkunft / Nacht' : 'Room rate / night') + '</span>' +
+        '<strong>' + A.money(rate) + '</strong>' +
+        '<span class="hotel-rate-note">' + (de ? 'Täglich automatisch abgebucht' : 'Deducted daily automatically') + '</span>' +
+      '</div>' +
+    '</div>';
+
+    var liveAlert = '';
+    if (auctionOpenHere()) {
+      liveAlert = '<div class="hotel-live-card hotel-live-card--open">' +
+        '<div class="hotel-live-icon">🔨</div>' +
+        '<div class="hotel-live-text">' +
+          '<h4>' + (de ? 'AUKTION HEUTE IN ' + h(c.name).toUpperCase() + '!' : 'AUCTION TODAY IN ' + h(c.name).toUpperCase() + '!') + '</h4>' +
+          '<p>' + (de ? 'Der Auktionssaal nimmt heute Gebote entgegen. Nutze deine Chance auf wertvolle Originale.' : 'The saleroom is open for bidding today. Take your chance to acquire rare originals.') + '</p>' +
+        '</div>' +
+        '<button type="button" class="btn primary" data-view="auction">' + (de ? '🔨 Auktionssaal betreten' : '🔨 Enter Auction Room') + '</button>' +
+      '</div>';
+    } else if (auctionListUp()) {
+      var daysLeft = daysToAuction();
+      liveAlert = '<div class="hotel-live-card hotel-live-card--hanging">' +
+        '<div class="hotel-live-icon">📜</div>' +
+        '<div class="hotel-live-text">' +
+          '<h4>' + (de ? 'Auktionskatalog liegt aus' : 'Catalogue on View') + '</h4>' +
+          '<p>' + (de ? 'Die Auktion in ' + h(c.name) + ' findet in ' + daysLeft + ' Tag(en) statt (Tag ' + G.auctionDay + '). Besichtige die Lose vorab.' : 'The auction in ' + h(c.name) + ' takes place in ' + daysLeft + ' day(s) (Day ' + G.auctionDay + '). Inspect the lots in advance.') + '</p>' +
+        '</div>' +
+        '<button type="button" class="btn" data-view="auction">' + (de ? '📜 Katalog im Saal ansehen' : '📜 View Catalogue in Room') + '</button>' +
+      '</div>';
+    }
+
+    var scheduleCards = '';
+    if (!upcoming.length) {
+      scheduleCards = '<p class="empty">' + (de ? 'Derzeit sind keine Auktionen im Kalender eingetragen.' : 'No auctions currently scheduled.') + '</p>';
+    } else {
+      scheduleCards = upcoming.map(function (auc) {
+        var aucCity = A.city(auc.cityId);
+        var cityName = aucCity ? aucCity.name : auc.cityId;
+        var daysAway = auc.day - G.day;
+        var isHere = auc.cityId === c.id;
+        var isToday = daysAway === 0;
+
+        var timingBadge = isToday
+          ? '<span class="hotel-timing-badge hotel-timing-badge--today">' + (de ? '🔨 HEUTE' : '🔨 TODAY') + '</span>'
+          : daysAway === 1
+            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen · Tag ' + auc.day : 'Tomorrow · Day ' + auc.day) + '</span>'
+            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen · Tag ' + auc.day : 'In ' + daysAway + ' days · Day ' + auc.day) + '</span>';
+
+        var locBadge = isHere
+          ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
+          : '<span class="hotel-loc-badge">' + (de ? 'Reise nach ' + h(cityName) : 'Travel to ' + h(cityName)) + '</span>';
+
+        var thumbsHtml = (auc.lots || []).map(function (lot) {
+          var w = A.work(lot.inst.defId);
+          if (!w) return '';
+          var pic = A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null;
+          var a = A.artistById[w.artistId];
+          return '<div class="hotel-auc-thumb" title="' + h(w.title) + (a ? ' — ' + h(a.name) : '') + '">' +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span>🖼️</span>') +
+          '</div>';
+        }).join('');
+
+        var worksCount = auc.lots ? auc.lots.length : 0;
+        var worksLabel = de
+          ? (worksCount === 1 ? '1 Kunstwerk im Angebot' : worksCount + ' Kunstwerke im Angebot')
+          : (worksCount === 1 ? '1 artwork offered' : worksCount + ' artworks offered');
+
+        return '<article class="hotel-auction-card' + (isHere ? ' is-here' : '') + (isToday ? ' is-today' : '') + '" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
+          '<div class="hotel-auction-card-head">' +
+            '<div class="hotel-auction-city">🏛️ <strong>' + h(cityName) + '</strong> ' + locBadge + '</div>' +
+            timingBadge +
+          '</div>' +
+          '<div class="hotel-auction-card-body">' +
+            '<div class="hotel-auc-thumbs-wrap">' + thumbsHtml + '</div>' +
+            '<div class="hotel-auction-card-info">' +
+              '<span class="hotel-auc-count">' + worksLabel + '</span>' +
+              '<span class="hotel-auc-hint">' + (de ? 'Klicken, um Versteigerungslose & Schätzpreise zu sehen' : 'Click to inspect lots & estimates') + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="hotel-auction-card-foot">' +
+            '<button type="button" class="btn btn-sm" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
+              (de ? '🔍 Auktionslose ansehen' : '🔍 View Auction Lots') +
+            '</button>' +
+            (isToday && isHere ? '<button type="button" class="btn btn-sm primary" data-view="auction">' + (de ? '🔨 Mitbieten' : '🔨 Bid Now') + '</button>' : '') +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    var scheduleSection = '<section class="hotel-auctions-section">' +
+      '<div class="hotel-section-head">' +
+        '<h3>🏛️ ' + (de ? 'Auktionskalender & Kommende Auktionen' : 'Auction Calendar & Upcoming Auctions') + '</h3>' +
+        '<p class="note">' + (de ? 'Große Kunstauktionen finden in Intervallen in den Metropolen statt. Klicke auf eine Auktion, um genau zu sehen, welche Kunstwerke dort versteigert werden.' : 'Major art auctions take place at scheduled intervals in major art capitals. Click on an auction to see exactly what is being auctioned.') + '</p>' +
+      '</div>' +
+      '<div class="hotel-auctions-grid">' + scheduleCards + '</div>' +
+    '</section>';
+
+    return '<div class="hotel-view">' + hotelHead + liveAlert + scheduleSection + '</div>';
+  }
 
   function viewDealer() {
     var offers = G.stock[G.cityId] || [];

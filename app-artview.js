@@ -166,7 +166,20 @@
         '<h4 class="av-sub">The painter</h4>' + bio +
       '</div></div>';
 
-    dialog(w.title, body, [{ label: 'Close', primary: true, onClick: closeDialog }], 'av-dialog');
+    var returnToAuc = window.ArtRaceLastAuctionPreviewId;
+    var closeButtons = returnToAuc ? [
+      {
+        label: (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') ? 'Zurück zum Auktionskatalog' : 'Back to Auction Catalogue',
+        primary: true,
+        onClick: function () {
+          closeDialog();
+          if (A.shell && A.shell.openAuctionPreviewDialog) A.shell.openAuctionPreviewDialog(returnToAuc);
+        }
+      },
+      { label: (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') ? 'Schließen' : 'Close', onClick: closeDialog }
+    ] : [{ label: 'Close', primary: true, onClick: closeDialog }];
+
+    dialog(w.title, body, closeButtons, 'av-dialog');
 
     var root = document.querySelector('.dialog.av-dialog');
     var image = root && root.querySelector('.av-plate img');

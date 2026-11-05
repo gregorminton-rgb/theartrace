@@ -254,6 +254,7 @@ pairs.push(
 ["Fully restored","Vollständig restauriert"]
 );
 pairs.push(['Artwork slots','Sammlungsplätze'],['Collection capacity','Sammlungskapazität']);
+pairs.push(['Auction calendar','Auktionskalender'],['Upcoming auctions','Kommende Auktionen'],['Auction Catalogue','Auktionskatalog'],['Inspect Lots','Auktionslose ansehen'],['View Auction Lots','Auktionslose ansehen'],['Enter Auction Room','Auktionssaal betreten']);
 var map=Object.create(null),reverse=Object.create(null);
 pairs.forEach(function(p){map[p[0]]=p[1];if(!(p[1] in reverse))reverse[p[1]]=p[0];});
 var originals=new WeakMap(), rendered=new WeakMap(),mutating=false;

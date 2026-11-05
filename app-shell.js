@@ -72,6 +72,117 @@
       if (A.mapView && A.mapView.get()) syncWorldMap();
     }
   }
+  function openAuctionPreviewDialog(aucId) {
+    window.ArtRaceLastAuctionPreviewId = aucId;
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var schedule = (A.app && A.app.getAuctionSchedule) ? A.app.getAuctionSchedule() : (G.auctionSchedule || []);
+    var auc = schedule.find(function (a) { return String(a.id) === String(aucId); });
+    if (!auc && schedule.length) auc = schedule[0];
+    if (!auc) return;
+
+    var aucCity = A.city(auc.cityId);
+    var cityName = aucCity ? aucCity.name : auc.cityId;
+    var daysAway = auc.day - G.day;
+    var isHere = auc.cityId === G.cityId;
+    var isToday = daysAway === 0;
+
+    var title = (de ? 'Auktionskatalog: ' : 'Auction Catalogue: ') + cityName +
+      ' · ' + (isToday ? (de ? 'HEUTE' : 'TODAY') : (de ? 'Tag ' + auc.day + ' (in ' + daysAway + ' Tagen)' : 'Day ' + auc.day + ' (in ' + daysAway + ' days)'));
+
+    var intro = '<div class="auc-preview-header">' +
+      '<p class="auc-preview-desc">' +
+      (de ? 'Offizielle Ankündigung des Auktionshauses von <b>' + h(cityName) + '</b>. Geplanter Auktionstag: <b>Tag ' + auc.day + '</b> (' + (isToday ? 'heute' : 'in ' + daysAway + ' Tagen') + '). Aufschlag/Provision: ' + A.pct(CFG.auctionCommission) + '.'
+          : 'Official announcement for the auction house of <b>' + h(cityName) + '</b>. Scheduled sale: <b>Day ' + auc.day + '</b> (' + (isToday ? 'today' : 'in ' + daysAway + ' days') + '). Buyer’s premium: ' + A.pct(CFG.auctionCommission) + '.') +
+      '</p>' +
+    '</div>';
+
+    var lotsHtml = (auc.lots || []).map(function (lot, idx) {
+      var w = A.work(lot.inst.defId);
+      if (!w) return '';
+      var a = A.artistById[w.artistId];
+      var tier = A.artTier ? A.artTier(w) : { grade: 'C', multiplier: 3 };
+      var tierLabel = (de ? 'Klasse ' : 'Class ') + tier.grade + ' · ×' + tier.multiplier + ' ★';
+      var condBand = A.conditionBand(lot.inst.condition);
+      var condPct = Math.round(lot.inst.condition * 100);
+      var condCls = lot.inst.condition > 0.67 ? 'ok' : (lot.inst.condition > 0.4 ? 'warn' : 'bad');
+
+      var pic = A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null;
+      var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
+      var facts = (w.typeName ? h(translateArt(w.typeName)) : '') +
+                  (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
+                  (w.dimensions ? ' · ' + h(w.dimensions) : '');
+
+      return '<div class="auc-preview-item">' +
+        '<div class="auc-preview-item-main">' +
+          '<div class="auc-preview-art-thumb" data-action="art" data-work="' + h(w.id) + '" role="button" tabindex="0" title="' + h(w.title) + ' — ' + (de ? 'Klicken für Details' : 'Click for details') + '">' +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span>🖼️</span>') +
+          '</div>' +
+          '<div class="auc-preview-art-details">' +
+            '<span class="auc-preview-lot-num">' + (de ? 'Los ' + (idx + 1) : 'Lot ' + (idx + 1)) + '</span>' +
+            '<h4 class="auc-preview-title">' + h(w.title) + '</h4>' +
+            '<div class="auc-preview-author">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + '</div>' +
+            '<div class="auc-preview-facts">' + h(tierLabel) + (facts ? ' · ' + facts : '') + '</div>' +
+            '<div class="auc-preview-tags">' +
+              '<span class="tag ' + condCls + '">' + (de ? 'Zustand: ' : 'Condition: ') + h(condBand) + ' (' + condPct + '%)</span>' +
+              (lot.inst.isFake ? '<span class="tag warn">' + (de ? 'Fälschungsrisiko bekannt' : 'Forgery risk noted') + '</span>' : '<span class="tag">' + (de ? 'Katalogeintrag geprüft' : 'Catalogue listed') + '</span>') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="auc-preview-prices">' +
+          '<div class="auc-preview-price-col">' +
+            '<span class="auc-price-lbl">' + (de ? 'Mindestgebot (Reserve)' : 'Reserve Bid') + '</span>' +
+            '<strong class="auc-price-val">' + A.money(lot.reserve) + '</strong>' +
+          '</div>' +
+          '<div class="auc-preview-price-col">' +
+            '<span class="auc-price-lbl">' + (de ? 'Auktionsschätzung' : 'Estimate') + '</span>' +
+            '<strong class="auc-price-val">' + A.money(lot.low) + ' – ' + A.money(lot.high) + '</strong>' +
+          '</div>' +
+        '</div>' +
+        '<div class="auc-preview-actions">' +
+          '<button type="button" class="btn btn-sm" data-action="art" data-work="' + h(w.id) + '">' +
+            (de ? '🔍 Kunstwerk im Detail ansehen' : '🔍 Inspect Artwork Details') +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    var body = '<div class="auc-preview-wrap">' + intro + '<div class="auc-preview-list">' + lotsHtml + '</div></div>';
+
+    var buttons = [];
+    if (isHere && isToday) {
+      buttons.push({
+        label: de ? '🔨 Auktionssaal betreten' : '🔨 Enter Auction Room',
+        primary: true,
+        onClick: function () {
+          window.ArtRaceLastAuctionPreviewId = null;
+          G.view = 'auction';
+          closeDialog();
+          renderAll();
+        }
+      });
+    } else if (!isHere) {
+      buttons.push({
+        label: de ? '🚂 Reise nach ' + cityName + ' planen' : '🚂 Plan Travel to ' + cityName,
+        primary: true,
+        onClick: function () {
+          window.ArtRaceLastAuctionPreviewId = null;
+          G.view = 'travel';
+          closeDialog();
+          renderAll();
+        }
+      });
+    }
+    buttons.push({
+      label: de ? 'Schließen' : 'Close',
+      onClick: function () {
+        window.ArtRaceLastAuctionPreviewId = null;
+        closeDialog();
+      }
+    });
+
+    dialog(title, body, buttons, 'auc-preview-dialog');
+  }
+
   /* Focused auction quiz instead of three answer buttons in every lot row. */
   function auctionQuizDialog(index) {
     var lot=G.lots && G.lots[index];
@@ -632,6 +743,8 @@
     /* Upgrade existing five-slot careers without removing purchased slots. */
     G.capacity = Math.min(CFG.maxPortfolioCapacity,
       Math.max(Number(G.capacity) || 0, CFG.startingPortfolioCapacity + (Number(G.slotsBought) || 0)));
+    if (!Array.isArray(G.auctionSchedule)) G.auctionSchedule = [];
+    if (A.app && A.app.syncAuction) A.app.syncAuction();
     G.rng = A.makeRng(G.seed);
     if (A.race) A.race.ensure();
     G.clockTimer = null;
@@ -717,6 +830,7 @@
     var action = t.getAttribute('data-action');
 
     if (action === 'close-dialog') { colonyDetailsType=null;closeDialog();return; }
+    if (action === 'auction-preview') { openAuctionPreviewDialog(t.getAttribute('data-auction-id')); return; }
     if (action === 'auction-quiz-open') { auctionQuizDialog(lot);return; }
     if (action === 'colony-ui-open') { colonyDetailsDialog(t.getAttribute('data-panel'));return; }
     if (action === 'art') {
@@ -833,6 +947,6 @@
 
   A.shell = { warnCareerEnd: warnCareerEnd, stopClock: stopClock, resumeClock: resumeClockIfWanted, endGame: endGame,
               startClock: startClock, setSpeed: setClockSpeed, paintClock: paintClockUi,
-              dialog: dialog, closeDialog: closeDialog };
+              dialog: dialog, closeDialog: closeDialog, openAuctionPreviewDialog: openAuctionPreviewDialog };
   window.ArtRaceApp = { G: G, app: A.app, shared: A.shared, game: A };
 })();
