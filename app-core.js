@@ -1123,7 +1123,7 @@
       beginVoyage: beginVoyage, voyageRoute: voyageRoute, startPassage: startPassage,
       /* player actions — app-shell.js wires these to the buttons */
       bidLot: bidLot, passLot: passLot, buySlot: buySlot, answerLotQuiz: answerLotQuiz,
-      restore: restore, collect: collect, examine: examine, repay: repay,
+      restore: restore, collect: collect, examine: examine, repay: repay, borrow: borrow,
       /* auction calendar — app-trade.js reads these instead of guessing */
       ownedWork: ownedWork, auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
       daysToAuction: daysToAuction, saleLeadDays: saleLeadDays, getAuctionSchedule: function() { return G.auctionSchedule || []; }

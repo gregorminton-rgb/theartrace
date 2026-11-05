@@ -44,6 +44,7 @@
   var restoreArtwork = function () { return A.app.restore.apply(null, arguments); };
   var examine = function () { return A.app.examine.apply(null, arguments); };
   var repay = function () { return A.app.repay.apply(null, arguments); };
+  var borrow = function () { return A.app.borrow.apply(null, arguments); };
 
   /* ---------- overlay dialog ------------------------------------------- */
   function dialog(title, html, buttons, cls) {
