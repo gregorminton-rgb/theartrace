@@ -169,22 +169,37 @@
   }
   function fullStandingsHTML(){
     var de=isGerman(),rows=standings();
+    var medals = ['🥇', '🥈', '🥉', '🎖️'];
+    var avatars = { 'Henry': '🎩', 'Ada': '👒', 'Clara': '🎨', 'Felix': '🧐' };
     return '<div class="race-details-intro">'+(de?'Rangfolge nach Sammlungspunkten. Bei Gleichstand entscheiden Gemäldeanzahl und Bargeld.':'Ranked by collection points; painting count and cash break ties.')+'</div>'+
+      '<div class="race-details-grid">'+
       rows.map(function(p,i){
         var source=p.type==='human'?G:(G.rivals||[]).filter(function(r){return r.id===p.id;})[0]||{};
         var journey=source.travelDays>0?(de?'Unterwegs · noch '+source.travelDays+' Tage':'Travelling · '+source.travelDays+' days remaining'):(de?'Am Standort':'At location');
-        return '<section class="race-detail-player'+(p.type==='human'?' is-human':'')+'">'+
-          '<div class="race-detail-heading"><strong>'+(i+1)+'. '+safe(p.name)+'</strong><span>'+p.points+' ★ · '+p.pictures+' 🖼️</span></div>'+
-          '<dl><dt>'+(de?'Spieler':'Player')+'</dt><dd>'+(p.type==='human'?(de?'Du':'You'):(de?'Computer':'Computer'))+'</dd>'+
-          '<dt>'+(de?'Aufenthaltsort':'Location')+'</dt><dd>'+safe(placeName(p.city))+'</dd>'+
-          '<dt>'+(de?'Status':'Status')+'</dt><dd>'+safe(journey)+'</dd>'+
-          '<dt>'+(de?'Sammlungspunkte':'Collection points')+'</dt><dd>'+p.points+'</dd>'+
-          '<dt>'+(de?'Gemälde':'Paintings')+'</dt><dd>'+p.pictures+'</dd>'+
-          '<dt>'+(de?'Bargeld':'Cash')+'</dt><dd>'+A.money(p.cash)+'</dd>'+
-          '<dt>'+(de?'Lagerkapazität':'Crate capacity')+'</dt><dd>'+Number(source.capacity||0)+'</dd>'+
-          '<dt>'+(de?'Ansehen':'Reputation')+'</dt><dd>'+Number(source.reputation||0)+'</dd>'+
-          '<dt>'+(de?'Plantagen/Felder':'Plantations / fields')+'</dt><dd>'+p.colonies+'</dd></dl></section>';
-      }).join('');
+        var medal = medals[i] || '🎖️';
+        var isHuman = p.type === 'human';
+        var avatar = isHuman ? '🎩' : (avatars[p.name] || '👤');
+        return '<section class="race-detail-player'+(isHuman?' is-human':'')+(i===0?' is-first':'')+'">'+
+          '<div class="race-detail-header-row">'+
+            '<div class="race-detail-badge">' + medal + ' <span class="race-detail-avatar">' + avatar + '</span></div>'+
+            '<div class="race-detail-identity">'+
+              '<strong>'+safe(p.name)+(isHuman?' <span class="player-you-tag">'+(de?'Du':'You')+'</span>':'')+'</strong>'+
+              '<small>📍 '+safe(placeName(p.city))+' · '+safe(journey)+'</small>'+
+            '</div>'+
+            '<div class="race-detail-scorebox">'+
+              '<strong>'+p.points+' ★</strong>'+
+              '<small>'+p.pictures+' 🖼️</small>'+
+            '</div>'+
+          '</div>'+
+          '<div class="race-detail-stats-grid">'+
+            '<div class="race-detail-stat-pill"><span>'+(de?'Bargeld':'Cash')+'</span><strong>'+A.money(p.cash)+'</strong></div>'+
+            '<div class="race-detail-stat-pill"><span>'+(de?'Lagerkapazität':'Crates')+'</span><strong>'+Number(source.capacity||0)+'</strong></div>'+
+            '<div class="race-detail-stat-pill"><span>'+(de?'Ansehen':'Reputation')+'</span><strong>'+Number(source.reputation||0)+'</strong></div>'+
+            '<div class="race-detail-stat-pill"><span>'+(de?'Plantagen':'Colonies')+'</span><strong>'+p.colonies+'</strong></div>'+
+          '</div>'+
+        '</section>';
+      }).join('')+
+      '</div>';
   }
   function openRaceDetails(){
     if(!A.shell || !A.shell.dialog)return;

@@ -110,6 +110,7 @@
     G.lots = [];
     G.auctionDay = 0;
     G.auctionCityId = null;
+    G.auctionSchedule = [];
     G.nextUid = 1;
     G.log = [];
     G.history = [];
@@ -172,7 +173,8 @@
   function offeredWork(id) {
     return Object.keys(G.stock||{}).some(function(city){
       return (G.stock[city]||[]).some(function(p){return p.defId===id;});
-    }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});
+    }) || (G.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;}) ||
+      (G.auctionSchedule||[]).some(function(a){return !a.completed&&(a.lots||[]).some(function(l){return l.inst&&l.inst.defId===id&&!l.closed;});});
   }
   function freeWork(temporary,cityId) {
     var year=dateOf(G.day).year;
@@ -560,27 +562,27 @@
   function daysToAuction() {
     var city = A.city(G.cityId);
     if (!city || !city.hasAuctionHouse) return -1;
+    if (!G.auctionDay || G.auctionDay <= 0) return -1;
     return Math.max(0, G.auctionDay - G.day);
   }
 
-  function drawAuction() {
-    var city = A.city(G.cityId);
+  function drawAuctionLots(city, day, reservedDefIds) {
+    if (!city) return [];
     var lots = [];
-    /* A sale offers two works, at most; scarce catalogues can contain fewer. */
-    var lotLimit=2;
+    var lotLimit = Math.min(2, G.rng ? (G.rng.chance(0.45) ? 1 : 2) : 2);
+    var reserved = (reservedDefIds || []).slice();
     for (var i = 0; i < lotLimit; i++) {
-      var w = freeWork(lots.map(function(p){return p.inst.defId;}),city.id);
+      var w = freeWork(lots.map(function(p){return p.inst.defId;}).concat(reserved), city.id);
       if (!w) break;
+      reserved.push(w.id);
       var cond = A.clamp(w.typicalCondition + G.rng.range(-0.2, 0.1), 0.05, 1);
       var inst = makeInstance(w, cond, G.rng.chance(fakeChance(w)), city.name + ' auction lot');
       var idx = A.sliceIndex(G.market, city, A.workEpoch(w));
-      var mv = A.marketValue(w, inst, city, idx, dateOf(G.day).year);
+      var year = dateOf(day || G.day).year;
+      var mv = A.marketValue(w, inst, city, idx, year);
       var best = 0;
       var difficulty = G.difficulty === 'Hard' ? 'Hard' : G.difficulty === 'Normal' ? 'Normal' : 'Easy';
       for (var r = 0; r < rivalCount(); r++) {
-        /* The room bids to individual price limits, not infinite wealth.
-           Medium and Hard bring a firmer market; an occasional determined
-           collector pushes farther without making every auction unwinnable. */
         var pressure = difficulty === 'Hard' ? 1.28 : difficulty === 'Normal' ? 1.13 : 1;
         var ceiling = mv * (0.7 + aggression() * G.rng.range(0.35, 1.15)) * pressure;
         if (difficulty !== 'Easy' && G.rng.chance(difficulty === 'Hard' ? 0.16 : 0.08)) {
@@ -591,42 +593,162 @@
       lots.push({
         inst: inst,
         reserve: Math.max(1, Math.round(mv * CFG.auctionReserveRatio)),
-        low: A.estimateLow(w, inst, city, idx, dateOf(G.day).year),
-        high: A.estimateHigh(w, inst, city, idx, dateOf(G.day).year),
+        low: A.estimateLow(w, inst, city, idx, year),
+        high: A.estimateHigh(w, inst, city, idx, year),
         bid: Math.max(1, Math.round(mv * CFG.auctionReserveRatio)),
         rivalCeiling: Math.round(best),
         leader: 'room',
         closed: false
       });
     }
+    return lots;
+  }
+
+  function drawAuction() {
+    var city = A.city(G.cityId);
+    if (!city) return;
+    var lots = drawAuctionLots(city, G.auctionDay || G.day, []);
     G.lots = lots;
     G.auctionCityId = city.id;
   }
 
-  /* Keeps the sale calendar honest: draw the catalogue when its window opens,
-   * drop it when the hammer has fallen, and schedule the next sale. */
+  function auctionHouseCities() {
+    return A.cities.filter(function (c) { return !!c.hasAuctionHouse; });
+  }
+
+  function maintainAuctionSchedule() {
+    if (!Array.isArray(G.auctionSchedule)) G.auctionSchedule = [];
+    G.auctionSchedule.forEach(function (auc) {
+      if (!auc.completed && auc.lots && auc.lots.length > 2) {
+        auc.lots = auc.lots.slice(0, 2);
+      }
+    });
+
+    // Close expired auctions whose hammer day has passed
+    G.auctionSchedule.forEach(function (auc) {
+      if (G.day > auc.day && !auc.completed) {
+        auc.completed = true;
+        (auc.lots || []).forEach(function (lot) {
+          if (!lot.closed) {
+            lot.closed = true;
+            lot.leader = 'room';
+          }
+        });
+      }
+    });
+
+    var cities = auctionHouseCities();
+    if (!cities.length) return;
+
+    // Prune very old completed auctions (keep last 40 days)
+    G.auctionSchedule = G.auctionSchedule.filter(function (auc) {
+      return auc.day >= G.day - 40;
+    });
+
+    // Count active upcoming auctions
+    var upcoming = G.auctionSchedule.filter(function (auc) {
+      return auc.day >= G.day && !auc.completed;
+    });
+    upcoming.sort(function (a, b) { return a.day - b.day; });
+
+    var baseInterval = Math.max(14, CFG.auctionIntervalDays || 16);
+
+    while (upcoming.length < 4) {
+      var lastDay = upcoming.length ? upcoming[upcoming.length - 1].day : (G.auctionSchedule.length ? G.auctionSchedule[G.auctionSchedule.length - 1].day : G.day);
+      var nextDay;
+      if (!upcoming.length && !G.auctionSchedule.some(function(a){ return a.day >= G.day; })) {
+        nextDay = G.day + (CFG.auctionFirstDelay || 12);
+      } else {
+        var jitter = G.rng ? G.rng.int(0, 4) : 2;
+        nextDay = Math.max(G.day + 10, lastDay + baseInterval + jitter);
+      }
+
+      var recentCityIds = upcoming.slice(-2).map(function (a) { return a.cityId; });
+      var candidates = cities.filter(function (c) { return recentCityIds.indexOf(c.id) === -1; });
+      if (!candidates.length) candidates = cities.slice();
+      var chosenCity = G.rng ? G.rng.pick(candidates) : candidates[0];
+
+      var lockedWorkIds = [];
+      G.auctionSchedule.forEach(function (a) {
+        if (!a.completed) {
+          (a.lots || []).forEach(function (l) {
+            if (l.inst && l.inst.defId) lockedWorkIds.push(l.inst.defId);
+          });
+        }
+      });
+
+      var lots = drawAuctionLots(chosenCity, nextDay, lockedWorkIds);
+      var newAuc = {
+        id: 'auc_' + (G.nextUid++),
+        cityId: chosenCity.id,
+        day: nextDay,
+        lots: lots,
+        completed: false
+      };
+      G.auctionSchedule.push(newAuc);
+      upcoming.push(newAuc);
+      upcoming.sort(function (a, b) { return a.day - b.day; });
+    }
+  }
+
+  /* Keeps the sale calendar honest and synchronized with the global schedule. */
   function syncAuction() {
+    maintainAuctionSchedule();
+
     var city = A.city(G.cityId);
     var hasRoom = !!(city && city.hasAuctionHouse);
-    /* Away from an auction house the calendar is kept, not wiped: the player
-       should still know when the hammer falls where they last stood. The
-       city check in auctionListUp() already hides a foreign sale list. */
-    if (!hasRoom) return;
-    if (G.auctionCityId !== city.id) {
-      /* a different room: its own calendar starts a couple of days out */
+    if (!hasRoom) {
+      G.auctionCityId = null;
+      G.lots = [];
+      return;
+    }
+
+    // 1. Is there an auction TODAY in this city?
+    var liveAuc = null;
+    for (var _i0 = 0; _i0 < G.auctionSchedule.length; _i0++) {
+      var _a0 = G.auctionSchedule[_i0];
+      if (_a0.cityId === city.id && _a0.day === G.day && !_a0.completed) { liveAuc = _a0; break; }
+    }
+    if (liveAuc) {
       G.auctionCityId = city.id;
-      G.lots = [];
-      G.auctionDay = Math.max(G.auctionDay, G.day + (CFG.auctionPreDays || 2));
+      G.auctionDay = liveAuc.day;
+      G.lots = liveAuc.lots;
+      return;
     }
-    if (G.day > G.auctionDay) {
-      G.auctionDay = G.day + CFG.auctionIntervalDays;
+
+    // 2. Is there an auction with catalogue hanging in this city?
+    var hangingAuc = null;
+    for (var _i1 = 0; _i1 < G.auctionSchedule.length; _i1++) {
+      var _a1 = G.auctionSchedule[_i1];
+      if (_a1.cityId === city.id && G.day >= _a1.day - saleLeadDays() && G.day <= _a1.day && !_a1.completed) { hangingAuc = _a1; break; }
+    }
+    if (hangingAuc) {
+      G.auctionCityId = city.id;
+      G.auctionDay = hangingAuc.day;
+      G.lots = hangingAuc.lots;
+      return;
+    }
+
+    // 3. Otherwise, point to the next scheduled auction in this room (or none)
+    var nextInCity = null;
+    for (var _i2 = 0; _i2 < G.auctionSchedule.length; _i2++) {
+      var _a2 = G.auctionSchedule[_i2];
+      if (_a2.cityId === city.id && _a2.day > G.day && !_a2.completed) { nextInCity = _a2; break; }
+    }
+    if (nextInCity) {
+      G.auctionCityId = city.id;
+      G.auctionDay = nextInCity.day;
+      G.lots = nextInCity.lots;
+    } else {
+      G.auctionCityId = city.id;
+      G.auctionDay = 0;
       G.lots = [];
     }
-    if (!G.lots.length && G.day >= G.auctionDay - saleLeadDays()) drawAuction();
   }
 
   function buildAuction() {
     G.auctionCityId = null;
+    G.auctionSchedule = [];
     syncAuction();
   }
 
@@ -920,7 +1042,7 @@
    * RENDER
    * ===================================================================== */
   var VIEW_TITLES = {
-    accommodation: 'Unterkunft', dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
+    accommodation: 'Townhouse', dealer: 'Dealer gallery', portfolio: 'Your warehouse', auction: 'Auction house',
     bank: 'Bank', studio: 'Restoration studio', travel: 'Travel office', trade: 'Trade desk', report: 'Career report'
   };
 
@@ -1006,10 +1128,10 @@
       beginVoyage: beginVoyage, voyageRoute: voyageRoute, startPassage: startPassage,
       /* player actions — app-shell.js wires these to the buttons */
       bidLot: bidLot, passLot: passLot, buySlot: buySlot, answerLotQuiz: answerLotQuiz,
-      restore: restore, collect: collect, examine: examine, repay: repay,
+      restore: restore, collect: collect, examine: examine, repay: repay, borrow: borrow,
       /* auction calendar — app-trade.js reads these instead of guessing */
       ownedWork: ownedWork, auctionOpenHere: auctionOpenHere, auctionListUp: auctionListUp,
-      daysToAuction: daysToAuction, saleLeadDays: saleLeadDays
+      daysToAuction: daysToAuction, saleLeadDays: saleLeadDays, getAuctionSchedule: function() { return G.auctionSchedule || []; }
     }
   };
   A.shared = window.ArtRaceGame.shared;

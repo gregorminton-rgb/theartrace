@@ -66,6 +66,8 @@
       '<span class="wm-key wm-key--city">★ Kunststädte: 1–3 Sterne</span>' +
       '<span class="wm-key wm-key--trade">🪙 Handel</span>' +
       '<span class="wm-levels">' +
+      '<button type="button" class="wm-zoom-btn" data-map-zoom="in" title="Zoom in" aria-label="Zoom in">+</button>' +
+      '<button type="button" class="wm-zoom-btn" data-map-zoom="out" title="Zoom out" aria-label="Zoom out">−</button>' +
       '<button type="button" class="wm-level' + (lv === 'europe' ? ' is-on' : '') +
       '" data-map-level="europe">Europa</button>' +
       '<button type="button" class="wm-level' + (lv === 'world' ? ' is-on' : '') +
@@ -322,6 +324,12 @@
       stage.addEventListener('click', function (ev) {
         var lvBtn = ev.target.closest('[data-map-level]');
         if (lvBtn) { setMapLevel(lvBtn.getAttribute('data-map-level')); return; }
+        var zoomBtn = ev.target.closest('[data-map-zoom]');
+        if (zoomBtn && worldMap) {
+          if (zoomBtn.getAttribute('data-map-zoom') === 'in' && worldMap.zoomIn) worldMap.zoomIn();
+          else if (zoomBtn.getAttribute('data-map-zoom') === 'out' && worldMap.zoomOut) worldMap.zoomOut();
+          return;
+        }
         var c = worldMap && worldMap.canvas;
         if (!c || ev.target !== c) return;
         pickPlaceAt(ev, c);

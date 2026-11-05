@@ -523,6 +523,18 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   margin-left: auto; display: inline-flex; gap: .25em;
   border-left: 1px solid rgba(224, 188, 99, .35); padding-left: .55em;
 }
+.wm-zoom-btn{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:26px;min-height:26px;padding:2px 6px;
+ font-family:var(--sans);font-size:.95rem;font-weight:700;line-height:1;
+ background:#fbf3e1;border:1.5px solid #8b6f47;border-radius:6px;
+ color:#3d2610;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.wm-zoom-btn:hover{background:#fef8eb;border-color:var(--gold)}
+.wm-zoom-btn:active{background:#ebdabb}
+@media(max-width:760px){
+ #wm-stage .wm-zoom-btn,#colony-wm-stage .wm-zoom-btn{min-width:24px;min-height:24px;font-size:.85rem;padding:1px 5px}
+}
 .wm-level {
   font-family: var(--sans); font-size: .6rem; letter-spacing: .09em; text-transform: uppercase;
   padding: .18em .5em; border-radius: 2px; cursor: pointer;
@@ -605,52 +617,57 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .colony-screen { display: flex; flex-direction: column; height: 100%; }
 
 .colony-bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 1em;
-  padding: .7em 1.2em;
+  display: flex; align-items: center; justify-content: space-between; gap: .75em;
+  padding: .35em .9em;
   background: linear-gradient(180deg, #8a5c2e, #5a3a18);
-  border-bottom: 3px solid #3d2610; color: #fff8e6;
-  box-shadow: 0 4px 12px rgba(8, 4, 0, .35);
+  border-bottom: 2px solid #3d2610; color: #fff8e6;
+  box-shadow: 0 3px 8px rgba(8, 4, 0, .3);
 }
-.colony-bar-brand { display: flex; flex-direction: column; }
-.colony-bar-brand strong { font-size: 1.2rem; letter-spacing: .08em; color: #fff4dc; }
-.colony-bar-brand span { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--gold-2); }
-.colony-bar-stats { display: flex; align-items: center; gap: .6em; flex-wrap: wrap; }
+.colony-bar-brand { display: flex; flex-direction: column; justify-content: center; }
+.colony-bar-brand strong { font-size: 1.05rem; letter-spacing: .06em; line-height: 1.15; color: #fff4dc; }
+.colony-bar-brand span { font-family: var(--sans); font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--gold-2); }
+.colony-bar-stats { display: flex; align-items: center; gap: .4em; flex-wrap: wrap; }
 .colony-chip {
-  font-family: var(--sans); font-size: .74rem; background: #fff6df; color: #5a3a18;
-  border: 2px solid #b08a52; padding: .35em .7em; border-radius: 999px;
+  font-family: var(--sans); font-size: .7rem; background: #fff6df; color: #5a3a18;
+  border: 1.5px solid #b08a52; padding: .22em .6em; border-radius: 999px;
   white-space: nowrap;
+}
+.colony-bar .chrono-row {
+  display: flex; flex-direction: row; align-items: center; gap: .45em;
+}
+.colony-bar .chrono-cal {
+  padding: .1em .45em; gap: .12em .35em;
+}
+.colony-bar .chrono-date b { font-size: 1.05rem; }
+.colony-bar .chrono-date span { font-size: .75rem; }
+.colony-bar .chrono .btn {
+  padding: .3em .8em; font-size: .74rem; align-self: center; min-height: 30px;
 }
 
 .colony-menu {
-  display: flex; flex-wrap: wrap; align-items: stretch; gap: 0;
+  display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; min-height: 38px;
   border-bottom: 2px solid #3d2610; position: sticky; top: 0; z-index: 5;
   background: linear-gradient(180deg, #a6d86a, #6fa53a);
   box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
 }
 .colony-menu-label {
-  display: flex; align-items: center; padding: 0 1.1em 0 1.4em;
-  font-family: var(--serif, Georgia, serif); font-size: .72rem;
-  letter-spacing: .16em; text-transform: uppercase; color: #fff8e6;
+  display: flex; align-items: center; padding: 0 .9em;
+  font-family: var(--serif, Georgia, serif); font-size: .68rem;
+  letter-spacing: .12em; text-transform: uppercase; color: #fff8e6;
   border-right: 1px solid #5a8a2e; white-space: nowrap;
 }
 .colony-menu-btn {
-  display: flex; flex-direction: column; gap: .12em; align-items: flex-start;
-  font-family: var(--sans); font-size: .82rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .08em;
+  display: flex; flex-direction: row; align-items: center; gap: .45em;
+  font-family: var(--sans); font-size: .78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .06em;
   color: #f4ffe6; background: transparent;
   border: none; border-right: 1px solid #5a8a2e;
-  padding: .6em 1.4em; cursor: pointer;
+  padding: .35em .95em; cursor: pointer;
   transition: background .2s, color .2s;
 }
-.colony-menu-btn b { font-size: .98em; }
-/* the icon only appears in the phone layout, where the tabs become a docked
-   icon-over-label bar exactly like the city station rail */
-.colony-menu-ico { display: none; }
-.colony-menu-btn small {
-  font-size: .8em; font-weight: 400; letter-spacing: .02em;
-  text-transform: none; color: #d8efc0; white-space: nowrap;
-}
-.colony-menu-btn.active small { color: #fff; }
+.colony-menu-btn b { font-size: .95em; }
+.colony-menu-ico { display: inline-flex; align-items: center; justify-content: center; }
+.colony-menu-btn small { display: none; }
 .colony-menu-btn:hover { background: rgba(255, 255, 255, .15); color: #fff; }
 .colony-menu-btn.active {
   background: linear-gradient(180deg, #f5c542, #d9962b);
@@ -672,57 +689,64 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 .colony-layout {
-  flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1em;
-  padding: 1em; min-height: 0; height: 100%;
+  flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: .7em;
+  padding: .6em .8em; min-height: 0; height: 100%;
 }
 .colony-side { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-.colony-main { display: flex; flex-direction: column; gap: .8em; min-height: 0; }
+.colony-main { display: flex; flex-direction: column; gap: .6em; min-height: 0; }
 
-/* Workers, inspector and palette share one card, parted by hairlines instead
-   of three stacked boxes. */
 .colony-stack {
-  display: flex; flex-direction: column; gap: .55em;
+  display: flex; flex-direction: column; gap: .45em;
   flex: 1 1 auto; min-height: 0; overflow: auto;
-  background: var(--card); border: 2px solid #c9a46a; border-radius: 14px;
-  padding: .7em .75em; box-shadow: 0 2px 6px rgba(20, 10, 0, .15);
+  background: var(--card); border: 2px solid #c9a46a; border-radius: 12px;
+  padding: .6em .65em; box-shadow: 0 2px 6px rgba(20, 10, 0, .15);
 }
 .colony-panel { padding: 0; border: 0; background: none; box-shadow: none; }
 .colony-stack > .colony-panel + .colony-panel {
-  border-top: 1px solid #ddc79f; padding-top: .55em;
+  border-top: 1px solid #ddc79f; padding-top: .45em;
 }
 .colony-panel-title {
-  margin: 0 0 .35em; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--oxblood);
+  margin: 0 0 .3em; font-size: .76rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--oxblood); font-weight: 700;
 }
-.colony-note { font-size: .74rem; color: var(--ink-soft); margin: .25em 0 .45em; line-height: 1.35; }
+.colony-note { font-size: .72rem; color: var(--ink-soft); margin: .15em 0 .3em; line-height: 1.3; }
 
 .crop-tile {
-  display: flex; flex-direction: column; align-items: center; gap: .15em;
-  padding: .6em .5em; margin-bottom: .5em; cursor: grab;
-  background: linear-gradient(180deg, #f7ecd6, #ead9b8);
-  border: 2px solid #c9a46a; border-radius: 12px; text-align: center;
+  display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: .5em;
+  padding: .4em .5em; margin-bottom: .35em; cursor: grab;
+  background: linear-gradient(180deg, #fbf4e6, #ebdabb);
+  border: 1.5px solid #c9a46a; border-radius: 8px; text-align: left;
+  transition: border-color .15s, box-shadow .15s;
 }
 .crop-tile:hover { border-color: var(--gold); }
 .crop-tile.selected { border-color: var(--oxblood); box-shadow: inset 0 0 0 2px var(--gold-2); }
 .crop-tile.dragging { opacity: .4; }
-.crop-tile .crop-thumb { width: 64px; height: 64px; }
-.crop-tile-label { font-weight: 600; font-size: .92rem; }
-.crop-tile-meta { font-family: var(--sans); font-size: .66rem; color: var(--ink-soft); }
-.crop-tile-prov { font-family: var(--sans); font-size: .62rem; color: var(--blue); font-style: italic; }
-.crop-tile-land { font-family: var(--sans); font-size: .66rem; color: var(--ink); font-weight: 700; }
+.crop-tile .crop-thumb { width: 46px; height: 46px; border-radius: 5px; object-fit: cover; }
+.crop-tile-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.crop-tile-label { font-weight: 700; font-size: .88rem; color: #2a1b0c; line-height: 1.15; }
+.crop-tile-meta { font-family: var(--sans); font-size: .65rem; color: var(--ink-soft); }
+.crop-tile-prov { font-family: var(--sans); font-size: .62rem; color: #2b6238; font-style: italic; }
+.crop-tile-land { font-family: var(--sans); font-size: .66rem; color: var(--oxblood); font-weight: 700; }
 
 .colony-workers-row {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em .7em;
-  margin-bottom: .3em;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3em .6em;
+  margin-bottom: .15em;
 }
 .colony-workers-totals {
-  display: flex; flex-wrap: wrap; gap: .15em .8em; align-items: baseline;
+  display: flex; flex-wrap: wrap; gap: .15em .6em; align-items: baseline;
   flex: 1 1 auto; min-width: 0;
 }
 .colony-worker-num { font-size: .95rem; font-weight: 700; color: var(--oxblood); }
 .colony-worker-label { font-family: var(--sans); font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-left: .22em; }
-.colony-workers-row .btn.buy { padding: .3em .8em; font-size: .76rem; }
+.colony-workers-row .btn.buy { padding: .25em .65em; font-size: .74rem; white-space: nowrap; }
 .colony-panel--workers .colony-note { margin: .1em 0 .35em; }
+.colony-auto-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3em .6em;
+  margin-top: .35em; padding-top: .3em; border-top: 1px dashed #ddc79f;
+}
+.colony-auto-badge { font-family: var(--sans); font-size: .72rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.colony-auto-btns { display: flex; gap: 4px; }
+.colony-auto-btns .btn { padding: .2em .6em; font-size: .68rem; min-height: 22px; height: 22px; line-height: 1; }
 
 /* Fields sit in a regular grid: 2 per row, 16 at most (4 rows), with one
    equal gap in both directions. The board scrolls on its own, so the field
@@ -1105,16 +1129,32 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
      the money row underneath */
   .colony-bar {
     display: grid; grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start; gap: .25em .5em; padding: .4em .55em;
-    padding-top: max(.4em, env(safe-area-inset-top));
+    align-items: center; gap: .15em .4em; padding: .2em .4em;
+    padding-top: max(.2em, env(safe-area-inset-top));
   }
   .colony-bar-brand { grid-area: 1 / 1; min-width: 0; }
   .colony-bar .chrono { grid-area: 1 / 2; }
-  .colony-bar-brand strong { font-size: .92rem; }
-  .colony-bar-brand span { font-size: .58rem; }
-  .colony-bar-stats { grid-area: 2 / 1 / 3 / -1; gap: .3em; }
-  .colony-chip { font-size: .6rem; padding: .2em .45em; }
-  .colony-bar-stats .btn { padding: .3em .6em; font-size: .62rem; min-height: 0; }
+  .colony-bar-brand strong { font-size: .88rem; line-height: 1.1; }
+  .colony-bar-brand span { display: none; }
+  .colony-bar .chrono-row { display: flex; flex-direction: row; align-items: center; gap: .3em; }
+  .colony-bar .chrono-cal { padding: 1px 4px; gap: 2px 4px; }
+  .colony-bar .chrono-date b { font-size: .86rem; line-height: 1; }
+  .colony-bar .chrono-date span { font-size: .6rem; }
+  .colony-bar .chrono-timer { display: none; }
+  .colony-bar .chrono-auto { font-size: .48rem; }
+  .colony-bar .chrono-speed { display: none; }
+  .colony-bar .chrono .btn, .colony-bar .chrono-row > .btn {
+    align-self: center; width: auto; min-height: 22px; height: 22px;
+    padding: 1px 7px; font-size: .64rem; line-height: 1.1; white-space: nowrap;
+  }
+  .colony-bar-stats {
+    grid-area: 2 / 1 / 3 / -1; gap: .25em;
+    display: flex; align-items: center; flex-wrap: nowrap;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .colony-bar-stats::-webkit-scrollbar { display: none; }
+  .colony-chip { font-size: .56rem; padding: 1px 5px; min-height: 20px; line-height: 1.2; flex: 0 0 auto; }
+  .colony-bar-stats .btn { padding: 1px 5px; font-size: .56rem; min-height: 20px; line-height: 1.2; flex: 0 0 auto; }
 
   /* the five menu tabs become the same docked icon-over-label bar as the city
      station rail — one bottom menu for the whole game, never jumping around */
@@ -1274,13 +1314,20 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .plot.multi::after{content:"✓";position:absolute;top:4px;right:4px;display:grid;place-items:center;background:#3f7a1e;color:white;border-radius:50%;width:26px;height:26px;font:700 18px var(--sans);z-index:5}
 @media(max-width:700px){.colony-layout{display:flex;flex-direction:column;min-height:0;height:auto}.colony-main{min-height:55vh}.colony-side{overflow:visible}.colony-grid{min-height:45vh;overflow-y:auto}.colony-multi-actions{min-width:0}}
 
-/* Compact selection actions docked below the field grid. */
+/* Compact selection, automation and workforce unified toolbar docked below the field grid. */
 #colony-field-toolbar{position:sticky;bottom:0;z-index:5;flex:0 0 auto;box-shadow:0 -3px 12px rgba(47,31,14,.14)}
-#colony-field-toolbar .colony-multi{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding:5px 6px;margin:0;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
-#colony-field-toolbar .colony-multi-count{font:700 .7rem var(--sans);width:auto;flex:0 0 auto;white-space:nowrap;opacity:1}
-#colony-field-toolbar .colony-multi>.btn{flex:1 1 0;min-width:0;min-height:40px;padding:5px 3px;font-size:.63rem;white-space:nowrap}
-@media(min-width:650px){#colony-field-toolbar .colony-multi{gap:8px;padding:8px}#colony-field-toolbar .colony-multi>.btn{font-size:.75rem}}
-@media(max-width:380px){#colony-field-toolbar .colony-multi-count{font-size:.64rem}#colony-field-toolbar .colony-multi>.btn{font-size:.57rem}}
+#colony-field-toolbar .colony-multi{display:flex;flex-direction:column;gap:5px;padding:6px 8px;margin:0;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+.colony-multi-workers-bar{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:4px;border-bottom:1px dashed #d5c19c}
+.colony-multi-workers-stats{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:.72rem;color:var(--ink)}
+.colony-multi-workers-title{font-weight:700;font-size:.72rem;color:var(--oxblood)}
+.colony-multi-workers-counts{font-size:.68rem;opacity:.9}
+.colony-multi-hire-btn{flex:0 0 auto;min-height:24px!important;height:24px;padding:2px 8px!important;font-size:.65rem!important;white-space:nowrap}
+.colony-multi-status-bar{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.colony-multi-count{font:700 .72rem var(--sans);color:var(--ink)}
+.colony-multi-auto-badge{font-size:.68rem;color:#386121;font-weight:600}
+.colony-multi-btns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.colony-multi-btns .btn{min-height:34px!important;padding:4px 2px!important;font-size:.65rem!important;white-space:normal;line-height:1.15;text-align:center}
+.colony-multi-upgrade-btn{width:100%;min-height:40px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:5px 8px!important;line-height:1.15;text-align:center}
 
 /* Accessible, thumb-sized manual and automatic day controls on every screen. */
 .chrono-auto{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:5px 10px;font:700 .83rem var(--sans);letter-spacing:0;text-transform:none;background:var(--paper);border:2px solid var(--line);border-radius:11px;color:var(--ink);cursor:pointer;white-space:nowrap}
@@ -1491,12 +1538,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-music{flex:.44 1 0;font-size:.91rem}
  #screen-game #hud-cash,#screen-game #hud-rep{flex:1.4 1 0}
  #screen-game #ticker{font-size:.59rem;max-height:22px}
- .colony-workers-mobile{display:block}
- #colony-workers-mobile{padding:5px 8px;background:var(--paper);border:1px solid var(--line);border-radius:9px;margin-bottom:5px}
- #colony-workers-mobile .colony-workers-totals{display:flex;gap:12px;justify-content:center;margin:2px 0 5px}
- #colony-workers-mobile .colony-panel-title{margin:0 0 4px;font-size:.76rem}
- #colony-workers-mobile .colony-note{display:none}
- #colony-workers-mobile .btn.buy{min-height:40px;width:100%;font-size:.8rem}
+ .colony-workers-mobile,#colony-workers-mobile{display:none!important}
  #colony-workers{display:none}
 }
 @media(max-width:390px){
@@ -1508,7 +1550,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-balance .language-switch,#screen-game #hud-music{flex:1 1 40px}
  #screen-game #hud-cash,#screen-game #hud-rep{flex:2 1 115px}
 }
-@media(min-width:761px){.colony-workers-mobile{display:none}}
+@media(min-width:761px){.colony-workers-mobile,#colony-workers-mobile{display:none!important}}
 
 /* Allow translated day-end labels to wrap neatly in the mobile round button. */
 @media(max-width:760px){
@@ -1526,7 +1568,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .colony-main{min-height:0;flex:none}
  .colony-view--plantage .colony-grid{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   --plot-gap:5px;min-height:0;height:auto;max-height:34dvh;
+   --plot-gap:5px;min-height:0;height:auto;max-height:42dvh;
  }
  .colony-view--plantage .plot{padding:4px 2px;gap:2px;font-size:.75rem}
  .colony-view--plantage .plot--empty .plot-empty-plus{font-size:1.5rem}
@@ -1535,9 +1577,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .plot--planted .plot-label,
  .colony-view--plantage .plot--planted .plot-workers,
  .colony-view--plantage .plot--planted .plot-status{font-size:.7rem}
- #colony-field-toolbar .colony-multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
- #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
- #colony-field-toolbar .colony-multi>.btn{min-height:36px;white-space:normal;line-height:1.12;font-size:.66rem}
+ #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
 /* Mobile title: frame the artwork, not the introductory text card. */
@@ -1624,9 +1664,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .auction-quiz-dialog .dialog-actions .btn{min-height:48px;white-space:normal;text-align:center}
 .colony-mobile-dialog-buttons{display:none}
 @media(max-width:760px){
- .colony-mobile-dialog-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
- .colony-mobile-dialog-buttons .btn{min-height:44px;white-space:normal;font-size:.79rem}
+ .colony-mobile-dialog-buttons{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:3px 0}
+ .colony-mobile-dialog-buttons .btn{min-height:30px;white-space:normal;font-size:.72rem;padding:2px 6px}
  #colony-inspector,#colony-palette{display:none!important}
+ .colony-view--plantage .colony-side{display:none!important}
  #overlay:has(.colony-ui-dialog){z-index:2000}
  .dialog.colony-ui-dialog{width:min(540px,calc(100vw - 16px));max-height:88dvh}
  .colony-ui-dialog .dialog-body{padding:10px;overflow:auto}
@@ -2126,31 +2167,31 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 /* Icon redesign phase 2: cohesive, playful miniature tokens on colony menu.
    Match city navigation while respecting the mobile dock height. */
-.colony-menu .colony-menu-ico{display:flex;align-items:center;justify-content:center;margin:0 0 5px;line-height:1}
+.colony-menu .colony-menu-ico{display:inline-flex;align-items:center;justify-content:center;margin:0;line-height:1}
 .colony-menu .icon-art{
  position:relative;isolation:isolate;display:grid;place-items:center;
- width:40px;height:40px;flex:0 0 40px;box-sizing:border-box;
- font-size:24px;line-height:1;border:2px solid #775125;border-radius:12px;
+ width:24px;height:24px;flex:0 0 24px;box-sizing:border-box;
+ font-size:14px;line-height:1;border:1.5px solid #775125;border-radius:6px;
  background:radial-gradient(circle at 30% 15%,#fffbd3,#f4d583 43%,#b87935);
- box-shadow:inset 0 2px 0 #ffffffba,inset 0 -3px 0 #8a592b55,0 3px 0 #5f411e,0 5px 8px #23170860;
- text-shadow:0 2px 2px #39220e60;transform:rotate(-3deg);
+ box-shadow:inset 0 1px 0 #ffffffba,inset 0 -2px 0 #8a592b55,0 2px 0 #5f411e,0 3px 5px #23170860;
+ text-shadow:0 1px 1px #39220e60;transform:rotate(-2deg);
  transition:transform .15s,filter .15s;
 }
 .colony-menu .icon-art::after{
- content:"";position:absolute;top:3px;left:7px;width:55%;height:20%;
+ content:"";position:absolute;top:2px;left:4px;width:55%;height:20%;
  border-radius:50%;background:#fff9d85e;pointer-events:none;
 }
-.colony-menu .colony-menu-btn:nth-child(even) .icon-art{transform:rotate(3deg)}
+.colony-menu .colony-menu-btn:nth-child(even) .icon-art{transform:rotate(2deg)}
 .colony-menu .colony-menu-btn:hover .icon-art,
 .colony-menu .colony-menu-btn:focus-visible .icon-art{
- transform:translateY(-2px) rotate(0deg) scale(1.06);filter:saturate(1.12);
+ transform:translateY(-1px) rotate(0deg) scale(1.08);filter:saturate(1.12);
 }
 .colony-menu .icon-art--plantage{background:radial-gradient(circle at 30% 15%,#f5ffd9,#c5ed8b 43%,#73ab4c)}
 .colony-menu .icon-art--handel{background:radial-gradient(circle at 30% 15%,#fffce2,#eadb8a 43%,#b4a052)}
 .colony-menu .icon-art--lager{background:radial-gradient(circle at 30% 15%,#fff5df,#edc391 43%,#b57c49)}
 .colony-menu .icon-art--arbeiter{background:radial-gradient(circle at 30% 15%,#f8f6ec,#bedbe5 43%,#6e9cac)}
 .colony-menu .icon-art--reise{background:radial-gradient(circle at 30% 15%,#effbff,#a9d9ed 43%,#4d9abd)}
-.colony-menu .colony-menu-btn.active .icon-art{border-color:#477322;box-shadow:inset 0 2px 0 #ffffffd0,0 3px 0 #477322,0 4px 9px #1f391e55}
+.colony-menu .colony-menu-btn.active .icon-art{border-color:#477322;box-shadow:inset 0 1px 0 #ffffffd0,0 2px 0 #477322,0 3px 6px #1f391e55}
 @media(max-width:760px){
  .colony-menu .colony-menu-btn{gap:2px}
  .colony-menu .colony-menu-ico{display:flex;margin:0}
@@ -2288,8 +2329,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  align-self:center;min-height:34px;line-height:1.1;margin:0;cursor:pointer;
 }
 @media(max-width:760px){
- #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:34px;padding:4px 7px}
- #colony #colony-missions,#colony #colony-weekly{min-height:32px}
+ #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:22px;padding:2px 5px;font-size:.56rem}
+ #colony #colony-missions,#colony #colony-weekly{min-height:20px;padding:1px 5px;font-size:.56rem;flex:0 0 auto}
 }
 
 /* Revised plantation scenery: image belongs in the HEADER, never behind fields.
@@ -2426,10 +2467,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  white-space:normal;overflow-wrap:break-word;min-width:0;height:auto;line-height:1.2;text-align:center;
 }
 @media(max-width:760px){
- #colony-field-toolbar .colony-multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:5px}
- #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
- #colony-field-toolbar .colony-multi>.btn{min-height:40px;white-space:normal;padding:6px 4px}
- #colony-field-toolbar .colony-multi>.btn[data-colony="upgrade-bulk"]{grid-column:1/-1;min-width:0;min-height:48px}
+ #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
 /* The rolling log ticker is not navigation; keep it out of the game header.
@@ -2553,8 +2591,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game:has(#wm-stage) #panel{padding:2px 4px}
  #screen-game:has(#wm-stage) #panel-foot{padding:4px 8px;font-size:.61rem;line-height:1.2}
  #wm-stage.worldmap--canvas,#colony-wm-stage.worldmap--canvas{
-   height:clamp(470px,calc(100dvh - 270px),760px);
-   min-height:470px;max-height:none;margin-bottom:4px;
+   height:clamp(520px,calc(100dvh - 170px),820px);
+   min-height:520px;max-height:none;margin-bottom:4px;
  }
  #wm-stage .wm-legend,#colony-wm-stage .wm-legend{
    top:5px;left:5px;right:5px;max-width:none;
@@ -2641,4 +2679,1022 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    justify-content:center;
    margin:0;
  }
+}
+
+/* =========================================================================
+ * Hotel & City Overview (Start-Seite der Stadt) & Auction Schedule System
+ * ========================================================================= */
+.hotel-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 14px 24px;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.hotel-welcome-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 248, 228, 0.94);
+  border: 1.5px solid #bba16b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 14px rgba(35, 21, 7, 0.12);
+}
+
+.hotel-welcome-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.hotel-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.hotel-welcome-main h3 {
+  margin: 0 0 3px;
+  font-size: 1.15rem;
+  color: #3b2813;
+}
+
+.hotel-meta {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  color: #6e583c;
+}
+
+.hotel-fac-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hotel-fac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #ede0c2;
+  color: #4b3517;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #d0bc93;
+}
+
+.hotel-rate-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.hotel-rate-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.hotel-rate-label {
+  font-size: 0.73rem;
+  color: #6e583c;
+}
+
+.hotel-rate-box strong {
+  font-size: 1.45rem;
+  color: #553b1b;
+  line-height: 1.15;
+  margin: 2px 0;
+}
+
+.hotel-rate-note {
+  font-size: 0.68rem;
+  color: #8c7353;
+}
+
+/* Live Auction Alert Cards */
+.hotel-live-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid #8e2b17;
+  background: linear-gradient(135deg, rgba(255, 237, 230, 0.95), rgba(255, 219, 204, 0.95));
+  box-shadow: 0 4px 16px rgba(142, 43, 23, 0.18);
+}
+
+.hotel-live-card--hanging {
+  border-color: #a4762c;
+  background: linear-gradient(135deg, rgba(255, 248, 226, 0.95), rgba(250, 235, 196, 0.95));
+}
+
+.hotel-live-icon {
+  font-size: 1.8rem;
+  flex: 0 0 auto;
+}
+
+.hotel-live-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hotel-live-text h4 {
+  margin: 0 0 2px;
+  font-size: 0.92rem;
+  color: #63190a;
+}
+
+.hotel-live-card--hanging .hotel-live-text h4 {
+  color: #5c3f11;
+}
+
+.hotel-live-text p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #4b3620;
+}
+
+/* Upcoming Auctions Section */
+.hotel-auctions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hotel-section-head h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: #3b2813;
+}
+
+.hotel-section-head p.note {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: #644f33;
+}
+
+.hotel-auctions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.hotel-auction-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: rgba(255, 252, 242, 0.93);
+  border: 1.5px solid #cdb58a;
+  border-radius: 11px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 3px 10px rgba(35, 21, 7, 0.08);
+}
+
+.hotel-auction-card:hover {
+  transform: translateY(-2px);
+  border-color: #8c6729;
+  box-shadow: 0 6px 18px rgba(35, 21, 7, 0.16);
+}
+
+.hotel-auction-card.is-here {
+  border-color: #2e7d32;
+  background: rgba(246, 255, 246, 0.94);
+}
+
+.hotel-auction-card.is-today {
+  border-color: #b71c1c;
+  box-shadow: 0 0 0 1px #b71c1c, 0 4px 14px rgba(183, 28, 28, 0.18);
+}
+
+.hotel-auction-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hotel-auction-city {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  color: #302010;
+}
+
+.hotel-loc-badge {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #eee3cb;
+  color: #553c1c;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hotel-loc-badge--here {
+  background: #d4edd5;
+  color: #1e5e22;
+  border: 1px solid #84c887;
+}
+
+.hotel-timing-badge {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1dfbc;
+  color: #533a18;
+  white-space: nowrap;
+}
+
+.hotel-timing-badge--soon {
+  background: #fedfb2;
+  color: #824706;
+}
+
+.hotel-timing-badge--today {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.hotel-auction-card-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.hotel-auc-thumbs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.hotel-auc-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid #8e6c38;
+  background: #20170f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-shadow: 0 3px 8px rgba(35, 20, 8, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.hotel-auction-card.is-single-lot .hotel-auc-thumb {
+  width: 68px;
+  height: 68px;
+}
+
+.hotel-auc-thumb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 14px rgba(35, 20, 8, 0.35);
+}
+
+.hotel-auc-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hotel-auc-noimg {
+  font-size: 1.3rem;
+  opacity: 0.8;
+}
+
+.hotel-auction-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.hotel-auc-count {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #3b2812;
+  letter-spacing: 0.2px;
+}
+
+.hotel-auc-painting-title {
+  font-size: 0.83rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #1a1006;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 1.25;
+}
+
+.hotel-auc-hint {
+  font-size: 0.73rem;
+  color: #6e5535;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 1.2;
+}
+
+.hotel-auction-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hotel-auction-card-foot .btn {
+  flex: 1 1 auto;
+}
+
+/* Auction Preview Dialog */
+.dialog.auc-preview-dialog {
+  max-width: 640px;
+  width: min(640px, 94vw);
+}
+
+.auc-preview-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted #cbb389;
+}
+
+.auc-preview-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #553c1e;
+  line-height: 1.35;
+}
+
+.auc-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.auc-preview-item {
+  background: rgba(255, 251, 240, 0.95);
+  border: 1.5px solid #c7ab77;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(35, 21, 7, 0.06);
+}
+
+.auc-preview-item-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.auc-preview-art-thumb {
+  width: 82px;
+  height: 82px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #8e6d3a;
+  background: #eee4ce;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.auc-preview-art-thumb:hover {
+  transform: scale(1.04);
+}
+
+.auc-preview-art-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auc-preview-art-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.auc-preview-lot-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8c672b;
+  letter-spacing: 0.04em;
+}
+
+.auc-preview-title {
+  margin: 1px 0 3px;
+  font-size: 0.98rem;
+  color: #382410;
+  line-height: 1.2;
+}
+
+.auc-preview-author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5c4426;
+}
+
+.auc-preview-facts {
+  font-size: 0.75rem;
+  color: #796144;
+  margin: 2px 0 4px;
+}
+
+.auc-preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.auc-preview-prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(244, 234, 210, 0.75);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.auc-preview-price-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.auc-price-lbl {
+  font-size: 0.7rem;
+  color: #6e5535;
+}
+
+.auc-price-val {
+  font-size: 0.92rem;
+  color: #3f2b15;
+}
+
+.auc-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .hotel-view {
+    padding: 8px 10px 16px;
+    gap: 8px;
+  }
+  .hotel-welcome-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  .hotel-welcome-main {
+    flex: 0 0 auto;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .hotel-icon {
+    font-size: 1.8rem;
+    margin-top: 2px;
+  }
+  .hotel-welcome-main h3 {
+    font-size: 0.98rem;
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+  .hotel-meta {
+    font-size: 0.72rem;
+    margin: 0 0 4px;
+  }
+  .hotel-fac-row {
+    gap: 4px;
+  }
+  .hotel-fac-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+  .hotel-rate-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    border-top: 1px dashed #d5c19c;
+    padding-top: 5px;
+    margin-top: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .hotel-rate-details {
+    align-items: flex-start;
+  }
+  .hotel-rate-box strong {
+    font-size: 1.18rem;
+    margin: 0;
+    line-height: 1;
+  }
+  .hotel-rate-label {
+    font-size: 0.68rem;
+  }
+  .hotel-rate-note {
+    font-size: 0.62rem;
+  }
+  .hotel-auctions-grid {
+    grid-template-columns: 1fr;
+  }
+  .auc-preview-prices {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* =========================================================================
+ * END GAME & STANDINGS REDESIGN: GRAPHICAL, REWARDING & CLEAN
+ * ========================================================================= */
+
+.race-winner-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin: 0 0 16px;
+  box-shadow: 0 4px 14px rgba(35, 21, 7, 0.12);
+}
+.race-winner-banner.is-victory {
+  background: linear-gradient(135deg, #fdf5d7 0%, #fae69e 50%, #f7d568 100%);
+  border: 2px solid #b8860b;
+  box-shadow: 0 4px 20px rgba(184, 134, 11, 0.3);
+}
+.race-winner-banner.is-runnerup {
+  background: linear-gradient(135deg, #f5f0e6 0%, #e8ddc8 100%);
+  border: 1.5px solid #a89476;
+}
+.race-winner-trophy {
+  font-size: 2.6rem;
+  line-height: 1;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+}
+.race-winner-body {
+  flex: 1 1 auto;
+}
+.race-winner-body h3 {
+  margin: 0 0 4px !important;
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.03em !important;
+  color: #3b2005 !important;
+}
+.race-winner-body p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #5c4120;
+  line-height: 1.35;
+}
+
+.race-podium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.race-podium-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 252, 244, 0.95);
+  border: 1.5px solid #cdb487;
+  border-radius: 10px;
+  box-shadow: 0 2px 7px rgba(35, 21, 7, 0.07);
+}
+.race-podium-card.is-first {
+  border: 2px solid #b8860b;
+  background: linear-gradient(135deg, #fffcf2 0%, #fdf2cd 100%);
+  box-shadow: 0 3px 12px rgba(184, 134, 11, 0.22);
+}
+.race-podium-card.is-human {
+  border-color: #3f7b44;
+}
+.race-podium-card.is-human.is-first {
+  border-color: #b8860b;
+}
+.race-podium-rank {
+  font-size: 1.35rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+.race-podium-rank .rank-num {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #533918;
+}
+.race-podium-avatar {
+  font-size: 1.45rem;
+  line-height: 1;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0e2c6;
+  border: 1px solid #c2a77b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.race-podium-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.race-podium-name {
+  font-size: 0.9rem;
+  color: #261607;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.player-you-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #2e7d32;
+  color: #fff;
+  font-weight: 700;
+}
+.race-podium-loc {
+  font-size: 0.7rem;
+  color: #7a6345;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.race-podium-score {
+  text-align: right;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.podium-score-points {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #945d16;
+}
+.podium-score-details {
+  font-size: 0.68rem;
+  color: #6a5337;
+  white-space: nowrap;
+}
+
+/* Interim Standings Dossier Cards */
+.race-detail-player {
+  border: 1.5px solid #b79b70;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+  background: #f7ede0;
+  box-shadow: 0 2px 7px rgba(35, 21, 7, 0.06);
+}
+.race-detail-player.is-first {
+  border: 2px solid #b8860b;
+  background: linear-gradient(135deg, #fffef7 0%, #fef3d4 100%);
+  box-shadow: 0 3px 12px rgba(184, 134, 11, 0.2);
+}
+.race-detail-player.is-human {
+  border-color: #3f7b44;
+}
+.race-detail-player.is-human.is-first {
+  border-color: #b8860b;
+}
+.race-detail-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.race-detail-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.3rem;
+  flex: 0 0 auto;
+}
+.race-detail-avatar {
+  font-size: 1.35rem;
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #edd8b4;
+  border: 1px solid #ba9e74;
+  align-items: center;
+  justify-content: center;
+}
+.race-detail-identity {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.race-detail-identity strong {
+  font-size: 0.95rem;
+  color: #2b1809;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.race-detail-identity small {
+  font-size: 0.72rem;
+  color: #695237;
+}
+.race-detail-scorebox {
+  text-align: right;
+  flex: 0 0 auto;
+}
+.race-detail-scorebox strong {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #925b16;
+}
+.race-detail-scorebox small {
+  font-size: 0.7rem;
+  color: #695237;
+}
+.race-detail-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+@media (max-width: 520px) {
+  .race-detail-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.race-detail-stat-pill {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid #d4c2a4;
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.race-detail-stat-pill span {
+  font-size: 0.63rem;
+  color: #7b6245;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.race-detail-stat-pill strong {
+  font-size: 0.8rem;
+  color: #2c1a0c;
+}
+
+/* End Game Collection Cards (replaces broken .row layout) */
+.end-art-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 11px 13px;
+  background: rgba(255, 252, 245, 0.95);
+  border: 1.5px solid #cfb88d;
+  border-radius: 10px;
+  margin: 0 0 10px;
+  box-shadow: 0 2px 7px rgba(35, 21, 7, 0.06);
+}
+.end-art-thumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid #8e6c38;
+  background: #1f160e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex: 0 0 auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+.end-art-thumb:hover {
+  transform: scale(1.05);
+}
+.end-art-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.end-art-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.end-art-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.end-art-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.end-art-title {
+  margin: 0 0 2px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #2b1a0c;
+  line-height: 1.25;
+}
+.end-art-credit {
+  font-size: 0.74rem;
+  color: #634b30;
+  line-height: 1.25;
+}
+.end-art-pricebox {
+  text-align: right;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.end-art-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2b1809;
+}
+.end-art-profit {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.end-art-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 2px 0;
+}
+.end-art-prov {
+  font-size: 0.68rem;
+  color: #64513b;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Point 1: Station Auction Live Alert */
+.station.has-live-auction {
+  position: relative !important;
+  box-shadow: 0 0 0 2px #d32f2f, 0 3px 12px rgba(211, 47, 47, 0.45) !important;
+  animation: pulseAuction 2s infinite ease-in-out;
+}
+@keyframes pulseAuction {
+  0%, 100% { box-shadow: 0 0 0 2px #d32f2f, 0 3px 10px rgba(211, 47, 47, 0.35); }
+  50% { box-shadow: 0 0 0 3px #b71c1c, 0 5px 16px rgba(183, 28, 28, 0.65); }
+}
+.station-live-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Point 2: Travel timing banner in auction preview */
+.auc-preview-travel-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  background: #fdf5e2;
+  border: 1.5px solid #d4be95;
+}
+.auc-preview-travel-banner.ok {
+  background: #eaf5eb;
+  border-color: #81c784;
+  color: #1e5e22;
+}
+.auc-preview-travel-banner.warn {
+  background: #fff3e0;
+  border-color: #ffb74d;
+  color: #b75500;
+}
+
+/* Point 3: Studio Condition Progress Bar */
+.studio-cond-bar-wrap {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+.studio-cond-bar-track {
+  position: relative;
+  height: 9px;
+  background: #ded0b2;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.studio-cond-bar-current {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d88934, #2e7d32);
+}
+.studio-cond-bar-gain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, #81c784, #4caf50);
+}
+.studio-cond-bar-gain.is-in-progress {
+  background: repeating-linear-gradient(
+    45deg,
+    #4caf50,
+    #4caf50 6px,
+    #81c784 6px,
+    #81c784 12px
+  );
+  animation: studioStripes 1.5s linear infinite;
+}
+@keyframes studioStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 24px 0; }
+}
+.studio-cond-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.64rem;
+  font-family: var(--sans);
+  color: #634f36;
+}
+.studio-gain-label {
+  font-weight: 700;
+  color: #2e7d32;
 }

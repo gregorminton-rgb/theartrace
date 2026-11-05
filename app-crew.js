@@ -393,6 +393,10 @@
       selectAllFields();
     } else if (action === 'select-clear') {
       clearMultiSelect();
+    } else if (action === 'auto-all') {
+      var allF = colonyFields();
+      var allIds = allF.map(function (f) { return f.id; });
+      setFieldsAuto(allIds, t.getAttribute('data-on') === '1');
     } else if (action === 'auto-bulk') {
       var bulkIds = multiSelectIds();
       if (!bulkIds.length) { log('Select fields first.'); return; }

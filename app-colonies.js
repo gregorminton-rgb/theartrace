@@ -478,7 +478,7 @@
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
       var mobileWorkers = el('colony-workers-mobile');
-      if (mobileWorkers) mobileWorkers.innerHTML = colonyWorkersHTML();
+      if (mobileWorkers) mobileWorkers.innerHTML = '';
       var grid = el('colony-grid');
       var gridScroll = grid.scrollTop;
       grid.innerHTML = colonyGridHTML();
@@ -514,14 +514,15 @@
         ' data-drag-crop="' + c.id + '" data-colony="arm" data-crop="' + c.id + '"' +
         ' title="Drag onto a free plot, or click then click a plot">' +
         cropThumb(c) +
-        '<span class="crop-tile-label">' + h(c.label) + '</span>' +
-        '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
-        '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
-        '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
+        '<div class="crop-tile-info">' +
+          '<span class="crop-tile-label">' + h(c.label) + '</span>' +
+          '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
+          '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
+          '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
+        '</div>' +
         '</button>';
     }).join('');
-    return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' +
-      '<p class="colony-note">Drag a plate onto a plot to lay out a field. That plot is then yours — and only there can the overseer take over.</p>' + cards;
+    return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' + cards;
   }
 
   function colonyWorkersHTML() {
@@ -530,15 +531,23 @@
     var idle = colonyIdle();
     var maxed = hired >= MAX_COLONY_WORKERS;
     var afford = G.cash >= WORKER_HIRE_COST;
-    return '<h3 class="colony-panel-title">Workers</h3>' +
-      '<div class="colony-workers-totals">' +
-        '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
-        '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
-        '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
-      '</div>' +
-      '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire worker · ' + A.money(WORKER_HIRE_COST) + '</button>' +
-      '<p class="colony-note">' + (maxed ? 'The colony is fully staffed.'
-        : 'Each worker adds +' + Math.round(WORKER_SPEED * 100) + '% growth and +1 unit per two. Assign them from a field\'s inspector.') + '</p>';
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+
+    var title = german ? 'Arbeitskräfte' : 'Workers';
+    var hiredLabel = german ? 'eingestellt' : 'hired';
+    var workingLabel = german ? 'im Einsatz' : 'working';
+    var idleLabel = german ? 'frei' : 'idle';
+    var hireBtn = (german ? 'Einstellen · ' : 'Hire · ') + A.money(WORKER_HIRE_COST);
+
+    return '<h3 class="colony-panel-title">' + title + '</h3>' +
+      '<div class="colony-workers-row">' +
+        '<div class="colony-workers-totals">' +
+          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">' + hiredLabel + '</span>' +
+          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">' + workingLabel + '</span>' +
+          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">' + idleLabel + '</span>' +
+        '</div>' +
+        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>' + hireBtn + '</button>' +
+      '</div>';
   }
 
   /* Only the fields in use plus one free plot are drawn: that free plot is the
@@ -648,29 +657,78 @@
       '</button>';
   }
 
-  /* One persistent toolbar: selection is always available, and bulk commands
-     always act on the selected fields only. No separate selection mode. */
+  /* One persistent toolbar: selection, automation, workforce and upgrades united. */
   function colonyMultiBarHTML() {
     var ids = crew.multiSelectIds();
     var n = ids.length;
-    var total = colonyFields().length;
-    var autoN = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
-    var selectedFields=ids.map(fieldById).filter(Boolean);
-    var sameLevel=selectedFields.length>0 && selectedFields.every(function(f){return f.level===selectedFields[0].level;});
-    var next=sameLevel?UPGRADES[selectedFields[0].level]:null;
-    var totalCost=next?next.cost*selectedFields.length:0;
-    var german=window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de';
-    var upgradeText=german?(selectedFields.length>1?selectedFields.length+' Felder verbessern':'Feld verbessern'):(selectedFields.length>1?'Upgrade '+selectedFields.length+' fields':'Upgrade field');
-    var upgradeStage=next?(german?({'Irrigation':'Bewässerung','Fertiliser':'Düngung','Storage shed':'Lagerschuppen'}[next.label]||next.label):next.label):'';
-    var upgradeLabel=next?'<span class="colony-upgrade-main">'+h(upgradeText)+'</span><span class="colony-upgrade-meta">'+h(upgradeStage)+' · '+A.money(totalCost)+'</span>':
-      (selectedFields.length&&!sameLevel?(german?'Felder gleicher Stufe wählen':'Select same-level fields'):(german?'Keine Verbesserung möglich':'No upgrade available'));
-    return '<div class="colony-multi" role="group" aria-label="Field selection and automation">' +
-      '<span class="colony-multi-count" aria-live="polite">' + n + '/' + total + ' selected</span>' +
-      '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>Select all</button>' +
-      '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>Clear</button>' +
-      '<button class="btn primary" type="button" data-colony="auto-bulk" data-on="1"' + (!n || autoN === n ? ' disabled' : '') + '>Auto on</button>' +
-      '<button class="btn ghost" type="button" data-colony="auto-bulk" data-on="0"' + (!autoN ? ' disabled' : '') + '>Auto off</button>' +
-      '<button class="btn go" type="button" data-colony="upgrade-bulk"' + (!next || G.cash<totalCost ? ' disabled' : '') + '>' + upgradeLabel + '</button>' +
+    var fields = colonyFields();
+    var total = fields.length;
+    var autoTotal = fields.filter(function(x) { return crew.fieldAutoOn(x); }).length;
+    var autoSelected = ids.filter(function(id) { return crew.fieldAutoOn(fieldById(id)); }).length;
+
+    var hired = colonyHired();
+    var assigned = colonyAssigned();
+    var idle = colonyIdle();
+    var maxed = hired >= MAX_COLONY_WORKERS;
+    var afford = G.cash >= WORKER_HIRE_COST;
+
+    var selectedFields = ids.map(fieldById).filter(Boolean);
+    var sameLevel = selectedFields.length > 0 && selectedFields.every(function(f) { return f.level === selectedFields[0].level; });
+    var next = sameLevel ? UPGRADES[selectedFields[0].level] : null;
+    var totalCost = next ? next.cost * selectedFields.length : 0;
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+
+    var workersTitle = german ? '👥 Arbeitskräfte' : '👥 Workers';
+    var workersStat = german
+      ? ('<b>' + hired + '</b> angestellt · <b>' + assigned + '</b> aktiv · <b>' + idle + '</b> frei')
+      : ('<b>' + hired + '</b> hired · <b>' + assigned + '</b> active · <b>' + idle + '</b> idle');
+    var hireBtn = (german ? '+ Einstellen · ' : '+ Hire · ') + A.money(WORKER_HIRE_COST);
+
+    var countText = n > 0
+      ? (n + '/' + total + ' ' + (german ? 'ausgewählt' : 'selected'))
+      : (total + ' ' + (german ? 'Felder gesamt' : 'total plots'));
+    var autoBadge = '🌱 ' + autoTotal + '/' + total + ' ' + (german ? 'automatisiert' : 'automated');
+
+    var selectAllText = german ? 'Alle auswählen' : 'Select all';
+    var selectClearText = german ? 'Auswahl aufheben' : 'Clear';
+    var autoOnText = german ? 'Automatik AN' : 'Auto on';
+    var autoOffText = german ? 'Automatik AUS' : 'Auto off';
+
+    var upgradeText = german
+      ? (selectedFields.length > 1 ? selectedFields.length + ' Felder verbessern' : 'Feld verbessern')
+      : (selectedFields.length > 1 ? 'Upgrade ' + selectedFields.length + ' fields' : 'Upgrade field');
+    var upgradeStage = next ? (german ? ({ 'Irrigation': 'Bewässerung', 'Fertiliser': 'Düngung', 'Storage shed': 'Lagerschuppen' }[next.label] || next.label) : next.label) : '';
+    var upgradeLabel = next
+      ? '<span class="colony-upgrade-main">' + h(upgradeText) + '</span><span class="colony-upgrade-meta">' + h(upgradeStage) + ' · ' + A.money(totalCost) + '</span>'
+      : (selectedFields.length && !sameLevel
+          ? (german ? 'Felder gleicher Stufe wählen' : 'Select same-level fields')
+          : (german ? 'Keine Verbesserung möglich' : 'No upgrade available'));
+
+    /* If fields are selected, Automatik buttons affect selected fields (auto-bulk).
+       If no fields are selected, Automatik buttons affect all fields (auto-all). */
+    var autoAction = n > 0 ? 'auto-bulk' : 'auto-all';
+    var canAutoOn = total > 0 && (n > 0 ? (autoSelected < n) : (autoTotal < total));
+    var canAutoOff = total > 0 && (n > 0 ? (autoSelected > 0) : (autoTotal > 0));
+
+    return '<div class="colony-multi" role="group" aria-label="Field selection, automation and workforce">' +
+      '<div class="colony-multi-workers-bar">' +
+        '<div class="colony-multi-workers-stats">' +
+          '<span class="colony-multi-workers-title">' + workersTitle + '</span>' +
+          '<span class="colony-multi-workers-counts">' + workersStat + '</span>' +
+        '</div>' +
+        '<button class="btn buy colony-multi-hire-btn" type="button" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>' + hireBtn + '</button>' +
+      '</div>' +
+      '<div class="colony-multi-status-bar">' +
+        '<span class="colony-multi-count" aria-live="polite">' + countText + '</span>' +
+        '<span class="colony-multi-auto-badge">' + autoBadge + '</span>' +
+      '</div>' +
+      '<div class="colony-multi-btns">' +
+        '<button class="btn ghost" type="button" data-colony="select-all"' + (!total || n === total ? ' disabled' : '') + '>' + selectAllText + '</button>' +
+        '<button class="btn ghost" type="button" data-colony="select-clear"' + (!n ? ' disabled' : '') + '>' + selectClearText + '</button>' +
+        '<button class="btn primary" type="button" data-colony="' + autoAction + '" data-on="1"' + (canAutoOn ? '' : ' disabled') + '>' + autoOnText + '</button>' +
+        '<button class="btn ghost" type="button" data-colony="' + autoAction + '" data-on="0"' + (canAutoOff ? '' : ' disabled') + '>' + autoOffText + '</button>' +
+      '</div>' +
+      '<button class="btn go colony-multi-upgrade-btn" type="button" data-colony="upgrade-bulk"' + (!next || G.cash < totalCost ? ' disabled' : '') + '>' + upgradeLabel + '</button>' +
       '</div>';
   }
 
@@ -678,9 +736,10 @@
     var f = G.selectedFieldId ? fieldById(G.selectedFieldId) : null;
     var selectedCount = crew.multiSelectIds().length;
     if (!f) {
-      return '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
-        '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to automate or upgrade selected fields of the same level.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
-        colonyWarehouseHTML();
+      if (selectedCount > 1) {
+        return '<h3 class="colony-panel-title">Multiple fields (' + selectedCount + ')</h3>' + colonyWarehouseHTML();
+      }
+      return colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
     var next = UPGRADES[f.level];
@@ -702,10 +761,8 @@
       '<div class="colony-controls-row">' +
       '<button class="btn" data-colony="assign" data-field="' + f.id + '"' + ((idle > 0 && f.workers < MAX_FIELD_WORKERS) ? '' : ' disabled') + '>+1 worker</button>' +
       '<button class="btn ghost" data-colony="unassign" data-field="' + f.id + '"' + (f.workers > 0 ? '' : ' disabled') + '>-1 worker</button>' +
-
       '</div>' +
-      '</div>' +
-      '<p class="colony-note">Automation is controlled above for all selected fields. The overseer harvests, replants and assigns workers automatically.</p>';
+      '</div>';
     return html + colonyWarehouseHTML();
   }
 
@@ -791,7 +848,7 @@
     var ids=CROPS.map(function(c){return c.id;}).filter(function(id){return stock[id]>0;});
     var count=crew.colonyUnits();
     var head='<h4 class="colony-warehouse-title">Warehouse · '+count+' crate(s) ashore</h4>';
-    if (!ids.length) return head+'<p class="colony-note">No harvested goods yet. Harvest fields to fill the warehouse.</p>';
+    if (!ids.length) return head;
     return head+ids.map(function(id){
       var crop=CROP_BY_ID[id];
       return '<div class="colony-warehouse-row">'+cropThumb(crop)+

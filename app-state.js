@@ -33,6 +33,8 @@
     restockDay: {},       // cityId -> day the shelf was filled
     lots: [],             // current auction lots
     auctionDay: 0,
+    auctionCityId: null,
+    auctionSchedule: [],
     nextUid: 1,
     log: [],
     raceSnapshots: [],

@@ -110,8 +110,8 @@ window.ART_DATA = {
                     "dailyLoanInterest":  0.006,
                     "reputationForMaxLoan":  80,
                     "maxLoanReputationMultiplier":  3,
-                    "auctionLotCount":  4,
-                    "auctionIntervalDays":  5,
+                    "auctionLotCount":  2,
+                    "auctionIntervalDays":  16,
                     "auctionCommission":  0.12,
                     "auctionQuizDiscount": 0.2,
                     "rivalAggression":  0.88,
@@ -143,7 +143,7 @@ window.ART_DATA = {
                     "auctionReserveRatio":  0.75,
                     "auctionIncrementRatio":  0.07,
                     "auctionLeadDays":  2,
-                "auctionPreDays":   4
+                "auctionPreDays":   12
                 },
     "artists":  [
                     {

@@ -1069,6 +1069,9 @@
       setLabels: setLabels,
       setLevel: setLevel,
       resetZoom: resetZoom,
+      zoomIn: function () { zoomAt(1.35, W / 2, H / 2); },
+      zoomOut: function () { zoomAt(1 / 1.35, W / 2, H / 2); },
+      zoomAt: zoomAt,
       getView: function(){return {level:api.level,z:zoomView.z,cx:zoomView.cx,cy:zoomView.cy};},
       refresh: refresh,
       destroy: destroy
@@ -1080,7 +1083,15 @@
     /* zoom state: factor z, and the plate point (0..1) held at the centre */
     /* Start mobile viewers closer to the land, without changing viewport size.
        Pinch, drag, wheel and the Europe/World selector retain their controls. */
-    function defaultZoom(){return window.matchMedia && window.matchMedia('(max-width: 760px)').matches ? 1.35 : 1;}
+    function defaultZoom(){
+      if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) {
+        var isLandscape = window.matchMedia('(orientation: landscape)').matches;
+        if (isLandscape) return 1.35;
+        var lv = api ? api.level : (opts.level || 'world');
+        return lv === 'europe' ? 1.75 : 2.15;
+      }
+      return 1;
+    }
     var saved = opts.initialView;
     var zoomView = saved && saved.level === api.level &&
       isFinite(saved.z) && isFinite(saved.cx) && isFinite(saved.cy) ?

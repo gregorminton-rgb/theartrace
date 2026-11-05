@@ -65,14 +65,24 @@
 
   function bareSlug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, ''); }
 
+  function artPicture(workId) {
+    if (!workId) return null;
+    if (ARTWORK[workId]) return ARTWORK[workId];
+    var want = bareSlug(workId);
+    for (var k in ARTWORK) { if (bareSlug(k) === want) return ARTWORK[k]; }
+    return null;
+  }
+
   function pictureFor(slug) {
     if (!slug) return null;
     /* Legacy Firenze id now represents Venice across all city previews. */
     if (slug === 'firenze') slug = 'venedig';
     if (IMAGES[slug]) return IMAGES[slug];
+    if (ARTWORK[slug]) return ARTWORK[slug];
     /* tolerate a master called "NewYork.jpg" for the id "newyork" */
     var want = bareSlug(slug);
     for (var key in IMAGES) { if (bareSlug(key) === want) return IMAGES[key]; }
+    for (var akey in ARTWORK) { if (bareSlug(akey) === want) return ARTWORK[akey]; }
     return null;
   }
   function cityPicture(city) {
@@ -151,6 +161,6 @@
     }
     syncPlayAreaBackground();
   }
-  A.art = { thumb: thumb, pictureFor: pictureFor, cityPicture: cityPicture,
+  A.art = { thumb: thumb, pictureFor: pictureFor, artPicture: artPicture, cityPicture: cityPicture,
             renderBackdrop: renderBackdrop, IMAGES: IMAGES };
 })();

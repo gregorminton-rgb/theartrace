@@ -179,7 +179,23 @@
       /* Rooms that exist only in some cities are hidden, not greyed out: a
          locked door with no explanation reads like a bug. The auction is the
          clearest case — the room is only there while a catalogue is hanging. */
-      if (v === 'auction') ok = !!c && c.hasAuctionHouse && auctionListUp();
+      if (v === 'auction') {
+        ok = !!c && c.hasAuctionHouse && auctionListUp();
+        var isLiveToday = ok && auctionOpenHere();
+        b.classList.toggle('has-live-auction', isLiveToday);
+        var liveBadge = b.querySelector('.station-live-badge');
+        if (isLiveToday) {
+          var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+          if (!liveBadge) {
+            liveBadge = document.createElement('span');
+            liveBadge.className = 'station-live-badge';
+            b.appendChild(liveBadge);
+          }
+          liveBadge.textContent = de ? 'HEUTE' : 'TODAY';
+        } else if (liveBadge) {
+          liveBadge.remove();
+        }
+      }
       if (v === 'bank') ok = !!c && !!c.hasBank;
       if (v === 'studio') ok = !!c && !!c.hasRestorationStudio;
       if (v === 'trade') ok = !!c && !!TRADE_HUB_IDS[c.id];
@@ -289,7 +305,7 @@
                G.portfolio.length + '/' + G.capacity + ' Artwork slots</span>' +
                (view === 'auction' ? sceneStrip(auctionOpenHere() ? 'auction_2' : 'auction_4') : '') + '</div>';
     var body = '';
-    if (view === 'accommodation') body = '<div class="arrival-accommodation"><span class="arrival-accommodation-icon">🏨</span><h3>Willkommen in '+h(c.name)+'</h3><p>Unterkunft pro Nacht</p><strong>'+A.money(A.cityHotelRate(c.id))+'</strong><p class="note">Die Kosten werden für jeden Aufenthaltstag automatisch abgebucht.</p></div>';
+    if (view === 'accommodation') body = viewAccommodation(c);
     else if (view === 'dealer') body = viewDealer();
     else if (view === 'portfolio') body = viewPortfolio();
     else if (view === 'auction') body = viewAuction();
@@ -301,7 +317,8 @@
 
     el('panel').innerHTML = head + body;
     var hint = el('panel-hint');
-    hint.textContent = view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
+    hint.textContent = view === 'accommodation' ? (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Dein Stadthaus und Stadtübersicht. Plane deine Reisen nach den kommenden Kunstauktionen.' : 'Your townhouse and city overview. Plan your journeys around upcoming art auctions.') :
+      view === 'travel' ? 'Pick a city on the map or in the list to move the gallery there. Gold colony pins can be sailed to.' :
       view === 'auction' ? 'Bid until the room stops you, then settle the commission.' :
       view === 'trade' ? 'Sell the colonial harvest — London and New York pay different rates.' :
       view === 'dealer' ? 'A gallery is the fast, expensive way to buy — auction rooms are cheaper, if you can wait for the hammer.' : '';
@@ -360,6 +377,156 @@
     });
     cards.forEach(function(card) {grid.appendChild(card);});
   });
+
+    function viewAccommodation(c) {
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var rate = A.cityHotelRate(c.id);
+    var schedule = (A.app && A.app.getAuctionSchedule) ? A.app.getAuctionSchedule() : (G.auctionSchedule || []);
+    var upcoming = schedule.filter(function (auc) { return auc.day >= G.day && !auc.completed; });
+    upcoming.sort(function (a, b) { return a.day - b.day; });
+
+    var facilities = [];
+    if (c.hasAuctionHouse) facilities.push({ icon: '🏛️', label: de ? 'Auktionshaus' : 'Auction House' });
+    if (c.hasBank) facilities.push({ icon: '🏦', label: de ? 'Bank' : 'Bank' });
+    if (c.hasRestorationStudio) facilities.push({ icon: '🎨', label: de ? 'Restaurierungsatelier' : 'Restoration Studio' });
+    if (TRADE_HUB_IDS[c.id]) facilities.push({ icon: '💰', label: de ? 'Warenbörse' : 'Commodity Exchange' });
+
+    var facHtml = facilities.map(function (f) {
+      return '<span class="hotel-fac-badge"><span aria-hidden="true">' + f.icon + '</span> ' + h(f.label) + '</span>';
+    }).join('');
+
+    var hotelHead = '<div class="hotel-welcome-card">' +
+      '<div class="hotel-welcome-main">' +
+        '<span class="hotel-icon" aria-hidden="true">🏠</span>' +
+        '<div>' +
+          '<h3>' + (de ? 'Stadthaus & Residenz ' + h(c.name) : 'Townhouse & Residence ' + h(c.name)) + '</h3>' +
+          '<p class="hotel-meta">' + h(c.country) + ' · ' + h(c.regionName) + '</p>' +
+          (facHtml ? '<div class="hotel-fac-row">' + facHtml + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="hotel-rate-box">' +
+        '<div class="hotel-rate-details">' +
+          '<span class="hotel-rate-label">' + (de ? 'Wohnkosten / Nacht' : 'Upkeep / night') + '</span>' +
+          '<span class="hotel-rate-note">' + (de ? 'Täglich automatisch abgebucht' : 'Deducted daily automatically') + '</span>' +
+        '</div>' +
+        '<strong>' + A.money(rate) + '</strong>' +
+      '</div>' +
+    '</div>';
+
+    var liveAlert = '';
+    if (auctionOpenHere()) {
+      liveAlert = '<div class="hotel-live-card hotel-live-card--open">' +
+        '<div class="hotel-live-icon">🔨</div>' +
+        '<div class="hotel-live-text">' +
+          '<h4>' + (de ? 'AUKTION HEUTE IN ' + h(c.name).toUpperCase() + '!' : 'AUCTION TODAY IN ' + h(c.name).toUpperCase() + '!') + '</h4>' +
+          '<p>' + (de ? 'Der Auktionssaal nimmt heute Gebote entgegen. Nutze deine Chance auf wertvolle Originale.' : 'The saleroom is open for bidding today. Take your chance to acquire rare originals.') + '</p>' +
+        '</div>' +
+        '<button type="button" class="btn primary" data-view="auction">' + (de ? '🔨 Auktionssaal betreten' : '🔨 Enter Auction Room') + '</button>' +
+      '</div>';
+    } else if (auctionListUp()) {
+      var daysLeft = daysToAuction();
+      liveAlert = '<div class="hotel-live-card hotel-live-card--hanging">' +
+        '<div class="hotel-live-icon">📜</div>' +
+        '<div class="hotel-live-text">' +
+          '<h4>' + (de ? 'Auktionskatalog liegt aus' : 'Catalogue on View') + '</h4>' +
+          '<p>' + (de ? 'Die Auktion in ' + h(c.name) + ' findet in ' + daysLeft + ' Tag(en) statt (Tag ' + G.auctionDay + '). Besichtige die Lose vorab.' : 'The auction in ' + h(c.name) + ' takes place in ' + daysLeft + ' day(s) (Day ' + G.auctionDay + '). Inspect the lots in advance.') + '</p>' +
+        '</div>' +
+        '<button type="button" class="btn" data-view="auction">' + (de ? '📜 Katalog im Saal ansehen' : '📜 View Catalogue in Room') + '</button>' +
+      '</div>';
+    }
+
+    var scheduleCards = '';
+    if (!upcoming.length) {
+      scheduleCards = '<p class="empty">' + (de ? 'Derzeit sind keine Auktionen im Kalender eingetragen.' : 'No auctions currently scheduled.') + '</p>';
+    } else {
+      scheduleCards = upcoming.map(function (auc) {
+        var aucCity = A.city(auc.cityId);
+        var cityName = aucCity ? aucCity.name : auc.cityId;
+        var daysAway = auc.day - G.day;
+        var isHere = auc.cityId === c.id;
+        var isToday = daysAway === 0;
+
+        var timingBadge = isToday
+          ? '<span class="hotel-timing-badge hotel-timing-badge--today">' + (de ? '🔨 HEUTE' : '🔨 TODAY') + '</span>'
+          : daysAway === 1
+            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen · Tag ' + auc.day : 'Tomorrow · Day ' + auc.day) + '</span>'
+            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen · Tag ' + auc.day : 'In ' + daysAway + ' days · Day ' + auc.day) + '</span>';
+
+        var locBadge = isHere
+          ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
+          : '<span class="hotel-loc-badge">' + (de ? 'Reise nötig' : 'Travel required') + '</span>';
+
+        var lots = (auc.lots || []).slice(0, 2);
+        var worksCount = lots.length;
+
+        var thumbsHtml = lots.map(function (lot) {
+          var w = A.work(lot.inst.defId);
+          if (!w) return '';
+          var pic = (A.art && A.art.artPicture ? A.art.artPicture(w.id) : null) ||
+                    (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
+                    (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
+          var a = A.artistById[w.artistId];
+          var titleWithArtist = h(w.title) + (a ? ' - ' + h(a.name) : '');
+          return '<div class="hotel-auc-thumb" title="' + titleWithArtist + '">' +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">' + h(w.title.slice(0, 1)) + '</span>') +
+          '</div>';
+        }).join('');
+
+        var infoHtml = '';
+        if (worksCount === 1) {
+          var w0 = A.work(lots[0].inst.defId);
+          var a0 = w0 ? A.artistById[w0.artistId] : null;
+          var artistName0 = a0 ? a0.name : '';
+          infoHtml = '<span class="hotel-auc-count">' + (de ? '1 Spitzenlos im Angebot' : '1 featured lot offered') + '</span>' +
+                     (w0 ? '<span class="hotel-auc-painting-title" title="' + h(w0.title) + '">&bdquo;' + h(w0.title) + '&ldquo;</span>' : '') +
+                     '<span class="hotel-auc-hint">' + (artistName0 ? h(artistName0) + ' · ' : '') + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' - ' + A.money(lots[0].high) + '</span>';
+        } else if (worksCount === 2) {
+          var w1 = A.work(lots[0].inst.defId);
+          var w2 = A.work(lots[1].inst.defId);
+          var a1 = w1 ? A.artistById[w1.artistId] : null;
+          var a2 = w2 ? A.artistById[w2.artistId] : null;
+          var artistsList = [a1 ? a1.name : '', a2 ? a2.name : ''].filter(Boolean).join(' & ');
+          var minEst = Math.min(lots[0].low, lots[1].low);
+          var maxEst = Math.max(lots[0].high, lots[1].high);
+          infoHtml = '<span class="hotel-auc-count">' + (de ? '2 Meisterwerke im Angebot' : '2 masterpieces offered') + '</span>' +
+                     '<span class="hotel-auc-painting-title" title="' + h(artistsList) + '">' + h(artistsList || (de ? 'Ausgewählte Werke' : 'Selected works')) + '</span>' +
+                     '<span class="hotel-auc-hint">' + (de ? 'Schätzungen ' : 'Estimates ') + A.money(minEst) + ' - ' + A.money(maxEst) + '</span>';
+        } else {
+          infoHtml = '<span class="hotel-auc-count">' + (de ? 'Katalog in Vorbereitung' : 'Catalogue in preparation') + '</span>' +
+                     '<span class="hotel-auc-hint">' + (de ? 'Klicken für Details' : 'Click to inspect') + '</span>';
+        }
+
+        var isSingle = worksCount === 1 ? ' is-single-lot' : '';
+
+        return '<article class="hotel-auction-card' + (isHere ? ' is-here' : '') + (isToday ? ' is-today' : '') + isSingle + '" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
+          '<div class="hotel-auction-card-head">' +
+            '<div class="hotel-auction-city"><strong>' + h(cityName) + '</strong> ' + locBadge + '</div>' +
+            timingBadge +
+          '</div>' +
+          '<div class="hotel-auction-card-body">' +
+            '<div class="hotel-auc-thumbs-wrap">' + thumbsHtml + '</div>' +
+            '<div class="hotel-auction-card-info">' + infoHtml + '</div>' +
+          '</div>' +
+          '<div class="hotel-auction-card-foot">' +
+            '<button type="button" class="btn btn-sm" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
+              (de ? 'Auktionslose ansehen' : 'View Auction Lots') +
+            '</button>' +
+            (isToday && isHere ? '<button type="button" class="btn btn-sm primary" data-view="auction">' + (de ? 'Mitbieten' : 'Bid Now') + '</button>' : '') +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    var scheduleSection = '<section class="hotel-auctions-section">' +
+      '<div class="hotel-section-head">' +
+        '<h3>🏛️ ' + (de ? 'Auktionskalender & Kommende Auktionen' : 'Auction Calendar & Upcoming Auctions') + '</h3>' +
+        '<p class="note">' + (de ? 'Große Kunstauktionen finden in Intervallen in den Metropolen statt. Klicke auf eine Auktion, um genau zu sehen, welche Kunstwerke dort versteigert werden.' : 'Major art auctions take place at scheduled intervals in major art capitals. Click on an auction to see exactly what is being auctioned.') + '</p>' +
+      '</div>' +
+      '<div class="hotel-auctions-grid">' + scheduleCards + '</div>' +
+    '</section>';
+
+    return '<div class="hotel-view">' + hotelHead + liveAlert + scheduleSection + '</div>';
+  }
 
   function viewDealer() {
     var offers = G.stock[G.cityId] || [];
@@ -567,26 +734,47 @@
 
   function viewStudio() {
     var city = A.city(G.cityId);
-    if (!city.hasRestorationStudio) return '<p class="empty">No restoration studio in ' + h(city.name) + '.</p>';
-    if (!G.portfolio.length) return '<p class="empty">Nothing to restore — the warehouse is empty.</p>';
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    if (!city.hasRestorationStudio) return '<p class="empty">' + (de ? 'Kein Restaurierungsatelier in ' + h(city.name) + '.' : 'No restoration studio in ' + h(city.name) + '.') + '</p>';
+    if (!G.portfolio.length) return '<p class="empty">' + (de ? 'Nichts zu restaurieren — dein Lager ist leer.' : 'Nothing to restore — the warehouse is empty.') + '</p>';
     var rows = G.portfolio.map(function (inst) {
       var inStudio = inst.restoreReadyDay >= 0 && G.day < inst.restoreReadyDay;
-      var gain = Math.min(CFG.restorationMaxGain, 1 - inst.condition);
-      var cost = A.restorationCost(gain);
-      var days = A.restorationDays(gain);
+      var curGain = inStudio ? (inst.pendingRestore || 0) : Math.min(CFG.restorationMaxGain, 1 - inst.condition);
+      var cost = A.restorationCost(curGain);
+      var days = A.restorationDays(curGain);
+      var curPct = Math.round(inst.condition * 100);
+      var gainPct = Math.round(curGain * 100);
+      var targetPct = Math.min(100, curPct + gainPct);
+
+      var progressBar = '<div class="studio-cond-bar-wrap" title="' + curPct + '% → ' + targetPct + '%">' +
+        '<div class="studio-cond-bar-track">' +
+          '<div class="studio-cond-bar-current" style="width:' + curPct + '%"></div>' +
+          '<div class="studio-cond-bar-gain' + (inStudio ? ' is-in-progress' : '') + '" style="left:' + curPct + '%;width:' + gainPct + '%"></div>' +
+        '</div>' +
+        '<div class="studio-cond-bar-labels">' +
+          '<span>' + curPct + '%</span>' +
+          '<span class="studio-gain-label">+' + gainPct + '% → ' + targetPct + '%</span>' +
+        '</div>' +
+      '</div>';
+
+      var statusText = inStudio
+        ? (de ? 'In Arbeit (fertig Tag ' + inst.restoreReadyDay + ')' : 'Restoring (ready day ' + inst.restoreReadyDay + ')')
+        : (de ? '+' + gainPct + '% in ' + days + ' ' + (days === 1 ? 'Tag' : 'Tagen') : '+' + gainPct + '% in ' + days + ' day(s)');
+
       return '<div class="row' + (inStudio ? ' busy' : '') + '">' + rowHead(inst) +
-        '<div class="row-tags">' + condTag(inst) + '</div>' +
-        '<div class="row-num"><span class="ask">' + (inStudio ? 'ready day ' + inst.restoreReadyDay : A.money(cost)) + '</span>' +
-        '<span class="est">' + (inStudio ? 'Restoring: ' + A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + (inst.pendingRestore || 0))) + ' when ready' : A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + gain)) + ' in ' + days + ' day(s)') + '</span></div>' +
+        '<div class="row-tags">' + condTag(inst) + progressBar + '</div>' +
+        '<div class="row-num"><span class="ask">' + (inStudio ? (de ? 'Tag ' + inst.restoreReadyDay : 'day ' + inst.restoreReadyDay) : A.money(cost)) + '</span>' +
+        '<span class="est">' + statusText + '</span></div>' +
         '<div class="row-btns">' +
         (inStudio
-          ? '<button class="btn" data-action="collect" data-uid="' + inst.uid + '"' + (G.day >= inst.restoreReadyDay ? '' : ' disabled') + '>Collect</button>'
-          : '<button class="btn" data-action="restore" data-uid="' + inst.uid + '"' + (gain > 0.005 && cost <= G.cash ? '' : ' disabled') + '>Restore</button>') +
+          ? '<button class="btn" data-action="collect" data-uid="' + inst.uid + '"' + (G.day >= inst.restoreReadyDay ? '' : ' disabled') + '>' + (de ? 'Abholen' : 'Collect') + '</button>'
+          : '<button class="btn" data-action="restore" data-uid="' + inst.uid + '"' + (curGain > 0.005 && cost <= G.cash ? '' : ' disabled') + '>' + (de ? 'Restaurieren' : 'Restore') + '</button>') +
         '</div></div>';
     }).join('');
-    return '<p class="note">' + h(city.studioName || 'The studio') + ' charges ' + A.money(CFG.restorationCostPerHundredth) +
-      ' per +0.01 condition, max ' + A.pct(CFG.restorationMaxGain) + ' per job, at least ' +
-      CFG.restorationMinDays + ' day(s).</p>' + rows;
+    return '<p class="note">' + (de
+      ? h(city.studioName || 'Das Atelier') + ' berechnet ' + A.money(CFG.restorationCostPerHundredth) + ' pro +0,01 Zustand (max. +' + A.pct(CFG.restorationMaxGain) + ' pro Auftrag, mind. ' + CFG.restorationMinDays + ' Tage).'
+      : h(city.studioName || 'The studio') + ' charges ' + A.money(CFG.restorationCostPerHundredth) + ' per +0.01 condition (max ' + A.pct(CFG.restorationMaxGain) + ' per job, at least ' + CFG.restorationMinDays + ' day(s)).') +
+      '</p>' + rows;
   }
   function viewTravel() {
     var from = A.city(G.cityId);

@@ -27,7 +27,7 @@ var pairs=[
 ['New Game','Neues Spiel'],['Continue','Fortsetzen'],['How to Play','Spielanleitung'],['Data Source','Datenquelle'],
 ['Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.','Kaufe günstig in Amsterdam. Verkaufe teuer in Berlin. Hüte dich vor Fälschungen.'],
 ['A hand-built art trading game · version 1.0','Ein handgefertigtes Kunsthandelsspiel · Version 1.0'],
-['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
+['Townhouse','Stadthaus'],['Town Home','Stadthaus'],['Townhome','Stadthaus'],['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
 ['Market indices','Marktindizes'],['News','Nachrichten'],['End day','Tag beenden'],['Cash','Bargeld'],['Reputation','Ansehen'],['Goal','Ziel'],
 ['Music','Musik'],['Gallery in Amsterdam','Galerie in Amsterdam'],['Day speed','Tagesgeschwindigkeit'],['Let days pass automatically','Tage automatisch verstreichen lassen'],
 ['slow','langsam'],['normal','normal'],['fast','schnell'],['Plantation menu','Plantagenmenü'],['Crops','Feldfrüchte'],['Sow fields','Felder bestellen'],
@@ -254,6 +254,7 @@ pairs.push(
 ["Fully restored","Vollständig restauriert"]
 );
 pairs.push(['Artwork slots','Sammlungsplätze'],['Collection capacity','Sammlungskapazität']);
+pairs.push(['Auction calendar','Auktionskalender'],['Upcoming auctions','Kommende Auktionen'],['Auction Catalogue','Auktionskatalog'],['Inspect Lots','Auktionslose ansehen'],['View Auction Lots','Auktionslose ansehen'],['Enter Auction Room','Auktionssaal betreten']);
 var map=Object.create(null),reverse=Object.create(null);
 pairs.forEach(function(p){map[p[0]]=p[1];if(!(p[1] in reverse))reverse[p[1]]=p[0];});
 var originals=new WeakMap(), rendered=new WeakMap(),mutating=false;
