@@ -569,7 +569,7 @@
   function drawAuctionLots(city, day, reservedDefIds) {
     if (!city) return [];
     var lots = [];
-    var lotLimit = Math.min(3, CFG.auctionLotCount || 3);
+    var lotLimit = Math.min(2, G.rng ? (G.rng.chance(0.45) ? 1 : 2) : 2);
     var reserved = (reservedDefIds || []).slice();
     for (var i = 0; i < lotLimit; i++) {
       var w = freeWork(lots.map(function(p){return p.inst.defId;}).concat(reserved), city.id);
@@ -618,6 +618,11 @@
 
   function maintainAuctionSchedule() {
     if (!Array.isArray(G.auctionSchedule)) G.auctionSchedule = [];
+    G.auctionSchedule.forEach(function (auc) {
+      if (!auc.completed && auc.lots && auc.lots.length > 2) {
+        auc.lots = auc.lots.slice(0, 2);
+      }
+    });
 
     // Close expired auctions whose hammer day has passed
     G.auctionSchedule.forEach(function (auc) {

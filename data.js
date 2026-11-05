@@ -110,7 +110,7 @@ window.ART_DATA = {
                     "dailyLoanInterest":  0.006,
                     "reputationForMaxLoan":  80,
                     "maxLoanReputationMultiplier":  3,
-                    "auctionLotCount":  4,
+                    "auctionLotCount":  2,
                     "auctionIntervalDays":  16,
                     "auctionCommission":  0.12,
                     "auctionQuizDiscount": 0.2,

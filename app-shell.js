@@ -107,7 +107,9 @@
       var condPct = Math.round(lot.inst.condition * 100);
       var condCls = lot.inst.condition > 0.67 ? 'ok' : (lot.inst.condition > 0.4 ? 'warn' : 'bad');
 
-      var pic = A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null;
+      var pic = (A.art && A.art.artPicture ? A.art.artPicture(w.id) : null) ||
+                (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
+                (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
       var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
       var facts = (w.typeName ? h(translateArt(w.typeName)) : '') +
                   (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +

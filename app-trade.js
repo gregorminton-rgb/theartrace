@@ -438,38 +438,62 @@
           ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
           : '<span class="hotel-loc-badge">' + (de ? 'Reise nach ' + h(cityName) : 'Travel to ' + h(cityName)) + '</span>';
 
-        var thumbsHtml = (auc.lots || []).map(function (lot) {
+        var lots = (auc.lots || []).slice(0, 2);
+        var worksCount = lots.length;
+
+        var thumbsHtml = lots.map(function (lot) {
           var w = A.work(lot.inst.defId);
           if (!w) return '';
-          var pic = A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null;
+          var pic = (A.art && A.art.artPicture ? A.art.artPicture(w.id) : null) ||
+                    (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
+                    (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
           var a = A.artistById[w.artistId];
-          return '<div class="hotel-auc-thumb" title="' + h(w.title) + (a ? ' — ' + h(a.name) : '') + '">' +
-            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span>🖼️</span>') +
+          var titleWithArtist = h(w.title) + (a ? ' - ' + h(a.name) : '');
+          return '<div class="hotel-auc-thumb" title="' + titleWithArtist + '">' +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">???</span>') +
           '</div>';
         }).join('');
 
-        var worksCount = auc.lots ? auc.lots.length : 0;
-        var worksLabel = de
-          ? (worksCount === 1 ? '1 Kunstwerk im Angebot' : worksCount + ' Kunstwerke im Angebot')
-          : (worksCount === 1 ? '1 artwork offered' : worksCount + ' artworks offered');
+        var infoHtml = '';
+        if (worksCount === 1) {
+          var w0 = A.work(lots[0].inst.defId);
+          var a0 = w0 ? A.artistById[w0.artistId] : null;
+          var artistName0 = a0 ? a0.name : '';
+          infoHtml = '<span class="hotel-auc-count">' + (de ? '1 Spitzenlos im Angebot' : '1 featured lot offered') + '</span>' +
+                     (w0 ? '<span class="hotel-auc-painting-title" title="' + h(w0.title) + '">?' + h(w0.title) + '?</span>' : '') +
+                     '<span class="hotel-auc-hint">' + (artistName0 ? h(artistName0) + ' ? ' : '') + (de ? 'Sch?tzung ' : 'Est. ') + A.money(lots[0].low) + ' ? ' + A.money(lots[0].high) + '</span>';
+        } else if (worksCount === 2) {
+          var w1 = A.work(lots[0].inst.defId);
+          var w2 = A.work(lots[1].inst.defId);
+          var a1 = w1 ? A.artistById[w1.artistId] : null;
+          var a2 = w2 ? A.artistById[w2.artistId] : null;
+          var artistsList = [a1 ? a1.name : '', a2 ? a2.name : ''].filter(Boolean).join(' & ');
+          var minEst = Math.min(lots[0].low, lots[1].low);
+          var maxEst = Math.max(lots[0].high, lots[1].high);
+          infoHtml = '<span class="hotel-auc-count">' + (de ? '2 Meisterwerke im Angebot' : '2 masterpieces offered') + '</span>' +
+                     '<span class="hotel-auc-painting-title" title="' + h(artistsList) + '">' + h(artistsList || (de ? 'Ausgew?hlte Werke' : 'Selected works')) + '</span>' +
+                     '<span class="hotel-auc-hint">' + (de ? 'Sch?tzungen ' : 'Estimates ') + A.money(minEst) + ' ? ' + A.money(maxEst) + '</span>';
+        } else {
+          infoHtml = '<span class="hotel-auc-count">' + (de ? 'Katalog in Vorbereitung' : 'Catalogue in preparation') + '</span>' +
+                     '<span class="hotel-auc-hint">' + (de ? 'Klicken f?r Details' : 'Click to inspect') + '</span>';
+        }
 
-        return '<article class="hotel-auction-card' + (isHere ? ' is-here' : '') + (isToday ? ' is-today' : '') + '" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
+        var isSingle = worksCount === 1 ? ' is-single-lot' : '';
+
+        return '<article class="hotel-auction-card' + (isHere ? ' is-here' : '') + (isToday ? ' is-today' : '') + isSingle + '" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
           '<div class="hotel-auction-card-head">' +
-            '<div class="hotel-auction-city">🏛️ <strong>' + h(cityName) + '</strong> ' + locBadge + '</div>' +
+            '<div class="hotel-auction-city">??? <strong>' + h(cityName) + '</strong> ' + locBadge + '</div>' +
             timingBadge +
           '</div>' +
           '<div class="hotel-auction-card-body">' +
             '<div class="hotel-auc-thumbs-wrap">' + thumbsHtml + '</div>' +
-            '<div class="hotel-auction-card-info">' +
-              '<span class="hotel-auc-count">' + worksLabel + '</span>' +
-              '<span class="hotel-auc-hint">' + (de ? 'Klicken, um Versteigerungslose & Schätzpreise zu sehen' : 'Click to inspect lots & estimates') + '</span>' +
-            '</div>' +
+            '<div class="hotel-auction-card-info">' + infoHtml + '</div>' +
           '</div>' +
           '<div class="hotel-auction-card-foot">' +
             '<button type="button" class="btn btn-sm" data-action="auction-preview" data-auction-id="' + h(auc.id) + '">' +
-              (de ? '🔍 Auktionslose ansehen' : '🔍 View Auction Lots') +
+              (de ? '?? Auktionslose ansehen' : '?? View Auction Lots') +
             '</button>' +
-            (isToday && isHere ? '<button type="button" class="btn btn-sm primary" data-view="auction">' + (de ? '🔨 Mitbieten' : '🔨 Bid Now') + '</button>' : '') +
+            (isToday && isHere ? '<button type="button" class="btn btn-sm primary" data-view="auction">' + (de ? '?? Mitbieten' : '?? Bid Now') + '</button>' : '') +
           '</div>' +
         '</article>';
       }).join('');
