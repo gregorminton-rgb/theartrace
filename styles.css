@@ -3494,3 +3494,111 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+/* Point 1: Station Auction Live Alert */
+.station.has-live-auction {
+  position: relative !important;
+  box-shadow: 0 0 0 2px #d32f2f, 0 3px 12px rgba(211, 47, 47, 0.45) !important;
+  animation: pulseAuction 2s infinite ease-in-out;
+}
+@keyframes pulseAuction {
+  0%, 100% { box-shadow: 0 0 0 2px #d32f2f, 0 3px 10px rgba(211, 47, 47, 0.35); }
+  50% { box-shadow: 0 0 0 3px #b71c1c, 0 5px 16px rgba(183, 28, 28, 0.65); }
+}
+.station-live-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Point 2: Travel timing banner in auction preview */
+.auc-preview-travel-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  background: #fdf5e2;
+  border: 1.5px solid #d4be95;
+}
+.auc-preview-travel-banner.ok {
+  background: #eaf5eb;
+  border-color: #81c784;
+  color: #1e5e22;
+}
+.auc-preview-travel-banner.warn {
+  background: #fff3e0;
+  border-color: #ffb74d;
+  color: #b75500;
+}
+
+/* Point 3: Studio Condition Progress Bar */
+.studio-cond-bar-wrap {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+.studio-cond-bar-track {
+  position: relative;
+  height: 9px;
+  background: #ded0b2;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.studio-cond-bar-current {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d88934, #2e7d32);
+}
+.studio-cond-bar-gain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, #81c784, #4caf50);
+}
+.studio-cond-bar-gain.is-in-progress {
+  background: repeating-linear-gradient(
+    45deg,
+    #4caf50,
+    #4caf50 6px,
+    #81c784 6px,
+    #81c784 12px
+  );
+  animation: studioStripes 1.5s linear infinite;
+}
+@keyframes studioStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 24px 0; }
+}
+.studio-cond-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.64rem;
+  font-family: var(--sans);
+  color: #634f36;
+}
+.studio-gain-label {
+  font-weight: 700;
+  color: #2e7d32;
+}

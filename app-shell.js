@@ -90,11 +90,30 @@
     var title = (de ? 'Auktionskatalog: ' : 'Auction Catalogue: ') + cityName +
       ' · ' + (isToday ? (de ? 'HEUTE' : 'TODAY') : (de ? 'Tag ' + auc.day + ' (in ' + daysAway + ' Tagen)' : 'Day ' + auc.day + ' (in ' + daysAway + ' days)'));
 
+    var fromCity = A.city(G.cityId);
+    var toCity = A.city(auc.cityId);
+    var travelPrice = (fromCity && toCity) ? A.ticketPrice(fromCity, toCity) : 0;
+    var travelDays = (fromCity && toCity) ? A.ticketDays(fromCity, toCity) : 0;
+    var inTime = travelDays <= daysAway;
+    var canAfford = G.cash >= travelPrice;
+
+    var travelBanner = '';
+    if (!isHere && fromCity && toCity) {
+      var timingMsg = inTime
+        ? (de ? '✅ Reisedauer: ' + travelDays + ' ' + (travelDays === 1 ? 'Tag' : 'Tage') + ' · Ankunft rechtzeitig vor Auktionsbeginn' : '✅ Travel time: ' + travelDays + ' ' + (travelDays === 1 ? 'day' : 'days') + ' · In time for sale')
+        : (de ? '⚠️ Reisedauer: ' + travelDays + ' Tage · Du kommst voraussichtlich zu spät!' : '⚠️ Travel time: ' + travelDays + ' days · You might miss the sale!');
+      travelBanner = '<div class="auc-preview-travel-banner ' + (inTime ? 'ok' : 'warn') + '">' +
+        '<span>' + timingMsg + '</span>' +
+        '<strong>' + (de ? 'Fahrkarte: ' : 'Ticket: ') + A.money(travelPrice) + '</strong>' +
+      '</div>';
+    }
+
     var intro = '<div class="auc-preview-header">' +
       '<p class="auc-preview-desc">' +
       (de ? 'Offizielle Ankündigung des Auktionshauses von <b>' + h(cityName) + '</b>. Geplanter Auktionstag: <b>Tag ' + auc.day + '</b> (' + (isToday ? 'heute' : 'in ' + daysAway + ' Tagen') + '). Aufschlag/Provision: ' + A.pct(CFG.auctionCommission) + '.'
           : 'Official announcement for the auction house of <b>' + h(cityName) + '</b>. Scheduled sale: <b>Day ' + auc.day + '</b> (' + (isToday ? 'today' : 'in ' + daysAway + ' days') + '). Buyer’s premium: ' + A.pct(CFG.auctionCommission) + '.') +
       '</p>' +
+      travelBanner +
     '</div>';
 
     var lotsHtml = (auc.lots || []).map(function (lot, idx) {
@@ -164,14 +183,22 @@
         }
       });
     } else if (!isHere) {
+      var travelLabel = de
+        ? '🚂 Reise nach ' + cityName + ' buchen (' + travelDays + ' ' + (travelDays === 1 ? 'Tag' : 'Tage') + ' · ' + A.money(travelPrice) + ')'
+        : '🚂 Book Travel to ' + cityName + ' (' + travelDays + ' ' + (travelDays === 1 ? 'day' : 'days') + ' · ' + A.money(travelPrice) + ')';
       buttons.push({
-        label: de ? 'Reise nach ' + cityName + ' planen' : 'Plan Travel to ' + cityName,
+        label: travelLabel,
         primary: true,
         onClick: function () {
           window.ArtRaceLastAuctionPreviewId = null;
-          G.view = 'travel';
           closeDialog();
+          if (canAfford) {
+            travelTo(auc.cityId);
+          } else {
+            G.view = 'travel';
+          }
           renderAll();
+          scheduleSave();
         }
       });
     }

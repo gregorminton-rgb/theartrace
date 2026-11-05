@@ -179,7 +179,23 @@
       /* Rooms that exist only in some cities are hidden, not greyed out: a
          locked door with no explanation reads like a bug. The auction is the
          clearest case — the room is only there while a catalogue is hanging. */
-      if (v === 'auction') ok = !!c && c.hasAuctionHouse && auctionListUp();
+      if (v === 'auction') {
+        ok = !!c && c.hasAuctionHouse && auctionListUp();
+        var isLiveToday = ok && auctionOpenHere();
+        b.classList.toggle('has-live-auction', isLiveToday);
+        var liveBadge = b.querySelector('.station-live-badge');
+        if (isLiveToday) {
+          var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+          if (!liveBadge) {
+            liveBadge = document.createElement('span');
+            liveBadge.className = 'station-live-badge';
+            b.appendChild(liveBadge);
+          }
+          liveBadge.textContent = de ? 'HEUTE' : 'TODAY';
+        } else if (liveBadge) {
+          liveBadge.remove();
+        }
+      }
       if (v === 'bank') ok = !!c && !!c.hasBank;
       if (v === 'studio') ok = !!c && !!c.hasRestorationStudio;
       if (v === 'trade') ok = !!c && !!TRADE_HUB_IDS[c.id];
@@ -716,26 +732,47 @@
 
   function viewStudio() {
     var city = A.city(G.cityId);
-    if (!city.hasRestorationStudio) return '<p class="empty">No restoration studio in ' + h(city.name) + '.</p>';
-    if (!G.portfolio.length) return '<p class="empty">Nothing to restore — the warehouse is empty.</p>';
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    if (!city.hasRestorationStudio) return '<p class="empty">' + (de ? 'Kein Restaurierungsatelier in ' + h(city.name) + '.' : 'No restoration studio in ' + h(city.name) + '.') + '</p>';
+    if (!G.portfolio.length) return '<p class="empty">' + (de ? 'Nichts zu restaurieren — dein Lager ist leer.' : 'Nothing to restore — the warehouse is empty.') + '</p>';
     var rows = G.portfolio.map(function (inst) {
       var inStudio = inst.restoreReadyDay >= 0 && G.day < inst.restoreReadyDay;
-      var gain = Math.min(CFG.restorationMaxGain, 1 - inst.condition);
-      var cost = A.restorationCost(gain);
-      var days = A.restorationDays(gain);
+      var curGain = inStudio ? (inst.pendingRestore || 0) : Math.min(CFG.restorationMaxGain, 1 - inst.condition);
+      var cost = A.restorationCost(curGain);
+      var days = A.restorationDays(curGain);
+      var curPct = Math.round(inst.condition * 100);
+      var gainPct = Math.round(curGain * 100);
+      var targetPct = Math.min(100, curPct + gainPct);
+
+      var progressBar = '<div class="studio-cond-bar-wrap" title="' + curPct + '% → ' + targetPct + '%">' +
+        '<div class="studio-cond-bar-track">' +
+          '<div class="studio-cond-bar-current" style="width:' + curPct + '%"></div>' +
+          '<div class="studio-cond-bar-gain' + (inStudio ? ' is-in-progress' : '') + '" style="left:' + curPct + '%;width:' + gainPct + '%"></div>' +
+        '</div>' +
+        '<div class="studio-cond-bar-labels">' +
+          '<span>' + curPct + '%</span>' +
+          '<span class="studio-gain-label">+' + gainPct + '% → ' + targetPct + '%</span>' +
+        '</div>' +
+      '</div>';
+
+      var statusText = inStudio
+        ? (de ? 'In Arbeit (fertig Tag ' + inst.restoreReadyDay + ')' : 'Restoring (ready day ' + inst.restoreReadyDay + ')')
+        : (de ? '+' + gainPct + '% in ' + days + ' ' + (days === 1 ? 'Tag' : 'Tagen') : '+' + gainPct + '% in ' + days + ' day(s)');
+
       return '<div class="row' + (inStudio ? ' busy' : '') + '">' + rowHead(inst) +
-        '<div class="row-tags">' + condTag(inst) + '</div>' +
-        '<div class="row-num"><span class="ask">' + (inStudio ? 'ready day ' + inst.restoreReadyDay : A.money(cost)) + '</span>' +
-        '<span class="est">' + (inStudio ? 'Restoring: ' + A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + (inst.pendingRestore || 0))) + ' when ready' : A.pct(inst.condition) + ' → ' + A.pct(Math.min(1,inst.condition + gain)) + ' in ' + days + ' day(s)') + '</span></div>' +
+        '<div class="row-tags">' + condTag(inst) + progressBar + '</div>' +
+        '<div class="row-num"><span class="ask">' + (inStudio ? (de ? 'Tag ' + inst.restoreReadyDay : 'day ' + inst.restoreReadyDay) : A.money(cost)) + '</span>' +
+        '<span class="est">' + statusText + '</span></div>' +
         '<div class="row-btns">' +
         (inStudio
-          ? '<button class="btn" data-action="collect" data-uid="' + inst.uid + '"' + (G.day >= inst.restoreReadyDay ? '' : ' disabled') + '>Collect</button>'
-          : '<button class="btn" data-action="restore" data-uid="' + inst.uid + '"' + (gain > 0.005 && cost <= G.cash ? '' : ' disabled') + '>Restore</button>') +
+          ? '<button class="btn" data-action="collect" data-uid="' + inst.uid + '"' + (G.day >= inst.restoreReadyDay ? '' : ' disabled') + '>' + (de ? 'Abholen' : 'Collect') + '</button>'
+          : '<button class="btn" data-action="restore" data-uid="' + inst.uid + '"' + (curGain > 0.005 && cost <= G.cash ? '' : ' disabled') + '>' + (de ? 'Restaurieren' : 'Restore') + '</button>') +
         '</div></div>';
     }).join('');
-    return '<p class="note">' + h(city.studioName || 'The studio') + ' charges ' + A.money(CFG.restorationCostPerHundredth) +
-      ' per +0.01 condition, max ' + A.pct(CFG.restorationMaxGain) + ' per job, at least ' +
-      CFG.restorationMinDays + ' day(s).</p>' + rows;
+    return '<p class="note">' + (de
+      ? h(city.studioName || 'Das Atelier') + ' berechnet ' + A.money(CFG.restorationCostPerHundredth) + ' pro +0,01 Zustand (max. +' + A.pct(CFG.restorationMaxGain) + ' pro Auftrag, mind. ' + CFG.restorationMinDays + ' Tage).'
+      : h(city.studioName || 'The studio') + ' charges ' + A.money(CFG.restorationCostPerHundredth) + ' per +0.01 condition (max ' + A.pct(CFG.restorationMaxGain) + ' per job, at least ' + CFG.restorationMinDays + ' day(s)).') +
+      '</p>' + rows;
   }
   function viewTravel() {
     var from = A.city(G.cityId);
