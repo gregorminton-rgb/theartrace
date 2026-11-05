@@ -514,14 +514,15 @@
         ' data-drag-crop="' + c.id + '" data-colony="arm" data-crop="' + c.id + '"' +
         ' title="Drag onto a free plot, or click then click a plot">' +
         cropThumb(c) +
-        '<span class="crop-tile-label">' + h(c.label) + '</span>' +
-        '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
-        '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
-        '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
+        '<div class="crop-tile-info">' +
+          '<span class="crop-tile-label">' + h(c.label) + '</span>' +
+          '<span class="crop-tile-meta">' + c.days + 'd · seed ' + A.money(c.cost) + '</span>' +
+          '<span class="crop-tile-land">plot ' + A.money(plotPriceFor(c)) + '</span>' +
+          '<span class="crop-tile-prov">~' + A.money(indicative) + '/u at trade desk</span>' +
+        '</div>' +
         '</button>';
     }).join('');
-    return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' +
-      '<p class="colony-note">Drag a plate onto a plot to lay out a field. That plot is then yours — and only there can the overseer take over.</p>' + cards;
+    return '<h3 class="colony-panel-title">Crops · 2 local specialities</h3>' + cards;
   }
 
   function colonyWorkersHTML() {
@@ -531,14 +532,14 @@
     var maxed = hired >= MAX_COLONY_WORKERS;
     var afford = G.cash >= WORKER_HIRE_COST;
     return '<h3 class="colony-panel-title">Workers</h3>' +
-      '<div class="colony-workers-totals">' +
-        '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
-        '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
-        '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
-      '</div>' +
-      '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire worker · ' + A.money(WORKER_HIRE_COST) + '</button>' +
-      '<p class="colony-note">' + (maxed ? 'The colony is fully staffed.'
-        : 'Each worker adds +' + Math.round(WORKER_SPEED * 100) + '% growth and +1 unit per two. Assign them from a field\'s inspector.') + '</p>';
+      '<div class="colony-workers-row">' +
+        '<div class="colony-workers-totals">' +
+          '<span class="colony-worker-num">' + hired + '</span><span class="colony-worker-label">hired</span>' +
+          '<span class="colony-worker-num">' + assigned + '</span><span class="colony-worker-label">working</span>' +
+          '<span class="colony-worker-num">' + idle + '</span><span class="colony-worker-label">idle</span>' +
+        '</div>' +
+        '<button class="btn buy" data-colony="hire"' + ((!maxed && afford) ? '' : ' disabled') + '>Hire · ' + A.money(WORKER_HIRE_COST) + '</button>' +
+      '</div>';
   }
 
   /* Only the fields in use plus one free plot are drawn: that free plot is the
@@ -678,9 +679,10 @@
     var f = G.selectedFieldId ? fieldById(G.selectedFieldId) : null;
     var selectedCount = crew.multiSelectIds().length;
     if (!f) {
-      return '<h3 class="colony-panel-title">' + (selectedCount > 1 ? 'Multiple fields' : 'Field details') + '</h3>' +
-        '<p class="colony-note">' + (selectedCount > 1 ? 'Use the buttons above to automate or upgrade selected fields of the same level.' : 'Tap a field to view its details. Tap it again to deselect.') + '</p>' +
-        colonyWarehouseHTML();
+      if (selectedCount > 1) {
+        return '<h3 class="colony-panel-title">Multiple fields (' + selectedCount + ')</h3>' + colonyWarehouseHTML();
+      }
+      return colonyWarehouseHTML();
     }
     var crop = CROP_BY_ID[f.cropId];
     var next = UPGRADES[f.level];
@@ -702,10 +704,8 @@
       '<div class="colony-controls-row">' +
       '<button class="btn" data-colony="assign" data-field="' + f.id + '"' + ((idle > 0 && f.workers < MAX_FIELD_WORKERS) ? '' : ' disabled') + '>+1 worker</button>' +
       '<button class="btn ghost" data-colony="unassign" data-field="' + f.id + '"' + (f.workers > 0 ? '' : ' disabled') + '>-1 worker</button>' +
-
       '</div>' +
-      '</div>' +
-      '<p class="colony-note">Automation is controlled above for all selected fields. The overseer harvests, replants and assigns workers automatically.</p>';
+      '</div>';
     return html + colonyWarehouseHTML();
   }
 
@@ -791,7 +791,7 @@
     var ids=CROPS.map(function(c){return c.id;}).filter(function(id){return stock[id]>0;});
     var count=crew.colonyUnits();
     var head='<h4 class="colony-warehouse-title">Warehouse · '+count+' crate(s) ashore</h4>';
-    if (!ids.length) return head+'<p class="colony-note">No harvested goods yet. Harvest fields to fill the warehouse.</p>';
+    if (!ids.length) return head;
     return head+ids.map(function(id){
       var crop=CROP_BY_ID[id];
       return '<div class="colony-warehouse-row">'+cropThumb(crop)+
