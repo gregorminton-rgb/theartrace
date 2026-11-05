@@ -1,7 +1,7 @@
 // Offline support for The Great Art Race.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'artrace-v70-20261105-colonycompact';
-const AUCTION_CACHE_SUFFIX = '-colonycompact';
+const CACHE_VERSION = 'artrace-v71-20261105-colonymobile';
+const AUCTION_CACHE_SUFFIX = '-colonymobile';
 const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 

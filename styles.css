@@ -1110,16 +1110,32 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
      the money row underneath */
   .colony-bar {
     display: grid; grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start; gap: .25em .5em; padding: .4em .55em;
-    padding-top: max(.4em, env(safe-area-inset-top));
+    align-items: center; gap: .15em .4em; padding: .2em .4em;
+    padding-top: max(.2em, env(safe-area-inset-top));
   }
   .colony-bar-brand { grid-area: 1 / 1; min-width: 0; }
   .colony-bar .chrono { grid-area: 1 / 2; }
-  .colony-bar-brand strong { font-size: .92rem; }
-  .colony-bar-brand span { font-size: .58rem; }
-  .colony-bar-stats { grid-area: 2 / 1 / 3 / -1; gap: .3em; }
-  .colony-chip { font-size: .6rem; padding: .2em .45em; }
-  .colony-bar-stats .btn { padding: .3em .6em; font-size: .62rem; min-height: 0; }
+  .colony-bar-brand strong { font-size: .88rem; line-height: 1.1; }
+  .colony-bar-brand span { display: none; }
+  .colony-bar .chrono-row { display: flex; flex-direction: row; align-items: center; gap: .3em; }
+  .colony-bar .chrono-cal { padding: 1px 4px; gap: 2px 4px; }
+  .colony-bar .chrono-date b { font-size: .86rem; line-height: 1; }
+  .colony-bar .chrono-date span { font-size: .6rem; }
+  .colony-bar .chrono-timer { display: none; }
+  .colony-bar .chrono-auto { font-size: .48rem; }
+  .colony-bar .chrono-speed { display: none; }
+  .colony-bar .chrono .btn, .colony-bar .chrono-row > .btn {
+    align-self: center; width: auto; min-height: 22px; height: 22px;
+    padding: 1px 7px; font-size: .64rem; line-height: 1.1; white-space: nowrap;
+  }
+  .colony-bar-stats {
+    grid-area: 2 / 1 / 3 / -1; gap: .25em;
+    display: flex; align-items: center; flex-wrap: nowrap;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .colony-bar-stats::-webkit-scrollbar { display: none; }
+  .colony-chip { font-size: .56rem; padding: 1px 5px; min-height: 20px; line-height: 1.2; flex: 0 0 auto; }
+  .colony-bar-stats .btn { padding: 1px 5px; font-size: .56rem; min-height: 20px; line-height: 1.2; flex: 0 0 auto; }
 
   /* the five menu tabs become the same docked icon-over-label bar as the city
      station rail — one bottom menu for the whole game, never jumping around */
@@ -1497,11 +1513,13 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-cash,#screen-game #hud-rep{flex:1.4 1 0}
  #screen-game #ticker{font-size:.59rem;max-height:22px}
  .colony-workers-mobile{display:block}
- #colony-workers-mobile{padding:5px 8px;background:var(--paper);border:1px solid var(--line);border-radius:9px;margin-bottom:5px}
- #colony-workers-mobile .colony-workers-totals{display:flex;gap:12px;justify-content:center;margin:2px 0 5px}
- #colony-workers-mobile .colony-panel-title{margin:0 0 4px;font-size:.76rem}
- #colony-workers-mobile .colony-note{display:none}
- #colony-workers-mobile .btn.buy{min-height:40px;width:100%;font-size:.8rem}
+ #colony-workers-mobile{padding:2px 6px;background:var(--paper);border:1px solid var(--line);border-radius:6px;margin-bottom:3px}
+ #colony-workers-mobile .colony-panel-title{display:none}
+ #colony-workers-mobile .colony-workers-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0}
+ #colony-workers-mobile .colony-workers-totals{display:flex;gap:6px;align-items:baseline;margin:0}
+ #colony-workers-mobile .colony-worker-num{font-size:.82rem}
+ #colony-workers-mobile .colony-worker-label{font-size:.52rem}
+ #colony-workers-mobile .btn.buy{min-height:22px;height:22px;padding:1px 7px;font-size:.64rem;width:auto;flex:0 0 auto}
  #colony-workers{display:none}
 }
 @media(max-width:390px){
@@ -1629,9 +1647,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .auction-quiz-dialog .dialog-actions .btn{min-height:48px;white-space:normal;text-align:center}
 .colony-mobile-dialog-buttons{display:none}
 @media(max-width:760px){
- .colony-mobile-dialog-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
- .colony-mobile-dialog-buttons .btn{min-height:44px;white-space:normal;font-size:.79rem}
+ .colony-mobile-dialog-buttons{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:3px 0}
+ .colony-mobile-dialog-buttons .btn{min-height:30px;white-space:normal;font-size:.72rem;padding:2px 6px}
  #colony-inspector,#colony-palette{display:none!important}
+ .colony-view--plantage .colony-side{display:none!important}
  #overlay:has(.colony-ui-dialog){z-index:2000}
  .dialog.colony-ui-dialog{width:min(540px,calc(100vw - 16px));max-height:88dvh}
  .colony-ui-dialog .dialog-body{padding:10px;overflow:auto}
@@ -2293,8 +2312,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  align-self:center;min-height:34px;line-height:1.1;margin:0;cursor:pointer;
 }
 @media(max-width:760px){
- #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:34px;padding:4px 7px}
- #colony #colony-missions,#colony #colony-weekly{min-height:32px}
+ #screen-game #hud-missions,#screen-game #hud-weekly{flex:0 0 auto;min-height:22px;padding:2px 5px;font-size:.56rem}
+ #colony #colony-missions,#colony #colony-weekly{min-height:20px;padding:1px 5px;font-size:.56rem;flex:0 0 auto}
 }
 
 /* Revised plantation scenery: image belongs in the HEADER, never behind fields.
