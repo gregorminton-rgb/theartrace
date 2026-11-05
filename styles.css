@@ -1314,13 +1314,20 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .plot.multi::after{content:"✓";position:absolute;top:4px;right:4px;display:grid;place-items:center;background:#3f7a1e;color:white;border-radius:50%;width:26px;height:26px;font:700 18px var(--sans);z-index:5}
 @media(max-width:700px){.colony-layout{display:flex;flex-direction:column;min-height:0;height:auto}.colony-main{min-height:55vh}.colony-side{overflow:visible}.colony-grid{min-height:45vh;overflow-y:auto}.colony-multi-actions{min-width:0}}
 
-/* Compact selection actions docked below the field grid. */
+/* Compact selection, automation and workforce unified toolbar docked below the field grid. */
 #colony-field-toolbar{position:sticky;bottom:0;z-index:5;flex:0 0 auto;box-shadow:0 -3px 12px rgba(47,31,14,.14)}
-#colony-field-toolbar .colony-multi{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding:5px 6px;margin:0;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
-#colony-field-toolbar .colony-multi-count{font:700 .7rem var(--sans);width:auto;flex:0 0 auto;white-space:nowrap;opacity:1}
-#colony-field-toolbar .colony-multi>.btn{flex:1 1 0;min-width:0;min-height:40px;padding:5px 3px;font-size:.63rem;white-space:nowrap}
-@media(min-width:650px){#colony-field-toolbar .colony-multi{gap:8px;padding:8px}#colony-field-toolbar .colony-multi>.btn{font-size:.75rem}}
-@media(max-width:380px){#colony-field-toolbar .colony-multi-count{font-size:.64rem}#colony-field-toolbar .colony-multi>.btn{font-size:.57rem}}
+#colony-field-toolbar .colony-multi{display:flex;flex-direction:column;gap:5px;padding:6px 8px;margin:0;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+.colony-multi-workers-bar{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:4px;border-bottom:1px dashed #d5c19c}
+.colony-multi-workers-stats{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:.72rem;color:var(--ink)}
+.colony-multi-workers-title{font-weight:700;font-size:.72rem;color:var(--oxblood)}
+.colony-multi-workers-counts{font-size:.68rem;opacity:.9}
+.colony-multi-hire-btn{flex:0 0 auto;min-height:24px!important;height:24px;padding:2px 8px!important;font-size:.65rem!important;white-space:nowrap}
+.colony-multi-status-bar{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.colony-multi-count{font:700 .72rem var(--sans);color:var(--ink)}
+.colony-multi-auto-badge{font-size:.68rem;color:#386121;font-weight:600}
+.colony-multi-btns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.colony-multi-btns .btn{min-height:34px!important;padding:4px 2px!important;font-size:.65rem!important;white-space:normal;line-height:1.15;text-align:center}
+.colony-multi-upgrade-btn{width:100%;min-height:40px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:5px 8px!important;line-height:1.15;text-align:center}
 
 /* Accessible, thumb-sized manual and automatic day controls on every screen. */
 .chrono-auto{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:5px 10px;font:700 .83rem var(--sans);letter-spacing:0;text-transform:none;background:var(--paper);border:2px solid var(--line);border-radius:11px;color:var(--ink);cursor:pointer;white-space:nowrap}
@@ -1531,17 +1538,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-music{flex:.44 1 0;font-size:.91rem}
  #screen-game #hud-cash,#screen-game #hud-rep{flex:1.4 1 0}
  #screen-game #ticker{font-size:.59rem;max-height:22px}
- .colony-workers-mobile{display:block}
- #colony-workers-mobile{padding:3px 6px;background:var(--paper);border:1px solid var(--line);border-radius:6px;margin-bottom:3px}
- #colony-workers-mobile .colony-panel-title{display:block;margin:0 0 2px;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--oxblood);font-weight:700}
- #colony-workers-mobile .colony-workers-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0}
- #colony-workers-mobile .colony-workers-totals{display:flex;gap:6px;align-items:baseline;margin:0}
- #colony-workers-mobile .colony-worker-num{font-size:.82rem}
- #colony-workers-mobile .colony-worker-label{font-size:.52rem}
- #colony-workers-mobile .btn.buy{min-height:22px;height:22px;padding:1px 7px;font-size:.64rem;width:auto;flex:0 0 auto}
- #colony-workers-mobile .colony-auto-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:2px;padding-top:2px;border-top:1px dashed #d5c19c}
- #colony-workers-mobile .colony-auto-badge{font-size:.64rem}
- #colony-workers-mobile .colony-auto-btns .btn{padding:1px 6px;font-size:.6rem;min-height:20px;height:20px}
+ .colony-workers-mobile,#colony-workers-mobile{display:none!important}
  #colony-workers{display:none}
 }
 @media(max-width:390px){
@@ -1553,7 +1550,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud-balance .language-switch,#screen-game #hud-music{flex:1 1 40px}
  #screen-game #hud-cash,#screen-game #hud-rep{flex:2 1 115px}
 }
-@media(min-width:761px){.colony-workers-mobile{display:none}}
+@media(min-width:761px){.colony-workers-mobile,#colony-workers-mobile{display:none!important}}
 
 /* Allow translated day-end labels to wrap neatly in the mobile round button. */
 @media(max-width:760px){
@@ -1571,7 +1568,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .colony-main{min-height:0;flex:none}
  .colony-view--plantage .colony-grid{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   --plot-gap:5px;min-height:0;height:auto;max-height:34dvh;
+   --plot-gap:5px;min-height:0;height:auto;max-height:42dvh;
  }
  .colony-view--plantage .plot{padding:4px 2px;gap:2px;font-size:.75rem}
  .colony-view--plantage .plot--empty .plot-empty-plus{font-size:1.5rem}
@@ -1580,9 +1577,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .plot--planted .plot-label,
  .colony-view--plantage .plot--planted .plot-workers,
  .colony-view--plantage .plot--planted .plot-status{font-size:.7rem}
- #colony-field-toolbar .colony-multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
- #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
- #colony-field-toolbar .colony-multi>.btn{min-height:36px;white-space:normal;line-height:1.12;font-size:.66rem}
+ #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
 /* Mobile title: frame the artwork, not the introductory text card. */
@@ -2472,10 +2467,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  white-space:normal;overflow-wrap:break-word;min-width:0;height:auto;line-height:1.2;text-align:center;
 }
 @media(max-width:760px){
- #colony-field-toolbar .colony-multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:5px}
- #colony-field-toolbar .colony-multi-count{grid-column:1/-1}
- #colony-field-toolbar .colony-multi>.btn{min-height:40px;white-space:normal;padding:6px 4px}
- #colony-field-toolbar .colony-multi>.btn[data-colony="upgrade-bulk"]{grid-column:1/-1;min-width:0;min-height:48px}
+ #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
 /* The rolling log ticker is not navigation; keep it out of the game header.
