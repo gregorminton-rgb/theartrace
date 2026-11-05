@@ -33,12 +33,18 @@
   function visuals(rows){
     rows=rows||A.race.standings();
     var german=de(),maximum=Math.max(1,...rows.map(function(p){return Number(p.points)||0;}));
+    var medals = ['🥇', '🥈', '🥉', '🎖️'];
+    var avatars = { 'Henry': '🎩', 'Ada': '👒', 'Clara': '🎨', 'Felix': '🧐' };
     var html='<section class="race-chart-card"><h3>'+(german?'Sammlungspunkte im Vergleich':'Collection points compared')+'</h3>';
-    html+=rows.map(function(p){
+    html+=rows.map(function(p, i){
       var score=Math.max(0,Number(p.points)||0);
-      return '<div class="race-chart-row"><span class="race-chart-name">'+safe(p.name)+'</span>'+
-        '<div class="race-chart-track"><div class="race-chart-fill'+(p.type==='human'?' is-player':'')+
-        '" style="width:'+(score/maximum*100).toFixed(1)+'%"></div></div><b>'+score+' ★</b></div>';
+      var isHuman = p.type === 'human';
+      var avatar = isHuman ? '🎩' : (avatars[p.name] || '👤');
+      var medal = medals[i] || '🎖️';
+      return '<div class="race-chart-row"><span class="race-chart-name">' + medal + ' ' + avatar + ' ' + safe(p.name) + '</span>'+
+        '<div class="race-chart-track"><div class="race-chart-fill'+(isHuman?' is-player':'')+
+        (i===0?' is-leader':'')+
+        '" style="width:'+(score/maximum*100).toFixed(1)+'%"></div></div><b>'+score+' ★ <small style="font-size:.68rem;opacity:.75">('+p.pictures+' 🖼️)</small></b></div>';
     }).join('')+'</section>';
     var history=Array.isArray(G.raceSnapshots)?G.raceSnapshots.slice(-8):[];
     if(history.length<2)return html;

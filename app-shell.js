@@ -366,32 +366,56 @@
      which ones they are. Money is context, not the score. */
   function collectionRow(p, showProfit) {
     var w = A.work(p.defId);
+    if (!w) return '';
     var artist = A.artistById[w.artistId];
     var epoch = A.workEpoch(w);
     var value = valueOf(p);
     var where = A.cityById[p.purchaseCityId] ? A.cityById[p.purchaseCityId].name : 'a private sale';
-    /* dateOf() hands back the month NAME and the year, so no month table here. */
     var bought = dateOf(p.purchaseDay || 1);
-    var paid = 'Bought in ' + where + ' on ' + bought.month + ' ' + bought.day + ', ' +
-      bought.year + ' for ' + A.money(p.purchasePrice || 0);
-    var tags = '<span class="tag">' + A.conditionBand(p.condition) + ' ' + A.pct(p.condition) + '</span>' +
-      '<span class="tag">' + (p.authenticity === 'RevealedForgery' ? 'forgery' :
-        p.authenticity === 'Authenticated' ? 'authenticated' : 'unexamined') + '</span>' +
-      (p.provenance ? '<span class="tag">' + p.provenance + '</span>' : '');
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var paid = de
+      ? 'Gekauft in ' + where + ' am ' + bought.day + '. ' + bought.month + ' ' + bought.year + ' für ' + A.money(p.purchasePrice || 0)
+      : 'Bought in ' + where + ' on ' + bought.month + ' ' + bought.day + ', ' + bought.year + ' for ' + A.money(p.purchasePrice || 0);
+
+    var condBand = A.conditionBand(p.condition);
+    var condPct = Math.round(p.condition * 100);
+    var condCls = p.condition > 0.67 ? 'ok' : (p.condition > 0.4 ? 'warn' : 'bad');
+    var authLabel = p.authenticity === 'RevealedForgery' ? (de ? 'Fälschung' : 'Forgery') :
+                    p.authenticity === 'Authenticated' ? (de ? 'Geprüft' : 'Authenticated') : (de ? 'Ungeprüft' : 'Unexamined');
+    var authCls = p.authenticity === 'RevealedForgery' ? 'bad' :
+                  p.authenticity === 'Authenticated' ? 'ok' : 'warn';
+
     var delta = value - (p.purchasePrice || 0);
     var deltaHtml = showProfit && p.purchasePrice
-      ? '<span class="' + (delta >= 0 ? 'gain' : 'loss') + '">' +
+      ? '<span class="end-art-profit ' + (delta >= 0 ? 'gain' : 'loss') + '">' +
         (delta >= 0 ? '+' : '') + A.money(delta) + '</span>'
-      : '<span class="est">' + epoch + '</span>';
-    return '<div class="row">' +
-      '<div class="row-main"><div>' +
-        '<span class="title">' + w.title + '</span>' +
-        '<span class="credit">' + (artist ? artist.name : 'Unknown') + ' · ' +
-          (w.yearCreated || 'n.d.') + ' · ' + epoch + '</span>' +
-        '<span class="prov">' + paid + '</span>' +
-      '</div></div>' +
-      '<div class="row-tags">' + tags + '</div>' +
-      '<div class="row-num"><span class="ask">' + A.money(value) + '</span>' + deltaHtml + '</div>' +
+      : '';
+
+    var pic = (A.art && A.art.artPicture ? A.art.artPicture(w.id) : null) ||
+              (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
+              (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
+
+    return '<div class="end-art-card">' +
+      '<div class="end-art-thumb" data-action="art" data-work="' + h(w.id) + '" role="button" tabindex="0" title="' + h(w.title) + '">' +
+        (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="thumb-init">' + h(w.title.slice(0, 1)) + '</span>') +
+      '</div>' +
+      '<div class="end-art-content">' +
+        '<div class="end-art-main">' +
+          '<div class="end-art-text">' +
+            '<h4 class="end-art-title">' + h(w.title) + '</h4>' +
+            '<div class="end-art-credit">' + h(artist ? artist.name : 'Unknown') + ' · ' + (w.yearCreated || '') + ' · ' + h(epoch) + '</div>' +
+          '</div>' +
+          '<div class="end-art-pricebox">' +
+            '<span class="end-art-val">' + A.money(value) + '</span>' +
+            deltaHtml +
+          '</div>' +
+        '</div>' +
+        '<div class="end-art-badges">' +
+          '<span class="tag ' + condCls + '">' + h(condBand) + ' ' + condPct + '%</span>' +
+          '<span class="tag ' + authCls + '">' + h(authLabel) + '</span>' +
+        '</div>' +
+        '<div class="end-art-prov">' + h(paid) + (p.provenance ? ' · <em>' + h(p.provenance) + '</em>' : '') + '</div>' +
+      '</div>' +
     '</div>';
   }
 
@@ -427,8 +451,52 @@
     if(window.ArtRaceWeekly)window.ArtRaceWeekly.capture(true);
     var raceBoard = A.race ? A.race.standings() : [];
     var winner = raceBoard.length && raceBoard[0].type === 'human';
-    var rivalSummary = raceBoard.length ? '<h3>' + (winner ? 'You won the art race!' : 'Final standings') + '</h3>' +
-      '<ol>' + raceBoard.map(function(p) { return '<li>' + h(p.name) + ': ' + p.points + ' points · ' + p.pictures + ' paintings · ' + A.money(p.cash) + '</li>'; }).join('') + '</ol>' : '';
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var medals = ['🥇', '🥈', '🥉', '🎖️'];
+    var avatars = { 'Henry': '🎩', 'Ada': '👒', 'Clara': '🎨', 'Felix': '🧐' };
+
+    var heroBanner = '';
+    if (raceBoard.length) {
+      if (winner) {
+        heroBanner = '<div class="race-winner-banner is-victory">' +
+          '<div class="race-winner-trophy">🏆</div>' +
+          '<div class="race-winner-body">' +
+            '<h3>' + (de ? 'DU HAST DAS KUNSTRENNEN GEWONNEN!' : 'YOU WON THE ART RACE!') + '</h3>' +
+            '<p>' + (de ? 'Herausragender Erfolg! Du beendest deine Karriere auf Platz 1 der Kunstwelt.' : 'Triumph! You finish your career at the pinnacle of the art world.') + '</p>' +
+          '</div>' +
+        '</div>';
+      } else {
+        heroBanner = '<div class="race-winner-banner is-runnerup">' +
+          '<div class="race-winner-trophy">🎖️</div>' +
+          '<div class="race-winner-body">' +
+            '<h3>' + (de ? 'ENDSTAND IM KUNSTRENNEN' : 'FINAL RACE STANDINGS') + '</h3>' +
+            '<p>' + (de ? 'Sieger: ' + h(raceBoard[0].name) + ' mit ' + raceBoard[0].points + ' Sammlungspunkten.' : 'Winner: ' + h(raceBoard[0].name) + ' with ' + raceBoard[0].points + ' collection points.') + '</p>' +
+          '</div>' +
+        '</div>';
+      }
+    }
+
+    var podiumCards = raceBoard.length ? '<div class="race-podium-grid">' + raceBoard.map(function (p, i) {
+      var isHuman = p.type === 'human';
+      var avatar = isHuman ? '🎩' : (avatars[p.name] || '👤');
+      var medal = medals[i] || '🎖️';
+      var cObj = A.city(p.city);
+      var cityName = cObj ? cObj.name : (p.city || '–');
+      return '<div class="race-podium-card' + (isHuman ? ' is-human' : '') + (i === 0 ? ' is-first' : '') + '">' +
+        '<div class="race-podium-rank">' + medal + ' <span class="rank-num">' + (i + 1) + '.</span></div>' +
+        '<div class="race-podium-avatar">' + avatar + '</div>' +
+        '<div class="race-podium-info">' +
+          '<strong class="race-podium-name">' + h(p.name) + (isHuman ? ' <span class="player-you-tag">' + (de ? 'Du' : 'You') + '</span>' : '') + '</strong>' +
+          '<span class="race-podium-loc">' + (de ? 'Standort: ' : 'In ') + h(cityName) + '</span>' +
+        '</div>' +
+        '<div class="race-podium-score">' +
+          '<span class="podium-score-points">' + p.points + ' ★</span>' +
+          '<span class="podium-score-details">' + p.pictures + ' 🖼️ · ' + A.money(p.cash) + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>' : '';
+
+    var rivalSummary = heroBanner + podiumCards;
     var byEpoch = Object.keys(epochs).sort().map(function (e) {
       return epochs[e] + ' ' + e;
     }).join(' · ') || 'none';
