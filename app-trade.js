@@ -436,7 +436,7 @@
 
         var locBadge = isHere
           ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
-          : '<span class="hotel-loc-badge">' + (de ? 'Reise nach ' + h(cityName) : 'Travel to ' + h(cityName)) + '</span>';
+          : '<span class="hotel-loc-badge">' + (de ? 'Reise nötig' : 'Travel required') + '</span>';
 
         var lots = (auc.lots || []).slice(0, 2);
         var worksCount = lots.length;

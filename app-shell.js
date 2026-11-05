@@ -154,7 +154,7 @@
     var buttons = [];
     if (isHere && isToday) {
       buttons.push({
-        label: de ? '🔨 Auktionssaal betreten' : '🔨 Enter Auction Room',
+        label: de ? 'Auktionssaal betreten' : 'Enter Auction Room',
         primary: true,
         onClick: function () {
           window.ArtRaceLastAuctionPreviewId = null;
@@ -165,7 +165,7 @@
       });
     } else if (!isHere) {
       buttons.push({
-        label: de ? '🚂 Reise nach ' + cityName + ' planen' : '🚂 Plan Travel to ' + cityName,
+        label: de ? 'Reise nach ' + cityName + ' planen' : 'Plan Travel to ' + cityName,
         primary: true,
         onClick: function () {
           window.ArtRaceLastAuctionPreviewId = null;

@@ -2860,6 +2860,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   background: #eee3cb;
   color: #553c1c;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .hotel-loc-badge--here {
