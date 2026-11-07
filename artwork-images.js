@@ -40,16 +40,16 @@ window.ART_ARTWORK_IMAGES = {
         "mucha_seasons_posters": {
             "file": "images/art/mucha-seasons-posters.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 181051,
+            "height": 606,
+            "bytes": 227011,
             "source": "Alfons Mucha \u2013 Die Jahreszeiten (Farbserie, 1896).jpg",
             "how": "alias"
         },
         "mucha_gismonda": {
             "file": "images/art/mucha-gismonda.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 94647,
+            "width": 410,
+            "height": 1200,
+            "bytes": 230885,
             "source": "Alfons Mucha \u2013 Gismonda (1894).jpg",
             "how": "quote"
         },
@@ -104,8 +104,8 @@ window.ART_ARTWORK_IMAGES = {
         "friedrich_monk_by_the_sea": {
             "file": "images/art/friedrich-monk-by-the-sea.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 104800,
+            "height": 575,
+            "bytes": 129485,
             "source": "Caspar David Friedrich \u2013 Der M\u00f6nch am Meer (ca. 1808\u20131810).jpg",
             "how": "alias"
         },
@@ -120,8 +120,8 @@ window.ART_ARTWORK_IMAGES = {
         "friedrich_chalk_cliffs": {
             "file": "images/art/friedrich-chalk-cliffs.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 148020,
+            "height": 1133,
+            "bytes": 419057,
             "source": "Caspar David Friedrich \u2013 Kreidefelsen auf R\u00fcgen (ca. 1818).jpg",
             "how": "alias"
         },
@@ -135,25 +135,25 @@ window.ART_ARTWORK_IMAGES = {
         },
         "lorrain_marriage_of_isaac_and_rebekah": {
             "file": "images/art/lorrain-marriage-of-isaac-and-rebekah.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 142093,
+            "width": 799,
+            "height": 603,
+            "bytes": 86079,
             "source": "Claude Lorrain \u2013 Landschaft mit der Hochzeit von Isaak und Rebekka (1648).jpg",
             "how": "alias"
         },
         "lorrain_seaport_at_sunset": {
             "file": "images/art/lorrain-seaport-at-sunset.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 132227,
+            "height": 694,
+            "bytes": 155983,
             "source": "Claude Lorrain \u2013 Seehafen bei Sonnenuntergang (1639).jpg",
             "how": "alias"
         },
         "monet_haystack": {
             "file": "images/art/monet-haystack.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 135156,
+            "height": 581,
+            "bytes": 183070,
             "source": "Claude Monet \u2013 Heuhaufen (Heuschober, ca. 1891).jpg",
             "how": "alias"
         },
@@ -184,8 +184,8 @@ window.ART_ARTWORK_IMAGES = {
         "velazquez_cooking_eggs": {
             "file": "images/art/velazquez-cooking-eggs.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 130985,
+            "height": 767,
+            "bytes": 201436,
             "source": "Diego Vel\u00e1zquez \u2013 Die Eierk\u00f6chin (1618).jpg",
             "how": "alias"
         },
@@ -200,8 +200,8 @@ window.ART_ARTWORK_IMAGES = {
         "degas_at_the_races": {
             "file": "images/art/degas-at-the-races.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 141205,
+            "height": 573,
+            "bytes": 124771,
             "source": "Edgar Degas \u2013 Auf der Rennbahn (ca. 1876).jpg",
             "how": "alias"
         },
@@ -225,7 +225,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/manet-folies-bergere.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 196963,
+            "bytes": 224097,
             "source": "\u00c9douard Manet \u2013 Bar in den Folies-Berg\u00e8re (1882).jpg",
             "how": "alias"
         },
@@ -279,9 +279,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "schiele_seated_woman": {
             "file": "images/art/schiele-seated-woman.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 111960,
+            "width": 784,
+            "height": 1200,
+            "bytes": 279775,
             "source": "Egon Schiele \u2013 Sitzende Frau mit angezogenem Knie (1917).jpg",
             "how": "alias"
         },
@@ -295,9 +295,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "leger_mechanic": {
             "file": "images/art/leger-mechanic.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 145884,
+            "width": 800,
+            "height": 570,
+            "bytes": 114007,
             "source": "Fernand L\u00e9ger \u2013 Der Mechaniker (Le M\u00e9canicien, 1920).jpg",
             "how": "alias"
         },
@@ -353,7 +353,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/marc-yellow-cow.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 118315,
+            "bytes": 134974,
             "source": "Franz Marc \u2013 Die gelbe Kuh (1911).jpg",
             "how": "alias"
         },
@@ -367,41 +367,41 @@ window.ART_ARTWORK_IMAGES = {
         },
         "munter_flowers_still_life": {
             "file": "images/art/munter-flowers-still-life.jpg",
-            "width": 689,
-            "height": 509,
-            "bytes": 104433,
+            "width": 900,
+            "height": 440,
+            "bytes": 115112,
             "source": "Gabriele M\u00fcnter \u2013 Blumen (ca. 1910).jpg",
             "how": "alias"
         },
         "munter_jawlensky": {
             "file": "images/art/munter-jawlensky.jpg",
-            "width": 701,
-            "height": 509,
-            "bytes": 99967,
+            "width": 900,
+            "height": 607,
+            "bytes": 160938,
             "source": "Gabriele M\u00fcnter \u2013 Jawlensky und Erbsl\u00f6h (ca. 1909).jpg",
             "how": "alias"
         },
         "munter_boating": {
             "file": "images/art/munter-boating.jpg",
-            "width": 699,
-            "height": 509,
-            "bytes": 99008,
+            "width": 900,
+            "height": 634,
+            "bytes": 151003,
             "source": "Gabriele M\u00fcnter \u2013 Kahnfahrt (1910).jpg",
             "how": "alias"
         },
         "seurat_bathers_at_asnieres": {
             "file": "images/art/seurat-bathers-at-asnieres.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 153168,
+            "height": 560,
+            "bytes": 181494,
             "source": "Georges Seurat \u2013 Badende bei Asni\u00e8res (1884).jpg",
             "how": "alias"
         },
         "seurat_circus": {
             "file": "images/art/seurat-circus.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 184793,
+            "height": 1116,
+            "bytes": 535691,
             "source": "Georges Seurat \u2013 Der Zirkus (1891).jpg",
             "how": "alias"
         },
@@ -448,8 +448,8 @@ window.ART_ARTWORK_IMAGES = {
         "toulouse_dance_at_moulin_rouge": {
             "file": "images/art/toulouse-dance-at-moulin-rouge.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 145050,
+            "height": 684,
+            "bytes": 222171,
             "source": "Henri de Toulouse-Lautrec \u2013 Im Moulin Rouge Der Tanz (ca 1890).jpg",
             "how": "alias"
         },
@@ -464,8 +464,8 @@ window.ART_ARTWORK_IMAGES = {
         "matisse_red_studio": {
             "file": "images/art/matisse-red-studio.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 113341,
+            "height": 743,
+            "bytes": 170490,
             "source": "Henri Matisse - Das rote Atelier (1911).jpg",
             "how": "alias"
         },
@@ -479,9 +479,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "matisse_woman_with_a_hat": {
             "file": "images/art/matisse-woman-with-a-hat.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 123352,
+            "width": 881,
+            "height": 1200,
+            "bytes": 398148,
             "source": "Henri Matisse \u2013 Frau mit Hut (La femme au chapeau, 1905).jpg",
             "how": "alias"
         },
@@ -528,8 +528,8 @@ window.ART_ARTWORK_IMAGES = {
         "fragonard_the_swing_engraved": {
             "file": "images/art/fragonard-the-swing-engraved.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 171716,
+            "height": 1150,
+            "bytes": 432169,
             "source": "Jean-Honor\u00e9 Fragonard \u2013 Die Schaukel (Kupferstich, 1767).jpg",
             "how": "alias"
         },
@@ -696,8 +696,8 @@ window.ART_ARTWORK_IMAGES = {
         "gauguin_yellow_christ": {
             "file": "images/art/gauguin-yellow-christ.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 149579,
+            "height": 1148,
+            "bytes": 345373,
             "source": "Paul Gauguin \u2013 Der gelbe Christus (1889).jpg",
             "how": "alias"
         },
@@ -792,24 +792,24 @@ window.ART_ARTWORK_IMAGES = {
         "van_gogh_irises": {
             "file": "images/art/van-gogh-irises.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 185250,
+            "height": 695,
+            "bytes": 315437,
             "source": "Vincent van Gogh \u2013 Schwertlilien (ca. 1889).jpg",
             "how": "alias"
         },
         "van_gogh_sunflowers": {
             "file": "images/art/van-gogh-sunflowers.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 132876,
+            "height": 1145,
+            "bytes": 376565,
             "source": "Vincent van Gogh \u2013 Sonnenblumen (ca. 1888 bis 1889).jpg",
             "how": "alias"
         },
         "kandinsky_yellow_red_blue": {
             "file": "images/art/kandinsky-yellow-red-blue.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 141943,
+            "height": 578,
+            "bytes": 148762,
             "source": "Wassily Kandinsky \u2013 Gelb-Rot-Blau (1925).jpg",
             "how": "alias"
         },
@@ -841,7 +841,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/turner-rain-steam-speed.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 133144,
+            "bytes": 190646,
             "source": "William Turner \u2013 Regen, Dampf und Geschwindigkeit \u2013 Die Great Western Railway (1844).jpg",
             "how": "alias"
         },
