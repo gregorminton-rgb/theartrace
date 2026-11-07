@@ -725,16 +725,14 @@
       var tierLabel=(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★';
       /* While the expert question is open, the row must not show the answer:
          year, medium and kind of picture stay hidden, and the picture does not open. */
-      var info = open
-        ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
-          var tRow = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      var tRow = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
       var info = open
         ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
           '<span class="title">' + h(tRow) + '</span>' +
           '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span></div></div>'
         : quizOpen
           ? '<div class="row-main">' + thumb(w, lot.inst.uid, true) + '<div>' +
-            '<span class="title">' + h(w.title) + '</span>' +
+            '<span class="title">' + h(tRow) + '</span>' +
             '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span>' +
             '<span class="prov">' + h(lot.inst.provenance) + '</span></div></div>' +
             '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +

@@ -127,7 +127,8 @@
     var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
     var plaqueArtist = artist ? artist.name.toUpperCase() : 'UNKNOWN';
     var plaqueYears = (artist && artist.birthYear && artist.deathYear) ? ' (' + artist.birthYear + '–' + artist.deathYear + ')' : '';
-    var plaqueTitle = w.title + (w.yearCreated ? ' · ' + w.yearCreated : '');
+    var titleText = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+    var plaqueTitle = titleText + (w.yearCreated ? ' · ' + w.yearCreated : '');
 
     var plaqueHtml = '<div class="art-museum-plaque">' +
       '<span class="plaque-artist">' + h(plaqueArtist + plaqueYears) + '</span>' +

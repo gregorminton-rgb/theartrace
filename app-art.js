@@ -36,8 +36,6 @@
   function thumb(w, uid, plain) {
     var title = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : (w ? w.title : '');
     var isDe = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
-    var title = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : (w ? w.title : '');
-    var isDe = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
     var tint = EPOCH_TINT[A.workEpoch(w)] || EPOCH_TINT.Modern;
     var pic = artPicture(w.id);
     /* plain: a picture that does not open anything (used while a quiz is open) */

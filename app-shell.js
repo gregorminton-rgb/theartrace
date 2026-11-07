@@ -426,6 +426,9 @@
               (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
               (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
 
+    var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
+    var wTitle = workTitle(w);
+
     return '<div class="end-art-card">' +
       '<div class="end-art-thumb" data-action="art" data-work="' + h(w.id) + '" role="button" tabindex="0" title="' + h(w.title) + '">' +
         (pic ? '<img src="' + h(pic.file) + '" alt="' + h(wTitle) + '" loading="lazy" />' : '<span class="thumb-init">' + h(w.title.slice(0, 1)) + '</span>') +
