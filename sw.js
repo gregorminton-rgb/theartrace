@@ -1,7 +1,7 @@
 // Offline support for Grand Art Tour 1925.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'grandarttour-v98-20261107-gameplay1year';
-const AUCTION_CACHE_SUFFIX = '-gameplay1year';
+const CACHE_VERSION = 'grandarttour-v100-20261107-detailsgold';
+const AUCTION_CACHE_SUFFIX = '-detailsgold';
 const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 
@@ -49,7 +49,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys.filter((k) => k.startsWith('artrace-') && ![CORE_CACHE, RUNTIME_CACHE].includes(k))
+        keys.filter((k) => (k.startsWith('artrace-') || k.startsWith('grandarttour-')) && ![CORE_CACHE, RUNTIME_CACHE].includes(k))
           .map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())

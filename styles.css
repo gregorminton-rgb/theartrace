@@ -3014,7 +3014,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     padding: 5px 8px !important;
     gap: 4px !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
   .hud-top-row {
     flex: 0 0 auto !important;
@@ -3055,17 +3055,39 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     white-space: nowrap !important;
     padding-right: 4px !important;
   }
-  #hud-more {
+  #hud-more,
+  #screen-game #hud #hud-more {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 3px !important;
-    padding: 2px 7px !important;
-    font-size: .65rem !important;
+    gap: 4px !important;
+    padding: 2px 9px !important;
+    font-size: .66rem !important;
+    font-weight: 700 !important;
     min-height: 24px !important;
     line-height: 1 !important;
     border-radius: 6px !important;
     flex: 0 0 auto !important;
+    background: rgba(255, 245, 220, .18) !important;
+    border: 1px solid rgba(255, 220, 120, .55) !important;
+    color: #fff1d5 !important;
+    cursor: pointer !important;
+    text-shadow: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+    transition: background 0.15s, border-color 0.15s !important;
+  }
+  #hud-more:hover,
+  #hud-more:active,
+  #screen-game #hud #hud-more:hover,
+  #screen-game #hud #hud-more:active {
+    background: rgba(255, 245, 220, .32) !important;
+    border-color: var(--gold-2) !important;
+    color: #ffffff !important;
+  }
+  #screen-game #hud.hud-details-open #hud-more {
+    background: rgba(224, 188, 99, .28) !important;
+    border-color: var(--gold-2) !important;
+    color: #ffffff !important;
   }
   .hud-actions {
     display: none !important;
@@ -3096,9 +3118,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     padding-top: 0 !important;
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 4px !important;
+    gap: 3px !important;
     width: 100% !important;
   }
   #screen-game #hud.hud-details-open .hud-bottom-row {
@@ -3183,11 +3206,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     white-space: nowrap !important;
   }
   #screen-game #hud .chrono-date b {
-    font-size: .88rem !important;
+    font-size: .84rem !important;
     line-height: 1 !important;
   }
   #screen-game #hud .chrono-date span {
-    font-size: .62rem !important;
+    font-size: .59rem !important;
     line-height: 1 !important;
   }
   #screen-game #hud .chrono-auto,

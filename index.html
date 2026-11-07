@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#3d7a2e" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
-<link rel="stylesheet" href="styles.css?v=20261107-GAMEPLAY1" />
+<link rel="stylesheet" href="styles.css?v=20261107-DETAILSGOLD1" />
 <link rel="stylesheet" href="language.css?v=20261107-MOBILEHUD5" />
 </head>
 <body>
@@ -89,7 +89,7 @@
       </div>
       <div id="ticker"><span id="ticker-text"></span></div>
     </header>
-    <script>document.addEventListener('click',function(ev){var b=ev.target.closest('#hud-more');if(!b)return;var hud=document.getElementById('hud');if(!hud)return;var open=hud.classList.toggle('hud-details-open');b.setAttribute('aria-expanded',String(open));b.querySelector('span').textContent=open?'Weniger':'Details';});</script>
+    <script>document.addEventListener('click',function(ev){var b=ev.target.closest('#hud-more');if(!b)return;var hud=document.getElementById('hud');if(!hud)return;var open=hud.classList.toggle('hud-details-open');b.setAttribute('aria-expanded',String(open));var de=window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de';b.querySelector('span').textContent=open?(de?'Weniger':'Less'):'Details';});</script>
 
     <section id="race-standings" class="race-standings" aria-label="Four player standings"></section>
     <div id="main">
@@ -262,7 +262,7 @@
 <script src="app-map.js?v=20261103-MOBILEMAP1"></script>
 <script src="app-trade.js?v=20261107-TITLESDE1"></script>
 <script src="app-rivals.js?v=20261107-156QUARTETS1"></script>
-<script src="app-shell.js?v=20261107-GRANDARTTOUR1"></script>
+<script src="app-shell.js?v=20261107-DETAILSGOLD1"></script>
 <script src="app-missions.js?v=20261101-REWARDHISTORY1"></script>
 <script src="app-weekly.js?v=20261105-POINTS1TO3"></script>
  <script src="app-audio.js?v=20261102-COLONYMUSIC1"></script>

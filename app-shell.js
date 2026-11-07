@@ -697,6 +697,7 @@
   }
   /* New Game asks the same four setup questions for every career. */
   function showNewGameForm() {
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
     var cityOpts = A.cities.map(function (c, i) {
       return '<option value="' + c.id + '"' + (c.id === 'amsterdam' ? ' selected' : '') + '>' +
         h(c.name) + ', ' + h(c.country) + '</option>';
@@ -704,7 +705,6 @@
     var diffOpts = ['Easy', 'Normal', 'Hard'].map(function (d) {
       var v = A.DIFFICULTY[d];
       /* Existing economy is Easy; higher levels narrow commodity income. */
-      var german=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
       var label=d==='Easy'?(german?'Leicht':'Easy'):d==='Normal'?(german?'Mittel':'Medium'):(german?'Schwer':'Hard');
       return '<option value="' + d + '"' + (d === 'Easy' ? ' selected' : '') + '>' +
         label + ' · ' + (german?'Startgeld ':'Starting cash ')+A.money(CFG.startingMoney * v.startingMoney) +
