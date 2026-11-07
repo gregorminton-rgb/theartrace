@@ -1,7 +1,7 @@
 // Offline support for Grand Art Tour 1925.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'grandarttour-v95-20261107-cleanupoldhud';
-const AUCTION_CACHE_SUFFIX = '-cleanupoldhud';
+const CACHE_VERSION = 'grandarttour-v96-20261107-tightmobilehud';
+const AUCTION_CACHE_SUFFIX = '-tightmobilehud';
 const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 
