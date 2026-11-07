@@ -2877,6 +2877,11 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 #screen-game #hud #ticker { display: none !important; }
 
+/* Details button is hidden on desktop (>760px) by default */
+#hud-more {
+  display: none !important;
+}
+
 .hud-top-row {
   display: flex;
   align-items: center;
@@ -3011,19 +3016,90 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    padding: 5px 8px !important;
-    gap: 4px !important;
+    padding: 5px 8px 4px !important;
+    gap: 3px !important;
     box-sizing: border-box !important;
     overflow: visible !important;
+    border-radius: 12px 12px 0 0 !important;
+    background: linear-gradient(180deg, #6c4b26, #4d3318) !important;
+    border: 2px solid #8c6b42 !important;
+    border-bottom: 1px solid #3d2610 !important;
+    margin-bottom: 0 !important;
   }
+
+  /* TOP ROW: Suppress brand and actions on mobile in compact mode */
   .hud-top-row {
     flex: 0 0 auto !important;
     min-height: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    gap: 4px !important;
+    gap: 3px !important;
   }
+  .hud-top-row .hud-brand {
+    display: none !important;
+  }
+  .hud-actions {
+    display: none !important;
+  }
+  #hud-sub {
+    display: none !important;
+  }
+
+  /* .hud-stead is the full-width single row header */
+  .hud-stead {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 6px !important;
+    text-align: left !important;
+  }
+  #hud-city {
+    font-size: .88rem !important;
+    font-weight: 700 !important;
+    color: #fff8e6 !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  #hud-hotel {
+    font-size: .63rem !important;
+    color: #f4e1b3 !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+    margin-right: 4px !important;
+  }
+
+  /* Details toggle button styled in Deco gold */
+  #hud-more {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    padding: 3px 8px !important;
+    min-height: 25px !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    background: rgba(255, 245, 220, .18) !important;
+    border: 1px solid rgba(255, 220, 120, .6) !important;
+    color: #fff1d5 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .25) !important;
+    flex: 0 0 auto !important;
+  }
+  #hud-more:active {
+    background: rgba(255, 245, 220, .32) !important;
+  }
+
+  /* BOTTOM ROW: Compact mode is 1 horizontal bar: Cash left, Calendar + End Day right */
   .hud-bottom-row {
     flex: 0 0 auto !important;
     min-height: 0 !important;
@@ -3034,16 +3110,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 3px !important;
-    width: 100% !important;
-  }
-  #screen-game #hud.hud-details-open .hud-bottom-row {
-    flex-direction: column !important;
     gap: 4px !important;
     width: 100% !important;
-    border-top: 1px dashed rgba(255, 220, 120, .25) !important;
-    padding-top: 4px !important;
   }
+
   .hud-stats {
     flex: 0 1 auto !important;
     display: flex !important;
@@ -3051,43 +3121,29 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     gap: 3px !important;
     min-width: 0 !important;
   }
-  #screen-game #hud.hud-details-open .hud-stats {
-    flex: 0 0 auto !important;
-    order: 2 !important;
-    width: 100% !important;
-    flex-wrap: wrap !important;
-    gap: 4px !important;
-  }
-  .hud-stats {
-    flex: 0 0 auto !important;
+  .hud-stats #hud-cash {
+    display: inline-flex !important;
+    align-items: center !important;
+    font-size: .68rem !important;
+    padding: 2px 7px !important;
+    min-height: 24px !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
+    background: rgba(255, 240, 210, .14) !important;
+    border: 1px solid rgba(255, 220, 120, .6) !important;
+    color: #ffe27a !important;
   }
   .hud-stats #hud-rep,
   .hud-stats #hud-goal {
     display: none !important;
   }
-  #screen-game #hud.hud-details-open .hud-stats #hud-rep,
-  #screen-game #hud.hud-details-open .hud-stats #hud-goal {
-    display: inline-flex !important;
-    font-size: .63rem !important;
-    padding: 2px 7px !important;
-    min-height: 23px !important;
-  }
-  .hud-stats #hud-cash {
-    font-size: .68rem !important;
-    padding: 2px 7px !important;
-    min-height: 24px !important;
-    white-space: nowrap !important;
-  }
+
   #screen-game #hud .chrono {
     flex: 0 0 auto !important;
     display: flex !important;
     align-items: center !important;
     justify-content: flex-end !important;
     margin: 0 !important;
-  }
-  #screen-game #hud.hud-details-open .chrono {
-    order: 1 !important;
-    width: 100% !important;
   }
   #screen-game #hud .chrono-row {
     display: flex !important;
@@ -3097,23 +3153,16 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     margin: 0 !important;
     width: auto !important;
   }
-  #screen-game #hud.hud-details-open .chrono-row {
-    width: 100% !important;
-    justify-content: space-between !important;
-  }
   #screen-game #hud .chrono-cal {
     display: inline-flex !important;
-    align-items: center !important;
+    align-items: baseline !important;
     gap: 3px !important;
     padding: 2px 6px !important;
     min-height: 24px !important;
     border-radius: 6px !important;
+    background: rgba(255, 250, 236, .94) !important;
     box-sizing: border-box !important;
-  }
-  #screen-game #hud.hud-details-open .chrono-cal {
-    flex: 1 1 auto !important;
-    justify-content: space-between !important;
-    gap: 6px !important;
+    box-shadow: none !important;
   }
   #screen-game #hud .chrono-date {
     display: inline-flex !important;
@@ -3123,17 +3172,75 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   }
   #screen-game #hud .chrono-date b {
     font-size: .84rem !important;
+    color: #8c2810 !important;
     line-height: 1 !important;
   }
   #screen-game #hud .chrono-date span {
     font-size: .59rem !important;
+    color: #3b2713 !important;
     line-height: 1 !important;
   }
-  #screen-game #hud .chrono-date b { font-size: .92rem; }
-  #screen-game #hud .chrono-date span { font-size: .64rem; }
   #screen-game #hud .chrono-auto,
   #screen-game #hud .chrono-speed {
     display: none !important;
+  }
+
+  #screen-game #hud #end-day {
+    min-height: 24px !important;
+    min-width: 0 !important;
+    padding: 2px 9px !important;
+    font-size: .68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: .02em !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(180deg, #c7863a, #8f541b) !important;
+    border: 1px solid #ffda82 !important;
+    color: #fff9ed !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3) !important;
+  }
+
+  /* EXPANDED MODE ON MOBILE (.hud-details-open) */
+  #screen-game #hud.hud-details-open {
+    padding-bottom: 6px !important;
+  }
+  #screen-game #hud.hud-details-open .hud-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    width: 100% !important;
+    padding: 3px 0 2px !important;
+    border-top: 1px dashed rgba(255, 220, 120, .25) !important;
+  }
+  #screen-game #hud.hud-details-open .hud-actions .hud-chip,
+  #screen-game #hud.hud-details-open .hud-actions .language-switch {
+    font-size: .64rem !important;
+    padding: 2px 6px !important;
+    min-height: 24px !important;
+  }
+
+  #screen-game #hud.hud-details-open .hud-bottom-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    width: 100% !important;
+    border-top: 1px dashed rgba(255, 220, 120, .25) !important;
+    padding-top: 4px !important;
+  }
+  #screen-game #hud.hud-details-open .chrono {
+    order: 1 !important;
+    width: 100% !important;
+  }
+  #screen-game #hud.hud-details-open .chrono-row {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  #screen-game #hud.hud-details-open .chrono-cal {
+    flex: 1 1 auto !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
   }
   #screen-game #hud.hud-details-open .chrono-auto {
     display: inline-flex !important;
@@ -3141,24 +3248,34 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     gap: 2px !important;
     font-size: .58rem !important;
     white-space: nowrap !important;
+    color: #4a341e !important;
   }
   #screen-game #hud.hud-details-open .chrono-speed {
     display: inline-block !important;
-    font-size: .6rem !important;
+    font-size: .60rem !important;
     min-width: 58px !important;
     max-width: 66px !important;
     padding: 1px 2px !important;
   }
-  #screen-game #hud #end-day {
-    min-height: 24px !important;
-    min-width: 0 !important;
-    padding: 2px 9px !important;
-    font-size: .68rem !important;
-    font-weight: 700 !important;
-    border-radius: 6px !important;
-    white-space: nowrap !important;
-    box-sizing: border-box !important;
+  #screen-game #hud.hud-details-open .hud-stats {
+    order: 2 !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
   }
+  #screen-game #hud.hud-details-open .hud-stats #hud-cash,
+  #screen-game #hud.hud-details-open .hud-stats #hud-rep,
+  #screen-game #hud.hud-details-open .hud-stats #hud-goal {
+    display: inline-flex !important;
+    flex: 1 1 calc(33.33% - 4px) !important;
+    justify-content: center !important;
+    font-size: .63rem !important;
+    padding: 2px 4px !important;
+    min-height: 23px !important;
+  }
+
   #screen-game #race-standings {
     flex: 0 0 auto !important;
     padding: 2px 6px 3px !important;
