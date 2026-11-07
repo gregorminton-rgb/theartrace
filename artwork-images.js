@@ -1263,3 +1263,14 @@ window.ART_ARTWORK_IMAGES = {
         }
     }
 };
+
+(function () {
+  var v = '?v=20261107-PUREZEROFRAMES';
+  var imgs = window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images;
+  if (!imgs) return;
+  for (var k in imgs) {
+    if (imgs[k] && imgs[k].file && imgs[k].file.indexOf('?v=') === -1) {
+      imgs[k].file += v;
+    }
+  }
+})();

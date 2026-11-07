@@ -22,7 +22,7 @@ function classTable(){
  var grades=['A','B','C','D','E'];
  return '<div class="tutorial-tier-grid">'+grades.map(function(g,i){
   var artwork=example(g);
-  return '<div class="tutorial-tier-card tutorial-tier-'+g.toLowerCase()+'">'+
+  return '<div class="tutorial-tier-card tutorial-tier-'+g.toLowerCase()+'"'+(artwork?' data-open-work="'+esc(artwork.w.id)+'" style="cursor:pointer" title="'+esc(artwork.w.title)+'"':'')+'>'+
    '<div class="tutorial-tier-art">'+(artwork?'<img src="'+esc(artwork.file)+'" alt="'+esc(artwork.w.title)+'" loading="lazy">':'<span aria-hidden="true">🖼️</span>')+'</div>'+
    '<strong class="tutorial-tier-letter">'+g+'</strong>'+
    '<span class="tutorial-tier-multi">×'+(5-i)+'</span></div>';
@@ -31,7 +31,8 @@ function classTable(){
 function exampleCards(){
  return '<div class="tutorial-example-grid">'+['A','E'].map(function(g){
   var item=example(g),points=g==='A'?15:3;
-  return '<div class="tutorial-example"><div class="tutorial-example-art">'+
+  return '<div class="tutorial-example"'+(item?' data-open-work="'+esc(item.w.id)+'" style="cursor:pointer" title="'+esc(item.w.title)+'"':'')+'>'+
+   '<div class="tutorial-example-art">'+
    (item?'<img src="'+esc(item.file)+'" alt="'+esc(item.w.title)+'" loading="lazy">':'<span>🖼️</span>')+
    '</div><div class="tutorial-example-caption"><b>'+copy('Klasse ','Class ')+g+'</b>'+
    '<strong>'+points+' ★</strong></div></div>';
@@ -99,3 +100,10 @@ function open(){page=0;render();}
 document.addEventListener('click',function(e){if(e.target.closest('#hud-tutorial-help'))open();});
 window.ArtRaceTutorial={open:open};
 })();
+document.addEventListener('click',function(e){
+ var card=e.target.closest('[data-open-work]');
+ if(card&&window.ArtRace&&window.ArtRace.artView){
+  var id=card.getAttribute('data-open-work');
+  if(id)window.ArtRace.artView.openWork(id);
+ }
+});
