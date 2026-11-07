@@ -111,9 +111,12 @@
     }
     G.cash -= total;
     /* the first layout is the purchase: the plot becomes the player's */
-    claimPlot(G.colonyId, plotIndex, crop.id);
+    var prevOwned = ownedPlot(G.colonyId, plotIndex);
+    var initLvl = (prevOwned && prevOwned.level) ? prevOwned.level : 0;
+    var curPlot = claimPlot(G.colonyId, plotIndex, crop.id);
+    if (curPlot && prevOwned && prevOwned.level) curPlot.level = prevOwned.level;
     G.fields.push({ id: G.nextFieldId++, colonyId: G.colonyId, plotIndex: plotIndex, cropId: crop.id,
-                    plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
+                    plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: initLvl });
     G.colonyStats.planted += 1;
     log('Laid out a ' + crop.label + ' field on plot ' + (plotIndex + 1) + '.');
     G.selectedFieldId = G.nextFieldId - 1;
@@ -197,6 +200,8 @@
     if (G.cash < next.cost) { log(next.label + ' costs ' + A.money(next.cost) + '.'); return; }
     G.cash -= next.cost;
     f.level += 1;
+    var p = claimPlot(f.colonyId, f.plotIndex, f.cropId);
+    if (p) p.level = Math.max(p.level || 0, f.level);
     log('Upgraded the ' + T().CROP_BY_ID[f.cropId].label + ' field to ' + next.label + '.');
     renderColony();
   }
@@ -217,7 +222,11 @@
       log('Upgrading '+fields.length+' fields costs '+A.money(total)+'.'); return;
     }
     G.cash-=total;
-    fields.forEach(function(f){f.level+=1;});
+    fields.forEach(function(f){
+      f.level+=1;
+      var p = claimPlot(f.colonyId, f.plotIndex, f.cropId);
+      if (p) p.level = Math.max(p.level || 0, f.level);
+    });
     log('Upgraded '+fields.length+' fields to '+next.label+' for '+A.money(total)+'.');
     renderColony();
   }
@@ -244,7 +253,7 @@
   function claimPlot(colonyId, plotIndex, cropId) {
     if (!G.ownedPlots) G.ownedPlots = {};
     var key = ownedPlotKey(colonyId, plotIndex);
-    if (!G.ownedPlots[key]) G.ownedPlots[key] = { auto: false, cropId: cropId };
+    if (!G.ownedPlots[key]) G.ownedPlots[key] = { auto: false, cropId: cropId, level: 0 };
     G.ownedPlots[key].cropId = cropId;
     return G.ownedPlots[key];
   }
@@ -335,8 +344,9 @@
       if (!cur && crop && G.cash >= crop.cost) {
         G.cash -= crop.cost;
         pl.cropId = crop.id;
+        var initLvl = (pl && pl.level) ? pl.level : 0;
         G.fields.push({ id: G.nextFieldId++, colonyId: colonyId, plotIndex: pi, cropId: crop.id,
-                        plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
+                        plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: initLvl });
         G.colonyStats.planted += 1;
       }
     }
