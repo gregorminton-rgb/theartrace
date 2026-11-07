@@ -711,8 +711,12 @@
         ' · ' + (german?'Warenpreise ':'Commodity prices ')+Math.round(v.tradeIncome*100)+' %</option>';
     }).join('');
     var durOpts = A.DURATIONS.map(function (d, i) {
-      return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
-        h(d.label) + ' (' + d.days + ' days)</option>';
+      var isDefault = d.days === 365;
+      var dLabel = german
+        ? (d.days === 365 ? '1 Jahr (Standard)' : d.days === 180 ? 'Halbes Jahr' : d.days === 90 ? 'Kurz' : d.label)
+        : (d.days === 365 ? '1 Year (Standard)' : d.days === 180 ? 'Half-year' : d.days === 90 ? 'Short' : d.label);
+      return '<option value="' + i + '"' + (isDefault ? ' selected' : '') + '>' +
+        dLabel + ' (' + d.days + (german ? ' Tage)' : ' days)') + '</option>';
     }).join('');
     dialog('Set up a career', '<div class="form career-setup-form career-setup-v2">' +
       '<fieldset class="race-setup"><legend>Four-player race</legend>' +

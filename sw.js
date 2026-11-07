@@ -1,7 +1,7 @@
 // Offline support for Grand Art Tour 1925.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'grandarttour-v97-20261107-badgecardfix';
-const AUCTION_CACHE_SUFFIX = '-badgecardfix';
+const CACHE_VERSION = 'grandarttour-v98-20261107-gameplay1year';
+const AUCTION_CACHE_SUFFIX = '-gameplay1year';
 const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 
