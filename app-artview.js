@@ -124,11 +124,29 @@
     }
     var owned = ownedInstances(id);
 
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var plaqueArtist = artist ? artist.name.toUpperCase() : 'UNKNOWN';
+    var plaqueYears = (artist && artist.birthYear && artist.deathYear) ? ' (' + artist.birthYear + '–' + artist.deathYear + ')' : '';
+    var plaqueTitle = w.title + (w.yearCreated ? ' · ' + w.yearCreated : '');
+
+    var plaqueHtml = '<div class="art-museum-plaque">' +
+      '<span class="plaque-artist">' + h(plaqueArtist + plaqueYears) + '</span>' +
+      '<span class="plaque-title">' + h(plaqueTitle) + '</span>' +
+    '</div>';
+
     var plate = pic
-      ? '<figure class="av-plate"><img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="eager" decoding="async">' +
-        (pic.how === 'alias' ? '<figcaption>A stand-in plate: a different original by the same painter.</figcaption>' : '') +
+      ? '<figure class="av-plate art-museum-frame">' +
+          '<div class="art-frame-moulding">' +
+            '<div class="art-frame-mat">' +
+              '<div class="art-frame-canvas">' +
+                '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="eager" decoding="async">' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          plaqueHtml +
+          (pic.how === 'alias' ? '<figcaption>' + (german ? 'Stellvertreter-Werk desselben Künstlers' : 'A stand-in plate: a different original by the same painter.') + '</figcaption>' : '') +
         '</figure>'
-      : '<div class="av-plate av-plate--missing"><span>No picture imported for this work yet</span></div>';
+      : '<div class="av-plate av-plate--missing"><span>' + (german ? 'Noch kein Bild importiert' : 'No picture imported for this work yet') + '</span></div>';
 
     var enriched = window.ART_EXTRA_STORIES && window.ART_EXTRA_STORIES[id];
     var extraStory = enriched ? '<section class="av-extra"><h4>' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Hintergrundgeschichte' : 'Behind the painting') + '</h4><p>' + h(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? enriched.de : enriched.en) + '</p><a target="_blank" rel="noopener noreferrer" href="' + h(enriched.source) + '">' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Museumsquelle ansehen' : 'Museum source') + '</a></section>' : '';
