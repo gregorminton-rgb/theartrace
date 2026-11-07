@@ -3159,9 +3159,19 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 @media(max-width: 760px) {
-  #screen-game #hud {
-    padding: 6px 8px 4px !important;
+  #screen-game {
     gap: 3px !important;
+  }
+  #screen-game #hud {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 5px 8px 5px !important;
+    gap: 4px !important;
+  }
+  .hud-top-row {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
   }
   .hud-top-row .hud-brand {
     display: none !important;
@@ -3183,22 +3193,29 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     align-items: baseline;
     justify-content: space-between;
     width: 100%;
+    gap: 6px;
   }
-  #hud-city { font-size: .84rem; }
+  #hud-city { font-size: .84rem; line-height: 1.15; }
   #hud-sub { display: none; }
-  #hud-hotel { font-size: .62rem; }
+  #hud-hotel { font-size: .62rem; margin-left: auto; padding-right: 6px; }
   #hud-more {
     display: flex !important;
     align-items: center;
     gap: 3px;
-    padding: 3px 7px;
+    padding: 2px 7px;
     font-size: .65rem;
-    min-height: 27px;
+    min-height: 25px;
     border-radius: 6px;
+    flex: 0 0 auto;
   }
   .hud-bottom-row {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
     border-top: none;
     padding-top: 0;
+  }
+  .hud-stats {
+    flex: 0 0 auto !important;
   }
   .hud-stats #hud-rep,
   .hud-stats #hud-goal {
@@ -3211,14 +3228,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .hud-stats #hud-cash {
     font-size: .7rem;
     padding: 2px 7px;
-    min-height: 27px;
+    min-height: 26px;
+  }
+  #screen-game #hud .chrono {
+    flex: 1 1 auto;
+    justify-content: flex-end;
   }
   #screen-game #hud .chrono-row {
-    gap: 4px;
+    gap: 5px;
+    width: 100%;
+    justify-content: flex-end;
   }
   #screen-game #hud .chrono-cal {
     padding: 2px 6px;
+    min-height: 28px;
+    border-radius: 6px;
   }
+  #screen-game #hud .chrono-date b { font-size: .92rem; }
+  #screen-game #hud .chrono-date span { font-size: .64rem; }
   #screen-game #hud .chrono-auto,
   #screen-game #hud .chrono-speed {
     display: none;
@@ -3230,10 +3257,34 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     display: block;
   }
   #screen-game #hud #end-day {
-    min-height: 31px;
-    min-width: 80px;
+    min-height: 28px;
+    min-width: 76px;
     padding: 3px 8px;
     font-size: .72rem;
+    border-radius: 6px;
+  }
+  #screen-game #race-standings {
+    flex: 0 0 auto !important;
+    padding: 2px 6px 3px !important;
+    margin-top: -3px !important;
+    border-radius: 0 0 10px 10px !important;
+  }
+  #screen-game #race-standings .race-self-trigger {
+    min-height: 24px !important;
+    padding: 1px 4px !important;
+  }
+  #screen-game #race-standings .race-self-avatar {
+    font-size: .85rem !important;
+  }
+  #screen-game #race-standings .race-self-info strong {
+    font-size: .72rem !important;
+  }
+  #screen-game #race-standings .race-self-info small {
+    font-size: .64rem !important;
+  }
+  #screen-game #main {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
   }
 }
 
