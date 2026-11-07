@@ -521,8 +521,8 @@
         var timingBadge = isToday
           ? '<span class="hotel-timing-badge hotel-timing-badge--today">' + (de ? '🔨 HEUTE' : '🔨 TODAY') + '</span>'
           : daysAway === 1
-            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen · Tag ' + auc.day : 'Tomorrow · Day ' + auc.day) + '</span>'
-            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen · Tag ' + auc.day : 'In ' + daysAway + ' days · Day ' + auc.day) + '</span>';
+            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen' : 'Tomorrow') + '</span>'
+            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen' : 'In ' + daysAway + ' days') + '</span>';
 
         var locBadge = isHere
           ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
