@@ -141,7 +141,7 @@
     var sets=[];
     Object.keys(groups).forEach(function(id){
       var group=groups[id],held=Object.keys(group.works).length, total=catalogue[id]||0;
-      var factor=total>=3&&held>=total?2:(total>=2&&held>=2?1.3:1);
+      var factor = total >= 4 && held >= total ? 2.0 : (held >= 3 ? 1.6 : (held >= 2 ? 1.3 : 1));
       if(factor>1) {
         var gain=Math.round(group.points*(factor-1)*10)/10;
         bonus+=gain;

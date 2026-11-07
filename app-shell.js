@@ -130,6 +130,10 @@
                 (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
                 (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
       var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
+      var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
+      var wTitle = workTitle(w);
+      var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
+      var wTitle = workTitle(w);
       var facts = (w.typeName ? h(translateArt(w.typeName)) : '') +
                   (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
                   (w.dimensions ? ' · ' + h(w.dimensions) : '');
@@ -137,11 +141,11 @@
       return '<div class="auc-preview-item">' +
         '<div class="auc-preview-item-main">' +
           '<div class="auc-preview-art-thumb" data-action="art" data-work="' + h(w.id) + '" role="button" tabindex="0" title="' + h(w.title) + ' — ' + (de ? 'Klicken für Details' : 'Click for details') + '">' +
-            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span>🖼️</span>') +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(wTitle) + '" loading="lazy" />' : '<span>🖼️</span>') +
           '</div>' +
           '<div class="auc-preview-art-details">' +
             '<span class="auc-preview-lot-num">' + (de ? 'Los ' + (idx + 1) : 'Lot ' + (idx + 1)) + '</span>' +
-            '<h4 class="auc-preview-title">' + h(w.title) + '</h4>' +
+            '<h4 class="auc-preview-title">' + h(wTitle) + '</h4>' +
             '<div class="auc-preview-author">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + '</div>' +
             '<div class="auc-preview-facts">' + h(tierLabel) + (facts ? ' · ' + facts : '') + '</div>' +
             '<div class="auc-preview-tags">' +
@@ -422,9 +426,12 @@
               (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
               (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
 
+    var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
+    var wTitle = workTitle(w);
+
     return '<div class="end-art-card">' +
       '<div class="end-art-thumb" data-action="art" data-work="' + h(w.id) + '" role="button" tabindex="0" title="' + h(w.title) + '">' +
-        (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="thumb-init">' + h(w.title.slice(0, 1)) + '</span>') +
+        (pic ? '<img src="' + h(pic.file) + '" alt="' + h(wTitle) + '" loading="lazy" />' : '<span class="thumb-init">' + h(w.title.slice(0, 1)) + '</span>') +
       '</div>' +
       '<div class="end-art-content">' +
         '<div class="end-art-main">' +

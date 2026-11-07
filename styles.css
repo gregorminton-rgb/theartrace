@@ -1,3 +1,16 @@
+
+/* Commodity market & news are opened on demand via the header [Börse] button. */
+#market-col {
+  display: none !important;
+}
+#screen-game #main {
+  grid-template-columns: 8.5rem minmax(0, 1fr) !important;
+}
+@media(max-width: 760px) {
+  #screen-game #main {
+    grid-template-columns: 1fr !important;
+  }
+}
 /* =========================================================================
  * styles.css - Hay Day-inspired farm and trade theme.
  * Everything is drawn with CSS; no bitmap textures.
@@ -95,7 +108,7 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 .title-bar-brand {
   font-family: var(--serif); font-size: 1.05rem; font-weight: 600;
   letter-spacing: .16em; text-transform: uppercase; color: var(--gold-2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
+  text-shadow: none;
 }
 .title-bar-meta {
   font-family: var(--sans); font-size: .68rem; letter-spacing: .06em; color: #d8c7a4;
@@ -177,12 +190,15 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 
 /* ---------- main row --------------------------------------------------- */
 #main { display: grid; grid-template-columns: 8.5rem 1.3fr 1fr; gap: .7rem; flex: 1; min-height: 0; }
-#stations { display: flex; flex-direction: column; gap: .4rem; overflow-y: auto; }
+#stations {
+  display: flex; flex-direction: column; gap: .3rem; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(176, 138, 82, 0.45) transparent;
+}
 .station {
-  font-family: var(--serif); font-size: .84rem; text-align: left; padding: .85em .6em;
+  font-family: var(--serif); font-size: .80rem; text-align: left; padding: .6em .55em;
   background: linear-gradient(180deg, #fff6df, #ead6a8); color: var(--ink);
-  border: 2px solid #b08a52; border-radius: 14px; cursor: pointer;
-  box-shadow: 0 3px 0 #b08a52, 0 4px 8px rgba(20, 10, 0, .2);
+  border: 2px solid #b08a52; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 2px 0 #b08a52, 0 3px 6px rgba(20, 10, 0, .18);
 }
 .station .st-ico { display: block; font-size: 1.25rem; line-height: 1; margin-bottom: .25em; }
 .station:hover { filter: brightness(1.04); }
@@ -247,7 +263,7 @@ li.news.live b { color: var(--oxblood); }
   background: linear-gradient(180deg, #a6d86a, #7fb84a);
   color: #fff;
 }
-.panel-head h2 { text-shadow: 0 2px 0 #3a6418; }
+.panel-head h2 { text-shadow: none; }
 .panel-head h2 { margin: 0; font-size: 1.3rem; letter-spacing: .01em; }
 .panel-sub { font-family: var(--sans); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-soft); }
 .panel-body, #panel { flex: 1; overflow-y: auto; padding: .8em 1em; }
@@ -357,7 +373,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .chrono-speed {
   font-family: var(--sans); font-size: .64rem; color: var(--ink);
   background: var(--paper); border: 1px solid var(--line); border-radius: 2px;
-  padding: .05em .1em; max-width: 5.2em;
+  padding: .12em .3em; min-width: 74px; max-width: 86px;
 }
 #end-day { flex: none; padding: .28em .7em; font-size: .66rem; }
 
@@ -433,11 +449,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 /* ---------- responsive ------------------------------------------------- */
-@media (max-width: 900px) {
-  #main { grid-template-columns: 1fr; }
-  #stations { flex-direction: row; overflow-x: auto; }
-  .station { flex: 1 0 auto; min-width: 6.5em; }
-  .station.ghost { display: none; }
+@media (max-width: 760px) {
   #panel-wrap { max-height: 60vh; }
 }
 
@@ -751,47 +763,476 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Fields sit in a regular grid: 2 per row, 16 at most (4 rows), with one
    equal gap in both directions. The board scrolls on its own, so the field
    list never pushes the side panels off screen. */
+/* Hay Day Plantation Experience: tactile farm bar, rich farm parcels, tap & swipe harvest */
+.farm-hayday-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, rgba(255, 248, 230, 0.95), rgba(240, 222, 185, 0.92));
+  border: 1.5px solid #b89158;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(30, 18, 8, 0.18);
+  flex-wrap: wrap;
+}
+.farm-seed-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.farm-seed-label {
+  font-family: var(--serif, serif);
+  font-weight: 700;
+  font-size: 0.74rem;
+  color: #5c3e1c;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.farm-seed-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid #c4a470;
+  background: linear-gradient(180deg, #fffdf7, #ede0c2);
+  color: #3b2814;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.farm-seed-btn:hover {
+  border-color: #589437;
+  background: #fff;
+  transform: translateY(-1px);
+}
+.farm-seed-btn.is-active {
+  border-color: #3e7b23;
+  background: linear-gradient(180deg, #f0ffd6, #c2e88a);
+  box-shadow: 0 0 10px rgba(88, 148, 55, 0.5), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+.farm-seed-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.farm-seed-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+.farm-seed-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.farm-seed-meta {
+  font-size: 0.62rem;
+  color: #6d5131;
+}
+.farm-seed-check {
+  font-size: 0.75rem;
+  color: #2e6616;
+  font-weight: 800;
+  margin-left: 2px;
+}
+.farm-harvest-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffd740, #ffab00) !important;
+  color: #3b2100 !important;
+  border: 1.5px solid #e65100 !important;
+  box-shadow: 0 3px 10px rgba(255, 171, 0, 0.5), 0 0 8px rgba(255, 215, 64, 0.6);
+  cursor: pointer;
+  animation: harvestBtnGlow 1.5s infinite alternate ease-in-out;
+}
+@keyframes harvestBtnGlow {
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(255, 171, 0, 0.4); }
+  100% { transform: scale(1.04); box-shadow: 0 4px 14px rgba(255, 171, 0, 0.75), 0 0 12px #ffe082; }
+}
+
 .colony-grid {
-  --plot-gap: 8px;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--plot-gap); align-content: start;
-  overflow-y: auto; padding: var(--plot-gap);
-  flex: 1; min-height: 0;
-  background: linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%);
-  border-radius: 4px; box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
-  -webkit-overflow-scrolling: touch; touch-action: pan-y;
+  --plot-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--plot-gap);
+  align-content: start;
+  overflow-y: auto;
+  padding: var(--plot-gap);
+  flex: 1;
+  min-height: 0;
+  background: radial-gradient(circle at 50% 30%, #587541 0%, #3e562b 60%, #2b3d1c 100%);
+  border: 2px solid #6d512a;
+  border-radius: 12px;
+  box-shadow: inset 0 3px 12px rgba(0,0,0,0.5), 0 4px 15px rgba(20,10,0,0.3);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .plot {
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: .15em; padding: .4em .3em; min-width: 0; min-height: 0;
-  aspect-ratio: 144 / 190;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 10px;
   cursor: pointer;
-  background: transparent; border: 2px dashed rgba(140, 110, 70, .6);
-  border-radius: 6px; color: var(--ink); transition: all .2s;
+  box-sizing: border-box;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.05;
+  background: #361f10;
+  border: 2px solid #6b4421;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 3px 8px rgba(20, 10, 0, 0.25);
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.plot--empty { border-style: dashed; border-width: 2px; background: rgba(242, 234, 216, .15); }
-.plot--empty.can-plant { border-color: var(--green); border-style: solid; background: rgba(200, 230, 205, .25); box-shadow: 0 0 8px rgba(47, 93, 58, .4); }
-.plot--planted { border-style: solid; border-width: 3px; border-color: #c9a46a; background: rgba(255, 248, 232, .45); backdrop-filter: blur(2px); }
-.plot.ripe { border-color: var(--gold-2); box-shadow: 0 0 12px rgba(224, 188, 99, .7), inset 0 0 8px rgba(224, 188, 99, .3); }
-.plot.selected { border-color: var(--oxblood); box-shadow: 0 0 10px rgba(109, 31, 31, .6), inset 0 0 6px rgba(109, 31, 31, .3); }
-.plot.multi { outline: 3px dashed var(--gold, #c9a227); outline-offset: 2px; }
+.plot:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 6px 14px rgba(20, 10, 0, 0.35);
+}
+.plot:active {
+  transform: translateY(0);
+}
+.plot--planted {
+  background: radial-gradient(circle at 50% 30%, #462c16 0%, #2a1609 100%);
+  border: 2px solid #8e6538;
+}
+.plot--planted.ripe {
+  border: 2.5px solid #ffcc00;
+  box-shadow: 0 0 16px rgba(255, 204, 0, 0.6), inset 0 0 10px rgba(255, 204, 0, 0.3);
+  animation: farmPulseRipe 1.5s infinite ease-in-out;
+}
+@keyframes farmPulseRipe {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 204, 0, 0.5), inset 0 0 8px rgba(255, 204, 0, 0.2); }
+  50% { box-shadow: 0 0 22px rgba(255, 220, 50, 0.85), inset 0 0 14px rgba(255, 220, 50, 0.4); }
+}
+.plot--planted.selected {
+  border-color: #e53935;
+  box-shadow: 0 0 12px rgba(229, 57, 53, 0.7);
+}
+.plot--planted.multi {
+  outline: 3px dashed #ffc107;
+  outline-offset: 2px;
+}
+.plot--empty {
+  background: radial-gradient(circle at 50% 50%, #3a2211 0%, #221206 100%);
+  border: 2px dashed rgba(160, 120, 70, 0.5);
+}
+.plot--empty.can-plant {
+  border: 2px solid #7bc637;
+  background: radial-gradient(circle at 50% 50%, #3e5223 0%, #233111 100%);
+  box-shadow: 0 0 10px rgba(123, 198, 55, 0.45);
+}
+.plot-farm-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.plot-farm-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-crop-tag {
+  font-family: var(--serif, serif);
+  font-size: 0.71rem;
+  font-weight: 700;
+  color: #fff8e1;
+  background: rgba(20, 10, 4, 0.68);
+  padding: 2px 6px;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.plot-auto-badge {
+  font-size: 0.7rem;
+  background: rgba(255, 235, 59, 0.88);
+  color: #000;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.plot-worker-pill {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #ffe0b2;
+  background: rgba(30, 18, 8, 0.68);
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+.plot-sickle-badge {
+  position: absolute;
+  top: 26px;
+  right: 6px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: linear-gradient(180deg, #ffe066, #ffab00);
+  color: #3b2204;
+  border: 1.5px solid #fff;
+  border-radius: 12px;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4), 0 0 10px rgba(255, 215, 0, 0.6);
+  animation: sickleBounce 1s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+@keyframes sickleBounce {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(1.08); }
+}
+.plot-farm-foot {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-farm-foot .field-progress {
+  width: 100%;
+  height: 5px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+.plot-farm-foot .field-progress i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8bc34a, #4caf50);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.plot--planted.ripe .plot-farm-foot .field-progress i {
+  background: linear-gradient(90deg, #ffd54f, #ffb300);
+}
+.plot-foot-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.plot-status-label {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.63rem;
+  font-weight: 700;
+  color: #fff9e6;
+  background: rgba(18, 10, 4, 0.68);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.plot--planted.ripe .plot-status-label {
+  color: #ffd54f;
+  font-weight: 800;
+  background: rgba(70, 40, 5, 0.88);
+}
+.plot-yield-label {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.63rem;
+  font-weight: 800;
+  color: #a5d6a7;
+  background: rgba(14, 30, 10, 0.68);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+/* Plantation field levels & visual upgrade gimmicks */
+.plot-farm-head-left, .plot-farm-head-right {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.plot-lvl-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--sans, sans-serif);
+  font-size: 0.60rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 4px;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  pointer-events: auto;
+}
+.plot-lvl-badge.lvl-1 {
+  background: rgba(2, 136, 209, 0.85);
+  color: #e1f5fe;
+  border: 1px solid #4fc3f7;
+}
+.plot-lvl-badge.lvl-2 {
+  background: rgba(46, 125, 50, 0.88);
+  color: #f1f8e9;
+  border: 1px solid #81c784;
+}
+.plot-lvl-badge.lvl-3 {
+  background: linear-gradient(135deg, #b71c1c, #d32f2f);
+  color: #fff9c4;
+  border: 1px solid #ffd54f;
+  box-shadow: 0 0 6px rgba(255, 213, 79, 0.5);
+}
+
+.plot.plot--level-1 {
+  border-color: #0288d1;
+  box-shadow: 0 3px 10px rgba(2, 136, 209, 0.35), inset 0 0 10px rgba(3, 169, 244, 0.22);
+}
+.plot.plot--level-2 {
+  border-color: #43a047;
+  box-shadow: 0 3px 12px rgba(67, 160, 71, 0.4), inset 0 0 12px rgba(76, 175, 80, 0.28);
+}
+.plot.plot--level-3 {
+  border-color: #ffb300;
+  box-shadow: 0 4px 16px rgba(255, 179, 0, 0.45), inset 0 0 14px rgba(255, 193, 7, 0.32);
+}
+.plot.plot--level-3::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 16px 16px 0;
+  border-color: transparent #ffd54f transparent transparent;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+.plot-pips-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.plot-pips-group.empty-pips {
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.65);
+}
+.plot-level-star {
+  font-size: 0.72rem;
+  color: #ffd54f;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(255, 213, 79, 0.6);
+  line-height: 1;
+  display: inline-block;
+}
+.plot-level-star.lvl-1 {
+  color: #81d4fa;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 0 4px #0288d1;
+}
+.plot-level-star.lvl-2 {
+  color: #aed581;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 0 4px #43a047;
+}
+.plot-level-star.lvl-3 {
+  color: #ffd54f;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px #ffb300, 0 0 10px #ff6f00;
+  animation: starPulse 1.8s infinite ease-in-out;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px #ffb300); }
+  50% { transform: scale(1.22); filter: drop-shadow(0 0 6px #ffd54f); }
+}
+
+.field-upgrade-water {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+.field-upgrade-fertiliser {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+.field-upgrade-shed {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+}
+.plot-empty-overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-empty-icon {
+  font-size: 1.6rem;
+  color: #f5deb3;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  margin-bottom: 2px;
+}
+.plot-empty-title {
+  font-family: var(--serif, serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff8e7;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  text-align: center;
+  padding: 0 4px;
+}
+.plot-empty-cost {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #ffcc80;
+  background: rgba(20, 10, 4, 0.68);
+  padding: 1px 6px;
+  border-radius: 6px;
+  margin-top: 3px;
+}
+
+.farm-harvest-floater {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: var(--serif, serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff9e6;
+  background: linear-gradient(180deg, rgba(68, 140, 39, 0.95), rgba(40, 96, 29, 0.95));
+  border: 1.5px solid #ffd54f;
+  border-radius: 20px;
+  padding: 4px 11px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45), 0 0 10px rgba(255, 213, 79, 0.5);
+  transform: translate(-50%, -50%);
+  animation: farmFloatUp 0.95s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+@keyframes farmFloatUp {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+  20% { opacity: 1; transform: translate(-50%, -20px) scale(1.15); }
+  60% { opacity: 1; transform: translate(-50%, -45px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -75px) scale(0.85); }
+}
+
 .colony-multi { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 .5em; }
 .colony-multi .btn { min-height: 40px; }
 .colony-multi-toggle { flex: 0 0 auto; min-width: 7.6rem; white-space: nowrap; }
 .colony-multi-auto { flex: 0 0 auto; min-width: 8.4rem; white-space: nowrap; }
 .colony-multi-count { font-size: 13px; opacity: .8; white-space: nowrap; }
 .plot.drag-over { border-color: var(--gold); background: rgba(247, 236, 214, .4); box-shadow: 0 0 14px rgba(179, 135, 44, .6); }
-.plot:hover { border-color: var(--gold); }
-.plot-house { width: 36px; height: 36px; margin-bottom: .1em; filter: drop-shadow(0 2px 5px rgba(20, 10, 0, .5)); }
-.plot-crop { width: 44px; height: 44px; }
-.plot-label { font-size: .78rem; font-weight: 700; line-height: 1.1; text-align: center; color: #2a1f12; text-shadow: 0 1px 2px rgba(255,255,255,.6); }
-.plot-workers { font-family: var(--sans); font-size: .64rem; color: #3a2818; font-weight: 600; }
-.plot-status { font-family: var(--sans); font-size: .68rem; color: var(--oxblood); font-weight: 700; text-shadow: 0 1px 1px rgba(255,255,255,.4); }
-.plot-empty-plus { font-size: 2.4rem; color: rgba(168, 147, 112, .7); line-height: 1; }
-.plot-empty-label { font-family: var(--sans); font-size: .68rem; color: rgba(75, 58, 41, .8); text-transform: uppercase; letter-spacing: .05em; text-align: center; font-weight: 600; }
-.plot-pips { display: flex; gap: 3px; justify-content: center; }
-.plot-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
-.plot .field-progress { width: 90%; margin-top: .2em; }
 
 .colony-hint { margin: 0; font-family: var(--sans); font-size: .72rem; color: var(--ink-soft); font-style: italic; text-align: center; }
 
@@ -929,10 +1370,113 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .av { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: 0; }
 .av-left { padding: 1.1em 1.2em; background: linear-gradient(180deg, #efe4cd, #e2d2b2); border-right: 1px solid var(--line); }
 .av-right { padding: 1.1em 1.3em 1.4em; background: linear-gradient(180deg, #f4e6c8, #e9d9bb); max-height: 76vh; overflow-y: auto; }
-.av-plate { margin: 0 0 .8em; background: #241a10; border: 1px solid #5a4a30; border-radius: 3px; padding: 8px; box-shadow: 0 6px 22px rgba(20,10,0,.45); }
-.av-plate img { display: block; width: 100%; height: auto; max-height: 58vh; object-fit: contain; background: #1b130c; }
+/* Museum-grade in-game framing system */
+.av-plate { margin: 0 0 .9em; background: #18110b; border: 1px solid #4a3319; border-radius: 4px; padding: 12px; box-shadow: 0 10px 30px rgba(10, 5, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+.av-plate img { display: block; width: 100%; height: auto; max-height: 56vh; object-fit: contain; background: #0f0a06; }
 .av-plate figcaption { margin-top: .45em; font-family: var(--sans); font-size: .62rem; letter-spacing: .04em; text-transform: uppercase; color: #cbb78f; text-align: center; }
 .av-plate--missing { display: flex; align-items: center; justify-content: center; min-height: 220px; color: #cbb78f; font-family: var(--sans); font-size: .8rem; }
+
+.art-frame-moulding {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #7c5a24 0%, #caa452 20%, #68481a 40%, #e6cf8a 65%, #5a3c12 85%, #8c6a2e 100%);
+  border: 1px solid #4a300d;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 6px rgba(0,0,0,0.6), 0 4px 14px rgba(0,0,0,0.45);
+  box-sizing: border-box;
+}
+.art-frame-mat {
+  background: #160f0a;
+  padding: 8px;
+  border: 2px solid #b38b3f;
+  box-shadow: inset 0 3px 12px rgba(0,0,0,0.85), 0 1px 2px rgba(255,255,255,0.2);
+  box-sizing: border-box;
+}
+.art-frame-canvas {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f0a06;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.9);
+  width: 100%;
+}
+.art-frame-canvas img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 56vh;
+  object-fit: contain;
+  transition: transform 0.08s ease-out;
+}
+.art-museum-plaque {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  padding: 5px 28px;
+  background: linear-gradient(180deg, #f0d588 0%, #d4ad4b 45%, #e8cb79 55%, #b3882f 100%);
+  border: 1px solid #7c5812;
+  border-radius: 2px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.3);
+  text-align: center;
+  user-select: none;
+}
+.art-museum-plaque::before,
+.art-museum-plaque::after {
+  content: "•";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  line-height: 1;
+  color: #5c3f0f;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+.art-museum-plaque::before { left: 8px; }
+.art-museum-plaque::after { right: 8px; }
+
+.plaque-artist {
+  font-family: var(--serif, Georgia, serif);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #2b1c06;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  line-height: 1.2;
+}
+.plaque-title {
+  font-family: var(--serif, Georgia, serif);
+  font-style: italic;
+  font-size: 0.68rem;
+  color: #4a3411;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+/* Gilded frame accents on gallery tiles & auction thumbnails */
+.portfolio-gallery-tile img {
+  border: 2px solid #b8974a;
+  outline: 1px solid #4a3210;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  border-radius: 2px;
+  background: #150e08;
+}
+.auc-preview-art-thumb {
+  border: 2.5px solid #c8a355 !important;
+  outline: 1px solid #4a300e;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset 0 0 6px rgba(0,0,0,0.6) !important;
+  background: #18110a;
+}
+.thumb-art {
+  border: 1.5px solid #b8974a !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.35) !important;
+  border-radius: 3px;
+  background: #160f09;
+}
 .av-title { margin: 0 0 .1em; font-family: var(--serif); font-size: 1.5rem; line-height: 1.15; color: var(--ink); }
 .av-credit { margin: 0 0 .9em; font-family: var(--serif); font-style: italic; font-size: .95rem; color: var(--oxblood); }
 .av-story { margin: 0 0 .7em; font-size: .88rem; line-height: 1.6; }
@@ -1568,15 +2112,12 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .colony-main{min-height:0;flex:none}
  .colony-view--plantage .colony-grid{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   --plot-gap:5px;min-height:0;height:auto;max-height:42dvh;
+   --plot-gap:6px;min-height:0;height:auto;max-height:45dvh;
  }
- .colony-view--plantage .plot{padding:4px 2px;gap:2px;font-size:.75rem}
- .colony-view--plantage .plot--empty .plot-empty-plus{font-size:1.5rem}
- .colony-view--plantage .plot--empty .plot-empty-label{font-size:.7rem;line-height:1.15;overflow-wrap:anywhere;text-align:center}
- .colony-view--plantage .plot--planted .plot-house{width:36px;height:36px}
- .colony-view--plantage .plot--planted .plot-label,
- .colony-view--plantage .plot--planted .plot-workers,
- .colony-view--plantage .plot--planted .plot-status{font-size:.7rem}
+ .colony-view--plantage .plot{padding:4px 3px;aspect-ratio:1 / 1.08}
+ .plot-farm-head .plot-crop-tag{font-size:.62rem;padding:1px 4px}
+ .plot-status-label, .plot-yield-label{font-size:.58rem;padding:1px 4px}
+ .plot-sickle-badge{top:20px;right:3px;font-size:.60rem;padding:1px 5px}
  #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
@@ -1915,33 +2456,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Desktop: one genuinely compact HUD row, not a tall dark empty rectangle. */
 @media(min-width:1000px){
  #screen-game{gap:8px}
- #screen-game #hud{
-   display:grid;grid-template-columns:auto auto minmax(70px,1fr) minmax(380px,auto);
-   grid-template-areas:"brand balance ticker chrono";
-   align-items:center;column-gap:12px;row-gap:0;
-   padding:5px 12px;min-height:0;border-width:2px;border-radius:11px;
- }
- #screen-game #hud .hud-brand{justify-content:center;gap:1px}
- #screen-game #hud .hud-brand strong{font-size:.91rem;line-height:1.15}
- #screen-game #hud .hud-name{font-size:.57rem;line-height:1.1}
- #screen-game #hud-balance{align-self:center;gap:5px;flex-wrap:wrap}
- #screen-game #hud .hud-chip{font-size:.67rem;padding:4px 7px}
- #screen-game #hud .chrono{
-   display:flex;flex-direction:row;align-items:center;justify-content:flex-end;
-   gap:10px;min-width:0;align-self:center;
- }
- #screen-game #hud .hud-stead{align-items:flex-end;text-align:right;min-width:105px}
- #screen-game #hud-city{font-size:.83rem;line-height:1.12}
- #screen-game #hud-sub{font-size:.58rem;line-height:1.1}
- #screen-game #hud .chrono-row{flex-direction:row;align-items:center;gap:7px}
- #screen-game #hud .chrono-cal{flex-wrap:nowrap;gap:5px;padding:4px 7px;box-shadow:none}
- #screen-game #hud .chrono-date b{font-size:.98rem}
- #screen-game #hud .chrono-date span{font-size:.67rem}
- #screen-game #hud .chrono-timer{display:none}
- #screen-game #hud .chrono-auto{white-space:nowrap;font-size:.55rem}
- #screen-game #hud .chrono-speed{max-width:64px;font-size:.62rem}
- #screen-game #hud #end-day{align-self:center;min-height:35px;white-space:nowrap;padding:5px 9px;font-size:.72rem}
- #screen-game #ticker{min-width:0;max-height:36px;overflow:hidden}
 }
 /* Let the city photo actually read through the interface. The former
    multiple 80-95% opaque paper overlays flattened it almost entirely. */
@@ -1964,19 +2478,44 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Keep the travel map and text-bearing interactive pieces clear and opaque. */
 #screen-game .worldmap--canvas{background:#2079a0;backdrop-filter:none}
 
-/* Desktop header: use the same current city artwork as the game stage. */
-@media(min-width:1000px){
- #screen-game #hud{
-   background-image:linear-gradient(90deg,rgba(246,225,183,.77),rgba(236,210,163,.60)),var(--play-city-art,none);
-   background-position:center center;background-size:cover;background-repeat:no-repeat;
-   color:#3d2818;border-color:#9d7746;box-shadow:0 3px 12px rgba(45,30,16,.20);
- }
- #screen-game #hud .hud-brand strong{color:#533416;text-shadow:0 1px 0 rgba(255,251,236,.8)}
- #screen-game #hud .hud-name,#screen-game #hud-city,#screen-game #hud-sub{color:#382718;text-shadow:0 1px 2px rgba(255,248,227,.9)}
- #screen-game #hud .hud-chip,#screen-game #hud .language-switch{background:rgba(255,245,220,.84);color:#49321c;border-color:#aa8950}
- #screen-game #hud #ticker{background:rgba(255,247,223,.78);border-radius:7px;color:#47301b}
- #screen-game #hud .chrono-cal{background:rgba(255,250,236,.87);border-radius:10px}
- #screen-game #hud .chrono-speed,#screen-game #hud .chrono-auto{background:rgba(255,249,232,.93);color:#322315}
+/* Header typography: clean, crisp, no artificial fake text shadows */
+#screen-game #hud,
+#screen-game #hud .hud-brand,
+#screen-game #hud .hud-brand strong,
+#screen-game #hud .hud-name,
+#screen-game #hud .hud-stead,
+#screen-game #hud-city,
+#screen-game #hud-sub,
+#screen-game #hud-hotel,
+#screen-game #hud .hud-chip,
+#screen-game #hud .language-switch {
+  text-shadow: none !important;
+}
+
+#screen-game #hud .hud-brand strong {
+  color: var(--gold-2) !important;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+#screen-game #hud .hud-name {
+  color: #e4caa0 !important;
+  letter-spacing: .12em;
+  opacity: .9;
+}
+
+#screen-game #hud-city {
+  color: #fff8e6 !important;
+  font-weight: 700;
+}
+
+#screen-game #hud-sub {
+  color: #e4caa0 !important;
+  opacity: .9;
+}
+
+#screen-game #hud-hotel {
+  color: #f4e1b3 !important;
 }
 
 /* Auction title and auction-house illustration share one visual group. */
@@ -2085,17 +2624,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    margin:0;
    overflow:hidden;
    isolation:isolate;
-   padding:5px 4px;
-   gap:2px;
+   padding:6px;
  }
- .colony-view--plantage .plot--planted .plot-house{width:30px;height:30px}
- .colony-view--plantage .plot-head,.colony-view--plantage .plot-foot{flex:0 0 auto}
- .colony-view--plantage .plot-label{font-size:.71rem}
- .colony-view--plantage .plot-workers{font-size:.68rem;font-weight:800}
- .colony-view--plantage .plot-status{font-size:.66rem}
- .colony-view--plantage .plot-field{top:32px;bottom:31px;overflow:hidden}
- .colony-view--plantage .plot-pips{gap:2px}
- .colony-view--plantage .plot-pip{width:5px;height:5px}
 }
 @media(min-width:761px) and (max-width:1050px){
  .colony-view--plantage .colony-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
@@ -2136,7 +2666,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 /* Illustrated, tactile menu badges. Phase 1: all seven city navigation icons.
    Retain native emoji fallback, with consistent frame/light/shadow across OSes. */
-#screen-game #stations .st-ico{display:flex;justify-content:center;align-items:center;margin-bottom:5px;line-height:1}
+#screen-game #stations .st-ico{display:flex;justify-content:center;align-items:center;margin-bottom:3px;line-height:1}
 #screen-game #stations .icon-art{
  display:grid;place-items:center;position:relative;isolation:isolate;
  width:40px;height:40px;flex:0 0 40px;
@@ -2379,9 +2909,10 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .dialog--tutorial .tutorial-tier-card small{font-size:.63rem}
 .dialog--tutorial .tutorial-tier-a{background:#f5e5b8;border-color:#a4772e}
 .dialog--tutorial .tutorial-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:12px 0}
-.dialog--tutorial .tutorial-example{display:flex;flex-direction:column;min-width:0;background:#f4e6ca;border:1px solid #b59459;border-radius:9px;overflow:hidden}
-.dialog--tutorial .tutorial-example-art{height:138px;display:grid;place-items:center;background:#382d25}
-.dialog--tutorial .tutorial-example-art img{width:100%;height:100%;max-height:138px;object-fit:contain}
+.dialog--tutorial .tutorial-example{display:flex;flex-direction:column;min-width:0;background:#f4e6ca;border:2px solid #b59459;border-radius:9px;overflow:hidden;box-shadow:0 3px 8px rgba(0,0,0,0.18);transition:transform 0.15s ease}
+.dialog--tutorial .tutorial-example:hover{transform:translateY(-2px)}
+.dialog--tutorial .tutorial-example-art{height:138px;display:flex;align-items:center;justify-content:center;background:#14110e;border-bottom:2px solid #b08a52;box-shadow:inset 0 0 12px rgba(0,0,0,0.7);padding:6px;box-sizing:border-box;overflow:hidden}
+.dialog--tutorial .tutorial-example-art img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;box-shadow:0 2px 6px rgba(0,0,0,0.5);display:block}
 .dialog--tutorial .tutorial-example-caption{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:8px 10px}
 .dialog--tutorial .tutorial-example-caption strong{color:#81521c}
 .dialog--tutorial .tutorial-set-visual{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
@@ -2393,7 +2924,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .dialog--tutorial .tutorial-tier-card{padding:7px 1px}
  .dialog--tutorial .tutorial-tier-score{font-size:.56rem}
  .dialog--tutorial .tutorial-tier-card small{font-size:.55rem}
- .dialog--tutorial .tutorial-example-art,.dialog--tutorial .tutorial-example-art img{height:105px;max-height:105px}
+ .dialog--tutorial .tutorial-example-art{height:105px;max-height:105px}
 }
 
 /* Six short tutorial pages; navigation stays at exactly the same screen position. */
@@ -2409,25 +2940,24 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
 }
 #overlay .dialog--tutorial .tutorial-hero{min-height:clamp(130px,23dvh,210px)}
-#overlay .dialog--tutorial .tutorial-example-art,
-#overlay .dialog--tutorial .tutorial-example-art img{height:122px;max-height:122px}
+#overlay .dialog--tutorial .tutorial-example-art{height:122px;max-height:122px}
+#overlay .dialog--tutorial .tutorial-example-art img{max-width:100%;max-height:100%;width:auto;height:auto}
 #overlay .dialog--tutorial .tutorial-progress{padding:4px 0 8px}
 @media(max-width:480px){
  #overlay .dialog.dialog--tutorial{height:calc(100dvh - 18px)}
  #overlay .dialog--tutorial .tutorial-hero{min-height:145px}
- #overlay .dialog--tutorial .tutorial-example-art,
- #overlay .dialog--tutorial .tutorial-example-art img{height:100px;max-height:100px}
+ #overlay .dialog--tutorial .tutorial-example-art{height:100px;max-height:100px}
 }
 
 /* Real works from the same artist instead of generic picture symbols. */
 .dialog--tutorial .tutorial-set-example{min-width:0}
 .dialog--tutorial .tutorial-set-paintings{display:flex;align-items:stretch;justify-content:center;gap:5px;width:100%;height:118px}
-.dialog--tutorial .tutorial-set-paintings img{display:block;min-width:0;flex:1 1 0;width:0;height:100%;object-fit:contain;background:#332820;border:2px solid #b08a52;border-radius:4px;box-sizing:border-box}
+.dialog--tutorial .tutorial-set-paintings img{display:block;min-width:0;flex:1 1 0;width:0;height:100%;object-fit:contain;background:#14110e;border:2px solid #b08a52;border-radius:4px;box-sizing:border-box;box-shadow:inset 0 0 8px rgba(0,0,0,0.7);padding:2px}
 .dialog--tutorial .tutorial-set-example>strong{font-size:.78rem;text-align:center}
 @media(max-width:480px){.dialog--tutorial .tutorial-set-paintings{height:83px;gap:3px}.dialog--tutorial .tutorial-set-paintings img{border-width:1px}}
 
 /* Each A–E tutorial tier shows an actual catalogue painting. */
-.dialog--tutorial .tutorial-tier-art{width:100%;height:94px;display:grid;place-items:center;overflow:hidden;background:#30251e;border-radius:5px}
+.dialog--tutorial .tutorial-tier-art{width:100%;height:94px;display:grid;place-items:center;overflow:hidden;background:#14110e;border:1.5px solid #b08a52;border-radius:5px;box-sizing:border-box;box-shadow:inset 0 0 8px rgba(0,0,0,0.6);padding:3px}
 .dialog--tutorial .tutorial-tier-art img{display:block;width:100%;height:100%;object-fit:contain}
 .dialog--tutorial .tutorial-tier-art span{color:#f4e4c4}
 .dialog--tutorial .tutorial-tier-card{min-width:0;gap:5px}
@@ -2488,25 +3018,223 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 /* Regression fix: removing the ticker also removes its reserved grid track. */
-#screen-game #hud{
- grid-template-columns:auto minmax(0,1fr) auto;
- grid-template-areas:"brand balance chrono";
+/* Responsive, aligned HUD layout: Navigation & Context on row 1, Stats & Chrono on row 2 */
+#screen-game #hud {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  padding: 6px 12px;
+  grid-template-columns: none !important;
+  grid-template-areas: none !important;
+  border-radius: 13px;
+  border: 2px solid #3d2610;
+  background: linear-gradient(180deg, #8a5c2e, #5a3a18);
+  box-sizing: border-box;
 }
-#screen-game #hud #ticker{display:none!important}
-@media(min-width:1000px){
- #screen-game #hud{
-  grid-template-columns:auto minmax(0,1fr) minmax(360px,auto);
-  grid-template-areas:"brand balance chrono";
- }
+#screen-game #hud #ticker { display: none !important; }
+
+.hud-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
-@media(max-width:760px){
- #screen-game #hud{
-  display:flex;flex-direction:column;align-items:stretch;
-  grid-template-areas:none;
- }
- #screen-game #hud .hud-brand{order:0;min-width:0}
- #screen-game #hud .chrono{order:1;min-width:0;width:100%}
- #screen-game #hud-balance{order:2;min-width:0;width:100%}
+
+.hud-top-row .hud-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 0 0 auto;
+}
+.hud-top-row .hud-brand strong { font-size: .95rem; line-height: 1.15; color: var(--gold-2); }
+.hud-top-row .hud-name { font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; opacity: .85; }
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.hud-actions .hud-chip,
+.hud-actions .language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 2px 7px;
+  font-size: .68rem;
+  border-radius: 7px;
+  background: rgba(255, 245, 220, .14);
+  border: 1px solid rgba(255, 220, 120, .5);
+  color: #fff1d5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hud-actions .hud-chip:hover,
+.hud-actions .language-switch:hover {
+  background: rgba(255, 245, 220, .26);
+}
+
+.hud-stead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+#hud-city { font-size: .88rem; font-weight: 700; color: #fff8e6; line-height: 1.15; }
+#hud-sub { font-size: .62rem; color: #e4caa0; }
+#hud-hotel { font-size: .62rem; color: #f4e1b3; }
+
+.hud-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 220, 120, .2);
+}
+
+.hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+.hud-stats .hud-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 2px 9px;
+  font-size: .72rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgba(255, 240, 210, .12);
+  border: 1.5px solid rgba(255, 220, 120, .55);
+  color: #ffe27a;
+}
+
+#screen-game #hud .chrono {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin: 0;
+}
+#screen-game #hud .chrono-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+#screen-game #hud .chrono-cal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgba(255, 250, 236, .92);
+  box-shadow: none;
+}
+#screen-game #hud .chrono-date b { font-size: .98rem; }
+#screen-game #hud .chrono-date span { font-size: .68rem; }
+#screen-game #hud .chrono-timer { display: none; }
+#screen-game #hud .chrono-auto { font-size: .58rem; white-space: nowrap; }
+#screen-game #hud .chrono-speed { font-size: .66rem; width: auto; min-width: 76px; max-width: 86px; padding: 3px 5px; }
+#screen-game #hud #end-day {
+  min-height: 33px;
+  padding: 4px 11px;
+  font-size: .76rem;
+  white-space: nowrap;
+}
+
+@media(max-width: 760px) {
+  #screen-game #hud {
+    padding: 6px 8px 4px !important;
+    gap: 3px !important;
+  }
+  .hud-top-row .hud-brand {
+    display: none !important;
+  }
+  .hud-actions {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .hud-actions {
+    display: flex;
+    order: 3;
+    width: 100%;
+    gap: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 220, 120, .25);
+  }
+  .hud-stead {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+  }
+  #hud-city { font-size: .84rem; }
+  #hud-sub { display: none; }
+  #hud-hotel { font-size: .62rem; }
+  #hud-more {
+    display: flex !important;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    font-size: .65rem;
+    min-height: 27px;
+    border-radius: 6px;
+  }
+  .hud-bottom-row {
+    border-top: none;
+    padding-top: 0;
+  }
+  .hud-stats #hud-rep,
+  .hud-stats #hud-goal {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .hud-stats #hud-rep,
+  #screen-game #hud.hud-details-open .hud-stats #hud-goal {
+    display: inline-flex;
+  }
+  .hud-stats #hud-cash {
+    font-size: .7rem;
+    padding: 2px 7px;
+    min-height: 27px;
+  }
+  #screen-game #hud .chrono-row {
+    gap: 4px;
+  }
+  #screen-game #hud .chrono-cal {
+    padding: 2px 6px;
+  }
+  #screen-game #hud .chrono-auto,
+  #screen-game #hud .chrono-speed {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .chrono-auto {
+    display: flex;
+  }
+  #screen-game #hud.hud-details-open .chrono-speed {
+    display: block;
+  }
+  #screen-game #hud #end-day {
+    min-height: 31px;
+    min-width: 80px;
+    padding: 3px 8px;
+    font-size: .72rem;
+  }
 }
 
 /* Colony uses the same live music toggle as the city HUD. */
@@ -3011,14 +3739,25 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   line-height: 1.25;
 }
 
+.hotel-auc-artist {
+  font-size: 0.74rem;
+  color: #4a3621;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 1.25;
+}
+
 .hotel-auc-hint {
   font-size: 0.73rem;
+  font-weight: 500;
   color: #6e5535;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .hotel-auction-card-foot {

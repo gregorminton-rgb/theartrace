@@ -94,7 +94,7 @@ function runToArrival() {
   while (G.voyage && guard++ < 90) days(1);
   return guard < 90;
 }
-check('engine loaded', A.works.length === 105 && A.artists.length === 35 && A.cities.length >= 13,
+check('engine loaded', A.works.length === 156 && A.artists.length === 35 && A.cities.length >= 13,
       'works=' + A.works.length + ' artists=' + A.artists.length + ' cities=' + A.cities.length);
 var artistCounts = {}, workIds = {}, imageFiles = {}, uniqueWorks = true, completeImages = true;
 var imageMap = window.ART_ARTWORK_IMAGES.images;
@@ -110,11 +110,11 @@ for (var wi = 0; wi < A.works.length; wi++) {
   if (picture) imageFiles[picture.file] = true;
 }
 check('unique work ids', uniqueWorks);
-check('one web-sized image per work', completeImages && Object.keys(imageMap).length === 105 &&
-      window.ART_ARTWORK_IMAGES.meta.count === 105);
+check('one web-sized image per work', completeImages && Object.keys(imageMap).length === 156 &&
+      window.ART_ARTWORK_IMAGES.meta.count === 156);
 check('all works belong to registered artists', Object.keys(artistCounts).length === A.artists.length);
 for (var ai = 0; ai < A.artists.length; ai++) {
-  check('three works for ' + A.artists[ai].id, artistCounts[A.artists[ai].id] === 3);
+  check('four works for ' + A.artists[ai].id, artistCounts[A.artists[ai].id] === 4);
 }
 var extraFacts = window.ART_RACE_EXTRA_WORKS.every(function(work) {
   return !!(work.medium && work.dimensions && work.description && A.artistById[work.artistId]);

@@ -124,11 +124,30 @@
     }
     var owned = ownedInstances(id);
 
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    var plaqueArtist = artist ? artist.name.toUpperCase() : 'UNKNOWN';
+    var plaqueYears = (artist && artist.birthYear && artist.deathYear) ? ' (' + artist.birthYear + '–' + artist.deathYear + ')' : '';
+    var titleText = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+    var plaqueTitle = titleText + (w.yearCreated ? ' · ' + w.yearCreated : '');
+
+    var plaqueHtml = '<div class="art-museum-plaque">' +
+      '<span class="plaque-artist">' + h(plaqueArtist + plaqueYears) + '</span>' +
+      '<span class="plaque-title">' + h(plaqueTitle) + '</span>' +
+    '</div>';
+
     var plate = pic
-      ? '<figure class="av-plate"><img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="eager" decoding="async">' +
-        (pic.how === 'alias' ? '<figcaption>A stand-in plate: a different original by the same painter.</figcaption>' : '') +
+      ? '<figure class="av-plate art-museum-frame">' +
+          '<div class="art-frame-moulding">' +
+            '<div class="art-frame-mat">' +
+              '<div class="art-frame-canvas">' +
+                '<img src="' + h(pic.file) + '" alt="' + h(titleText) + '" loading="eager" decoding="async">' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          plaqueHtml +
+          (pic.how === 'alias' ? '<figcaption>' + (german ? 'Stellvertreter-Werk desselben Künstlers' : 'A stand-in plate: a different original by the same painter.') + '</figcaption>' : '') +
         '</figure>'
-      : '<div class="av-plate av-plate--missing"><span>No picture imported for this work yet</span></div>';
+      : '<div class="av-plate av-plate--missing"><span>' + (german ? 'Noch kein Bild importiert' : 'No picture imported for this work yet') + '</span></div>';
 
     var enriched = window.ART_EXTRA_STORIES && window.ART_EXTRA_STORIES[id];
     var extraStory = enriched ? '<section class="av-extra"><h4>' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Hintergrundgeschichte' : 'Behind the painting') + '</h4><p>' + h(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? enriched.de : enriched.en) + '</p><a target="_blank" rel="noopener noreferrer" href="' + h(enriched.source) + '">' + (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de' ? 'Museumsquelle ansehen' : 'Museum source') + '</a></section>' : '';
@@ -158,7 +177,7 @@
     var body = '<div class="av">' +
       '<div class="av-left">' + plate + '<div class="av-zoom-controls"><button type="button" data-artzoom="out" aria-label="Zoom out">−</button><button type="button" data-artzoom="reset">100%</button><button type="button" data-artzoom="in" aria-label="Zoom in">+</button></div>' + story + aside + extraStory + '</div>' +
       '<div class="av-right">' +
-        '<h3 class="av-title">' + h(w.title) + '</h3>' +
+        '<h3 class="av-title">' + h(titleText) + '</h3>' +
         '<p class="av-credit">' + h(artist ? artist.name : 'Unknown') + ', ' + w.yearCreated + '</p>' +
         facts + extra +
         ownedBlock(owned) +
@@ -179,7 +198,7 @@
       { label: (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') ? 'Schließen' : 'Close', onClick: closeDialog }
     ] : [{ label: 'Close', primary: true, onClick: closeDialog }];
 
-    dialog(w.title, body, closeButtons, 'av-dialog');
+    dialog(titleText, body, closeButtons, 'av-dialog');
 
     var root = document.querySelector('.dialog.av-dialog');
     var image = root && root.querySelector('.av-plate img');

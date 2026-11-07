@@ -1,0 +1,782 @@
+[
+  {
+    "id": "botticelli_dante_comedy",
+    "title": "Illustration for the Divine Comedy",
+    "file": "data.js"
+  },
+  {
+    "id": "botticelli_primavera_detail",
+    "title": "Primavera, detail panel",
+    "file": "data.js"
+  },
+  {
+    "id": "botticelli_venus_study",
+    "title": "The Birth of Venus, tempera study",
+    "file": "data.js"
+  },
+  {
+    "id": "cezanne_apples_oranges",
+    "title": "Apples and Oranges",
+    "file": "data.js"
+  },
+  {
+    "id": "cezanne_card_players",
+    "title": "The Card Players, reduced version",
+    "file": "data.js"
+  },
+  {
+    "id": "cezanne_sainte_victoire",
+    "title": "Mont Sainte-Victoire",
+    "file": "data.js"
+  },
+  {
+    "id": "degas_at_the_races",
+    "title": "At the Races, pastel",
+    "file": "data.js"
+  },
+  {
+    "id": "degas_little_dancer",
+    "title": "Little Dancer, plaster study",
+    "file": "data.js"
+  },
+  {
+    "id": "degas_the_star",
+    "title": "The Star, ballet study",
+    "file": "data.js"
+  },
+  {
+    "id": "durer_melencolia",
+    "title": "Melencolia I",
+    "file": "data.js"
+  },
+  {
+    "id": "durer_praying_hands",
+    "title": "Praying Hands",
+    "file": "data.js"
+  },
+  {
+    "id": "durer_young_hare_after",
+    "title": "Young Hare, after the original",
+    "file": "data.js"
+  },
+  {
+    "id": "fragonard_gentleman_portrait",
+    "title": "Portrait of a Gentleman",
+    "file": "data.js"
+  },
+  {
+    "id": "fragonard_the_swing_engraved",
+    "title": "The Swing, engraved after",
+    "file": "data.js"
+  },
+  {
+    "id": "fragonard_young_girl_reading",
+    "title": "A Young Girl Reading",
+    "file": "data.js"
+  },
+  {
+    "id": "gauguin_breton_sketch",
+    "title": "Breton Village, sketch",
+    "file": "data.js"
+  },
+  {
+    "id": "gauguin_tahitian_beach",
+    "title": "Tahitian Women on the Beach",
+    "file": "data.js"
+  },
+  {
+    "id": "gauguin_yellow_christ",
+    "title": "The Yellow Christ",
+    "file": "data.js"
+  },
+  {
+    "id": "goya_maja_study",
+    "title": "La Maja, study",
+    "file": "data.js"
+  },
+  {
+    "id": "goya_sleep_of_reason",
+    "title": "The Sleep of Reason Produces Monsters",
+    "file": "data.js"
+  },
+  {
+    "id": "goya_the_colossus",
+    "title": "The Colossus",
+    "file": "data.js"
+  },
+  {
+    "id": "hokusai_great_wave",
+    "title": "The Great Wave off Kanagawa",
+    "file": "data.js"
+  },
+  {
+    "id": "hokusai_red_fuji",
+    "title": "Fine Wind, Clear Morning",
+    "file": "data.js"
+  },
+  {
+    "id": "hokusai_sketchbook",
+    "title": "Random Sketches, Volume One",
+    "file": "data.js"
+  },
+  {
+    "id": "klimt_adele_study",
+    "title": "Portrait of Adele, study",
+    "file": "data.js"
+  },
+  {
+    "id": "klimt_the_kiss_study",
+    "title": "The Kiss, preliminary study",
+    "file": "data.js"
+  },
+  {
+    "id": "klimt_tree_of_life",
+    "title": "Tree of Life, mosaic cartoon",
+    "file": "data.js"
+  },
+  {
+    "id": "manet_folies_bergere",
+    "title": "A Bar at the Folies-Bergere",
+    "file": "data.js"
+  },
+  {
+    "id": "manet_olympia_study",
+    "title": "Olympia, study",
+    "file": "data.js"
+  },
+  {
+    "id": "manet_peonies",
+    "title": "Peonies in a Vase",
+    "file": "data.js"
+  },
+  {
+    "id": "monet_haystack",
+    "title": "Haystacks at Giverny",
+    "file": "data.js"
+  },
+  {
+    "id": "monet_impression_variant",
+    "title": "Impression, Sunrise, variant",
+    "file": "data.js"
+  },
+  {
+    "id": "monet_water_lilies",
+    "title": "Water Lilies, pond study",
+    "file": "data.js"
+  },
+  {
+    "id": "mucha_gismonda",
+    "title": "Gismonda, theatre poster",
+    "file": "data.js"
+  },
+  {
+    "id": "mucha_seasons_posters",
+    "title": "The Seasons, poster set",
+    "file": "data.js"
+  },
+  {
+    "id": "mucha_slav_epic_note",
+    "title": "Slav Epic, working note",
+    "file": "data.js"
+  },
+  {
+    "id": "munter_boating",
+    "title": "Boating, blue landscape",
+    "file": "data.js"
+  },
+  {
+    "id": "munter_flowers_still_life",
+    "title": "Still Life with Flowers",
+    "file": "data.js"
+  },
+  {
+    "id": "munter_jawlensky",
+    "title": "Portrait of Jawlensky",
+    "file": "data.js"
+  },
+  {
+    "id": "rembrandt_night_watch_sketch",
+    "title": "The Night Watch, oil sketch",
+    "file": "data.js"
+  },
+  {
+    "id": "rembrandt_self_portrait",
+    "title": "Self Portrait at the Easel",
+    "file": "data.js"
+  },
+  {
+    "id": "rembrandt_three_trees",
+    "title": "The Three Trees",
+    "file": "data.js"
+  },
+  {
+    "id": "renoir_boating_party",
+    "title": "Luncheon of the Boating Party",
+    "file": "data.js"
+  },
+  {
+    "id": "renoir_moulin_galette",
+    "title": "Dance at the Moulin de la Galette",
+    "file": "data.js"
+  },
+  {
+    "id": "renoir_two_sisters",
+    "title": "Two Sisters on the Terrace",
+    "file": "data.js"
+  },
+  {
+    "id": "turner_rain_steam_speed",
+    "title": "Rain, Steam and Speed",
+    "file": "data.js"
+  },
+  {
+    "id": "turner_temeraire",
+    "title": "The Fighting Temeraire",
+    "file": "data.js"
+  },
+  {
+    "id": "turner_venice_laguna",
+    "title": "Venice, from the Laguna",
+    "file": "data.js"
+  },
+  {
+    "id": "van_gogh_irises",
+    "title": "Irises, Saint-Remy",
+    "file": "data.js"
+  },
+  {
+    "id": "van_gogh_starry_night_study",
+    "title": "The Starry Night, study",
+    "file": "data.js"
+  },
+  {
+    "id": "van_gogh_sunflowers",
+    "title": "Sunflowers, Arles variant",
+    "file": "data.js"
+  },
+  {
+    "id": "velazquez_cooking_eggs",
+    "title": "An Old Woman Cooking Eggs",
+    "file": "data.js"
+  },
+  {
+    "id": "velazquez_man_in_black",
+    "title": "Portrait of a Man in Black",
+    "file": "data.js"
+  },
+  {
+    "id": "velazquez_meninas_bozzetto",
+    "title": "Las Meninas, bozzetto",
+    "file": "data.js"
+  },
+  {
+    "id": "vermeer_love_letter",
+    "title": "The Love Letter, studio version",
+    "file": "data.js"
+  },
+  {
+    "id": "vermeer_music_lesson_study",
+    "title": "The Music Lesson, study",
+    "file": "data.js"
+  },
+  {
+    "id": "vermeer_pearl_earring_copy",
+    "title": "Girl with a Pearl Earring, copy after",
+    "file": "data.js"
+  },
+  {
+    "id": "watteau_cythera_reduction",
+    "title": "Pilgrimage to Cythera, reduction",
+    "file": "data.js"
+  },
+  {
+    "id": "watteau_fete_champetre",
+    "title": "The Fete Champetre",
+    "file": "data.js"
+  },
+  {
+    "id": "watteau_harlequin_study",
+    "title": "Harlequin, study",
+    "file": "data.js"
+  },
+  {
+    "id": "durer_fur_coat_self_portrait",
+    "title": "Self-Portrait in a Fur-Collared Robe",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leonardo_st_john_the_baptist",
+    "title": "Saint John the Baptist",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "botticelli_mars_and_venus",
+    "title": "Venus and Mars",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "caravaggio_medusa",
+    "title": "Medusa",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "lorrain_apollo_and_muses",
+    "title": "Landscape with Apollo and the Muses",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "velazquez_surrender_of_breda",
+    "title": "The Surrender of Breda",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "vermeer_the_milkmaid",
+    "title": "The Milkmaid",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "rembrandt_anatomy_lesson",
+    "title": "The Anatomy Lesson of Dr. Nicolaes Tulp",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "watteau_gersaints_shopsign",
+    "title": "Gersaint's Shopsign",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "fragonard_stolen_kiss",
+    "title": "The Stolen Kiss",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "friedrich_sea_of_ice",
+    "title": "The Sea of Ice",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "goya_third_of_may",
+    "title": "The Third of May 1808",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "turner_slave_ship",
+    "title": "The Slave Ship",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "hokusai_waterfall_ono",
+    "title": "The Waterfall at Ono on the Kisokaido",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "pissarro_apple_harvest",
+    "title": "Apple Picking at Eragny-sur-Epte",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "monet_woman_with_parasol",
+    "title": "Woman with a Parasol",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "degas_the_ballet_class",
+    "title": "The Ballet Class",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "manet_luncheon_on_the_grass",
+    "title": "The Luncheon on the Grass",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "seurat_the_models",
+    "title": "The Models (Les Poseuses)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "toulouse_the_toilette",
+    "title": "Rousse (The Toilette)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "renoir_large_bathers",
+    "title": "The Large Bathers",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "munch_vampire",
+    "title": "Vampire (Love and Pain)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "cezanne_large_bathers",
+    "title": "The Large Bathers",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "gauguin_where_do_we_come_from",
+    "title": "Where Do We Come From? What Are We? Where Are We Going?",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "van_gogh_cafe_terrace",
+    "title": "Café Terrace at Night",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "mucha_job",
+    "title": "JOB Cigarettes",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "schiele_krumau",
+    "title": "Krumau Town Crescent",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leger_three_women",
+    "title": "Three Women (Le Grand Déjeuner)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "marc_tower_of_blue_horses",
+    "title": "The Tower of Blue Horses",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "munter_country_road_winter",
+    "title": "Country Road in Winter",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "klimt_judith_i",
+    "title": "Judith and the Head of Holofernes (Judith I)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "matisse_open_window",
+    "title": "The Open Window, Collioure",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "chagall_over_the_town",
+    "title": "Over the Town",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "picasso_portrait_gertrude_stein",
+    "title": "Portrait of Gertrude Stein",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "kandinsky_murnau_street",
+    "title": "Murnau, Street with Church",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "raphael_school_of_athens",
+    "title": "The School of Athens",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "raphael_sistine_madonna",
+    "title": "Sistine Madonna",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "raphael_three_graces",
+    "title": "The Three Graces",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "raphael_castiglione",
+    "title": "Portrait of Baldassare Castiglione",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "rubens_judgement_of_paris",
+    "title": "The Judgement of Paris",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "rubens_fall_of_the_damned",
+    "title": "The Fall of the Damned",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "rubens_three_graces",
+    "title": "The Three Graces",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "rubens_elevation_of_cross",
+    "title": "The Elevation of the Cross",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "delacroix_liberty_leading_people",
+    "title": "Liberty Leading the People",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "delacroix_death_of_sardanapalus",
+    "title": "The Death of Sardanapalus",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "delacroix_barque_of_dante",
+    "title": "The Barque of Dante",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "delacroix_lion_hunt",
+    "title": "Lion Hunt",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "modigliani_reclining_nude",
+    "title": "Reclining Nude (Nu couché)",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "modigliani_jeanne_hebuterne",
+    "title": "Portrait of Jeanne Hébuterne",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "modigliani_leopold_zborowski",
+    "title": "Portrait of Léopold Zborowski",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "modigliani_woman_with_fan",
+    "title": "Woman with a Fan",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "pissarro_red_roofs",
+    "title": "The Red Roofs",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "pissarro_hoarfrost",
+    "title": "Hoarfrost",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "caravaggio_bacchus",
+    "title": "Bacchus",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "caravaggio_calling_of_saint_matthew",
+    "title": "The Calling of Saint Matthew",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "friedrich_monk_by_the_sea",
+    "title": "The Monk by the Sea",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "friedrich_chalk_cliffs",
+    "title": "Chalk Cliffs on Rugen",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "lorrain_marriage_of_isaac_and_rebekah",
+    "title": "Landscape with the Marriage of Isaac and Rebekah",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "lorrain_seaport_at_sunset",
+    "title": "Seaport at Sunset",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "munch_sick_child",
+    "title": "The Sick Child",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "munch_madonna",
+    "title": "Madonna",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "schiele_self_portrait_physalis",
+    "title": "Self-Portrait with Chinese Lantern Plant",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "schiele_seated_woman",
+    "title": "Seated Woman with Bent Knees",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leger_mechanic",
+    "title": "The Mechanic",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leger_city",
+    "title": "The City",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "marc_yellow_cow",
+    "title": "Yellow Cow",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "marc_fate_of_the_animals",
+    "title": "Fate of the Animals",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "seurat_bathers_at_asnieres",
+    "title": "Bathers at Asnieres",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "seurat_circus",
+    "title": "The Circus",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "toulouse_dance_at_moulin_rouge",
+    "title": "At the Moulin Rouge: The Dance",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "toulouse_jane_avril",
+    "title": "Jane Avril",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "matisse_red_studio",
+    "title": "The Red Studio",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "matisse_woman_with_a_hat",
+    "title": "Woman with a Hat",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leonardo_lady_with_an_ermine",
+    "title": "Lady with an Ermine",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leonardo_virgin_of_the_rocks",
+    "title": "Virgin of the Rocks",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "chagall_birthday",
+    "title": "The Birthday",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "chagall_paris_through_the_window",
+    "title": "Paris through the Window",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "picasso_old_guitarist",
+    "title": "The Old Guitarist",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "picasso_three_musicians",
+    "title": "Three Musicians",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "kandinsky_yellow_red_blue",
+    "title": "Yellow-Red-Blue",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "kandinsky_composition_vii",
+    "title": "Composition VII",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "pissarro_boulevard_montmartre",
+    "title": "Boulevard Montmartre at night",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "friedrich_wanderer",
+    "title": "Wanderer above the Sea of Fog",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "lorrain_queen_of_sheba",
+    "title": "The Embarkation of the Queen of Sheba",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "munch_the_scream",
+    "title": "The Scream",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "schiele_death_and_maiden",
+    "title": "Death and the Maiden",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leger_nudes_in_the_forest",
+    "title": "Nudes in the Forest",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "marc_blue_horse",
+    "title": "The Blue Horse I",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "seurat_grande_jatte",
+    "title": "A Sunday on La Grande Jatte",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "matisse_the_dance",
+    "title": "The Dance",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "toulouse_moulin_rouge",
+    "title": "At the Moulin Rouge",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "leonardo_mona_lisa",
+    "title": "Mona Lisa",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "chagall_i_and_the_village",
+    "title": "I and the Village",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "caravaggio_judith",
+    "title": "Judith Beheading Holofernes",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "picasso_demoiselles",
+    "title": "Les Demoiselles d'Avignon",
+    "file": "works-extra.js"
+  },
+  {
+    "id": "kandinsky_improvisation_26",
+    "title": "Improvisation 26",
+    "file": "works-extra.js"
+  }
+]

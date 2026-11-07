@@ -111,9 +111,12 @@
     }
     G.cash -= total;
     /* the first layout is the purchase: the plot becomes the player's */
-    claimPlot(G.colonyId, plotIndex, crop.id);
+    var prevOwned = ownedPlot(G.colonyId, plotIndex);
+    var initLvl = (prevOwned && prevOwned.level) ? prevOwned.level : 0;
+    var curPlot = claimPlot(G.colonyId, plotIndex, crop.id);
+    if (curPlot && prevOwned && prevOwned.level) curPlot.level = prevOwned.level;
     G.fields.push({ id: G.nextFieldId++, colonyId: G.colonyId, plotIndex: plotIndex, cropId: crop.id,
-                    plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
+                    plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: initLvl });
     G.colonyStats.planted += 1;
     log('Laid out a ' + crop.label + ' field on plot ' + (plotIndex + 1) + '.');
     G.selectedFieldId = G.nextFieldId - 1;
@@ -137,6 +140,28 @@
     G.colonyStats.harvested += yieldUnits;
     log('Harvested ' + yieldUnits + ' ' + T().CROP_BY_ID[f.cropId].label + ' unit(s) onto the quay.');
     if (G.selectedFieldId === fid) G.selectedFieldId = null;
+    renderColony();
+  }
+
+  function harvestAllFields() {
+    var colonyF = colonyFields().filter(function (f) { return f.ripe; });
+    if (!colonyF.length) return;
+    var totalYield = 0;
+    var owner = G.colonyId;
+    if (!G.colonyStock) G.colonyStock = {};
+    if (!G.colonyStock[owner]) G.colonyStock[owner] = {};
+    colonyF.forEach(function (f) {
+      var yieldUnits = fieldYield(f);
+      var idx = -1;
+      G.fields.forEach(function (x, i) { if (x.id === f.id) idx = i; });
+      if (idx >= 0) G.fields.splice(idx, 1);
+      G.colonyStock[owner][f.cropId] = (G.colonyStock[owner][f.cropId] || 0) + yieldUnits;
+      G.goods[f.cropId] = (G.goods[f.cropId] || 0) + yieldUnits;
+      G.colonyStats.harvested += yieldUnits;
+      totalYield += yieldUnits;
+    });
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    log((de ? 'Ernte komplett eingebracht: ' : 'Harvested all ripe fields: ') + totalYield + (de ? ' Kisten.' : ' crates.'));
     renderColony();
   }
 
@@ -175,6 +200,8 @@
     if (G.cash < next.cost) { log(next.label + ' costs ' + A.money(next.cost) + '.'); return; }
     G.cash -= next.cost;
     f.level += 1;
+    var p = claimPlot(f.colonyId, f.plotIndex, f.cropId);
+    if (p) p.level = Math.max(p.level || 0, f.level);
     log('Upgraded the ' + T().CROP_BY_ID[f.cropId].label + ' field to ' + next.label + '.');
     renderColony();
   }
@@ -195,7 +222,11 @@
       log('Upgrading '+fields.length+' fields costs '+A.money(total)+'.'); return;
     }
     G.cash-=total;
-    fields.forEach(function(f){f.level+=1;});
+    fields.forEach(function(f){
+      f.level+=1;
+      var p = claimPlot(f.colonyId, f.plotIndex, f.cropId);
+      if (p) p.level = Math.max(p.level || 0, f.level);
+    });
     log('Upgraded '+fields.length+' fields to '+next.label+' for '+A.money(total)+'.');
     renderColony();
   }
@@ -222,7 +253,7 @@
   function claimPlot(colonyId, plotIndex, cropId) {
     if (!G.ownedPlots) G.ownedPlots = {};
     var key = ownedPlotKey(colonyId, plotIndex);
-    if (!G.ownedPlots[key]) G.ownedPlots[key] = { auto: false, cropId: cropId };
+    if (!G.ownedPlots[key]) G.ownedPlots[key] = { auto: false, cropId: cropId, level: 0 };
     G.ownedPlots[key].cropId = cropId;
     return G.ownedPlots[key];
   }
@@ -313,8 +344,9 @@
       if (!cur && crop && G.cash >= crop.cost) {
         G.cash -= crop.cost;
         pl.cropId = crop.id;
+        var initLvl = (pl && pl.level) ? pl.level : 0;
         G.fields.push({ id: G.nextFieldId++, colonyId: colonyId, plotIndex: pi, cropId: crop.id,
-                        plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: 0 });
+                        plantedDay: G.day, progress: 0, ripe: false, workers: 0, level: initLvl });
         G.colonyStats.planted += 1;
       }
     }
@@ -384,11 +416,22 @@
     } else if (action === 'plant-at') {
       var pi = parseInt(t.getAttribute('data-plot'), 10);
       if (plotField(pi)) { renderColony(); return; }
+      if (!G.plantCropId) {
+        var avail = T().COLONY_CROP_IDS[G.colonyId] || [];
+        if (avail.length) G.plantCropId = avail[0];
+      }
       if (!G.plantCropId) { log('Pick a crop plate first, then click a free plot.'); return; }
       plantCrop(G.plantCropId, pi);
+    } else if (action === 'harvest-all') {
+      harvestAllFields();
     } else if (action === 'select') {
       var sfid = parseInt(t.getAttribute('data-field'), 10);
-      toggleMultiSelect(sfid);
+      var fObj = fieldById(sfid);
+      if (fObj && fObj.ripe) {
+        harvestField(sfid);
+      } else {
+        toggleMultiSelect(sfid);
+      }
     } else if (action === 'select-all') {
       selectAllFields();
     } else if (action === 'select-clear') {
@@ -616,6 +659,7 @@
     colonyHeldUnits: colonyHeldUnits,
     plantCrop: plantCrop,
     harvestField: harvestField,
+    harvestAllFields: harvestAllFields,
     hireWorker: hireWorker,
     assignWorker: assignWorker,
     unassignWorker: unassignWorker,

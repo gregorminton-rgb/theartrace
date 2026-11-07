@@ -158,8 +158,80 @@
       return '<li class="news"><b>' + h(ev.headline) + '</b><span class="news-meta">day ' + ev.day + '</span></li>';
     });
     var list = live.concat(old);
-    el('news-list').innerHTML = list.length ? list.join('') : '<li class="news">No news. The salerooms are quiet.</li>';
+    var nl = el('news-list');
+    if (nl) nl.innerHTML = list.length ? list.join('') : '<li class="news">No news. The salerooms are quiet.</li>';
   }
+
+  function openMarketDialog() {
+    var de = !!(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de');
+    var hubs = ['london', 'newyork', 'tokio'];
+    var names = { london: 'London', newyork: 'New York', tokio: de ? 'Tokio' : 'Tokyo' };
+    var currentHub = hubs.indexOf(G.cityId) !== -1 ? G.cityId : null;
+
+    var rows = CROPS.map(function (crop) {
+      var hub = currentHub;
+      if (!hub) hub = hubs.reduce(function (best, id) {
+        return cropPrice(crop, id) > cropPrice(crop, best) ? id : best;
+      }, hubs[0]);
+      var price = cropPrice(crop, hub);
+      var previous = A.colonies.cropPriceOnDay(crop, hub, G.day - 1);
+      var change = previous > 0 ? (price / previous - 1) * 100 : 0;
+      var arrow = change > 0.05 ? '▲' : change < -0.05 ? '▼' : '■';
+      var label = de ? ({ kakao: 'Kakao', tee: 'Tee', kaffee: 'Kaffee', tabak: 'Tabak', stoffe: 'Stoffe' }[crop.id] || crop.label) : crop.label;
+      var icon = { kakao: '🍫', tee: '🍵', kaffee: '☕', tabak: '🍂', stoffe: '🧵' }[crop.id] || '📦';
+      var changeColor = change > 0.05 ? '#2b7816' : change < -0.05 ? '#a82c2c' : '#666';
+      return '<tr style="border-bottom:1px solid #ebdcb9">' +
+        '<td style="padding:7px 6px"><span style="font-size:1.15em;margin-right:5px">' + icon + '</span><b>' + h(label) + '</b>' +
+          (currentHub ? '' : '<small style="display:block;font-size:.72em;color:#785f3e;font-weight:600">' + h(names[hub]) + '</small>') +
+        '</td>' +
+        '<td class="num" style="padding:7px 6px;text-align:right;font-weight:700;font-size:1rem;color:#3b2713">' + A.money(price) + '</td>' +
+        '<td class="num" style="padding:7px 6px;text-align:right;font-weight:700;color:' + changeColor + '">' + (change >= 0 ? '+' : '') + change.toFixed(1) + '% ' + arrow + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var explainer = currentHub
+      ? (de ? 'Aktuelle Verkaufspreise je Kiste an der Warenbörse in ' + names[currentHub] + '. Änderung seit gestern.' : 'Current sale price per crate at the exchange in ' + names[currentHub] + '. Change since yesterday.')
+      : (de ? 'Bester aktueller Verkaufspreis je Kiste aus London, New York und Tokio. Der Handelsort steht unter der Ware.' : 'Best current sale price per crate across London, New York and Tokyo. Exchange shown below each good.');
+
+    var live = G.market.events.map(function (ev) {
+      return '<li class="news live" style="padding:8px 10px;margin-bottom:6px;border-left:3px solid #b8860b;background:rgba(219,186,106,.15);border-radius:4px">' +
+        '<b style="color:#4a3215;font-size:.84rem">' + h(ev.headline) + '</b>' +
+        '<div style="font-size:.72rem;color:#6b5232;margin-top:2px">' + h(ev.category) + ' · ' + h(ev.scope) +
+        (ev.anyEpoch ? '' : ' · ' + h(ev.targetEpoch)) +
+        ' · ' + (ev.multiplier >= 1 ? '+' : '') + ((ev.multiplier - 1) * 100).toFixed(0) + '% ' + (de ? 'bis Tag ' : 'until day ') + ev.endDay + '</div></li>';
+    });
+    var old = G.history.slice(0, 4).map(function (ev) {
+      return '<li class="news" style="padding:5px 8px;margin-bottom:4px;border-left:2px solid #a89476;font-size:.76rem;color:#553f24">' +
+        '<b>' + h(ev.headline) + '</b> <span style="opacity:.7;font-size:.7rem">(' + (de ? 'Tag ' : 'day ') + ev.day + ')</span></li>';
+    });
+    var newsHtml = live.concat(old).join('') || ('<li style="font-size:.8rem;opacity:.8;padding:6px">' + (de ? 'Keine aktuellen Meldungen.' : 'No active news.') + '</li>');
+
+    var body = '<div class="market-modal" style="display:flex;flex-direction:column;gap:12px;max-height:68vh;overflow-y:auto">' +
+      '<div style="background:rgba(255,248,228,.95);border:1.5px solid #c8b184;border-radius:10px;padding:10px 12px">' +
+        '<p style="font-size:.74rem;color:#6d5330;margin:0 0 8px;line-height:1.3">' + h(explainer) + '</p>' +
+        '<table class="market-table" style="width:100%;border-collapse:collapse;font-size:.82rem">' +
+          '<thead><tr style="border-bottom:1.5px solid #d5c19c;text-align:left;color:#8a642e;font-size:.72rem">' +
+            '<th style="padding:4px 6px">' + (de ? 'Ware' : 'Commodity') + '</th>' +
+            '<th style="padding:4px 6px;text-align:right">' + (de ? 'Preis' : 'Price') + '</th>' +
+            '<th style="padding:4px 6px;text-align:right">' + (de ? 'Änderung' : 'Change') + '</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>' +
+      '</div>' +
+      '<div style="background:rgba(255,248,228,.95);border:1.5px solid #c8b184;border-radius:10px;padding:10px 12px">' +
+        '<h4 style="margin:0 0 6px;font-size:.82rem;color:#8a642e;text-transform:uppercase;letter-spacing:.05em">📰 ' + (de ? 'Marktnachrichten & Ereignisse' : 'Market News & Events') + '</h4>' +
+        '<ul style="list-style:none;padding:0;margin:0">' + newsHtml + '</ul>' +
+      '</div>' +
+    '</div>';
+
+    A.shell.dialog(de ? '📊 Warenbörse & Marktnachrichten' : '📊 Commodity Market & News', body,
+      [{ label: de ? 'Schließen' : 'Close', primary: true, onClick: function () { A.shell.closeDialog(); } }],
+      'market-dialog');
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('#hud-market,#colony-market')) openMarketDialog();
+  });
 
   /* A sea or rail leg in progress: G.cityId still names the port we left. */
   function inTransit() {
@@ -233,11 +305,12 @@
     /* Catalogue facts: painter, year, kind of picture, and (for the extra
        masters) medium and size. shopInfo falls back to the kind of picture. */
     var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
+    var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
     var tier=A.artTier(w);
     var facts = '<strong>'+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★</strong> · '+h(translateArt(w.typeName)) + (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
                 (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
     return '<div class="row-main">' + thumb(w, inst.uid) + '<div>' +
-           '<span class="title">' + h(w.title) + '</span>' +
+           '<span class="title">' + h(workTitle(w)) + '</span>' +
            '<span class="credit">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + ' · ' +
            facts + aliasTag(w) + '</span>' +
            '<span class="prov">' + h(inst.provenance) + '</span></div></div>';
@@ -449,8 +522,8 @@
         var timingBadge = isToday
           ? '<span class="hotel-timing-badge hotel-timing-badge--today">' + (de ? '🔨 HEUTE' : '🔨 TODAY') + '</span>'
           : daysAway === 1
-            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen · Tag ' + auc.day : 'Tomorrow · Day ' + auc.day) + '</span>'
-            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen · Tag ' + auc.day : 'In ' + daysAway + ' days · Day ' + auc.day) + '</span>';
+            ? '<span class="hotel-timing-badge hotel-timing-badge--soon">' + (de ? 'Morgen' : 'Tomorrow') + '</span>'
+            : '<span class="hotel-timing-badge">' + (de ? 'In ' + daysAway + ' Tagen' : 'In ' + daysAway + ' days') + '</span>';
 
         var locBadge = isHere
           ? '<span class="hotel-loc-badge hotel-loc-badge--here">' + (de ? 'Hier vor Ort' : 'Here in town') + '</span>'
@@ -466,9 +539,10 @@
                     (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
                     (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
           var a = A.artistById[w.artistId];
-          var titleWithArtist = h(w.title) + (a ? ' - ' + h(a.name) : '');
+          var wTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+          var titleWithArtist = h(wTitle) + (a ? ' - ' + h(a.name) : '');
           return '<div class="hotel-auc-thumb" title="' + titleWithArtist + '">' +
-            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">' + h(w.title.slice(0, 1)) + '</span>') +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(wTitle) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">' + h(wTitle.slice(0, 1)) + '</span>') +
           '</div>';
         }).join('');
 
@@ -478,8 +552,9 @@
           var a0 = w0 ? A.artistById[w0.artistId] : null;
           var artistName0 = a0 ? a0.name : '';
           infoHtml = '<span class="hotel-auc-count">' + (de ? '1 Spitzenlos im Angebot' : '1 featured lot offered') + '</span>' +
-                     (w0 ? '<span class="hotel-auc-painting-title" title="' + h(w0.title) + '">&bdquo;' + h(w0.title) + '&ldquo;</span>' : '') +
-                     '<span class="hotel-auc-hint">' + (artistName0 ? h(artistName0) + ' · ' : '') + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' - ' + A.money(lots[0].high) + '</span>';
+                     (w0 ? (function(){ var t0=(window.ArtRaceArtI18n&&window.ArtRaceArtI18n.workTitle)?window.ArtRaceArtI18n.workTitle(w0):w0.title; return '<span class="hotel-auc-painting-title" title="' + h(t0) + '">&bdquo;' + h(t0) + '&ldquo;</span>'; })() : '') +
+                     (artistName0 ? '<span class="hotel-auc-artist" title="' + h(artistName0) + '">' + h(artistName0) + '</span>' : '') +
+                     '<span class="hotel-auc-hint">' + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' &ndash; ' + A.money(lots[0].high) + '</span>';
         } else if (worksCount === 2) {
           var w1 = A.work(lots[0].inst.defId);
           var w2 = A.work(lots[1].inst.defId);
@@ -490,7 +565,7 @@
           var maxEst = Math.max(lots[0].high, lots[1].high);
           infoHtml = '<span class="hotel-auc-count">' + (de ? '2 Meisterwerke im Angebot' : '2 masterpieces offered') + '</span>' +
                      '<span class="hotel-auc-painting-title" title="' + h(artistsList) + '">' + h(artistsList || (de ? 'Ausgewählte Werke' : 'Selected works')) + '</span>' +
-                     '<span class="hotel-auc-hint">' + (de ? 'Schätzungen ' : 'Estimates ') + A.money(minEst) + ' - ' + A.money(maxEst) + '</span>';
+                     '<span class="hotel-auc-hint">' + (de ? 'Schätzungen ' : 'Estimates ') + A.money(minEst) + ' &ndash; ' + A.money(maxEst) + '</span>';
         } else {
           infoHtml = '<span class="hotel-auc-count">' + (de ? 'Katalog in Vorbereitung' : 'Catalogue in preparation') + '</span>' +
                      '<span class="hotel-auc-hint">' + (de ? 'Klicken für Details' : 'Click to inspect') + '</span>';
@@ -650,13 +725,14 @@
       var tierLabel=(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★';
       /* While the expert question is open, the row must not show the answer:
          year, medium and kind of picture stay hidden, and the picture does not open. */
+      var tRow = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
       var info = open
         ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
-          '<span class="title">' + h(w.title) + '</span>' +
+          '<span class="title">' + h(tRow) + '</span>' +
           '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span></div></div>'
         : quizOpen
           ? '<div class="row-main">' + thumb(w, lot.inst.uid, true) + '<div>' +
-            '<span class="title">' + h(w.title) + '</span>' +
+            '<span class="title">' + h(tRow) + '</span>' +
             '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span>' +
             '<span class="prov">' + h(lot.inst.provenance) + '</span></div></div>' +
             '<div class="row-tags">' + condTag(lot.inst) + authTag(lot.inst) +
@@ -835,7 +911,7 @@
   }
 
   A.trade = {
-    renderMarket: renderMarket, renderNews: renderNews, renderStations: renderStations,
+    renderMarket: renderMarket, renderNews: renderNews, openMarketDialog: openMarketDialog, renderStations: renderStations,
     renderTicker: renderTicker, renderPanel: renderPanel,
     viewTrade: viewTrade, viewDealer: viewDealer, viewPortfolio: viewPortfolio,
     viewAuction: viewAuction, viewBank: viewBank, viewStudio: viewStudio,

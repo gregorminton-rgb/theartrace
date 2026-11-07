@@ -447,6 +447,9 @@
   /* A short note for every painter in the catalogue, so the large view can
      always name the school and the years. */
   var ARTIST_NOTES = {
+    modigliani: 'Livorno and Paris; Bohemian Montparnasse portraits with elongated forms.',
+    delacroix: 'Paris; leader of French Romanticism, famous for movement and vivid colour.',
+    raphael: 'Urbino and Rome; the master of classic harmony and Vatican frescoes.',
     botticelli: 'Florentine, in the circle of the Medici: mythologies and altarpieces.',
     leonardo: 'Florentine, the model Renaissance "uomo universale" — painter, anatomist, engineer.',
     bosch: 'Hertogenbosch, a moralist whose imagery is unique in Netherlandish painting.',
