@@ -115,7 +115,8 @@
            Scaling the rivals down to 0.4 puts the median winning bid near 1.18x
            value, so a dealer (2.2x) really is the expensive option and cross-city
            arbitrage becomes worth the freight. 1 = the exported value. */
-        auctionAggressionScale: 0.4
+        auctionAggressionScale: 0.4,
+    auctionFirstDelay: 12
       };
 
   /* Web-only keys that are not invented numbers but arithmetic over the export.

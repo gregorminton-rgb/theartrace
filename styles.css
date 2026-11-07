@@ -190,12 +190,15 @@ code { font-family: var(--sans); font-size: .9em; background: rgba(0, 0, 0, .07)
 
 /* ---------- main row --------------------------------------------------- */
 #main { display: grid; grid-template-columns: 8.5rem 1.3fr 1fr; gap: .7rem; flex: 1; min-height: 0; }
-#stations { display: flex; flex-direction: column; gap: .4rem; overflow-y: auto; }
+#stations {
+  display: flex; flex-direction: column; gap: .3rem; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(176, 138, 82, 0.45) transparent;
+}
 .station {
-  font-family: var(--serif); font-size: .84rem; text-align: left; padding: .85em .6em;
+  font-family: var(--serif); font-size: .80rem; text-align: left; padding: .6em .55em;
   background: linear-gradient(180deg, #fff6df, #ead6a8); color: var(--ink);
-  border: 2px solid #b08a52; border-radius: 14px; cursor: pointer;
-  box-shadow: 0 3px 0 #b08a52, 0 4px 8px rgba(20, 10, 0, .2);
+  border: 2px solid #b08a52; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 2px 0 #b08a52, 0 3px 6px rgba(20, 10, 0, .18);
 }
 .station .st-ico { display: block; font-size: 1.25rem; line-height: 1; margin-bottom: .25em; }
 .station:hover { filter: brightness(1.04); }
@@ -370,7 +373,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 .chrono-speed {
   font-family: var(--sans); font-size: .64rem; color: var(--ink);
   background: var(--paper); border: 1px solid var(--line); border-radius: 2px;
-  padding: .05em .1em; max-width: 5.2em;
+  padding: .12em .3em; min-width: 74px; max-width: 86px;
 }
 #end-day { flex: none; padding: .28em .7em; font-size: .66rem; }
 
@@ -2118,7 +2121,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 
 /* Illustrated, tactile menu badges. Phase 1: all seven city navigation icons.
    Retain native emoji fallback, with consistent frame/light/shadow across OSes. */
-#screen-game #stations .st-ico{display:flex;justify-content:center;align-items:center;margin-bottom:5px;line-height:1}
+#screen-game #stations .st-ico{display:flex;justify-content:center;align-items:center;margin-bottom:3px;line-height:1}
 #screen-game #stations .icon-art{
  display:grid;place-items:center;position:relative;isolation:isolate;
  width:40px;height:40px;flex:0 0 40px;
@@ -2602,7 +2605,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 #screen-game #hud .chrono-date span { font-size: .68rem; }
 #screen-game #hud .chrono-timer { display: none; }
 #screen-game #hud .chrono-auto { font-size: .58rem; white-space: nowrap; }
-#screen-game #hud .chrono-speed { font-size: .64rem; max-width: 64px; }
+#screen-game #hud .chrono-speed { font-size: .66rem; width: auto; min-width: 76px; max-width: 86px; padding: 3px 5px; }
 #screen-game #hud #end-day {
   min-height: 33px;
   padding: 4px 11px;
@@ -3191,14 +3194,25 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   line-height: 1.25;
 }
 
+.hotel-auc-artist {
+  font-size: 0.74rem;
+  color: #4a3621;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 1.25;
+}
+
 .hotel-auc-hint {
   font-size: 0.73rem;
+  font-weight: 500;
   color: #6e5535;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .hotel-auction-card-foot {

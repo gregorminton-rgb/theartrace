@@ -28,7 +28,7 @@ var pairs=[
 ['Buy low in Amsterdam. Sell high in Berlin. Mind the fakes.','Kaufe günstig in Amsterdam. Verkaufe teuer in Berlin. Hüte dich vor Fälschungen.'],
 ['A hand-built art trading game · version 1.0','Ein handgefertigtes Kunsthandelsspiel · Version 1.0'],
 ['Townhouse','Stadthaus'],['Town Home','Stadthaus'],['Townhome','Stadthaus'],['Travel','Reisen'],['Dealer','Kunsthandel'],['Portfolio','Sammlung'],['Auction','Auktion'],['Bank','Bank'],['Studio','Atelier'],['Trade','Handel'],
-['Market indices','Marktindizes'],['News','Nachrichten'],['Commodity market','Warenbörse'],['Commodity Market','Warenbörse'],['📊 Börse','📊 Market'],['End day','Tag beenden'],['Cash','Bargeld'],['Reputation','Ansehen'],['Goal','Ziel'],
+['Market indices','Marktindizes'],['News','Nachrichten'],['Commodity market','Warenbörse'],['Commodity Market','Warenbörse'],['📊 Market','📊 Börse'],['Commodity market / rates','Warenbörse / Marktkurse'],['End day','Tag beenden'],['Cash','Bargeld'],['Reputation','Ansehen'],['Goal','Ziel'],
 ['Music','Musik'],['Gallery in Amsterdam','Galerie in Amsterdam'],['Day speed','Tagesgeschwindigkeit'],['Let days pass automatically','Tage automatisch verstreichen lassen'],
 ['slow','langsam'],['normal','normal'],['fast','schnell'],['Plantation menu','Plantagenmenü'],['Crops','Feldfrüchte'],['Sow fields','Felder bestellen'],
 ['Ship the harvest','Ernte verschiffen'],['Store','Lager'],['Supplies & crates','Vorräte und Kisten'],['Workers','Arbeitskräfte'],['Hire & assign','Einstellen und zuweisen'],

@@ -551,7 +551,8 @@
           var artistName0 = a0 ? a0.name : '';
           infoHtml = '<span class="hotel-auc-count">' + (de ? '1 Spitzenlos im Angebot' : '1 featured lot offered') + '</span>' +
                      (w0 ? '<span class="hotel-auc-painting-title" title="' + h(w0.title) + '">&bdquo;' + h(w0.title) + '&ldquo;</span>' : '') +
-                     '<span class="hotel-auc-hint">' + (artistName0 ? h(artistName0) + ' · ' : '') + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' - ' + A.money(lots[0].high) + '</span>';
+                     (artistName0 ? '<span class="hotel-auc-artist" title="' + h(artistName0) + '">' + h(artistName0) + '</span>' : '') +
+                     '<span class="hotel-auc-hint">' + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' &ndash; ' + A.money(lots[0].high) + '</span>';
         } else if (worksCount === 2) {
           var w1 = A.work(lots[0].inst.defId);
           var w2 = A.work(lots[1].inst.defId);
@@ -562,7 +563,7 @@
           var maxEst = Math.max(lots[0].high, lots[1].high);
           infoHtml = '<span class="hotel-auc-count">' + (de ? '2 Meisterwerke im Angebot' : '2 masterpieces offered') + '</span>' +
                      '<span class="hotel-auc-painting-title" title="' + h(artistsList) + '">' + h(artistsList || (de ? 'Ausgewählte Werke' : 'Selected works')) + '</span>' +
-                     '<span class="hotel-auc-hint">' + (de ? 'Schätzungen ' : 'Estimates ') + A.money(minEst) + ' - ' + A.money(maxEst) + '</span>';
+                     '<span class="hotel-auc-hint">' + (de ? 'Schätzungen ' : 'Estimates ') + A.money(minEst) + ' &ndash; ' + A.money(maxEst) + '</span>';
         } else {
           infoHtml = '<span class="hotel-auc-count">' + (de ? 'Katalog in Vorbereitung' : 'Catalogue in preparation') + '</span>' +
                      '<span class="hotel-auc-hint">' + (de ? 'Klicken für Details' : 'Click to inspect') + '</span>';
