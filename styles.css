@@ -2277,16 +2277,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  #screen-game #hud .chrono-date span{font-size:.7rem}
  #screen-game #hud #end-day{grid-column:2;grid-row:1;min-height:37px;min-width:100px;padding:5px 9px;font-size:.75rem;line-height:1.1}
  #screen-game #hud .chrono-auto,#screen-game #hud .chrono-speed{display:none}
- #screen-game #hud-balance{display:flex;order:2;gap:5px;margin:0;min-height:0}
- #screen-game #hud-balance .language-switch,#screen-game #hud-music,#screen-game #hud-rep,#screen-game #hud-goal{display:none}
- #screen-game #hud #hud-cash{display:inline-flex;flex:0 1 auto;width:auto;min-height:26px;font-size:.72rem;padding:2px 8px;background:rgba(255,242,210,.10);border:1px solid #947347;border-radius:7px;color:#ffedc7}
  #screen-game #ticker{display:none}
- #screen-game #hud.hud-details-open .chrono-auto{display:flex;min-height:36px}
- #screen-game #hud.hud-details-open .chrono-speed{display:block;width:85px;min-height:36px}
- #screen-game #hud.hud-details-open #hud-balance .language-switch,#screen-game #hud.hud-details-open #hud-music,#screen-game #hud.hud-details-open #hud-rep{display:flex;flex:1 1 auto;width:auto;min-height:34px}
- #screen-game #hud.hud-details-open #hud-balance{flex-wrap:wrap}
- #screen-game #hud.hud-details-open #hud-cash{min-height:34px}
- #screen-game #hud.hud-details-open #ticker{display:block}
  #screen-game #race-standings{background:#634625;border:2px solid #8c6b42;border-top:1px solid #947347;border-radius:0 0 14px 14px;padding:4px 7px 6px;margin-top:-3px}
  #screen-game #race-standings .race-self-trigger{background:transparent;border:0;border-radius:7px;padding:3px 6px;min-height:32px;box-shadow:none}
  #screen-game #race-standings .race-self-avatar{font-size:.95rem}
@@ -2322,8 +2313,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .tutorial-hero{min-height:clamp(180px,28dvh,230px)}
  .tutorial-copy{padding:13px 15px 3px}
  .tutorial-hero-title{left:14px;bottom:11px}
- #screen-game #hud-balance .hud-help{display:none}
- #screen-game #hud.hud-details-open #hud-balance .hud-help{display:flex;align-items:center;justify-content:center;flex:0 0 36px;min-height:34px}
+
  .dialog--tutorial .dialog-actions .btn{flex:1 1 auto;font-size:.8rem}
 }
 
@@ -3172,31 +3162,44 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .hud-top-row {
     flex: 0 0 auto !important;
     min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 6px !important;
   }
   .hud-top-row .hud-brand {
     display: none !important;
   }
   .hud-actions {
-    display: none;
+    display: none !important;
   }
   #screen-game #hud.hud-details-open .hud-actions {
-    display: flex;
+    display: flex !important;
     order: 3;
     width: 100%;
+    flex-wrap: wrap;
     gap: 4px;
-    padding-top: 4px;
+    padding-top: 5px;
+    margin-top: 2px;
     border-top: 1px dashed rgba(255, 220, 120, .25);
   }
+  #screen-game #hud.hud-details-open .hud-actions .hud-chip,
+  #screen-game #hud.hud-details-open .hud-actions .language-switch {
+    min-height: 25px;
+    padding: 2px 7px;
+    font-size: .65rem;
+  }
   .hud-stead {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-    width: 100%;
-    gap: 6px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 6px !important;
   }
   #hud-city { font-size: .84rem; line-height: 1.15; }
-  #hud-sub { display: none; }
+  #hud-sub { display: none !important; }
   #hud-hotel { font-size: .62rem; margin-left: auto; padding-right: 6px; }
   #hud-more {
     display: flex !important;
@@ -3211,19 +3214,42 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
   .hud-bottom-row {
     flex: 0 0 auto !important;
     min-height: 0 !important;
-    border-top: none;
-    padding-top: 0;
+    border-top: none !important;
+    padding-top: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  #screen-game #hud.hud-details-open .hud-bottom-row {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
   }
   .hud-stats {
     flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+  #screen-game #hud.hud-details-open .hud-stats {
+    flex: 1 1 100% !important;
+    order: 2;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    margin-top: 2px;
   }
   .hud-stats #hud-rep,
   .hud-stats #hud-goal {
-    display: none;
+    display: none !important;
   }
   #screen-game #hud.hud-details-open .hud-stats #hud-rep,
   #screen-game #hud.hud-details-open .hud-stats #hud-goal {
-    display: inline-flex;
+    display: inline-flex !important;
+    font-size: .66rem !important;
+    padding: 2px 7px !important;
+    min-height: 24px !important;
   }
   .hud-stats #hud-cash {
     font-size: .7rem;
@@ -3231,37 +3257,51 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     min-height: 26px;
   }
   #screen-game #hud .chrono {
-    flex: 1 1 auto;
-    justify-content: flex-end;
+    flex: 1 1 auto !important;
+    justify-content: flex-end !important;
+    display: flex !important;
+  }
+  #screen-game #hud.hud-details-open .chrono {
+    flex: 0 0 auto !important;
+    margin-left: auto;
   }
   #screen-game #hud .chrono-row {
-    gap: 5px;
-    width: 100%;
-    justify-content: flex-end;
+    gap: 5px !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
   }
   #screen-game #hud .chrono-cal {
-    padding: 2px 6px;
-    min-height: 28px;
-    border-radius: 6px;
+    padding: 2px 6px !important;
+    min-height: 28px !important;
+    border-radius: 6px !important;
   }
-  #screen-game #hud .chrono-date b { font-size: .92rem; }
-  #screen-game #hud .chrono-date span { font-size: .64rem; }
+  #screen-game #hud .chrono-date b { font-size: .92rem !important; }
+  #screen-game #hud .chrono-date span { font-size: .64rem !important; }
   #screen-game #hud .chrono-auto,
   #screen-game #hud .chrono-speed {
-    display: none;
+    display: none !important;
   }
   #screen-game #hud.hud-details-open .chrono-auto {
-    display: flex;
+    display: flex !important;
+    font-size: .6rem !important;
+    padding: 2px 5px !important;
   }
   #screen-game #hud.hud-details-open .chrono-speed {
-    display: block;
+    display: block !important;
+    font-size: .64rem !important;
+    min-width: 68px !important;
+    max-width: 74px !important;
+    padding: 2px 4px !important;
   }
   #screen-game #hud #end-day {
-    min-height: 28px;
-    min-width: 76px;
-    padding: 3px 8px;
-    font-size: .72rem;
-    border-radius: 6px;
+    min-height: 28px !important;
+    min-width: 76px !important;
+    padding: 3px 8px !important;
+    font-size: .72rem !important;
+    border-radius: 6px !important;
   }
   #screen-game #race-standings {
     flex: 0 0 auto !important;
@@ -3287,7 +3327,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     min-height: 0 !important;
   }
 }
-
 /* Colony uses the same live music toggle as the city HUD. */
 #colony #colony-music{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:34px;font-size:1.05rem;cursor:pointer}
 #colony #colony-music.is-on{background:#f0d997;border-color:#ad7c37;color:#4b3317}
