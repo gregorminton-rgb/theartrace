@@ -305,11 +305,12 @@
     /* Catalogue facts: painter, year, kind of picture, and (for the extra
        masters) medium and size. shopInfo falls back to the kind of picture. */
     var translateArt = window.ArtRaceArtI18n ? window.ArtRaceArtI18n.translate : function(v){return v;};
+    var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : '';};
     var tier=A.artTier(w);
     var facts = '<strong>'+(window.ArtRaceLanguage&&window.ArtRaceLanguage.get()==='de'?'Klasse ':'Class ')+tier.grade+' · ×'+tier.multiplier+' ★</strong> · '+h(translateArt(w.typeName)) + (w.medium ? ' · ' + h(translateArt(w.medium)) : '') +
                 (w.dimensions ? ' · ' + h(w.dimensions) : '') + ' · rarity ' + w.rarity;
     return '<div class="row-main">' + thumb(w, inst.uid) + '<div>' +
-           '<span class="title">' + h(w.title) + '</span>' +
+           '<span class="title">' + h(workTitle(w)) + '</span>' +
            '<span class="credit">' + h(a ? a.name : 'Unknown') + ', ' + w.yearCreated + ' · ' +
            facts + aliasTag(w) + '</span>' +
            '<span class="prov">' + h(inst.provenance) + '</span></div></div>';
@@ -538,9 +539,10 @@
                     (A.art && A.art.pictureFor ? A.art.pictureFor(w.id) : null) ||
                     (window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images ? window.ART_ARTWORK_IMAGES.images[w.id] : null);
           var a = A.artistById[w.artistId];
-          var titleWithArtist = h(w.title) + (a ? ' - ' + h(a.name) : '');
+          var wTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+          var titleWithArtist = h(wTitle) + (a ? ' - ' + h(a.name) : '');
           return '<div class="hotel-auc-thumb" title="' + titleWithArtist + '">' +
-            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">' + h(w.title.slice(0, 1)) + '</span>') +
+            (pic ? '<img src="' + h(pic.file) + '" alt="' + h(wTitle) + '" loading="lazy" />' : '<span class="hotel-auc-noimg">' + h(wTitle.slice(0, 1)) + '</span>') +
           '</div>';
         }).join('');
 
@@ -550,7 +552,7 @@
           var a0 = w0 ? A.artistById[w0.artistId] : null;
           var artistName0 = a0 ? a0.name : '';
           infoHtml = '<span class="hotel-auc-count">' + (de ? '1 Spitzenlos im Angebot' : '1 featured lot offered') + '</span>' +
-                     (w0 ? '<span class="hotel-auc-painting-title" title="' + h(w0.title) + '">&bdquo;' + h(w0.title) + '&ldquo;</span>' : '') +
+                     (w0 ? (function(){ var t0=(window.ArtRaceArtI18n&&window.ArtRaceArtI18n.workTitle)?window.ArtRaceArtI18n.workTitle(w0):w0.title; return '<span class="hotel-auc-painting-title" title="' + h(t0) + '">&bdquo;' + h(t0) + '&ldquo;</span>'; })() : '') +
                      (artistName0 ? '<span class="hotel-auc-artist" title="' + h(artistName0) + '">' + h(artistName0) + '</span>' : '') +
                      '<span class="hotel-auc-hint">' + (de ? 'Schätzung ' : 'Est. ') + A.money(lots[0].low) + ' &ndash; ' + A.money(lots[0].high) + '</span>';
         } else if (worksCount === 2) {
@@ -725,7 +727,10 @@
          year, medium and kind of picture stay hidden, and the picture does not open. */
       var info = open
         ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
-          '<span class="title">' + h(w.title) + '</span>' +
+          var tRow = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      var info = open
+        ? '<div class="row-main">' + thumb(w, lot.inst.uid) + '<div>' +
+          '<span class="title">' + h(tRow) + '</span>' +
           '<span class="credit">' + h(a ? a.name : 'Unknown') + ' · '+h(tierLabel)+'</span></div></div>'
         : quizOpen
           ? '<div class="row-main">' + thumb(w, lot.inst.uid, true) + '<div>' +

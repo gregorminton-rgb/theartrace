@@ -39,6 +39,8 @@
   var w=nextArtwork(works);
   var artist=A.artistById && A.artistById[w.artistId];
   var de=language();
+  var workTitle = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle : function(work){return work ? work.title : "";};
+  var title = workTitle(w);
   var note=de?'Entdecke ein Werk aus der Kunstgeschichte. Tippe auf das Bild, um mehr zu erfahren.':'Discover a work of art history. Tap the picture to learn more.';
   dismiss();
   var panel=document.createElement('aside');
@@ -46,8 +48,8 @@
   panel.setAttribute('role','status');
   panel.innerHTML='<button type="button" class="art-spotlight-close" aria-label="'+(de?'Schließen':'Close')+'">×</button>'+
    '<div class="art-spotlight-label">'+(de?'Kunstwerk des Tages':'Artwork of the day')+'</div>'+
-   '<button type="button" class="art-spotlight-picture" aria-label="'+(de?'Kunstwerk ansehen':'View artwork')+'"><img src="'+esc(images[w.id].file)+'" alt="'+esc(w.title)+'"></button>'+
-   '<div class="art-spotlight-copy"><strong>'+esc(w.title)+'</strong><span>'+esc(artist?artist.name:'')+' · '+esc(w.yearCreated)+' · '+esc(A.workEpoch?A.workEpoch(w):'')+'</span><small>'+note+'</small></div>';
+   '<button type="button" class="art-spotlight-picture" aria-label="'+(de?'Kunstwerk ansehen':'View artwork')+'"><img src="'+esc(images[w.id].file)+'" alt="'+esc(title)+'"></button>'+
+   '<div class="art-spotlight-copy"><strong>'+esc(title)+'</strong><span>'+esc(artist?artist.name:'')+' · '+esc(w.yearCreated)+' · '+esc(A.workEpoch?A.workEpoch(w):'')+'</span><small>'+note+'</small></div>';
   document.body.appendChild(panel);
   panel.querySelector('.art-spotlight-close').addEventListener('click',dismiss);
   panel.querySelector('.art-spotlight-picture').addEventListener('click',function(){

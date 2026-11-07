@@ -271,9 +271,11 @@
     if (p.isFake) G.stats.forgery += 1;
     if (profit > 0) {
       rep(CFG.reputationPerProfitableSale);
-      log('Sold ' + w.title + ' for ' + A.money(price) + ' (profit ' + A.money(profit) + ').');
+      var wt = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      log('Sold ' + wt + ' for ' + A.money(price) + ' (profit ' + A.money(profit) + ').');
     } else {
-      log('Sold ' + w.title + ' for ' + A.money(price) + ' (loss ' + A.money(-profit) + ').');
+      var wt = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      log('Sold ' + wt + ' for ' + A.money(price) + ' (loss ' + A.money(-profit) + ').');
     }
     if (p.authenticity === 'RevealedForgery') {
       var lost = -rep(-CFG.reputationPenaltyForgery);
@@ -336,9 +338,11 @@
     var w = A.work(p.defId);
     if (verdict) {
       rep(-Math.round(CFG.reputationPenaltyForgery / 2));
-      log('Expert calls ' + w.title + ' a FORGERY. It now trades at ' + A.pct(CFG.forgeryValueMultiplier) + '.');
+      var wtExp = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      log('Expert calls ' + wtExp + ' a FORGERY. It now trades at ' + A.pct(CFG.forgeryValueMultiplier) + '.');
     } else {
-      log('Expert authenticates ' + w.title + ' (' + A.money(fee) + ').');
+      var wtAuth = (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : w.title;
+      log('Expert authenticates ' + wtAuth + ' (' + A.money(fee) + ').');
     }
   }
 

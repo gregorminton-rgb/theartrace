@@ -1,3 +1,6 @@
+function getWorkTitle(w) {
+  return (window.ArtRaceArtI18n && window.ArtRaceArtI18n.workTitle) ? window.ArtRaceArtI18n.workTitle(w) : (w ? w.title : '');
+}
 /* Six-page tutorial: collection score, A-E tiers, sets, travel and trade. */
 (function(){
 'use strict';
@@ -44,7 +47,7 @@ function artistSetExamples(){
  works.forEach(function(w){
   var img=images[w.id];
   if(!img||!img.file)return;
-  (groups[w.artistId]||(groups[w.artistId]=[])).push({title:w.title,file:img.file});
+  (groups[w.artistId]||(groups[w.artistId]=[])).push({title:getWorkTitle(w),file:img.file});
  });
  var ids=Object.keys(groups).filter(function(id){return groups[id].length>=3;});
  var picasso=ids.filter(function(id){return /picasso/i.test(id);})[0];

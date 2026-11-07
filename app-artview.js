@@ -139,7 +139,7 @@
           '<div class="art-frame-moulding">' +
             '<div class="art-frame-mat">' +
               '<div class="art-frame-canvas">' +
-                '<img src="' + h(pic.file) + '" alt="' + h(w.title) + '" loading="eager" decoding="async">' +
+                '<img src="' + h(pic.file) + '" alt="' + h(titleText) + '" loading="eager" decoding="async">' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -176,7 +176,7 @@
     var body = '<div class="av">' +
       '<div class="av-left">' + plate + '<div class="av-zoom-controls"><button type="button" data-artzoom="out" aria-label="Zoom out">−</button><button type="button" data-artzoom="reset">100%</button><button type="button" data-artzoom="in" aria-label="Zoom in">+</button></div>' + story + aside + extraStory + '</div>' +
       '<div class="av-right">' +
-        '<h3 class="av-title">' + h(w.title) + '</h3>' +
+        '<h3 class="av-title">' + h(titleText) + '</h3>' +
         '<p class="av-credit">' + h(artist ? artist.name : 'Unknown') + ', ' + w.yearCreated + '</p>' +
         facts + extra +
         ownedBlock(owned) +
@@ -197,7 +197,7 @@
       { label: (window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de') ? 'Schließen' : 'Close', onClick: closeDialog }
     ] : [{ label: 'Close', primary: true, onClick: closeDialog }];
 
-    dialog(w.title, body, closeButtons, 'av-dialog');
+    dialog(titleText, body, closeButtons, 'av-dialog');
 
     var root = document.querySelector('.dialog.av-dialog');
     var image = root && root.querySelector('.av-plate img');
