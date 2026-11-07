@@ -639,19 +639,19 @@ window.ART_ARTWORK_IMAGES = {
         },
         "picasso_old_guitarist": {
             "file": "images/art/picasso-old-guitarist.jpg",
-            "width": 900,
-            "height": 1125,
-            "bytes": 183452,
-            "source": "Pablo Picasso - Der alte Gitarrist (1903).png",
-            "how": "alias"
+            "width": 806,
+            "height": 1200,
+            "bytes": 165348,
+            "source": "Old guitarist chicago.jpg",
+            "how": "wikimedia"
         },
         "picasso_three_musicians": {
             "file": "images/art/picasso-three-musicians.jpg",
             "width": 900,
-            "height": 720,
-            "bytes": 153689,
-            "source": "Pablo Picasso - Drei Musikanten (1921).png",
-            "how": "alias"
+            "height": 973,
+            "bytes": 216794,
+            "source": "Pablo Picasso, 1921, Nous autres musiciens (Three Musicians), oil on canvas, 204.5 x 188.3 cm, Philadelphia Museum of Art.jpg",
+            "how": "wikimedia"
         },
         "picasso_demoiselles": {
             "file": "images/art/picasso-demoiselles.jpg",
@@ -1159,10 +1159,10 @@ window.ART_ARTWORK_IMAGES = {
         },
         "modigliani_jeanne_hebuterne": {
             "file": "images/art/modigliani-jeanne-hebuterne.jpg",
-            "width": 900,
-            "height": 1369,
-            "bytes": 114668,
-            "source": "Amedeo Modigliani 025.jpg",
+            "width": 783,
+            "height": 1200,
+            "bytes": 229948,
+            "source": "Amedeo Modigliani - Portrait of Jeanne H\u00e9buterne (Portrait de Jeanne H\u00e9buterne) - BF422 - Barnes Foundation.jpg",
             "how": "wikimedia"
         },
         "modigliani_leopold_zborowski": {
@@ -1231,9 +1231,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "hokusai_waterfall_ono": {
             "file": "images/art/hokusai-waterfall-ono.jpg",
-            "width": 900,
-            "height": 1322,
-            "bytes": 248934,
+            "width": 817,
+            "height": 1200,
+            "bytes": 283843,
             "source": "Katsushika Hokusai (1760-1849), Ono waterval aan de Kisokaido (1835).jpg",
             "how": "wikimedia"
         },
@@ -1248,9 +1248,9 @@ window.ART_ARTWORK_IMAGES = {
         "picasso_portrait_gertrude_stein": {
             "file": "images/art/picasso-gertrude-stein.jpg",
             "width": 900,
-            "height": 600,
-            "bytes": 53038,
-            "source": "Family of Saltimbanques in the National Gallery of Art.jpg",
+            "height": 1113,
+            "bytes": 227828,
+            "source": "GertrudeStein.JPG",
             "how": "wikimedia"
         },
         "munter_country_road_winter": {
@@ -1264,8 +1264,9 @@ window.ART_ARTWORK_IMAGES = {
     }
 };
 
+// Append global cache buster to all image paths so browser never serves stale framed copies
 (function () {
-  var v = '?v=20261107-PUREZEROFRAMES';
+  var v = '?v=20261107-PUREZEROFRAMES3';
   var imgs = window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images;
   if (!imgs) return;
   for (var k in imgs) {
