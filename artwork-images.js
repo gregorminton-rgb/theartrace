@@ -592,8 +592,8 @@ window.ART_ARTWORK_IMAGES = {
                    "leonardo_virgin_of_the_rocks":  {
                                                         "file":  "images/art/leonardo-virgin-of-the-rocks.jpg",
                                                         "width":  900,
-                                                        "height":  672,
-                                                        "bytes":  31684,
+                                                        "height":  1387,
+                                                        "bytes":  233275,
                                                         "source":  "Leonardo da Vinci – Felsgrottenmadonna (ca. 1483 und 1486).jpg",
                                                         "how":  "alias"
                                                     },
