@@ -158,8 +158,80 @@
       return '<li class="news"><b>' + h(ev.headline) + '</b><span class="news-meta">day ' + ev.day + '</span></li>';
     });
     var list = live.concat(old);
-    el('news-list').innerHTML = list.length ? list.join('') : '<li class="news">No news. The salerooms are quiet.</li>';
+    var nl = el('news-list');
+    if (nl) nl.innerHTML = list.length ? list.join('') : '<li class="news">No news. The salerooms are quiet.</li>';
   }
+
+  function openMarketDialog() {
+    var de = !!(window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de');
+    var hubs = ['london', 'newyork', 'tokio'];
+    var names = { london: 'London', newyork: 'New York', tokio: de ? 'Tokio' : 'Tokyo' };
+    var currentHub = hubs.indexOf(G.cityId) !== -1 ? G.cityId : null;
+
+    var rows = CROPS.map(function (crop) {
+      var hub = currentHub;
+      if (!hub) hub = hubs.reduce(function (best, id) {
+        return cropPrice(crop, id) > cropPrice(crop, best) ? id : best;
+      }, hubs[0]);
+      var price = cropPrice(crop, hub);
+      var previous = A.colonies.cropPriceOnDay(crop, hub, G.day - 1);
+      var change = previous > 0 ? (price / previous - 1) * 100 : 0;
+      var arrow = change > 0.05 ? '▲' : change < -0.05 ? '▼' : '■';
+      var label = de ? ({ kakao: 'Kakao', tee: 'Tee', kaffee: 'Kaffee', tabak: 'Tabak', stoffe: 'Stoffe' }[crop.id] || crop.label) : crop.label;
+      var icon = { kakao: '🍫', tee: '🍵', kaffee: '☕', tabak: '🍂', stoffe: '🧵' }[crop.id] || '📦';
+      var changeColor = change > 0.05 ? '#2b7816' : change < -0.05 ? '#a82c2c' : '#666';
+      return '<tr style="border-bottom:1px solid #ebdcb9">' +
+        '<td style="padding:7px 6px"><span style="font-size:1.15em;margin-right:5px">' + icon + '</span><b>' + h(label) + '</b>' +
+          (currentHub ? '' : '<small style="display:block;font-size:.72em;color:#785f3e;font-weight:600">' + h(names[hub]) + '</small>') +
+        '</td>' +
+        '<td class="num" style="padding:7px 6px;text-align:right;font-weight:700;font-size:1rem;color:#3b2713">' + A.money(price) + '</td>' +
+        '<td class="num" style="padding:7px 6px;text-align:right;font-weight:700;color:' + changeColor + '">' + (change >= 0 ? '+' : '') + change.toFixed(1) + '% ' + arrow + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var explainer = currentHub
+      ? (de ? 'Aktuelle Verkaufspreise je Kiste an der Warenbörse in ' + names[currentHub] + '. Änderung seit gestern.' : 'Current sale price per crate at the exchange in ' + names[currentHub] + '. Change since yesterday.')
+      : (de ? 'Bester aktueller Verkaufspreis je Kiste aus London, New York und Tokio. Der Handelsort steht unter der Ware.' : 'Best current sale price per crate across London, New York and Tokyo. Exchange shown below each good.');
+
+    var live = G.market.events.map(function (ev) {
+      return '<li class="news live" style="padding:8px 10px;margin-bottom:6px;border-left:3px solid #b8860b;background:rgba(219,186,106,.15);border-radius:4px">' +
+        '<b style="color:#4a3215;font-size:.84rem">' + h(ev.headline) + '</b>' +
+        '<div style="font-size:.72rem;color:#6b5232;margin-top:2px">' + h(ev.category) + ' · ' + h(ev.scope) +
+        (ev.anyEpoch ? '' : ' · ' + h(ev.targetEpoch)) +
+        ' · ' + (ev.multiplier >= 1 ? '+' : '') + ((ev.multiplier - 1) * 100).toFixed(0) + '% ' + (de ? 'bis Tag ' : 'until day ') + ev.endDay + '</div></li>';
+    });
+    var old = G.history.slice(0, 4).map(function (ev) {
+      return '<li class="news" style="padding:5px 8px;margin-bottom:4px;border-left:2px solid #a89476;font-size:.76rem;color:#553f24">' +
+        '<b>' + h(ev.headline) + '</b> <span style="opacity:.7;font-size:.7rem">(' + (de ? 'Tag ' : 'day ') + ev.day + ')</span></li>';
+    });
+    var newsHtml = live.concat(old).join('') || ('<li style="font-size:.8rem;opacity:.8;padding:6px">' + (de ? 'Keine aktuellen Meldungen.' : 'No active news.') + '</li>');
+
+    var body = '<div class="market-modal" style="display:flex;flex-direction:column;gap:12px;max-height:68vh;overflow-y:auto">' +
+      '<div style="background:rgba(255,248,228,.95);border:1.5px solid #c8b184;border-radius:10px;padding:10px 12px">' +
+        '<p style="font-size:.74rem;color:#6d5330;margin:0 0 8px;line-height:1.3">' + h(explainer) + '</p>' +
+        '<table class="market-table" style="width:100%;border-collapse:collapse;font-size:.82rem">' +
+          '<thead><tr style="border-bottom:1.5px solid #d5c19c;text-align:left;color:#8a642e;font-size:.72rem">' +
+            '<th style="padding:4px 6px">' + (de ? 'Ware' : 'Commodity') + '</th>' +
+            '<th style="padding:4px 6px;text-align:right">' + (de ? 'Preis' : 'Price') + '</th>' +
+            '<th style="padding:4px 6px;text-align:right">' + (de ? 'Änderung' : 'Change') + '</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>' +
+      '</div>' +
+      '<div style="background:rgba(255,248,228,.95);border:1.5px solid #c8b184;border-radius:10px;padding:10px 12px">' +
+        '<h4 style="margin:0 0 6px;font-size:.82rem;color:#8a642e;text-transform:uppercase;letter-spacing:.05em">📰 ' + (de ? 'Marktnachrichten & Ereignisse' : 'Market News & Events') + '</h4>' +
+        '<ul style="list-style:none;padding:0;margin:0">' + newsHtml + '</ul>' +
+      '</div>' +
+    '</div>';
+
+    A.shell.dialog(de ? '📊 Warenbörse & Marktnachrichten' : '📊 Commodity Market & News', body,
+      [{ label: de ? 'Schließen' : 'Close', primary: true, onClick: function () { A.shell.closeDialog(); } }],
+      'market-dialog');
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('#hud-market,#colony-market')) openMarketDialog();
+  });
 
   /* A sea or rail leg in progress: G.cityId still names the port we left. */
   function inTransit() {
@@ -835,7 +907,7 @@
   }
 
   A.trade = {
-    renderMarket: renderMarket, renderNews: renderNews, renderStations: renderStations,
+    renderMarket: renderMarket, renderNews: renderNews, openMarketDialog: openMarketDialog, renderStations: renderStations,
     renderTicker: renderTicker, renderPanel: renderPanel,
     viewTrade: viewTrade, viewDealer: viewDealer, viewPortfolio: viewPortfolio,
     viewAuction: viewAuction, viewBank: viewBank, viewStudio: viewStudio,

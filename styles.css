@@ -1,3 +1,16 @@
+
+/* Commodity market & news are opened on demand via the header [Börse] button. */
+#market-col {
+  display: none !important;
+}
+#screen-game #main {
+  grid-template-columns: 8.5rem minmax(0, 1fr) !important;
+}
+@media(max-width: 760px) {
+  #screen-game #main {
+    grid-template-columns: 1fr !important;
+  }
+}
 /* =========================================================================
  * styles.css - Hay Day-inspired farm and trade theme.
  * Everything is drawn with CSS; no bitmap textures.
@@ -433,11 +446,7 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 /* ---------- responsive ------------------------------------------------- */
-@media (max-width: 900px) {
-  #main { grid-template-columns: 1fr; }
-  #stations { flex-direction: row; overflow-x: auto; }
-  .station { flex: 1 0 auto; min-width: 6.5em; }
-  .station.ghost { display: none; }
+@media (max-width: 760px) {
   #panel-wrap { max-height: 60vh; }
 }
 
@@ -1915,33 +1924,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Desktop: one genuinely compact HUD row, not a tall dark empty rectangle. */
 @media(min-width:1000px){
  #screen-game{gap:8px}
- #screen-game #hud{
-   display:grid;grid-template-columns:auto auto minmax(70px,1fr) minmax(380px,auto);
-   grid-template-areas:"brand balance ticker chrono";
-   align-items:center;column-gap:12px;row-gap:0;
-   padding:5px 12px;min-height:0;border-width:2px;border-radius:11px;
- }
- #screen-game #hud .hud-brand{justify-content:center;gap:1px}
- #screen-game #hud .hud-brand strong{font-size:.91rem;line-height:1.15}
- #screen-game #hud .hud-name{font-size:.57rem;line-height:1.1}
- #screen-game #hud-balance{align-self:center;gap:5px;flex-wrap:wrap}
- #screen-game #hud .hud-chip{font-size:.67rem;padding:4px 7px}
- #screen-game #hud .chrono{
-   display:flex;flex-direction:row;align-items:center;justify-content:flex-end;
-   gap:10px;min-width:0;align-self:center;
- }
- #screen-game #hud .hud-stead{align-items:flex-end;text-align:right;min-width:105px}
- #screen-game #hud-city{font-size:.83rem;line-height:1.12}
- #screen-game #hud-sub{font-size:.58rem;line-height:1.1}
- #screen-game #hud .chrono-row{flex-direction:row;align-items:center;gap:7px}
- #screen-game #hud .chrono-cal{flex-wrap:nowrap;gap:5px;padding:4px 7px;box-shadow:none}
- #screen-game #hud .chrono-date b{font-size:.98rem}
- #screen-game #hud .chrono-date span{font-size:.67rem}
- #screen-game #hud .chrono-timer{display:none}
- #screen-game #hud .chrono-auto{white-space:nowrap;font-size:.55rem}
- #screen-game #hud .chrono-speed{max-width:64px;font-size:.62rem}
- #screen-game #hud #end-day{align-self:center;min-height:35px;white-space:nowrap;padding:5px 9px;font-size:.72rem}
- #screen-game #ticker{min-width:0;max-height:36px;overflow:hidden}
 }
 /* Let the city photo actually read through the interface. The former
    multiple 80-95% opaque paper overlays flattened it almost entirely. */
@@ -2488,25 +2470,223 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 }
 
 /* Regression fix: removing the ticker also removes its reserved grid track. */
-#screen-game #hud{
- grid-template-columns:auto minmax(0,1fr) auto;
- grid-template-areas:"brand balance chrono";
+/* Responsive, aligned HUD layout: Navigation & Context on row 1, Stats & Chrono on row 2 */
+#screen-game #hud {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  padding: 6px 12px;
+  grid-template-columns: none !important;
+  grid-template-areas: none !important;
+  border-radius: 13px;
+  border: 2px solid #3d2610;
+  background: linear-gradient(180deg, #8a5c2e, #5a3a18);
+  box-sizing: border-box;
 }
-#screen-game #hud #ticker{display:none!important}
-@media(min-width:1000px){
- #screen-game #hud{
-  grid-template-columns:auto minmax(0,1fr) minmax(360px,auto);
-  grid-template-areas:"brand balance chrono";
- }
+#screen-game #hud #ticker { display: none !important; }
+
+.hud-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
-@media(max-width:760px){
- #screen-game #hud{
-  display:flex;flex-direction:column;align-items:stretch;
-  grid-template-areas:none;
- }
- #screen-game #hud .hud-brand{order:0;min-width:0}
- #screen-game #hud .chrono{order:1;min-width:0;width:100%}
- #screen-game #hud-balance{order:2;min-width:0;width:100%}
+
+.hud-top-row .hud-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 0 0 auto;
+}
+.hud-top-row .hud-brand strong { font-size: .95rem; line-height: 1.15; color: var(--gold-2); }
+.hud-top-row .hud-name { font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; opacity: .85; }
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.hud-actions .hud-chip,
+.hud-actions .language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 2px 7px;
+  font-size: .68rem;
+  border-radius: 7px;
+  background: rgba(255, 245, 220, .14);
+  border: 1px solid rgba(255, 220, 120, .5);
+  color: #fff1d5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hud-actions .hud-chip:hover,
+.hud-actions .language-switch:hover {
+  background: rgba(255, 245, 220, .26);
+}
+
+.hud-stead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+#hud-city { font-size: .88rem; font-weight: 700; color: #fff8e6; line-height: 1.15; }
+#hud-sub { font-size: .62rem; color: #e4caa0; }
+#hud-hotel { font-size: .62rem; color: #f4e1b3; }
+
+.hud-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 220, 120, .2);
+}
+
+.hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+.hud-stats .hud-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 2px 9px;
+  font-size: .72rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgba(255, 240, 210, .12);
+  border: 1.5px solid rgba(255, 220, 120, .55);
+  color: #ffe27a;
+}
+
+#screen-game #hud .chrono {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin: 0;
+}
+#screen-game #hud .chrono-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+#screen-game #hud .chrono-cal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgba(255, 250, 236, .92);
+  box-shadow: none;
+}
+#screen-game #hud .chrono-date b { font-size: .98rem; }
+#screen-game #hud .chrono-date span { font-size: .68rem; }
+#screen-game #hud .chrono-timer { display: none; }
+#screen-game #hud .chrono-auto { font-size: .58rem; white-space: nowrap; }
+#screen-game #hud .chrono-speed { font-size: .64rem; max-width: 64px; }
+#screen-game #hud #end-day {
+  min-height: 33px;
+  padding: 4px 11px;
+  font-size: .76rem;
+  white-space: nowrap;
+}
+
+@media(max-width: 760px) {
+  #screen-game #hud {
+    padding: 6px 8px 4px !important;
+    gap: 3px !important;
+  }
+  .hud-top-row .hud-brand {
+    display: none !important;
+  }
+  .hud-actions {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .hud-actions {
+    display: flex;
+    order: 3;
+    width: 100%;
+    gap: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 220, 120, .25);
+  }
+  .hud-stead {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+  }
+  #hud-city { font-size: .84rem; }
+  #hud-sub { display: none; }
+  #hud-hotel { font-size: .62rem; }
+  #hud-more {
+    display: flex !important;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    font-size: .65rem;
+    min-height: 27px;
+    border-radius: 6px;
+  }
+  .hud-bottom-row {
+    border-top: none;
+    padding-top: 0;
+  }
+  .hud-stats #hud-rep,
+  .hud-stats #hud-goal {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .hud-stats #hud-rep,
+  #screen-game #hud.hud-details-open .hud-stats #hud-goal {
+    display: inline-flex;
+  }
+  .hud-stats #hud-cash {
+    font-size: .7rem;
+    padding: 2px 7px;
+    min-height: 27px;
+  }
+  #screen-game #hud .chrono-row {
+    gap: 4px;
+  }
+  #screen-game #hud .chrono-cal {
+    padding: 2px 6px;
+  }
+  #screen-game #hud .chrono-auto,
+  #screen-game #hud .chrono-speed {
+    display: none;
+  }
+  #screen-game #hud.hud-details-open .chrono-auto {
+    display: flex;
+  }
+  #screen-game #hud.hud-details-open .chrono-speed {
+    display: block;
+  }
+  #screen-game #hud #end-day {
+    min-height: 31px;
+    min-width: 80px;
+    padding: 3px 8px;
+    font-size: .72rem;
+  }
 }
 
 /* Colony uses the same live music toggle as the city HUD. */
