@@ -25,6 +25,35 @@
 
   global.ART_RACE_EXTRA_ARTISTS = [
     {
+      id: 'raphael', name: 'Raffaello Sanzio', epoch: 0, epochName: 'Renaissance',
+      bio: 'The prince of painters: master of harmony, proportion and grace. In Rome, popes and cardinals competed for his frescoes and altarpieces.',
+      birthYear: 1483, deathYear: 1520, nationality: 'Italian',
+      baseReputation: 95, reputationMultiplier: 1.95, annualAppreciation: 0.05,
+      catalogueSize: 320, forgeryProne: true, homeRegion: 0, homeRegionName: 'Europe'
+    },
+    {
+      id: 'rubens', name: 'Peter Paul Rubens', epoch: 1, epochName: 'Baroque',
+      bio: 'The diplomat-painter of Catholic Europe: immense altarpieces, dramatic mythological cycles and masterly brushwork from his Antwerp workshop.',
+      birthYear: 1577, deathYear: 1640, nationality: 'Flemish',
+      baseReputation: 92, reputationMultiplier: 1.92, annualAppreciation: 0.048,
+      catalogueSize: 1400, forgeryProne: true, homeRegion: 0, homeRegionName: 'Europe'
+    },
+    {
+      id: 'delacroix', name: 'Eugene Delacroix', epoch: 3, epochName: 'Romanticism',
+      bio: 'The fiery leader of the French Romantic school: colour, movement and intense emotion in place of cool neoclassicism.',
+      birthYear: 1798, deathYear: 1863, nationality: 'French',
+      baseReputation: 86, reputationMultiplier: 1.86, annualAppreciation: 0.046,
+      catalogueSize: 850, forgeryProne: false, homeRegion: 0, homeRegionName: 'Europe'
+    },
+    {
+      id: 'modigliani', name: 'Amedeo Modigliani', epoch: 6, epochName: 'Contemporary',
+      bio: 'Montparnasse, 1918: elongated swan necks, blank almond eyes and sculpted simplicity. Tragically short-lived and fiercely collected.',
+      birthYear: 1884, deathYear: 1920, nationality: 'Italian',
+      baseReputation: 88, reputationMultiplier: 1.88, annualAppreciation: 0.049,
+      catalogueSize: 350, forgeryProne: true, homeRegion: 0, homeRegionName: 'Europe'
+    },
+
+    {
       id: 'pissarro', name: 'Camille Pissarro', epoch: 4, epochName: 'Impressionism',
       bio: 'The elder of the group: the only painter who showed in all eight Impressionist exhibitions, and the one the younger dealers trust.',
       birthYear: 1830, deathYear: 1903, nationality: 'French',
@@ -132,6 +161,415 @@
   ];
 
   global.ART_RACE_EXTRA_WORKS = [
+    {
+      id: 'durer_fur_coat_self_portrait', title: 'Self-Portrait in a Fur-Collared Robe',
+      description: 'Self-Portrait in a Fur-Collared Robe, 1500 - durer.',
+      artistId: 'durer', yearCreated: 1500, type: 0, typeName: 'Painting',
+      medium: 'Oil on lime panel', dimensions: '67.1 x 48.9 cm',
+      basePrice: 88000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.82, homeCityId: 'muenchen'
+    },
+    {
+      id: 'leonardo_st_john_the_baptist', title: 'Saint John the Baptist',
+      description: 'Saint John the Baptist, 1516 - leonardo.',
+      artistId: 'leonardo', yearCreated: 1516, type: 0, typeName: 'Painting',
+      medium: 'Oil on walnut panel', dimensions: '69 x 57 cm',
+      basePrice: 92000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.72, homeCityId: 'paris'
+    },
+    {
+      id: 'botticelli_mars_and_venus', title: 'Venus and Mars',
+      description: 'Venus and Mars, 1485 - botticelli.',
+      artistId: 'botticelli', yearCreated: 1485, type: 0, typeName: 'Painting',
+      medium: 'Tempera and oil on poplar panel', dimensions: '69.2 x 173.4 cm',
+      basePrice: 75000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.76, homeCityId: 'firenze'
+    },
+    {
+      id: 'caravaggio_medusa', title: 'Medusa',
+      description: 'Medusa, 1597 - caravaggio.',
+      artistId: 'caravaggio', yearCreated: 1597, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas mounted on wood shield', dimensions: '60 x 55 cm',
+      basePrice: 82000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.7, homeCityId: 'roma'
+    },
+    {
+      id: 'lorrain_apollo_and_muses', title: 'Landscape with Apollo and the Muses',
+      description: 'Landscape with Apollo and the Muses, 1652 - lorrain.',
+      artistId: 'lorrain', yearCreated: 1652, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '186 x 290 cm',
+      basePrice: 44000, rarity: 7, rarityMultiplier: 2.1, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.68, homeCityId: 'paris'
+    },
+    {
+      id: 'velazquez_surrender_of_breda', title: 'The Surrender of Breda',
+      description: 'The Surrender of Breda, 1635 - velazquez.',
+      artistId: 'velazquez', yearCreated: 1635, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '307 x 367 cm',
+      basePrice: 86000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.74, homeCityId: 'madrid'
+    },
+    {
+      id: 'vermeer_the_milkmaid', title: 'The Milkmaid',
+      description: 'The Milkmaid, 1658 - vermeer.',
+      artistId: 'vermeer', yearCreated: 1658, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '45.5 x 41 cm',
+      basePrice: 94000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.85, homeCityId: 'amsterdam'
+    },
+    {
+      id: 'rembrandt_anatomy_lesson', title: 'The Anatomy Lesson of Dr. Nicolaes Tulp',
+      description: 'The Anatomy Lesson of Dr. Nicolaes Tulp, 1632 - rembrandt.',
+      artistId: 'rembrandt', yearCreated: 1632, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '169.5 x 216.5 cm',
+      basePrice: 89000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.78, homeCityId: 'amsterdam'
+    },
+    {
+      id: 'watteau_gersaints_shopsign', title: 'Gersaint\'s Shopsign',
+      description: 'Gersaint\'s Shopsign, 1720 - watteau.',
+      artistId: 'watteau', yearCreated: 1720, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '163 x 308 cm',
+      basePrice: 52000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.65, homeCityId: 'paris'
+    },
+    {
+      id: 'fragonard_stolen_kiss', title: 'The Stolen Kiss',
+      description: 'The Stolen Kiss, 1787 - fragonard.',
+      artistId: 'fragonard', yearCreated: 1787, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '45 x 55 cm',
+      basePrice: 48000, rarity: 7, rarityMultiplier: 2.1, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.75, homeCityId: 'paris'
+    },
+    {
+      id: 'friedrich_sea_of_ice', title: 'The Sea of Ice',
+      description: 'The Sea of Ice, 1824 - friedrich.',
+      artistId: 'friedrich', yearCreated: 1824, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '96.7 x 126.9 cm',
+      basePrice: 56000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.76, homeCityId: 'berlin'
+    },
+    {
+      id: 'goya_third_of_may', title: 'The Third of May 1808',
+      description: 'The Third of May 1808, 1814 - goya.',
+      artistId: 'goya', yearCreated: 1814, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '268 x 347 cm',
+      basePrice: 87000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.72, homeCityId: 'madrid'
+    },
+    {
+      id: 'turner_slave_ship', title: 'The Slave Ship',
+      description: 'The Slave Ship, 1840 - turner.',
+      artistId: 'turner', yearCreated: 1840, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '90.8 x 122.6 cm',
+      basePrice: 62000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.74, homeCityId: 'london'
+    },
+    {
+      id: 'hokusai_waterfall_ono', title: 'The Waterfall at Ono on the Kisokaido',
+      description: 'The Waterfall at Ono on the Kisokaido, 1832 - hokusai.',
+      artistId: 'hokusai', yearCreated: 1832, type: 0, typeName: 'Painting',
+      medium: 'Woodblock print, nishiki-e', dimensions: '37.5 x 25.5 cm',
+      basePrice: 38000, rarity: 7, rarityMultiplier: 2.1, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.82, homeCityId: 'tokio'
+    },
+    {
+      id: 'pissarro_apple_harvest', title: 'Apple Picking at Eragny-sur-Epte',
+      description: 'Apple Picking at Eragny-sur-Epte, 1888 - pissarro.',
+      artistId: 'pissarro', yearCreated: 1888, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '60 x 73 cm',
+      basePrice: 35000, rarity: 6, rarityMultiplier: 1.8, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.79, homeCityId: 'paris'
+    },
+    {
+      id: 'monet_woman_with_parasol', title: 'Woman with a Parasol',
+      description: 'Woman with a Parasol, 1875 - monet.',
+      artistId: 'monet', yearCreated: 1875, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '100 x 81 cm',
+      basePrice: 78000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.81, homeCityId: 'paris'
+    },
+    {
+      id: 'degas_the_ballet_class', title: 'The Ballet Class',
+      description: 'The Ballet Class, 1874 - degas.',
+      artistId: 'degas', yearCreated: 1874, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '85 x 75 cm',
+      basePrice: 66000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.8, homeCityId: 'paris'
+    },
+    {
+      id: 'manet_luncheon_on_the_grass', title: 'The Luncheon on the Grass',
+      description: 'The Luncheon on the Grass, 1863 - manet.',
+      artistId: 'manet', yearCreated: 1863, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '208 x 264 cm',
+      basePrice: 85000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.75, homeCityId: 'paris'
+    },
+    {
+      id: 'seurat_the_models', title: 'The Models (Les Poseuses)',
+      description: 'The Models (Les Poseuses), 1888 - seurat.',
+      artistId: 'seurat', yearCreated: 1888, type: 0, typeName: 'Painting',
+      medium: 'Pointillist oil on canvas', dimensions: '200 x 250 cm',
+      basePrice: 58000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.77, homeCityId: 'paris'
+    },
+    {
+      id: 'toulouse_the_toilette', title: 'Rousse (The Toilette)',
+      description: 'Rousse (The Toilette), 1889 - toulouse_lautrec.',
+      artistId: 'toulouse_lautrec', yearCreated: 1889, type: 0, typeName: 'Painting',
+      medium: 'Oil on cardboard', dimensions: '67 x 54 cm',
+      basePrice: 46000, rarity: 7, rarityMultiplier: 2.1, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.73, homeCityId: 'paris'
+    },
+    {
+      id: 'renoir_large_bathers', title: 'The Large Bathers',
+      description: 'The Large Bathers, 1887 - renoir.',
+      artistId: 'renoir', yearCreated: 1887, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '117.8 x 170.8 cm',
+      basePrice: 72000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.8, homeCityId: 'paris'
+    },
+    {
+      id: 'munch_vampire', title: 'Vampire (Love and Pain)',
+      description: 'Vampire (Love and Pain), 1895 - munch.',
+      artistId: 'munch', yearCreated: 1895, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '91 x 109 cm',
+      basePrice: 68000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.72, homeCityId: 'berlin'
+    },
+    {
+      id: 'cezanne_large_bathers', title: 'The Large Bathers',
+      description: 'The Large Bathers, 1906 - cezanne.',
+      artistId: 'cezanne', yearCreated: 1906, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '210.5 x 250.8 cm',
+      basePrice: 80000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.78, homeCityId: 'paris'
+    },
+    {
+      id: 'gauguin_where_do_we_come_from', title: 'Where Do We Come From? What Are We? Where Are We Going?',
+      description: 'Where Do We Come From? What Are We? Where Are We Going?, 1897 - gauguin.',
+      artistId: 'gauguin', yearCreated: 1897, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '139.1 x 374.6 cm',
+      basePrice: 84000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.74, homeCityId: 'paris'
+    },
+    {
+      id: 'van_gogh_cafe_terrace', title: 'Café Terrace at Night',
+      description: 'Café Terrace at Night, 1888 - van_gogh.',
+      artistId: 'van_gogh', yearCreated: 1888, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '80.7 x 65.3 cm',
+      basePrice: 89000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.83, homeCityId: 'amsterdam'
+    },
+    {
+      id: 'mucha_job', title: 'JOB Cigarettes',
+      description: 'JOB Cigarettes, 1896 - mucha.',
+      artistId: 'mucha', yearCreated: 1896, type: 0, typeName: 'Painting',
+      medium: 'Colour lithograph poster on paper', dimensions: '66.7 x 46.4 cm',
+      basePrice: 36000, rarity: 6, rarityMultiplier: 1.8, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.84, homeCityId: 'prag'
+    },
+    {
+      id: 'schiele_krumau', title: 'Krumau Town Crescent',
+      description: 'Krumau Town Crescent, 1915 - schiele.',
+      artistId: 'schiele', yearCreated: 1915, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '110 x 140 cm',
+      basePrice: 58000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.76, homeCityId: 'wien'
+    },
+    {
+      id: 'leger_three_women', title: 'Three Women (Le Grand Déjeuner)',
+      description: 'Three Women (Le Grand Déjeuner), 1921 - leger.',
+      artistId: 'leger', yearCreated: 1921, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '183.5 x 251.5 cm',
+      basePrice: 62000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.81, homeCityId: 'paris'
+    },
+    {
+      id: 'marc_tower_of_blue_horses', title: 'The Tower of Blue Horses',
+      description: 'The Tower of Blue Horses, 1913 - marc.',
+      artistId: 'marc', yearCreated: 1913, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '200 x 130 cm',
+      basePrice: 64000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.7, homeCityId: 'muenchen'
+    },
+    {
+      id: 'munter_country_road_winter', title: 'Country Road in Winter',
+      description: 'Country Road in Winter, 1910 - munter.',
+      artistId: 'munter', yearCreated: 1910, type: 0, typeName: 'Painting',
+      medium: 'Oil on cardboard', dimensions: '50.5 x 65 cm',
+      basePrice: 34000, rarity: 6, rarityMultiplier: 1.8, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.78, homeCityId: 'muenchen'
+    },
+    {
+      id: 'klimt_judith_i', title: 'Judith and the Head of Holofernes (Judith I)',
+      description: 'Judith and the Head of Holofernes (Judith I), 1901 - klimt.',
+      artistId: 'klimt', yearCreated: 1901, type: 0, typeName: 'Painting',
+      medium: 'Oil and gold leaf on canvas', dimensions: '84 x 42 cm',
+      basePrice: 85000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.82, homeCityId: 'wien'
+    },
+    {
+      id: 'matisse_open_window', title: 'The Open Window, Collioure',
+      description: 'The Open Window, Collioure, 1905 - matisse.',
+      artistId: 'matisse', yearCreated: 1905, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '55.3 x 46 cm',
+      basePrice: 67000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.8, homeCityId: 'paris'
+    },
+    {
+      id: 'chagall_over_the_town', title: 'Over the Town',
+      description: 'Over the Town, 1918 - chagall.',
+      artistId: 'chagall', yearCreated: 1918, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '141 x 198 cm',
+      basePrice: 65000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.79, homeCityId: 'paris'
+    },
+    {
+      id: 'picasso_portrait_gertrude_stein', title: 'Portrait of Gertrude Stein',
+      description: 'Portrait of Gertrude Stein, 1906 - picasso.',
+      artistId: 'picasso', yearCreated: 1906, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '100 x 81.3 cm',
+      basePrice: 76000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.82, homeCityId: 'paris'
+    },
+    {
+      id: 'kandinsky_murnau_street', title: 'Murnau, Street with Church',
+      description: 'Murnau, Street with Church, 1908 - kandinsky.',
+      artistId: 'kandinsky', yearCreated: 1908, type: 0, typeName: 'Painting',
+      medium: 'Oil on cardboard', dimensions: '33 x 44.5 cm',
+      basePrice: 54000, rarity: 7, rarityMultiplier: 2.1, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.8, homeCityId: 'muenchen'
+    },
+    {
+      id: 'raphael_school_of_athens', title: 'The School of Athens',
+      description: 'The School of Athens, 1511 - raphael.',
+      artistId: 'raphael', yearCreated: 1511, type: 0, typeName: 'Painting',
+      medium: 'Fresco cartoon / tempera', dimensions: '500 x 770 cm',
+      basePrice: 98000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.75, homeCityId: 'roma'
+    },
+    {
+      id: 'raphael_sistine_madonna', title: 'Sistine Madonna',
+      description: 'Sistine Madonna, 1512 - raphael.',
+      artistId: 'raphael', yearCreated: 1512, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '265 x 196 cm',
+      basePrice: 96000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.8, homeCityId: 'roma'
+    },
+    {
+      id: 'raphael_three_graces', title: 'The Three Graces',
+      description: 'The Three Graces, 1504 - raphael.',
+      artistId: 'raphael', yearCreated: 1504, type: 0, typeName: 'Painting',
+      medium: 'Oil on panel', dimensions: '17 x 17 cm',
+      basePrice: 74000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.78, homeCityId: 'firenze'
+    },
+    {
+      id: 'raphael_castiglione', title: 'Portrait of Baldassare Castiglione',
+      description: 'Portrait of Baldassare Castiglione, 1515 - raphael.',
+      artistId: 'raphael', yearCreated: 1515, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '82 x 67 cm',
+      basePrice: 82000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.82, homeCityId: 'roma'
+    },
+    {
+      id: 'rubens_judgement_of_paris', title: 'The Judgement of Paris',
+      description: 'The Judgement of Paris, 1636 - rubens.',
+      artistId: 'rubens', yearCreated: 1636, type: 0, typeName: 'Painting',
+      medium: 'Oil on oak panel', dimensions: '144.8 x 193.7 cm',
+      basePrice: 86000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.76, homeCityId: 'london'
+    },
+    {
+      id: 'rubens_fall_of_the_damned', title: 'The Fall of the Damned',
+      description: 'The Fall of the Damned, 1620 - rubens.',
+      artistId: 'rubens', yearCreated: 1620, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '286 x 224 cm',
+      basePrice: 88000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.72, homeCityId: 'muenchen'
+    },
+    {
+      id: 'rubens_three_graces', title: 'The Three Graces',
+      description: 'The Three Graces, 1635 - rubens.',
+      artistId: 'rubens', yearCreated: 1635, type: 0, typeName: 'Painting',
+      medium: 'Oil on oak panel', dimensions: '221 x 181 cm',
+      basePrice: 84000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.78, homeCityId: 'madrid'
+    },
+    {
+      id: 'rubens_elevation_of_cross', title: 'The Elevation of the Cross',
+      description: 'The Elevation of the Cross, 1610 - rubens.',
+      artistId: 'rubens', yearCreated: 1610, type: 0, typeName: 'Painting',
+      medium: 'Oil on wood panels (triptych)', dimensions: '462 x 341 cm',
+      basePrice: 90000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.74, homeCityId: 'amsterdam'
+    },
+    {
+      id: 'delacroix_liberty_leading_people', title: 'Liberty Leading the People',
+      description: 'Liberty Leading the People, 1830 - delacroix.',
+      artistId: 'delacroix', yearCreated: 1830, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '260 x 325 cm',
+      basePrice: 90000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.77, homeCityId: 'paris'
+    },
+    {
+      id: 'delacroix_death_of_sardanapalus', title: 'The Death of Sardanapalus',
+      description: 'The Death of Sardanapalus, 1827 - delacroix.',
+      artistId: 'delacroix', yearCreated: 1827, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '392 x 496 cm',
+      basePrice: 82000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.73, homeCityId: 'paris'
+    },
+    {
+      id: 'delacroix_barque_of_dante', title: 'The Barque of Dante',
+      description: 'The Barque of Dante, 1822 - delacroix.',
+      artistId: 'delacroix', yearCreated: 1822, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '189 x 241 cm',
+      basePrice: 75000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.75, homeCityId: 'paris'
+    },
+    {
+      id: 'delacroix_lion_hunt', title: 'Lion Hunt',
+      description: 'Lion Hunt, 1861 - delacroix.',
+      artistId: 'delacroix', yearCreated: 1861, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '76.5 x 98.5 cm',
+      basePrice: 64000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.8, homeCityId: 'paris'
+    },
+    {
+      id: 'modigliani_reclining_nude', title: 'Reclining Nude (Nu couché)',
+      description: 'Reclining Nude (Nu couché), 1917 - modigliani.',
+      artistId: 'modigliani', yearCreated: 1917, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '60 x 92 cm',
+      basePrice: 92000, rarity: 10, rarityMultiplier: 3.0, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.82, homeCityId: 'paris'
+    },
+    {
+      id: 'modigliani_jeanne_hebuterne', title: 'Portrait of Jeanne Hébuterne',
+      description: 'Portrait of Jeanne Hébuterne, 1918 - modigliani.',
+      artistId: 'modigliani', yearCreated: 1918, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '92 x 60 cm',
+      basePrice: 78000, rarity: 9, rarityMultiplier: 2.7, isMasterpiece: true,
+      hasKnownForgery: true, typicalCondition: 0.8, homeCityId: 'paris'
+    },
+    {
+      id: 'modigliani_leopold_zborowski', title: 'Portrait of Léopold Zborowski',
+      description: 'Portrait of Léopold Zborowski, 1916 - modigliani.',
+      artistId: 'modigliani', yearCreated: 1916, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '100 x 65 cm',
+      basePrice: 70000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: true,
+      hasKnownForgery: false, typicalCondition: 0.81, homeCityId: 'paris'
+    },
+    {
+      id: 'modigliani_woman_with_fan', title: 'Woman with a Fan',
+      description: 'Woman with a Fan, 1919 - modigliani.',
+      artistId: 'modigliani', yearCreated: 1919, type: 0, typeName: 'Painting',
+      medium: 'Oil on canvas', dimensions: '100 x 65 cm',
+      basePrice: 68000, rarity: 8, rarityMultiplier: 2.4, isMasterpiece: false,
+      hasKnownForgery: false, typicalCondition: 0.79, homeCityId: 'paris'
+    },
+
     {
       id: 'pissarro_red_roofs', title: 'The Red Roofs',
       description: 'The Red Roofs, 1877 - Camille Pissarro.',
