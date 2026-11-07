@@ -592,8 +592,8 @@ window.ART_ARTWORK_IMAGES = {
         "leonardo_virgin_of_the_rocks": {
             "file": "images/art/leonardo-virgin-of-the-rocks.jpg",
             "width": 900,
-            "height": 1387,
-            "bytes": 233275,
+            "height": 672,
+            "bytes": 91406,
             "source": "Leonardo da Vinci – Felsgrottenmadonna (ca. 1483 und 1486).jpg",
             "how": "alias"
         },
@@ -856,328 +856,328 @@ window.ART_ARTWORK_IMAGES = {
         "durer_fur_coat_self_portrait": {
             "file": "images/art/durer-fur-coat.jpg",
             "width": 900,
-            "height": 1246,
-            "bytes": 155792,
+            "height": 672,
+            "bytes": 90014,
             "source": "20171017194217!Dürer - Selbstbildnis im Pelzrock - Alte Pinakothek.jpg",
             "how": "wikimedia"
         },
         "leonardo_st_john_the_baptist": {
             "file": "images/art/leonardo-st-john.jpg",
             "width": 900,
-            "height": 1367,
-            "bytes": 189460,
+            "height": 672,
+            "bytes": 91272,
             "source": "Bacchus - Leonardo da Vinci workshop - Louvre INV 780.jpg",
             "how": "wikimedia"
         },
         "botticelli_mars_and_venus": {
             "file": "images/art/botticelli-mars-and-venus.jpg",
             "width": 900,
-            "height": 360,
-            "bytes": 66276,
+            "height": 672,
+            "bytes": 114077,
             "source": "Venus and Mars National Gallery.jpg",
             "how": "wikimedia"
         },
         "caravaggio_medusa": {
             "file": "images/art/caravaggio-medusa.jpg",
             "width": 900,
-            "height": 898,
-            "bytes": 147417,
+            "height": 672,
+            "bytes": 97804,
             "source": "Medusa by Caravaggio-Uffizi.jpg",
             "how": "wikimedia"
         },
         "lorrain_apollo_and_muses": {
             "file": "images/art/lorrain-apollo-muses.jpg",
             "width": 900,
-            "height": 589,
-            "bytes": 81841,
+            "height": 672,
+            "bytes": 121234,
             "source": "Claude Lorrain (Claude Gellée) - Landscape with Apollo and the Muses - NG 2240 - National Galleries of Scotland.jpg",
             "how": "wikimedia"
         },
         "velazquez_surrender_of_breda": {
             "file": "images/art/velazquez-surrender-of-breda.jpg",
             "width": 900,
-            "height": 742,
-            "bytes": 146894,
+            "height": 672,
+            "bytes": 142513,
             "source": "Velazquez-The Surrender of Breda.jpg",
             "how": "wikimedia"
         },
         "vermeer_the_milkmaid": {
             "file": "images/art/vermeer-the-milkmaid.jpg",
             "width": 900,
-            "height": 1009,
-            "bytes": 154498,
+            "height": 672,
+            "bytes": 92050,
             "source": "Johannes Vermeer - Het melkmeisje - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "rembrandt_anatomy_lesson": {
             "file": "images/art/rembrandt-anatomy-lesson.jpg",
             "width": 900,
-            "height": 678,
-            "bytes": 66880,
+            "height": 672,
+            "bytes": 109572,
             "source": "Rembrandt - The Anatomy Lesson of Dr Nicolaes Tulp.jpg",
             "how": "wikimedia"
         },
         "watteau_gersaints_shopsign": {
             "file": "images/art/watteau-gersaints-shopsign.jpg",
             "width": 900,
-            "height": 482,
-            "bytes": 116288,
+            "height": 672,
+            "bytes": 136634,
             "source": "Gersaint.jpg",
             "how": "wikimedia"
         },
         "fragonard_stolen_kiss": {
             "file": "images/art/fragonard-stolen-kiss.jpg",
             "width": 900,
-            "height": 738,
-            "bytes": 94358,
+            "height": 672,
+            "bytes": 116217,
             "source": "Jean-Honoré Fragonard - The Stolen Kiss.jpg",
             "how": "wikimedia"
         },
         "friedrich_sea_of_ice": {
             "file": "images/art/friedrich-sea-of-ice.jpg",
             "width": 900,
-            "height": 673,
-            "bytes": 104568,
+            "height": 672,
+            "bytes": 133349,
             "source": "Caspar David Friedrich - Das Eismeer - Hamburger Kunsthalle - 02.jpg",
             "how": "wikimedia"
         },
         "turner_slave_ship": {
             "file": "images/art/turner-slave-ship.jpg",
             "width": 900,
-            "height": 669,
-            "bytes": 93505,
+            "height": 672,
+            "bytes": 125415,
             "source": "J.M.W. Turner Slave Ship ( Slavers Throwing Overboard the Dead and Dying, Typhoon Coming On). 1840.png",
             "how": "wikimedia"
         },
         "pissarro_apple_harvest": {
             "file": "images/art/pissarro-apple-harvest.jpg",
             "width": 900,
-            "height": 905,
-            "bytes": 228804,
+            "height": 672,
+            "bytes": 112407,
             "source": "Camille Pissarro - Apple Picking - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "monet_woman_with_parasol": {
             "file": "images/art/monet-woman-with-parasol.jpg",
             "width": 900,
-            "height": 1118,
-            "bytes": 204011,
+            "height": 672,
+            "bytes": 105217,
             "source": "Claude Monet - Woman with a Parasol - Madame Monet and Her Son - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "seurat_the_models": {
             "file": "images/art/seurat-the-models.jpg",
             "width": 900,
-            "height": 725,
-            "bytes": 138220,
+            "height": 672,
+            "bytes": 133427,
             "source": "Georges Seurat - Models (Poseuses) - BF811 - Barnes Foundation.jpg",
             "how": "wikimedia"
         },
         "toulouse_the_toilette": {
             "file": "images/art/toulouse-the-toilette.jpg",
             "width": 900,
-            "height": 1126,
-            "bytes": 293383,
+            "height": 672,
+            "bytes": 121818,
             "source": "(Albi) Rousse (La Toilette) - 1889 - Henri de Toulouse-Lautrec - Musée d'Orsay, Paris.jpg",
             "how": "wikimedia"
         },
         "renoir_large_bathers": {
             "file": "images/art/renoir-large-bathers.jpg",
             "width": 900,
-            "height": 617,
-            "bytes": 116776,
+            "height": 672,
+            "bytes": 144351,
             "source": "Pierre-Auguste Renoir, French - The Large Bathers - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "munch_vampire": {
             "file": "images/art/munch-vampire.jpg",
             "width": 900,
-            "height": 737,
-            "bytes": 107717,
+            "height": 672,
+            "bytes": 121216,
             "source": "Edvard Munch - Vampire (1895) - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "cezanne_large_bathers": {
             "file": "images/art/cezanne-large-bathers.jpg",
             "width": 900,
-            "height": 752,
-            "bytes": 141303,
+            "height": 672,
+            "bytes": 141998,
             "source": "Paul Cézanne, French - The Large Bathers - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "van_gogh_cafe_terrace": {
             "file": "images/art/van-gogh-cafe-terrace.jpg",
             "width": 900,
-            "height": 1152,
-            "bytes": 417991,
+            "height": 672,
+            "bytes": 141668,
             "source": "Vincent-van-gogh-cafe-terrace-on-the-place-du-forum-arles-at-night-the.jpg",
             "how": "wikimedia"
         },
         "mucha_job": {
             "file": "images/art/mucha-job.jpg",
             "width": 900,
-            "height": 1178,
-            "bytes": 220500,
+            "height": 672,
+            "bytes": 115770,
             "source": "Alfons mucha, job, litografia, 1896.jpg",
             "how": "wikimedia"
         },
         "schiele_krumau": {
             "file": "images/art/schiele-krumau.jpg",
             "width": 900,
-            "height": 600,
-            "bytes": 109173,
+            "height": 672,
+            "bytes": 140748,
             "source": "Egon Schiele, Crescent of Houses II, 1915; Leopold Museum, Vienna (1).jpg",
             "how": "wikimedia"
         },
         "leger_three_women": {
             "file": "images/art/leger-three-women.jpg",
-            "width": 592,
-            "height": 418,
-            "bytes": 62844,
+            "width": 900,
+            "height": 672,
+            "bytes": 145724,
             "source": "Three Women, 1919 - Fernand Léger.jpg",
             "how": "wikimedia"
         },
         "marc_tower_of_blue_horses": {
             "file": "images/art/marc-tower-of-blue-horses.jpg",
             "width": 900,
-            "height": 1381,
-            "bytes": 387391,
+            "height": 672,
+            "bytes": 112232,
             "source": "Franz Marc - Der Turm der blauen Pferde - Skizze in Farbe.jpg",
             "how": "wikimedia"
         },
         "klimt_judith_i": {
             "file": "images/art/klimt-judith-i.jpg",
-            "width": 566,
-            "height": 1123,
-            "bytes": 153828,
+            "width": 900,
+            "height": 672,
+            "bytes": 97732,
             "source": "Gustav Klimt - Judith - 4737 - Österreichische Galerie Belvedere.jpg",
             "how": "wikimedia"
         },
         "matisse_open_window": {
             "file": "images/art/matisse-open-window.jpg",
             "width": 900,
-            "height": 1060,
-            "bytes": 190567,
+            "height": 672,
+            "bytes": 111222,
             "source": "Open Window, Collioure, 1905 - Henri Matisse.jpg",
             "how": "wikimedia"
         },
         "chagall_over_the_town": {
             "file": "images/art/chagall-over-the-town.jpg",
             "width": 900,
-            "height": 765,
-            "bytes": 77678,
+            "height": 672,
+            "bytes": 106737,
             "source": "Marc Chagall. Over Vitebsk, GD002422.jpg",
             "how": "wikimedia"
         },
         "kandinsky_murnau_street": {
             "file": "images/art/kandinsky-murnau-street.jpg",
             "width": 900,
-            "height": 628,
-            "bytes": 115943,
+            "height": 672,
+            "bytes": 144969,
             "source": "Murnau - Dorfstrasse by Wassily Kandinsky.jpg",
             "how": "wikimedia"
         },
         "raphael_school_of_athens": {
             "file": "images/art/raphael-school-of-athens.jpg",
             "width": 900,
-            "height": 698,
-            "bytes": 156799,
+            "height": 672,
+            "bytes": 155372,
             "source": "\"The School of Athens\" by Raffaello Sanzio da Urbino.jpg",
             "how": "wikimedia"
         },
         "raphael_sistine_madonna": {
             "file": "images/art/raphael-sistine-madonna.jpg",
             "width": 900,
-            "height": 1234,
-            "bytes": 239375,
+            "height": 672,
+            "bytes": 103378,
             "source": "RAFAEL - Madonna Sixtina (Gemäldegalerie Alter Meister, Dresden, 1513-14. Óleo sobre lienzo, 265 x 196 cm).jpg",
             "how": "wikimedia"
         },
         "raphael_three_graces": {
             "file": "images/art/raphael-three-graces.jpg",
             "width": 900,
-            "height": 896,
-            "bytes": 169336,
+            "height": 672,
+            "bytes": 94495,
             "source": "Raphaël - Les Trois Grâces - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "rubens_judgement_of_paris": {
             "file": "images/art/rubens-judgement-of-paris.jpg",
             "width": 900,
-            "height": 666,
-            "bytes": 105294,
+            "height": 672,
+            "bytes": 133333,
             "source": "Rubens - Judgement of Paris.jpg",
             "how": "wikimedia"
         },
         "rubens_elevation_of_cross": {
             "file": "images/art/rubens-elevation-of-cross.jpg",
             "width": 900,
-            "height": 659,
-            "bytes": 132256,
+            "height": 672,
+            "bytes": 151300,
             "source": "Peter Paul Rubens - The Raising of the Cross (Antwerp Cathedral).jpg",
             "how": "wikimedia"
         },
         "delacroix_liberty_leading_people": {
             "file": "images/art/delacroix-liberty-leading-people.jpg",
             "width": 900,
-            "height": 712,
-            "bytes": 125766,
+            "height": 672,
+            "bytes": 137303,
             "source": "Eugène Delacroix - La liberté guidant le peuple.jpg",
             "how": "wikimedia"
         },
         "delacroix_death_of_sardanapalus": {
             "file": "images/art/delacroix-death-of-sardanapalus.jpg",
             "width": 900,
-            "height": 707,
-            "bytes": 124440,
+            "height": 672,
+            "bytes": 138986,
             "source": "Death of Sardanapalus by Eugène Delacroix.jpg",
             "how": "wikimedia"
         },
         "delacroix_barque_of_dante": {
             "file": "images/art/delacroix-barque-of-dante.jpg",
             "width": 900,
-            "height": 1120,
-            "bytes": 120746,
+            "height": 672,
+            "bytes": 93767,
             "source": "William-Adolphe Bouguereau (1825-1905) - Dante And Virgil In Hell (1850).jpg",
             "how": "wikimedia"
         },
         "delacroix_lion_hunt": {
             "file": "images/art/delacroix-lion-hunt.jpg",
             "width": 900,
-            "height": 694,
-            "bytes": 115517,
+            "height": 672,
+            "bytes": 133858,
             "source": "Eugène Delacroix - Lion Hunt - 1922.404 - Art Institute of Chicago.jpg",
             "how": "wikimedia"
         },
         "modigliani_reclining_nude": {
             "file": "images/art/modigliani-reclining-nude.jpg",
             "width": 900,
-            "height": 674,
-            "bytes": 105464,
+            "height": 672,
+            "bytes": 128014,
             "source": "Amedeo Modigliani, 1916, Reclining Nude (Nu couché), oil on canvas, 65.5 x 87 cm, Foundation E.G. Bührle.jpg",
             "how": "wikimedia"
         },
         "modigliani_jeanne_hebuterne": {
             "file": "images/art/modigliani-jeanne-hebuterne.jpg",
             "width": 900,
-            "height": 1369,
-            "bytes": 114668,
+            "height": 672,
+            "bytes": 87019,
             "source": "Amedeo Modigliani 025.jpg",
             "how": "wikimedia"
         },
         "modigliani_leopold_zborowski": {
             "file": "images/art/modigliani-leopold-zborowski.jpg",
             "width": 900,
-            "height": 1389,
-            "bytes": 241201,
+            "height": 672,
+            "bytes": 92797,
             "source": "Amedeo modigliani - retrato de leopoldo zborowski 03.jpg",
             "how": "wikimedia"
         },
         "modigliani_woman_with_fan": {
             "file": "images/art/modigliani-woman-with-fan.jpg",
             "width": 900,
-            "height": 1439,
-            "bytes": 163957,
+            "height": 672,
+            "bytes": 92260,
             "source": "Amedeo Modigliani 028.jpg",
             "how": "wikimedia"
         },
@@ -1185,7 +1185,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/goya-third-of-may.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 117051,
+            "bytes": 140364,
             "source": "Francisco de Goya – Der 3. Mai 1808 (1814).jpg",
             "how": "alias"
         },
@@ -1193,7 +1193,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/degas-ballet-class.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 111162,
+            "bytes": 136449,
             "source": "Edgar Degas – Die Tanzklasse (1874).jpg",
             "how": "alias"
         },
@@ -1201,7 +1201,7 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/manet-luncheon-on-the-grass.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 118019,
+            "bytes": 140854,
             "source": "Édouard Manet – Das Frühstück im Grünen (1863).jpg",
             "how": "alias"
         },
@@ -1209,55 +1209,55 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/gauguin-where-do-we-come-from.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 122869,
+            "bytes": 143772,
             "source": "Paul Gauguin – Woher kommen wir Wer sind wir Wohin gehen wir (1897).jpg",
             "how": "alias"
         },
         "raphael_castiglione": {
             "file": "images/art/raphael-castiglione.jpg",
             "width": 900,
-            "height": 1120,
-            "bytes": 154131,
+            "height": 672,
+            "bytes": 90292,
             "source": "Baldassare Castiglione, by Raffaello Sanzio, from C2RMF retouched.jpg",
             "how": "wikimedia"
         },
         "rubens_fall_of_the_damned": {
             "file": "images/art/rubens-fall-of-the-damned.jpg",
             "width": 900,
-            "height": 650,
-            "bytes": 145347,
+            "height": 672,
+            "bytes": 159347,
             "source": "Pieter Bruegel the Elder - The Fall of the Rebel Angels - Google Art Project.jpg",
             "how": "wikimedia"
         },
         "hokusai_waterfall_ono": {
             "file": "images/art/hokusai-waterfall-ono.jpg",
             "width": 900,
-            "height": 1322,
-            "bytes": 248934,
+            "height": 672,
+            "bytes": 112523,
             "source": "Katsushika Hokusai (1760-1849), Ono waterval aan de Kisokaido (1835).jpg",
             "how": "wikimedia"
         },
         "rubens_three_graces": {
             "file": "images/art/rubens-three-graces.jpg",
             "width": 900,
-            "height": 1097,
-            "bytes": 167196,
+            "height": 672,
+            "bytes": 103425,
             "source": "The Three Graces, by Peter Paul Rubens, from Prado in Google Earth.jpg",
             "how": "wikimedia"
         },
         "picasso_portrait_gertrude_stein": {
             "file": "images/art/picasso-gertrude-stein.jpg",
             "width": 900,
-            "height": 600,
-            "bytes": 53038,
+            "height": 672,
+            "bytes": 105666,
             "source": "Family of Saltimbanques in the National Gallery of Art.jpg",
             "how": "wikimedia"
         },
         "munter_country_road_winter": {
             "file": "images/art/munter-country-road-winter.jpg",
-            "width": 775,
-            "height": 1042,
-            "bytes": 72419,
+            "width": 900,
+            "height": 672,
+            "bytes": 86317,
             "source": "Csm G-64-891-1 Muenter-G-ONLINE 794173df26.jpg",
             "how": "wikimedia"
         }
