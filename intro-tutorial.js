@@ -96,7 +96,7 @@ function render(){
  var buttons=[{label:copy('Überspringen','Skip'),onClick:close}];
  if(page>0)buttons.push({label:copy('Zurück','Back'),onClick:function(){page--;render();}});
  buttons.push({label:page===cards.length-1?copy('Karriere starten','Start career'):copy('Weiter','Next'),primary:true,onClick:function(){if(page===cards.length-1)close();else{page++;render();}}});
- A.shell.dialog(copy('Willkommen bei The Great Art Race','Welcome to The Great Art Race'),html,buttons,'dialog--tutorial');
+ A.shell.dialog(copy('Willkommen bei Grand Art Tour 1925','Welcome to Grand Art Tour 1925'),html,buttons,'dialog--tutorial');
 }
 function close(){var A=window.ArtRace;if(A&&A.shell)A.shell.closeDialog();}
 function open(){page=0;render();}

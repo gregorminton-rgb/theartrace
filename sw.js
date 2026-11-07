@@ -1,7 +1,7 @@
-// Offline support for The Great Art Race.
+// Offline support for Grand Art Tour 1925.
 // Bump CACHE_VERSION whenever a cached file changes.
-const CACHE_VERSION = 'artrace-v92-20261107-mobilehud';
-const AUCTION_CACHE_SUFFIX = '-mobilehud';
+const CACHE_VERSION = 'grandarttour-v93-20261107-brandname';
+const AUCTION_CACHE_SUFFIX = '-brandname';
 const CORE_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}${AUCTION_CACHE_SUFFIX}-runtime`;
 

@@ -566,7 +566,7 @@
         return collectionRow(p, true);
       }).join('') : ''
     ].join('');
-    dialog('The Great Art Race — ' + count + ' picture' + (count === 1 ? '' : 's'),
+    dialog('Grand Art Tour 1925 — ' + count + ' picture' + (count === 1 ? '' : 's'),
       lines, [
       { label: 'Read the journal', onClick: function () { G.view = 'report'; G.ended = false; closeDialog(); renderAll(); G.ended = true; } },
       { label: 'New career', primary: true, onClick: backToTitle }
