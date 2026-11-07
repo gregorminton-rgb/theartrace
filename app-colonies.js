@@ -473,12 +473,15 @@
     
     /* Render plantage view (only when visible) */
     if (G.colonyMenu === 'plantage') {
-      if(G.plantCropId && !colonyAllowsCrop(G.colonyId,G.plantCropId))G.plantCropId=null;
+      var availCrops = COLONY_CROP_IDS[G.colonyId] || [];
+      if (!G.plantCropId || !colonyAllowsCrop(G.colonyId, G.plantCropId)) {
+        G.plantCropId = availCrops.length ? availCrops[0] : null;
+      }
+      var topBar = el('farm-hayday-topbar');
+      if (topBar) topBar.innerHTML = farmTopBarHTML();
       el('colony-field-toolbar').innerHTML = colonyMultiBarHTML();
       el('colony-palette').innerHTML = colonyPaletteHTML();
       el('colony-workers').innerHTML = colonyWorkersHTML();
-      var mobileWorkers = el('colony-workers-mobile');
-      if (mobileWorkers) mobileWorkers.innerHTML = '';
       var grid = el('colony-grid');
       var gridScroll = grid.scrollTop;
       grid.innerHTML = colonyGridHTML();
@@ -487,10 +490,12 @@
       grid.style.backgroundImage = colony.bg || 'none';
       grid.style.backgroundSize = 'cover';
       grid.style.backgroundPosition = 'center';
+      bindGridSwipe(grid);
       el('colony-inspector').innerHTML = colonyInspectorHTML();
-      el('colony-hint').textContent = G.plantCropId
-        ? 'Click a free plot to plant ' + CROP_BY_ID[G.plantCropId].label + ' — or drag a plate from the left.'
-        : 'Drag a crop plate onto a free plot, or click a plate then a plot.';
+      var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+      el('colony-hint').textContent = de
+        ? 'Tippe oder wische über reife Felder zum Ernten. Tippe auf freie Parzellen zum Säen.'
+        : 'Tap or swipe ripe fields to harvest. Tap empty plots to sow seeds.';
     }
 
     /* Render handel view */
@@ -566,49 +571,247 @@
     return cells.join('');
   }
 
-  /* A little SVG diorama: tilled soil, crop rows that grow with progress, and
-     the assigned workers walking/picking along a row. Workers are PNG cutouts
-     placed with <image> so they scale with the tile. */
-  function fieldSVG(crop, f, pct) {
+  /* Hay Day Farm Top Bar: quick seed selection and instant harvest-all button */
+  function farmTopBarHTML() {
+    var colony = COLONY_BY_ID[G.colonyId];
+    if (!colony) return '';
+    var available = COLONY_CROP_IDS[G.colonyId] || [];
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+
+    var ripeFields = colonyFields().filter(function (f) { return f.ripe; });
+    var ripeCount = ripeFields.length;
+
+    var seedsHTML = available.map(function (cid) {
+      var c = CROP_BY_ID[cid];
+      if (!c) return '';
+      var isSelected = G.plantCropId === cid;
+      var emoji = { kakao: '🍫', kaffee: '☕', tabak: '🍂', tee: '🍵', stoffe: '🧵' }[cid] || '🌱';
+      return '<button type="button" class="farm-seed-btn' + (isSelected ? ' is-active' : '') + '"' +
+        ' data-colony="arm" data-crop="' + cid + '"' +
+        ' title="' + (de ? 'Saatgut auswählen' : 'Select seed') + '">' +
+        '<span class="farm-seed-icon">' + emoji + '</span>' +
+        '<span class="farm-seed-info">' +
+          '<span class="farm-seed-title">' + h(c.label) + '</span>' +
+          '<span class="farm-seed-meta">' + c.days + (de ? 'T · ' : 'd · ') + A.money(c.cost) + '</span>' +
+        '</span>' +
+        (isSelected ? '<span class="farm-seed-check">✓</span>' : '') +
+        '</button>';
+    }).join('');
+
+    var harvestBtn = '';
+    if (ripeCount > 0) {
+      harvestBtn = '<button type="button" class="farm-harvest-all-btn btn buy" data-colony="harvest-all">' +
+        '<span class="farm-harvest-all-icon">🌾</span> ' +
+        '<span>' + (de ? 'Alle ernten (' + ripeCount + ')' : 'Harvest All (' + ripeCount + ')') + '</span>' +
+        '</button>';
+    }
+
+    return '<div class="farm-hayday-bar">' +
+      '<div class="farm-seed-group">' +
+        '<span class="farm-seed-label">' + (de ? 'Saatgut:' : 'Seeds:') + '</span>' +
+        seedsHTML +
+      '</div>' +
+      (harvestBtn ? '<div class="farm-harvest-group">' + harvestBtn + '</div>' : '') +
+    '</div>';
+  }
+
+  function showFloatingHarvest(plotEl, crop, yieldUnits) {
+    if (!plotEl) return;
+    var rect = plotEl.getBoundingClientRect();
+    var floater = document.createElement('div');
+    floater.className = 'farm-harvest-floater';
+    var emoji = crop ? ({ kakao: '🍫', kaffee: '☕', tabak: '🍂', tee: '🍵', stoffe: '🧵' }[crop.id] || '🌾') : '🌾';
+    floater.innerHTML = '<span class="floater-emoji">' + emoji + '</span> +' + yieldUnits + ' ' + (crop ? crop.label : '');
+    floater.style.left = (rect.left + rect.width / 2) + 'px';
+    floater.style.top = (rect.top + rect.height / 3) + 'px';
+    document.body.appendChild(floater);
+    setTimeout(function () { floater.remove(); }, 950);
+  }
+
+  function bindGridSwipe(grid) {
+    if (!grid || grid._swipeBound) return;
+    grid._swipeBound = true;
+    var isDown = false;
+    var touchedPlots = new Set();
+
+    grid.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      isDown = true;
+      touchedPlots.clear();
+      handlePlotTarget(e.target);
+    });
+
+    window.addEventListener('pointerup', function () {
+      isDown = false;
+      touchedPlots.clear();
+    });
+
+    grid.addEventListener('pointermove', function (e) {
+      if (!isDown) return;
+      var target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target) handlePlotTarget(target);
+    });
+
+    function handlePlotTarget(target) {
+      var plot = target && target.closest('.plot');
+      if (!plot) return;
+      var plotIdx = plot.getAttribute('data-plot');
+      if (touchedPlots.has(plotIdx)) return;
+
+      if (plot.classList.contains('plot--planted') && plot.classList.contains('ripe')) {
+        touchedPlots.add(plotIdx);
+        var fid = parseInt(plot.getAttribute('data-field'), 10);
+        var f = fieldById(fid);
+        var crop = f ? CROP_BY_ID[f.cropId] : null;
+        var yUnits = f ? fieldYield(f) : 1;
+        showFloatingHarvest(plot, crop, yUnits);
+        crew.harvestField(fid);
+      } else if (plot.classList.contains('plot--empty') && G.plantCropId) {
+        touchedPlots.add(plotIdx);
+        var pi = parseInt(plotIdx, 10);
+        crew.plantCrop(G.plantCropId, pi);
+      }
+    }
+  }
+
+  /* Rich Hay Day Farmland SVG diorama with crop-specific foliage, fruits and tilled soil */
+  function farmFieldSVG(crop, f, pct) {
+    var isRipe = f.ripe;
     var grown = Math.max(0.18, Math.min(1, pct / 100));
-    var ripe = f.ripe;
-    var green = ripe ? '#5f8d43' : '#6f9a52';
-    var rows = '';
-    for (var r = 0; r < 3; r++) {
-      var y = 30 + r * 11;
-      rows += '<rect x="8" y="' + (y + 4) + '" width="84" height="2.5" rx="1" fill="#5c4326" opacity="' + (0.45 + r * 0.12).toFixed(2) + '"/>';
-      for (var c = 0; c < 7; c++) {
-        var x = 12 + c * 12;
-        var hh = (4 + grown * 9).toFixed(1);
-        var sway = ((c + r) % 2 ? 1 : -1) * 0.8;
-        rows += '<path d="M' + x + ' ' + (y + 5) + ' q' + sway + ' -' + (hh / 2) + ' 0 -' + hh +
-          '" stroke="' + green + '" stroke-width="' + (1.1 + grown * 0.9).toFixed(1) +
-          '" fill="none" stroke-linecap="round" opacity="' + (0.55 + grown * 0.45).toFixed(2) + '"/>';
-        if (grown > 0.55) {
-          rows += '<circle cx="' + (x + sway) + '" cy="' + (y + 5 - hh) + '" r="' + (0.9 + grown * 0.9).toFixed(1) +
-            '" fill="' + (ripe ? '#e0bc63' : '#8fae6a') + '"/>';
+    var id = f.id;
+
+    var svg = '<svg class="plot-farm-svg" viewBox="0 0 100 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">';
+    svg += '<defs>';
+    svg += '<linearGradient id="farmSoil' + id + '" x1="0" y1="0" x2="0" y2="1">';
+    svg += '<stop offset="0%" stop-color="#4e3118"/>';
+    svg += '<stop offset="50%" stop-color="#38210e"/>';
+    svg += '<stop offset="100%" stop-color="#281608"/>';
+    svg += '</linearGradient>';
+    svg += '</defs>';
+
+    // Soil bed
+    svg += '<rect x="1" y="2" width="98" height="64" rx="6" fill="url(#farmSoil' + id + ')"/>';
+
+    // 3D Furrows (Ackerfurchen)
+    for (var row = 0; row < 3; row++) {
+      var fy = 20 + row * 15;
+      svg += '<path d="M 4 ' + fy + ' Q 50 ' + (fy + 4) + ' 96 ' + fy + '" stroke="#1f0f04" stroke-width="3" fill="none" opacity="0.85"/>';
+      svg += '<path d="M 4 ' + (fy - 1) + ' Q 50 ' + (fy + 3) + ' 96 ' + (fy - 1) + '" stroke="#5a381b" stroke-width="1.1" fill="none" opacity="0.6"/>';
+    }
+
+    // Crops rendering based on type
+    if (crop.id === 'kakao') {
+      for (var r0 = 0; r0 < 3; r0++) {
+        var cy0 = 16 + r0 * 15;
+        for (var c0 = 0; c0 < 4; c0++) {
+          var cx0 = 15 + c0 * 24;
+          var leafH0 = 4 + grown * 8;
+          svg += '<ellipse cx="' + (cx0 - 3) + '" cy="' + (cy0 - leafH0/2) + '" rx="' + (2.5 + grown * 3.5) + '" ry="' + (2 + grown * 2.5) + '" fill="#2e7d32" transform="rotate(-22 ' + (cx0 - 3) + ' ' + (cy0 - leafH0/2) + ')"/>';
+          svg += '<ellipse cx="' + (cx0 + 3) + '" cy="' + (cy0 - leafH0/2) + '" rx="' + (2.5 + grown * 3.5) + '" ry="' + (2 + grown * 2.5) + '" fill="#388e3c" transform="rotate(22 ' + (cx0 + 3) + ' ' + (cy0 - leafH0/2) + ')"/>';
+          if (grown > 0.6 || isRipe) {
+            var podColor = isRipe ? '#b7410e' : '#a0522d';
+            svg += '<path d="M ' + cx0 + ' ' + (cy0 - 2) + ' q -2.5 3.5 0 8 q 2.5 -4.5 0 -8" fill="' + podColor + '" stroke="#5c2606" stroke-width="0.7"/>';
+            if (isRipe) svg += '<circle cx="' + (cx0 - 0.7) + '" cy="' + (cy0 + 1) + '" r="0.7" fill="#ffb74d"/>';
+          }
+        }
+      }
+    } else if (crop.id === 'kaffee') {
+      for (var r1 = 0; r1 < 3; r1++) {
+        var cy1 = 16 + r1 * 15;
+        for (var c1 = 0; c1 < 5; c1++) {
+          var cx1 = 12 + c1 * 19;
+          var rSize1 = 2.5 + grown * 4.5;
+          svg += '<circle cx="' + cx1 + '" cy="' + cy1 + '" r="' + rSize1 + '" fill="#1b5e20" opacity="0.95"/>';
+          svg += '<circle cx="' + (cx1 + 2) + '" cy="' + (cy1 - 2) + '" r="' + (rSize1 * 0.75) + '" fill="#2e7d32" opacity="0.9"/>';
+          if (grown > 0.5 || isRipe) {
+            var red1 = isRipe ? '#d32f2f' : '#8bc34a';
+            svg += '<circle cx="' + (cx1 - 2) + '" cy="' + (cy1 + 1) + '" r="1.5" fill="' + red1 + '"/>';
+            svg += '<circle cx="' + (cx1 + 2) + '" cy="' + (cy1 + 2) + '" r="1.3" fill="' + (isRipe ? '#b71c1c' : '#7cb342') + '"/>';
+            if (isRipe) {
+              svg += '<circle cx="' + cx1 + '" cy="' + (cy1 - 1) + '" r="1.4" fill="#ff1744"/>';
+              svg += '<circle cx="' + (cx1 - 0.4) + '" cy="' + (cy1 - 1.4) + '" r="0.5" fill="#fff"/>';
+            }
+          }
+        }
+      }
+    } else if (crop.id === 'tabak') {
+      for (var r2 = 0; r2 < 3; r2++) {
+        var cy2 = 18 + r2 * 15;
+        for (var c2 = 0; c2 < 4; c2++) {
+          var cx2 = 16 + c2 * 23;
+          var leafH2 = 4 + grown * 10;
+          var tColor1 = isRipe ? '#9e9d24' : '#558b2f';
+          var tColor2 = isRipe ? '#c0ca33' : '#689f38';
+          svg += '<path d="M ' + cx2 + ' ' + (cy2 + 2) + ' Q ' + (cx2 - 5) + ' ' + (cy2 - leafH2/2) + ' ' + (cx2 - 7) + ' ' + (cy2 - leafH2) + ' Q ' + (cx2 - 1.5) + ' ' + (cy2 - leafH2/2) + ' ' + cx2 + ' ' + (cy2 + 2) + '" fill="' + tColor1 + '"/>';
+          svg += '<path d="M ' + cx2 + ' ' + (cy2 + 2) + ' Q ' + (cx2 + 5) + ' ' + (cy2 - leafH2/2) + ' ' + (cx2 + 7) + ' ' + (cy2 - leafH2) + ' Q ' + (cx2 + 1.5) + ' ' + (cy2 - leafH2/2) + ' ' + cx2 + ' ' + (cy2 + 2) + '" fill="' + tColor2 + '"/>';
+          svg += '<path d="M ' + cx2 + ' ' + (cy2 + 2) + ' Q ' + cx2 + ' ' + (cy2 - leafH2/2) + ' ' + cx2 + ' ' + (cy2 - leafH2 - 1.5) + '" stroke="' + (isRipe ? '#fbc02d' : '#8bc34a') + '" stroke-width="0.9" fill="none"/>';
+        }
+      }
+    } else if (crop.id === 'tee') {
+      for (var r3 = 0; r3 < 3; r3++) {
+        var cy3 = 16 + r3 * 15;
+        var wH3 = 3.5 + grown * 6;
+        svg += '<ellipse cx="50" cy="' + cy3 + '" rx="44" ry="' + wH3 + '" fill="#2e7d32" opacity="0.9"/>';
+        svg += '<ellipse cx="48" cy="' + (cy3 - 2) + '" rx="42" ry="' + (wH3 * 0.8) + '" fill="#388e3c" opacity="0.95"/>';
+        if (grown > 0.4 || isRipe) {
+          for (var c3 = 0; c3 < 6; c3++) {
+            var tx3 = 16 + c3 * 14;
+            svg += '<path d="M ' + tx3 + ' ' + (cy3 - 1) + ' q -2 -3.5 0 -6.5 q 2 3 0 6.5" fill="' + (isRipe ? '#aed581' : '#81c784') + '"/>';
+            svg += '<path d="M ' + (tx3 + 2.5) + ' ' + (cy3 - 1) + ' q 2 -3.5 0 -6.5 q -2 3 0 6.5" fill="' + (isRipe ? '#c5e1a5' : '#a5d6a7') + '"/>';
+          }
+        }
+      }
+    } else {
+      // Stoffe (Cotton)
+      for (var r4 = 0; r4 < 3; r4++) {
+        var cy4 = 16 + r4 * 15;
+        for (var c4 = 0; c4 < 5; c4++) {
+          var cx4 = 13 + c4 * 18;
+          var plantH4 = 3.5 + grown * 8;
+          svg += '<path d="M ' + cx4 + ' ' + cy4 + ' L ' + cx4 + ' ' + (cy4 - plantH4) + '" stroke="#4e342e" stroke-width="1.3"/>';
+          svg += '<circle cx="' + (cx4 - 2.5) + '" cy="' + (cy4 - plantH4 * 0.6) + '" r="' + (1.2 + grown * 1.8) + '" fill="#33691e"/>';
+          svg += '<circle cx="' + (cx4 + 2.5) + '" cy="' + (cy4 - plantH4 * 0.6) + '" r="' + (1.2 + grown * 1.8) + '" fill="#33691e"/>';
+          if (grown > 0.6 || isRipe) {
+            var bSize4 = isRipe ? 3.0 : 2.0;
+            svg += '<circle cx="' + cx4 + '" cy="' + (cy4 - plantH4 - 1) + '" r="' + bSize4 + '" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>';
+            svg += '<circle cx="' + (cx4 - 1.2) + '" cy="' + (cy4 - plantH4) + '" r="' + (bSize4 * 0.75) + '" fill="#f5f5f5"/>';
+            svg += '<circle cx="' + (cx4 + 1.2) + '" cy="' + (cy4 - plantH4) + '" r="' + (bSize4 * 0.75) + '" fill="#fafafa"/>';
+          }
         }
       }
     }
+
+    // Workers on the field
     var seen = Math.max(0, Math.min(f.workers, 4));
-    var people = '';
     var poses = [['stand', 'm1'], ['pick', 'f2'], ['stand', 'f3'], ['pick', 'm4']];
     for (var w = 0; w < seen; w++) {
       var pose = poses[w % poses.length];
-      var kind = ripe ? 'stand' : 'pick';
+      var kind = isRipe ? 'stand' : 'pick';
       var file = 'images/sprites/worker-' + kind + '-' + pose[1] + '.png';
-      var px = 18 + w * 21;
-      var delay = (w * 0.7).toFixed(1);
-      people += '<g class="field-worker" style="animation-delay:' + delay + 's">' +
-        '<image href="' + file + '" x="' + px + '" y="20" width="18" height="36" preserveAspectRatio="xMidYMax meet"/>' +
-        '</g>';
+      var px = 14 + w * 22;
+      var delay = (w * 0.6).toFixed(1);
+      svg += '<g class="field-worker" style="animation-delay:' + delay + 's">';
+      svg += '<image href="' + file + '" x="' + px + '" y="16" width="20" height="38" preserveAspectRatio="xMidYMax meet"/>';
+      svg += '</g>';
     }
-    return '<svg class="plot-field" viewBox="0 0 100 64" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
-      '<defs><linearGradient id="soil' + f.id + '" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#8a6b43"/><stop offset="1" stop-color="#6b5030"/></linearGradient></defs>' +
-      '<rect x="2" y="8" width="96" height="50" rx="5" fill="url(#soil' + f.id + ')"/>' +
-      '<rect x="2" y="8" width="96" height="50" rx="5" fill="none" stroke="#4a3620" stroke-width="1.2" opacity="0.7"/>' +
-      rows + people +
+
+    svg += '</svg>';
+    return svg;
+  }
+
+  function farmEmptySoilSVG() {
+    return '<svg class="plot-farm-svg" viewBox="0 0 100 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<linearGradient id="emptySoilGrad" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="#462b16"/>' +
+          '<stop offset="50%" stop-color="#321d0d"/>' +
+          '<stop offset="100%" stop-color="#241306"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      '<rect x="1" y="2" width="98" height="64" rx="6" fill="url(#emptySoilGrad)"/>' +
+      '<path d="M 4 20 Q 50 24 96 20" stroke="#1d0e04" stroke-width="3" fill="none" opacity="0.8"/>' +
+      '<path d="M 4 36 Q 50 40 96 36" stroke="#1d0e04" stroke-width="3" fill="none" opacity="0.8"/>' +
+      '<path d="M 4 52 Q 50 56 96 52" stroke="#1d0e04" stroke-width="3" fill="none" opacity="0.8"/>' +
       '</svg>';
   }
 
@@ -616,45 +819,64 @@
     var colony = COLONY_BY_ID[G.colonyId];
     if (!colony) return '';
     var f = plotField(i);
-    
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+
     if (f) {
       var crop = CROP_BY_ID[f.cropId];
       var pct = fieldProgressPct(f);
+      var isRipe = f.ripe;
       var selected = G.selectedFieldId === f.id ? ' selected' : '';
       if (crew.multiSelect.ids[f.id]) selected += ' multi';
+
+      var cropEmoji = { kakao: '🍫', kaffee: '☕', tabak: '🍂', tee: '🍵', stoffe: '🧵' }[crop.id] || '🌱';
+      var daysLeft = fieldDaysLeft(f);
+      var statusText = isRipe ? (german ? 'REIF!' : 'RIPE!') : (daysLeft + (german ? ' Tage' : 'd'));
+      var yieldUnits = fieldYield(f);
+
       var pips = '';
-      for (var l = 0; l < f.level; l++) pips += '<i class="plot-pip"></i>';
-      var houseSVG = '<svg class="plot-house" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">' +
-        '<polygon points="16,4 28,14 28,28 4,28 4,14" fill="#8b6f47" stroke="#5a4a30" stroke-width="1.5"/>' +
-        '<polygon points="16,4 28,14 16,11" fill="#a0825a" opacity="0.6"/>' +
-        '<rect x="12" y="18" width="8" height="10" fill="#4a3a20"/>' +
-        '<rect x="8" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
-        '<rect x="19" y="16" width="5" height="5" fill="#2d4a5c" stroke="#1a2a35" stroke-width="0.8"/>' +
-        '</svg>';
-      return '<button type="button" aria-pressed="' + (crew.multiSelect.ids[f.id] ? 'true' : 'false') + '" class="plot plot--planted' + (f.ripe ? ' ripe' : '') + selected + '"' +
-        ' data-colony="select" data-field="' + f.id + '" data-plot="' + i + '">' +
-        /* the crop label and the crew size sit above the soil, the progress
-           rail below it — the diorama keeps the middle band to itself */
-        '<span class="plot-head">' +
-          '<span class="plot-label">' + h(crop.label) + '</span>' +
-          '<span class="plot-workers">' + f.workers + ' worker' + (f.workers === 1 ? '' : 's') + '</span>' +
-        '</span>' +
-        fieldSVG(crop, f, pct) +
-        houseSVG +
-        '<span class="plot-foot">' +
-          '<span class="field-progress"><i style="width:' + pct + '%"></i></span>' +
-          '<span class="plot-status">' + (f.ripe ? 'RIPE' : fieldDaysLeft(f) + 'd') + '</span>' +
-          '<span class="plot-pips">' + pips + '</span>' +
-        '</span>' +
-        '</button>';
-    }
-    
-    var armed = G.plantCropId ? ' can-plant' : '';
-    return '<button type="button" class="plot plot--empty' + armed + '"' +
-      ' data-colony="plant-at" data-plot="' + i + '" data-empty="1">' +
-      '<span class="plot-empty-plus">+</span>' +
-      '<span class="plot-empty-label">' + (G.plantCropId ? 'plant ' + CROP_BY_ID[G.plantCropId].label + ' · ' + A.money(plotPriceFor(CROP_BY_ID[G.plantCropId])) + ' + seed' : 'empty plot') + '</span>' +
+      for (var l = 0; l < f.level; l++) {
+        pips += '<span class="plot-level-star" title="Level ' + (l + 1) + '">★</span>';
+      }
+
+      var isAuto = crew.fieldAutoOn(f);
+
+      return '<button type="button" class="plot plot--planted' + (isRipe ? ' ripe' : '') + selected + '"' +
+        ' data-plot="' + i + '" data-field="' + f.id + '"' +
+        (isRipe ? ' data-colony="harvest" title="' + (german ? 'Tippen zum Ernten!' : 'Tap to harvest!') + '"' : ' data-colony="select"') + '>' +
+        '<div class="plot-farm-head">' +
+          '<span class="plot-crop-tag">' + cropEmoji + ' ' + h(crop.label) + '</span>' +
+          (isAuto ? '<span class="plot-auto-badge" title="' + (german ? 'Automatik aktiv' : 'Auto active') + '">⚡</span>' : '') +
+          (f.workers > 0 ? '<span class="plot-worker-pill">👤 ' + f.workers + '</span>' : '') +
+        '</div>' +
+        (isRipe ? '<div class="plot-sickle-badge">🌾 <span>' + (german ? 'ERNTEN' : 'HARVEST') + '</span></div>' : '') +
+        farmFieldSVG(crop, f, pct) +
+        '<div class="plot-farm-foot">' +
+          '<div class="field-progress"><i style="width:' + pct + '%"></i></div>' +
+          '<div class="plot-foot-bar">' +
+            '<span class="plot-status-label">' + statusText + '</span>' +
+            '<span class="plot-yield-label">+' + yieldUnits + '</span>' +
+            (pips ? '<span class="plot-pips-group">' + pips + '</span>' : '') +
+          '</div>' +
+        '</div>' +
       '</button>';
+    }
+
+    var armedCrop = G.plantCropId ? CROP_BY_ID[G.plantCropId] : null;
+    var armedEmoji = armedCrop ? ({ kakao: '🍫', kaffee: '☕', tabak: '🍂', tee: '🍵', stoffe: '🧵' }[armedCrop.id] || '🌱') : '🌱';
+    var plantLabel = armedCrop ? (german ? 'Säen: ' + armedCrop.label : 'Plant ' + armedCrop.label) : (german ? 'Freie Parzelle' : 'Free plot');
+    var costVal = armedCrop ? (plotPriceFor(armedCrop) + armedCrop.cost) : 0;
+    var costText = costVal ? A.money(costVal) : '';
+
+    return '<button type="button" class="plot plot--empty' + (armedCrop ? ' can-plant' : '') + '"' +
+      ' data-colony="plant-at" data-plot="' + i + '" data-empty="1"' +
+      ' title="' + (armedCrop ? (german ? 'Tippen zum Säen von ' + armedCrop.label : 'Tap to sow ' + armedCrop.label) : '') + '">' +
+      farmEmptySoilSVG() +
+      '<div class="plot-empty-overlay">' +
+        '<span class="plot-empty-icon">' + (armedCrop ? armedEmoji : '+') + '</span>' +
+        '<span class="plot-empty-title">' + plantLabel + '</span>' +
+        (costText ? '<span class="plot-empty-cost">' + costText + '</span>' : '') +
+      '</div>' +
+    '</button>';
   }
 
   /* One persistent toolbar: selection, automation, workforce and upgrades united. */

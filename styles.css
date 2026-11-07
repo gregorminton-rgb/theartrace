@@ -763,47 +763,377 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
 /* Fields sit in a regular grid: 2 per row, 16 at most (4 rows), with one
    equal gap in both directions. The board scrolls on its own, so the field
    list never pushes the side panels off screen. */
+/* Hay Day Plantation Experience: tactile farm bar, rich farm parcels, tap & swipe harvest */
+.farm-hayday-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, rgba(255, 248, 230, 0.95), rgba(240, 222, 185, 0.92));
+  border: 1.5px solid #b89158;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(30, 18, 8, 0.18);
+  flex-wrap: wrap;
+}
+.farm-seed-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.farm-seed-label {
+  font-family: var(--serif, serif);
+  font-weight: 700;
+  font-size: 0.74rem;
+  color: #5c3e1c;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.farm-seed-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid #c4a470;
+  background: linear-gradient(180deg, #fffdf7, #ede0c2);
+  color: #3b2814;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.farm-seed-btn:hover {
+  border-color: #589437;
+  background: #fff;
+  transform: translateY(-1px);
+}
+.farm-seed-btn.is-active {
+  border-color: #3e7b23;
+  background: linear-gradient(180deg, #f0ffd6, #c2e88a);
+  box-shadow: 0 0 10px rgba(88, 148, 55, 0.5), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+.farm-seed-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.farm-seed-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+.farm-seed-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.farm-seed-meta {
+  font-size: 0.62rem;
+  color: #6d5131;
+}
+.farm-seed-check {
+  font-size: 0.75rem;
+  color: #2e6616;
+  font-weight: 800;
+  margin-left: 2px;
+}
+.farm-harvest-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffd740, #ffab00) !important;
+  color: #3b2100 !important;
+  border: 1.5px solid #e65100 !important;
+  box-shadow: 0 3px 10px rgba(255, 171, 0, 0.5), 0 0 8px rgba(255, 215, 64, 0.6);
+  cursor: pointer;
+  animation: harvestBtnGlow 1.5s infinite alternate ease-in-out;
+}
+@keyframes harvestBtnGlow {
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(255, 171, 0, 0.4); }
+  100% { transform: scale(1.04); box-shadow: 0 4px 14px rgba(255, 171, 0, 0.75), 0 0 12px #ffe082; }
+}
+
 .colony-grid {
-  --plot-gap: 8px;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--plot-gap); align-content: start;
-  overflow-y: auto; padding: var(--plot-gap);
-  flex: 1; min-height: 0;
-  background: linear-gradient(to bottom, #8b9f7a 0%, #6b7d5a 40%, #5a6948 100%);
-  border-radius: 4px; box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
-  -webkit-overflow-scrolling: touch; touch-action: pan-y;
+  --plot-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--plot-gap);
+  align-content: start;
+  overflow-y: auto;
+  padding: var(--plot-gap);
+  flex: 1;
+  min-height: 0;
+  background: radial-gradient(circle at 50% 30%, #587541 0%, #3e562b 60%, #2b3d1c 100%);
+  border: 2px solid #6d512a;
+  border-radius: 12px;
+  box-shadow: inset 0 3px 12px rgba(0,0,0,0.5), 0 4px 15px rgba(20,10,0,0.3);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .plot {
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: .15em; padding: .4em .3em; min-width: 0; min-height: 0;
-  aspect-ratio: 144 / 190;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 10px;
   cursor: pointer;
-  background: transparent; border: 2px dashed rgba(140, 110, 70, .6);
-  border-radius: 6px; color: var(--ink); transition: all .2s;
+  box-sizing: border-box;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.05;
+  background: #361f10;
+  border: 2px solid #6b4421;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 3px 8px rgba(20, 10, 0, 0.25);
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.plot--empty { border-style: dashed; border-width: 2px; background: rgba(242, 234, 216, .15); }
-.plot--empty.can-plant { border-color: var(--green); border-style: solid; background: rgba(200, 230, 205, .25); box-shadow: 0 0 8px rgba(47, 93, 58, .4); }
-.plot--planted { border-style: solid; border-width: 3px; border-color: #c9a46a; background: rgba(255, 248, 232, .45); backdrop-filter: blur(2px); }
-.plot.ripe { border-color: var(--gold-2); box-shadow: 0 0 12px rgba(224, 188, 99, .7), inset 0 0 8px rgba(224, 188, 99, .3); }
-.plot.selected { border-color: var(--oxblood); box-shadow: 0 0 10px rgba(109, 31, 31, .6), inset 0 0 6px rgba(109, 31, 31, .3); }
-.plot.multi { outline: 3px dashed var(--gold, #c9a227); outline-offset: 2px; }
+.plot:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 6px 14px rgba(20, 10, 0, 0.35);
+}
+.plot:active {
+  transform: translateY(0);
+}
+.plot--planted {
+  background: radial-gradient(circle at 50% 30%, #462c16 0%, #2a1609 100%);
+  border: 2px solid #8e6538;
+}
+.plot--planted.ripe {
+  border: 2.5px solid #ffcc00;
+  box-shadow: 0 0 16px rgba(255, 204, 0, 0.6), inset 0 0 10px rgba(255, 204, 0, 0.3);
+  animation: farmPulseRipe 1.5s infinite ease-in-out;
+}
+@keyframes farmPulseRipe {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 204, 0, 0.5), inset 0 0 8px rgba(255, 204, 0, 0.2); }
+  50% { box-shadow: 0 0 22px rgba(255, 220, 50, 0.85), inset 0 0 14px rgba(255, 220, 50, 0.4); }
+}
+.plot--planted.selected {
+  border-color: #e53935;
+  box-shadow: 0 0 12px rgba(229, 57, 53, 0.7);
+}
+.plot--planted.multi {
+  outline: 3px dashed #ffc107;
+  outline-offset: 2px;
+}
+.plot--empty {
+  background: radial-gradient(circle at 50% 50%, #3a2211 0%, #221206 100%);
+  border: 2px dashed rgba(160, 120, 70, 0.5);
+}
+.plot--empty.can-plant {
+  border: 2px solid #7bc637;
+  background: radial-gradient(circle at 50% 50%, #3e5223 0%, #233111 100%);
+  box-shadow: 0 0 10px rgba(123, 198, 55, 0.45);
+}
+.plot-farm-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.plot-farm-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-crop-tag {
+  font-family: var(--serif, serif);
+  font-size: 0.71rem;
+  font-weight: 700;
+  color: #fff8e1;
+  background: rgba(20, 10, 4, 0.68);
+  padding: 2px 6px;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.plot-auto-badge {
+  font-size: 0.7rem;
+  background: rgba(255, 235, 59, 0.88);
+  color: #000;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.plot-worker-pill {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #ffe0b2;
+  background: rgba(30, 18, 8, 0.68);
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+.plot-sickle-badge {
+  position: absolute;
+  top: 26px;
+  right: 6px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: linear-gradient(180deg, #ffe066, #ffab00);
+  color: #3b2204;
+  border: 1.5px solid #fff;
+  border-radius: 12px;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4), 0 0 10px rgba(255, 215, 0, 0.6);
+  animation: sickleBounce 1s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+@keyframes sickleBounce {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(1.08); }
+}
+.plot-farm-foot {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-farm-foot .field-progress {
+  width: 100%;
+  height: 5px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+.plot-farm-foot .field-progress i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8bc34a, #4caf50);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.plot--planted.ripe .plot-farm-foot .field-progress i {
+  background: linear-gradient(90deg, #ffd54f, #ffb300);
+}
+.plot-foot-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.plot-status-label {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.63rem;
+  font-weight: 700;
+  color: #fff9e6;
+  background: rgba(18, 10, 4, 0.68);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.plot--planted.ripe .plot-status-label {
+  color: #ffd54f;
+  font-weight: 800;
+  background: rgba(70, 40, 5, 0.88);
+}
+.plot-yield-label {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.63rem;
+  font-weight: 800;
+  color: #a5d6a7;
+  background: rgba(14, 30, 10, 0.68);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.plot-pips-group {
+  display: flex;
+  gap: 2px;
+}
+.plot-level-star {
+  font-size: 0.70rem;
+  color: #ffca28;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+.plot-empty-overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+.plot-empty-icon {
+  font-size: 1.6rem;
+  color: #f5deb3;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  margin-bottom: 2px;
+}
+.plot-empty-title {
+  font-family: var(--serif, serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff8e7;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  text-align: center;
+  padding: 0 4px;
+}
+.plot-empty-cost {
+  font-family: var(--sans, sans-serif);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #ffcc80;
+  background: rgba(20, 10, 4, 0.68);
+  padding: 1px 6px;
+  border-radius: 6px;
+  margin-top: 3px;
+}
+
+.farm-harvest-floater {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: var(--serif, serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff9e6;
+  background: linear-gradient(180deg, rgba(68, 140, 39, 0.95), rgba(40, 96, 29, 0.95));
+  border: 1.5px solid #ffd54f;
+  border-radius: 20px;
+  padding: 4px 11px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45), 0 0 10px rgba(255, 213, 79, 0.5);
+  transform: translate(-50%, -50%);
+  animation: farmFloatUp 0.95s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+@keyframes farmFloatUp {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+  20% { opacity: 1; transform: translate(-50%, -20px) scale(1.15); }
+  60% { opacity: 1; transform: translate(-50%, -45px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -75px) scale(0.85); }
+}
+
 .colony-multi { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 .5em; }
 .colony-multi .btn { min-height: 40px; }
 .colony-multi-toggle { flex: 0 0 auto; min-width: 7.6rem; white-space: nowrap; }
 .colony-multi-auto { flex: 0 0 auto; min-width: 8.4rem; white-space: nowrap; }
 .colony-multi-count { font-size: 13px; opacity: .8; white-space: nowrap; }
 .plot.drag-over { border-color: var(--gold); background: rgba(247, 236, 214, .4); box-shadow: 0 0 14px rgba(179, 135, 44, .6); }
-.plot:hover { border-color: var(--gold); }
-.plot-house { width: 36px; height: 36px; margin-bottom: .1em; filter: drop-shadow(0 2px 5px rgba(20, 10, 0, .5)); }
-.plot-crop { width: 44px; height: 44px; }
-.plot-label { font-size: .78rem; font-weight: 700; line-height: 1.1; text-align: center; color: #2a1f12; text-shadow: 0 1px 2px rgba(255,255,255,.6); }
-.plot-workers { font-family: var(--sans); font-size: .64rem; color: #3a2818; font-weight: 600; }
-.plot-status { font-family: var(--sans); font-size: .68rem; color: var(--oxblood); font-weight: 700; text-shadow: 0 1px 1px rgba(255,255,255,.4); }
-.plot-empty-plus { font-size: 2.4rem; color: rgba(168, 147, 112, .7); line-height: 1; }
-.plot-empty-label { font-family: var(--sans); font-size: .68rem; color: rgba(75, 58, 41, .8); text-transform: uppercase; letter-spacing: .05em; text-align: center; font-weight: 600; }
-.plot-pips { display: flex; gap: 3px; justify-content: center; }
-.plot-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
-.plot .field-progress { width: 90%; margin-top: .2em; }
 
 .colony-hint { margin: 0; font-family: var(--sans); font-size: .72rem; color: var(--ink-soft); font-style: italic; text-align: center; }
 
@@ -1580,15 +1910,12 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
  .colony-view--plantage .colony-main{min-height:0;flex:none}
  .colony-view--plantage .colony-grid{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   --plot-gap:5px;min-height:0;height:auto;max-height:42dvh;
+   --plot-gap:6px;min-height:0;height:auto;max-height:45dvh;
  }
- .colony-view--plantage .plot{padding:4px 2px;gap:2px;font-size:.75rem}
- .colony-view--plantage .plot--empty .plot-empty-plus{font-size:1.5rem}
- .colony-view--plantage .plot--empty .plot-empty-label{font-size:.7rem;line-height:1.15;overflow-wrap:anywhere;text-align:center}
- .colony-view--plantage .plot--planted .plot-house{width:36px;height:36px}
- .colony-view--plantage .plot--planted .plot-label,
- .colony-view--plantage .plot--planted .plot-workers,
- .colony-view--plantage .plot--planted .plot-status{font-size:.7rem}
+ .colony-view--plantage .plot{padding:4px 3px;aspect-ratio:1 / 1.08}
+ .plot-farm-head .plot-crop-tag{font-size:.62rem;padding:1px 4px}
+ .plot-status-label, .plot-yield-label{font-size:.58rem;padding:1px 4px}
+ .plot-sickle-badge{top:20px;right:3px;font-size:.60rem;padding:1px 5px}
  #colony-field-toolbar .colony-multi{gap:4px;padding:5px 6px}
 }
 
@@ -2070,17 +2397,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
    margin:0;
    overflow:hidden;
    isolation:isolate;
-   padding:5px 4px;
-   gap:2px;
+   padding:6px;
  }
- .colony-view--plantage .plot--planted .plot-house{width:30px;height:30px}
- .colony-view--plantage .plot-head,.colony-view--plantage .plot-foot{flex:0 0 auto}
- .colony-view--plantage .plot-label{font-size:.71rem}
- .colony-view--plantage .plot-workers{font-size:.68rem;font-weight:800}
- .colony-view--plantage .plot-status{font-size:.66rem}
- .colony-view--plantage .plot-field{top:32px;bottom:31px;overflow:hidden}
- .colony-view--plantage .plot-pips{gap:2px}
- .colony-view--plantage .plot-pip{width:5px;height:5px}
 }
 @media(min-width:761px) and (max-width:1050px){
  .colony-view--plantage .colony-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}

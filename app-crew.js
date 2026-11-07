@@ -140,6 +140,28 @@
     renderColony();
   }
 
+  function harvestAllFields() {
+    var colonyF = colonyFields().filter(function (f) { return f.ripe; });
+    if (!colonyF.length) return;
+    var totalYield = 0;
+    var owner = G.colonyId;
+    if (!G.colonyStock) G.colonyStock = {};
+    if (!G.colonyStock[owner]) G.colonyStock[owner] = {};
+    colonyF.forEach(function (f) {
+      var yieldUnits = fieldYield(f);
+      var idx = -1;
+      G.fields.forEach(function (x, i) { if (x.id === f.id) idx = i; });
+      if (idx >= 0) G.fields.splice(idx, 1);
+      G.colonyStock[owner][f.cropId] = (G.colonyStock[owner][f.cropId] || 0) + yieldUnits;
+      G.goods[f.cropId] = (G.goods[f.cropId] || 0) + yieldUnits;
+      G.colonyStats.harvested += yieldUnits;
+      totalYield += yieldUnits;
+    });
+    var de = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
+    log((de ? 'Ernte komplett eingebracht: ' : 'Harvested all ripe fields: ') + totalYield + (de ? ' Kisten.' : ' crates.'));
+    renderColony();
+  }
+
   function hireWorker() {
     var hired = colonyHired();
     if (hired >= MAX_COLONY_WORKERS) { log('The colony cannot house more workers.'); return; }
@@ -384,11 +406,22 @@
     } else if (action === 'plant-at') {
       var pi = parseInt(t.getAttribute('data-plot'), 10);
       if (plotField(pi)) { renderColony(); return; }
+      if (!G.plantCropId) {
+        var avail = T().COLONY_CROP_IDS[G.colonyId] || [];
+        if (avail.length) G.plantCropId = avail[0];
+      }
       if (!G.plantCropId) { log('Pick a crop plate first, then click a free plot.'); return; }
       plantCrop(G.plantCropId, pi);
+    } else if (action === 'harvest-all') {
+      harvestAllFields();
     } else if (action === 'select') {
       var sfid = parseInt(t.getAttribute('data-field'), 10);
-      toggleMultiSelect(sfid);
+      var fObj = fieldById(sfid);
+      if (fObj && fObj.ripe) {
+        harvestField(sfid);
+      } else {
+        toggleMultiSelect(sfid);
+      }
     } else if (action === 'select-all') {
       selectAllFields();
     } else if (action === 'select-clear') {
@@ -616,6 +649,7 @@
     colonyHeldUnits: colonyHeldUnits,
     plantCrop: plantCrop,
     harvestField: harvestField,
+    harvestAllFields: harvestAllFields,
     hireWorker: hireWorker,
     assignWorker: assignWorker,
     unassignWorker: unassignWorker,
