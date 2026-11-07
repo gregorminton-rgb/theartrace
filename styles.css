@@ -3024,93 +3024,6 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     width: 100% !important;
     gap: 4px !important;
   }
-  .hud-top-row .hud-brand {
-    display: none !important;
-  }
-  .hud-stead {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    gap: 4px !important;
-    min-height: 24px !important;
-  }
-  #hud-city {
-    font-size: .82rem !important;
-    line-height: 1.15 !important;
-    font-weight: 700 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    max-width: 52% !important;
-  }
-  #hud-sub {
-    display: none !important;
-  }
-  #hud-hotel {
-    font-size: .62rem !important;
-    color: #f4e1b3 !important;
-    margin-left: auto !important;
-    white-space: nowrap !important;
-    padding-right: 4px !important;
-  }
-  #hud-more,
-  #screen-game #hud #hud-more {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 4px !important;
-    padding: 2px 9px !important;
-    font-size: .66rem !important;
-    font-weight: 700 !important;
-    min-height: 24px !important;
-    line-height: 1 !important;
-    border-radius: 6px !important;
-    flex: 0 0 auto !important;
-    background: rgba(255, 245, 220, .18) !important;
-    border: 1px solid rgba(255, 220, 120, .55) !important;
-    color: #fff1d5 !important;
-    cursor: pointer !important;
-    text-shadow: none !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
-    transition: background 0.15s, border-color 0.15s !important;
-  }
-  #hud-more:hover,
-  #hud-more:active,
-  #screen-game #hud #hud-more:hover,
-  #screen-game #hud #hud-more:active {
-    background: rgba(255, 245, 220, .32) !important;
-    border-color: var(--gold-2) !important;
-    color: #ffffff !important;
-  }
-  #screen-game #hud.hud-details-open #hud-more {
-    background: rgba(224, 188, 99, .28) !important;
-    border-color: var(--gold-2) !important;
-    color: #ffffff !important;
-  }
-  .hud-actions {
-    display: none !important;
-  }
-  #screen-game #hud.hud-details-open .hud-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 3px !important;
-    width: 100% !important;
-    padding-top: 3px !important;
-    margin-top: 1px !important;
-    border-top: 1px dashed rgba(255, 220, 120, .25) !important;
-  }
-  #screen-game #hud.hud-details-open .hud-actions .hud-chip,
-  #screen-game #hud.hud-details-open .hud-actions .language-switch {
-    min-height: 23px !important;
-    padding: 2px 6px !important;
-    font-size: .63rem !important;
-    line-height: 1.1 !important;
-    border-radius: 6px !important;
-  }
   .hud-bottom-row {
     flex: 0 0 auto !important;
     min-height: 0 !important;
@@ -3144,6 +3057,9 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     width: 100% !important;
     flex-wrap: wrap !important;
     gap: 4px !important;
+  }
+  .hud-stats {
+    flex: 0 0 auto !important;
   }
   .hud-stats #hud-rep,
   .hud-stats #hud-goal {
@@ -3213,6 +3129,8 @@ ul.journal em { font-family: var(--sans); font-size: .62rem; color: var(--ink-so
     font-size: .59rem !important;
     line-height: 1 !important;
   }
+  #screen-game #hud .chrono-date b { font-size: .92rem; }
+  #screen-game #hud .chrono-date span { font-size: .64rem; }
   #screen-game #hud .chrono-auto,
   #screen-game #hud .chrono-speed {
     display: none !important;
