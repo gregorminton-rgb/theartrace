@@ -16,24 +16,24 @@ window.ART_ARTWORK_IMAGES = {
         "durer_praying_hands": {
             "file": "images/art/durer-praying-hands.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 117960,
+            "height": 765,
+            "bytes": 225151,
             "source": "Albrecht D\u00fcrer \u2013 Betende H\u00e4nde (ca. 1508).jpg",
             "how": "alias"
         },
         "durer_young_hare_after": {
             "file": "images/art/durer-young-hare-after.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 115800,
+            "height": 999,
+            "bytes": 279382,
             "source": "Albrecht D\u00fcrer \u2013 Feldhase (ca. 1502).jpg",
             "how": "alias"
         },
         "durer_melencolia": {
             "file": "images/art/durer-melencolia.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 169811,
+            "height": 1146,
+            "bytes": 437156,
             "source": "Albrecht D\u00fcrer \u2013 Melencolia I (1514).jpg",
             "how": "alias"
         },
@@ -55,49 +55,49 @@ window.ART_ARTWORK_IMAGES = {
         },
         "mucha_slav_epic_note": {
             "file": "images/art/mucha-slav-epic-note.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 129154,
+            "width": 450,
+            "height": 1200,
+            "bytes": 181571,
             "source": "Alfons Mucha \u2013 Slawisches Epos Die Apotheose der Slawen (ca 1910\u20131928).jpg",
             "how": "alias"
         },
         "pissarro_boulevard_montmartre": {
             "file": "images/art/pissarro-boulevard-montmartre.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 119681,
+            "height": 718,
+            "bytes": 268557,
             "source": "Camille Pissarro \u2013 Boulevard Montmartre bei Nacht (1897).jpg",
             "how": "alias"
         },
         "pissarro_red_roofs": {
             "file": "images/art/pissarro-red-roofs.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 165835,
+            "height": 735,
+            "bytes": 302911,
             "source": "Camille Pissarro \u2013 Die roten D\u00e4cher (1877).jpg",
             "how": "alias"
         },
         "pissarro_hoarfrost": {
             "file": "images/art/pissarro-hoarfrost.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 161112,
+            "height": 906,
+            "bytes": 408765,
             "source": "Camille Pissarro \u2013 Raureif (1873).jpg",
             "how": "alias"
         },
         "caravaggio_bacchus": {
             "file": "images/art/caravaggio-bacchus.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 120662,
+            "height": 1050,
+            "bytes": 274440,
             "source": "Caravaggio \u2013 Bacchus (ca 1595\u20131597).jpg",
             "how": "alias"
         },
         "caravaggio_calling_of_saint_matthew": {
             "file": "images/art/caravaggio-calling-of-saint-matthew.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 108245,
+            "height": 850,
+            "bytes": 141772,
             "source": "Caravaggio \u2013 Die Berufung des Matth\u00e4us (ca. 1599\u20131600).jpg",
             "how": "alias"
         },
@@ -112,8 +112,8 @@ window.ART_ARTWORK_IMAGES = {
         "friedrich_wanderer": {
             "file": "images/art/friedrich-wanderer.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 102785,
+            "height": 1152,
+            "bytes": 209080,
             "source": "Caspar David Friedrich \u2013 Der Wanderer \u00fcber dem Nebelmeer (1818).jpg",
             "how": "alias"
         },
@@ -128,8 +128,8 @@ window.ART_ARTWORK_IMAGES = {
         "lorrain_queen_of_sheba": {
             "file": "images/art/lorrain-queen-of-sheba.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 115841,
+            "height": 684,
+            "bytes": 164402,
             "source": "Claude Lorrain \u2013 Die Einschiffung der K\u00f6nigin von Saba (1648).jpg",
             "how": "alias"
         },
@@ -160,24 +160,24 @@ window.ART_ARTWORK_IMAGES = {
         "monet_impression_variant": {
             "file": "images/art/monet-impression-variant.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 110946,
+            "height": 698,
+            "bytes": 130426,
             "source": "Claude Monet \u2013 Impression, Sonnenaufgang (1872).jpg",
             "how": "quote"
         },
         "monet_water_lilies": {
             "file": "images/art/monet-water-lilies.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 156169,
+            "height": 667,
+            "bytes": 207825,
             "source": "Claude Monet \u2013 Seerosen (ca. 1916).jpg",
             "how": "alias"
         },
         "velazquez_man_in_black": {
             "file": "images/art/velazquez-man-in-black.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 77215,
+            "width": 750,
+            "height": 950,
+            "bytes": 136449,
             "source": "Diego Vel\u00e1zquez \u2013 Bildnis eines Mannes (ca. 1630).jpg",
             "how": "alias"
         },
@@ -192,8 +192,8 @@ window.ART_ARTWORK_IMAGES = {
         "velazquez_meninas_bozzetto": {
             "file": "images/art/velazquez-meninas-bozzetto.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 112589,
+            "height": 1036,
+            "bytes": 167507,
             "source": "Diego Vel\u00e1zquez \u2013 Las Meninas (1656).jpg",
             "how": "alias"
         },
@@ -207,17 +207,17 @@ window.ART_ARTWORK_IMAGES = {
         },
         "degas_the_star": {
             "file": "images/art/degas-the-star.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 109676,
+            "width": 825,
+            "height": 1200,
+            "bytes": 336160,
             "source": "Edgar Degas \u2013 Die Tanzklasse (1874).jpg",
             "how": "alias"
         },
         "degas_little_dancer": {
             "file": "images/art/degas-little-dancer.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 106322,
+            "width": 846,
+            "height": 1200,
+            "bytes": 88674,
             "source": "Edgar Degas \u2013 Kleine vierzehnj\u00e4hrige T\u00e4nzerin (ca. 1881).jpg",
             "how": "alias"
         },
@@ -225,55 +225,55 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/manet-folies-bergere.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 147051,
+            "bytes": 196963,
             "source": "\u00c9douard Manet \u2013 Bar in den Folies-Berg\u00e8re (1882).jpg",
             "how": "alias"
         },
         "manet_peonies": {
             "file": "images/art/manet-peonies.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 116328,
+            "width": 713,
+            "height": 1200,
+            "bytes": 93103,
             "source": "\u00c9douard Manet \u2013 Das Fr\u00fchst\u00fcck im Gr\u00fcnen (1863).jpg",
             "how": "alias"
         },
         "manet_olympia_study": {
             "file": "images/art/manet-olympia-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 129809,
+            "height": 613,
+            "bytes": 129167,
             "source": "\u00c9douard Manet \u2013 Olympia (Studie, ca. 1863).jpg",
             "how": "alias"
         },
         "munch_sick_child": {
             "file": "images/art/munch-sick-child.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 124105,
+            "height": 908,
+            "bytes": 272930,
             "source": "Edvard Munch \u2013 Das kranke Kind (1885\u20131886).jpg",
             "how": "alias"
         },
         "munch_the_scream": {
             "file": "images/art/munch-the-scream.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 116574,
+            "height": 1138,
+            "bytes": 315789,
             "source": "Edvard Munch \u2013 Der Schrei (1893).jpg",
             "how": "alias"
         },
         "munch_madonna": {
             "file": "images/art/munch-madonna.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 118681,
+            "height": 1187,
+            "bytes": 383494,
             "source": "Edvard Munch \u2013 Madonna (1894\u20131895).jpg",
             "how": "alias"
         },
         "schiele_self_portrait_physalis": {
             "file": "images/art/schiele-self-portrait-physalis.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 145765,
+            "height": 728,
+            "bytes": 250132,
             "source": "Egon Schiele \u2013 Selbstbildnis mit Lampionfrucht (1912).jpg",
             "how": "alias"
         },
@@ -288,8 +288,8 @@ window.ART_ARTWORK_IMAGES = {
         "schiele_death_and_maiden": {
             "file": "images/art/schiele-death-and-maiden.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 130203,
+            "height": 761,
+            "bytes": 278616,
             "source": "Egon Schiele \u2013 Tod und M\u00e4dchen (1915).jpg",
             "how": "alias"
         },
@@ -303,49 +303,49 @@ window.ART_ARTWORK_IMAGES = {
         },
         "leger_city": {
             "file": "images/art/leger-city.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 134922,
+            "width": 831,
+            "height": 1200,
+            "bytes": 223330,
             "source": "Fernand L\u00e9ger \u2013 Die Stadt (La Ville, 1919).jpg",
             "how": "alias"
         },
         "leger_nudes_in_the_forest": {
             "file": "images/art/leger-nudes-in-the-forest.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 134594,
+            "height": 620,
+            "bytes": 158897,
             "source": "Fernand L\u00e9ger \u2013 Nackte M\u00e4nner im Wald (1910).jpg",
             "how": "alias"
         },
         "goya_the_colossus": {
             "file": "images/art/goya-the-colossus.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 115347,
+            "height": 998,
+            "bytes": 196985,
             "source": "Francisco de Goya \u2013 Der 3. Mai 1808 (1814).jpg",
             "how": "alias"
         },
         "goya_sleep_of_reason": {
             "file": "images/art/goya-sleep-of-reason.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 137245,
+            "width": 793,
+            "height": 1200,
+            "bytes": 498434,
             "source": "Francisco de Goya \u2013 Der Schlaf der Vernunft gebiert Ungeheuer (1799).jpg",
             "how": "alias"
         },
         "goya_maja_study": {
             "file": "images/art/goya-maja-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 143773,
+            "height": 457,
+            "bytes": 66113,
             "source": "Francisco de Goya \u2013 La Maja (Studie, ca. 1797).jpg",
             "how": "alias"
         },
         "marc_blue_horse": {
             "file": "images/art/marc-blue-horse.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 119147,
+            "width": 899,
+            "height": 1200,
+            "bytes": 337435,
             "source": "Franz Marc \u2013 Blaues Pferd I (1911).jpg",
             "how": "alias"
         },
@@ -353,39 +353,39 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/marc-yellow-cow.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 117152,
+            "bytes": 118315,
             "source": "Franz Marc \u2013 Die gelbe Kuh (1911).jpg",
             "how": "alias"
         },
         "marc_fate_of_the_animals": {
             "file": "images/art/marc-fate-of-the-animals.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 142342,
+            "height": 656,
+            "bytes": 291446,
             "source": "Franz Marc \u2013 Tierschicksale (1913).jpg",
             "how": "alias"
         },
         "munter_flowers_still_life": {
             "file": "images/art/munter-flowers-still-life.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 139310,
+            "width": 689,
+            "height": 509,
+            "bytes": 104433,
             "source": "Gabriele M\u00fcnter \u2013 Blumen (ca. 1910).jpg",
             "how": "alias"
         },
         "munter_jawlensky": {
             "file": "images/art/munter-jawlensky.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 142693,
+            "width": 701,
+            "height": 509,
+            "bytes": 99967,
             "source": "Gabriele M\u00fcnter \u2013 Jawlensky und Erbsl\u00f6h (ca. 1909).jpg",
             "how": "alias"
         },
         "munter_boating": {
             "file": "images/art/munter-boating.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 132281,
+            "width": 699,
+            "height": 509,
+            "bytes": 99008,
             "source": "Gabriele M\u00fcnter \u2013 Kahnfahrt (1910).jpg",
             "how": "alias"
         },
@@ -408,40 +408,40 @@ window.ART_ARTWORK_IMAGES = {
         "seurat_grande_jatte": {
             "file": "images/art/seurat-grande-jatte.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 123647,
+            "height": 599,
+            "bytes": 222416,
             "source": "Georges Seurat \u2013 Ein Sonntagnachmittag auf der Insel La Grande Jatte (1884).jpg",
             "how": "alias"
         },
         "klimt_adele_study": {
             "file": "images/art/klimt-adele-study.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 127626,
+            "width": 730,
+            "height": 1200,
+            "bytes": 260571,
             "source": "Gustav Klimt \u2013 Adele (Studie, ca. 1903).jpg",
             "how": "alias"
         },
         "klimt_the_kiss_study": {
             "file": "images/art/klimt-the-kiss-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 123539,
+            "height": 903,
+            "bytes": 315432,
             "source": "Gustav Klimt \u2013 Der Kuss (190708).jpg",
             "how": "alias"
         },
         "klimt_tree_of_life": {
             "file": "images/art/klimt-tree-of-life.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 188910,
+            "width": 633,
+            "height": 1200,
+            "bytes": 236712,
             "source": "Gustav Klimt \u2013 Lebensbaum (ca. 1905).jpg",
             "how": "alias"
         },
         "toulouse_moulin_rouge": {
             "file": "images/art/toulouse-moulin-rouge.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 121094,
+            "width": 808,
+            "height": 1200,
+            "bytes": 423990,
             "source": "Henri de Toulouse-Lautrec \u2013 Im Moulin Rouge (1892).jpg",
             "how": "alias"
         },
@@ -472,8 +472,8 @@ window.ART_ARTWORK_IMAGES = {
         "matisse_the_dance": {
             "file": "images/art/matisse-the-dance.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 111772,
+            "height": 243,
+            "bytes": 47068,
             "source": "Henri Matisse \u2013 Der Tanz (1910).jpg",
             "how": "alias"
         },
@@ -488,40 +488,40 @@ window.ART_ARTWORK_IMAGES = {
         "vermeer_pearl_earring_copy": {
             "file": "images/art/vermeer-pearl-earring-copy.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 101527,
+            "height": 1066,
+            "bytes": 254062,
             "source": "Jan Vermeer \u2013 Das M\u00e4dchen mit dem Perlenohrring.jpg",
             "how": "alias"
         },
         "watteau_harlequin_study": {
             "file": "images/art/watteau-harlequin-study.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 123897,
+            "width": 785,
+            "height": 1080,
+            "bytes": 254193,
             "source": "Jean-Antoine Watteau \u2013 Der Harlekin (ca. 1718).jpg",
             "how": "alias"
         },
         "watteau_cythera_reduction": {
             "file": "images/art/watteau-cythera-reduction.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 140018,
+            "height": 591,
+            "bytes": 166423,
             "source": "Jean-Antoine Watteau \u2013 Einschiffung nach Kythera (ca. 1717).jpg",
             "how": "alias"
         },
         "watteau_fete_champetre": {
             "file": "images/art/watteau-fete-champetre.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 143109,
+            "height": 748,
+            "bytes": 160435,
             "source": "Jean-Antoine Watteau \u2013 F\u00eate champ\u00eatre (ca. 1718\u20131721).jpg",
             "how": "alias"
         },
         "fragonard_young_girl_reading": {
             "file": "images/art/fragonard-young-girl-reading.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 115031,
+            "height": 1132,
+            "bytes": 231970,
             "source": "Jean-Honor\u00e9 Fragonard \u2013 Die Lesende (ca. 1769).jpg",
             "how": "alias"
         },
@@ -536,56 +536,56 @@ window.ART_ARTWORK_IMAGES = {
         "fragonard_gentleman_portrait": {
             "file": "images/art/fragonard-gentleman-portrait.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 132779,
+            "height": 1148,
+            "bytes": 265504,
             "source": "Jean-Honor\u00e9 Fragonard \u2013 Gentleman-Portrait (ca. 1769).jpg",
             "how": "alias"
         },
         "vermeer_love_letter": {
             "file": "images/art/vermeer-love-letter.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 126885,
+            "height": 1038,
+            "bytes": 121828,
             "source": "Johannes Vermeer \u2013 Der Liebesbrief (ca. 1669\u20131670).jpg",
             "how": "alias"
         },
         "vermeer_music_lesson_study": {
             "file": "images/art/vermeer-music-lesson-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 132622,
+            "height": 1036,
+            "bytes": 288410,
             "source": "Johannes Vermeer \u2013 Die Musikstunde (ca. 1662\u20131665).jpg",
             "how": "alias"
         },
         "hokusai_great_wave": {
             "file": "images/art/hokusai-great-wave.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 154658,
+            "height": 605,
+            "bytes": 204234,
             "source": "Katsushika Hokusai \u2013 Die gro\u00dfe Welle vor Kanagawa (ca. 1831).jpg",
             "how": "alias"
         },
         "hokusai_red_fuji": {
             "file": "images/art/hokusai-red-fuji.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 140650,
+            "height": 609,
+            "bytes": 197770,
             "source": "Katsushika Hokusai \u2013 Roter Fuji (ca. 1831).jpg",
             "how": "alias"
         },
         "hokusai_sketchbook": {
             "file": "images/art/hokusai-sketchbook.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 143703,
+            "width": 812,
+            "height": 1200,
+            "bytes": 250651,
             "source": "Katsushika Hokusai \u2013 Skizzenbuch (ca. 1814).jpg",
             "how": "alias"
         },
         "leonardo_lady_with_an_ermine": {
             "file": "images/art/leonardo-lady-with-an-ermine.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 81090,
+            "width": 892,
+            "height": 1200,
+            "bytes": 137823,
             "source": "Leonardo da Vinci \u2013 Dame mit dem Hermelin (ca. 1489\u20131490).jpg",
             "how": "alias"
         },
@@ -599,41 +599,41 @@ window.ART_ARTWORK_IMAGES = {
         },
         "leonardo_mona_lisa": {
             "file": "images/art/leonardo-mona-lisa.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 119002,
+            "width": 793,
+            "height": 1200,
+            "bytes": 264146,
             "source": "Leonardo da Vinci \u2013 Mona Lisa.jpg",
             "how": "alias"
         },
         "chagall_birthday": {
             "file": "images/art/chagall-birthday.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 146340,
+            "width": 810,
+            "height": 1200,
+            "bytes": 136532,
             "source": "Marc Chagall \u2013 Der Geburtstag (1915).jpg",
             "how": "alias"
         },
         "chagall_i_and_the_village": {
             "file": "images/art/chagall-i-and-the-village.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 128326,
+            "height": 600,
+            "bytes": 103194,
             "source": "Marc Chagall \u2013 Ich und das Dorf (1911).jpg",
             "how": "alias"
         },
         "chagall_paris_through_the_window": {
             "file": "images/art/chagall-paris-through-the-window.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 138862,
+            "height": 599,
+            "bytes": 70814,
             "source": "Marc Chagall \u2013 Paris durch das Fenster (1913).jpg",
             "how": "alias"
         },
         "caravaggio_judith": {
             "file": "images/art/caravaggio-judith.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 117390,
+            "height": 665,
+            "bytes": 148030,
             "source": "Michelangelo Merisi da Caravaggio \u2013 Judith und Holofernes.jpg",
             "how": "alias"
         },
@@ -656,40 +656,40 @@ window.ART_ARTWORK_IMAGES = {
         "picasso_demoiselles": {
             "file": "images/art/picasso-demoiselles.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 121849,
+            "height": 675,
+            "bytes": 146509,
             "source": "Pablo Picasso \u2013 Les Demoiselles d\u2019Avignon (1907).jpg",
             "how": "alias"
         },
         "cezanne_apples_oranges": {
             "file": "images/art/cezanne-apples-oranges.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 156860,
+            "height": 708,
+            "bytes": 212478,
             "source": "Paul C\u00e9zanne \u2013 \u00c4pfel und Orangen (ca. 1899).jpg",
             "how": "alias"
         },
         "cezanne_card_players": {
             "file": "images/art/cezanne-card-players.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 116290,
+            "height": 738,
+            "bytes": 202003,
             "source": "Paul C\u00e9zanne \u2013 Die Kartenspieler (ca. 1892).jpg",
             "how": "alias"
         },
         "cezanne_sainte_victoire": {
             "file": "images/art/cezanne-sainte-victoire.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 143681,
+            "height": 716,
+            "bytes": 175467,
             "source": "Paul C\u00e9zanne \u2013 Mont Sainte-Victoire (ca. 1904).jpg",
             "how": "alias"
         },
         "gauguin_breton_sketch": {
             "file": "images/art/gauguin-breton-sketch.jpg",
-            "width": 900,
-            "height": 672,
-            "bytes": 153376,
+            "width": 858,
+            "height": 596,
+            "bytes": 188604,
             "source": "Paul Gauguin \u2013 Bretonisches Dorf im Schnee (ca. 1894).jpg",
             "how": "alias"
         },
@@ -704,88 +704,88 @@ window.ART_ARTWORK_IMAGES = {
         "gauguin_tahitian_beach": {
             "file": "images/art/gauguin-tahitian-beach.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 121017,
+            "height": 671,
+            "bytes": 192398,
             "source": "Paul Gauguin \u2013 Woher kommen wir Wer sind wir Wohin gehen wir (1897).jpg",
             "how": "alias"
         },
         "renoir_moulin_galette": {
             "file": "images/art/renoir-moulin-galette.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 131521,
+            "height": 669,
+            "bytes": 212383,
             "source": "Pierre-Auguste Renoir \u2013 Bal au moulin de la Galette (1876).jpg",
             "how": "alias"
         },
         "renoir_boating_party": {
             "file": "images/art/renoir-boating-party.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 141978,
+            "height": 667,
+            "bytes": 180635,
             "source": "Pierre-Auguste Renoir \u2013 Das Fr\u00fchst\u00fcck der Ruderer (ca. 1881).jpg",
             "how": "alias"
         },
         "renoir_two_sisters": {
             "file": "images/art/renoir-two-sisters.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 150542,
+            "height": 1106,
+            "bytes": 337305,
             "source": "Pierre-Auguste Renoir \u2013 Zwei Schwestern (Auf der Terrasse) (ca. 1881).jpg",
             "how": "alias"
         },
         "rembrandt_three_trees": {
             "file": "images/art/rembrandt-three-trees.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 170293,
+            "height": 688,
+            "bytes": 237706,
             "source": "Rembrandt \u2013 Die drei B\u00e4ume (1643).jpg",
             "how": "alias"
         },
         "rembrandt_self_portrait": {
             "file": "images/art/rembrandt-self-portrait.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 99730,
+            "height": 1118,
+            "bytes": 318582,
             "source": "Rembrandt \u2013 Selbstbildnis (ca. 1659).jpg",
             "how": "alias"
         },
         "rembrandt_night_watch_sketch": {
             "file": "images/art/rembrandt-night-watch-sketch.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 115022,
+            "height": 732,
+            "bytes": 148776,
             "source": "Rembrandt van Rijn \u2013 Die Nachtwache.jpg",
             "how": "alias"
         },
         "botticelli_venus_study": {
             "file": "images/art/botticelli-venus-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 123470,
+            "height": 581,
+            "bytes": 168571,
             "source": "Sandro Botticelli \u2013 Die Geburt der Venus (ca. 1485).jpg",
             "how": "alias"
         },
         "botticelli_primavera_detail": {
             "file": "images/art/botticelli-primavera-detail.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 142099,
+            "height": 592,
+            "bytes": 225766,
             "source": "Sandro Botticelli \u2013 Primavera-Detail (ca. 1482).jpg",
             "how": "alias"
         },
         "botticelli_dante_comedy": {
             "file": "images/art/botticelli-dante-comedy.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 148740,
+            "height": 594,
+            "bytes": 219774,
             "source": "Sandro Botticellis \u201eIllustration zu Dantes G\u00f6ttlicher Kom\u00f6die\u201c (ca. 1485).jpg",
             "how": "alias"
         },
         "van_gogh_starry_night_study": {
             "file": "images/art/van-gogh-starry-night-study.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 159654,
+            "height": 718,
+            "bytes": 298410,
             "source": "Vincent van Gogh \u2013 Die Sternennacht.jpg",
             "how": "alias"
         },
@@ -816,24 +816,24 @@ window.ART_ARTWORK_IMAGES = {
         "kandinsky_improvisation_26": {
             "file": "images/art/kandinsky-improvisation-26.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 132978,
+            "height": 811,
+            "bytes": 264945,
             "source": "Wassily Kandinsky \u2013 Improvisation 26 (1912).jpg",
             "how": "alias"
         },
         "kandinsky_composition_vii": {
             "file": "images/art/kandinsky-composition-vii.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 171039,
+            "height": 598,
+            "bytes": 206865,
             "source": "Wassily Kandinsky \u2013 Komposition VII (1913).jpg",
             "how": "alias"
         },
         "turner_temeraire": {
             "file": "images/art/turner-temeraire.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 108619,
+            "height": 668,
+            "bytes": 106530,
             "source": "William Turner \u2013 Die \u201eFighting Temeraire\u201c (1838).jpg",
             "how": "alias"
         },
@@ -841,15 +841,15 @@ window.ART_ARTWORK_IMAGES = {
             "file": "images/art/turner-rain-steam-speed.jpg",
             "width": 900,
             "height": 672,
-            "bytes": 119197,
+            "bytes": 133144,
             "source": "William Turner \u2013 Regen, Dampf und Geschwindigkeit \u2013 Die Great Western Railway (1844).jpg",
             "how": "alias"
         },
         "turner_venice_laguna": {
             "file": "images/art/turner-venice-laguna.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 106476,
+            "height": 602,
+            "bytes": 123160,
             "source": "William Turner \u2013 Venedig von der Lagune aus (ca. 1840).jpg",
             "how": "alias"
         },
@@ -1184,32 +1184,32 @@ window.ART_ARTWORK_IMAGES = {
         "goya_third_of_may": {
             "file": "images/art/goya-third-of-may.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 117051,
+            "height": 695,
+            "bytes": 115356,
             "source": "Francisco de Goya \u00e2\u20ac\u201c Der 3. Mai 1808 (1814).jpg",
             "how": "alias"
         },
         "degas_the_ballet_class": {
             "file": "images/art/degas-ballet-class.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 111162,
+            "height": 1004,
+            "bytes": 322108,
             "source": "Edgar Degas \u00e2\u20ac\u201c Die Tanzklasse (1874).jpg",
             "how": "alias"
         },
         "manet_luncheon_on_the_grass": {
             "file": "images/art/manet-luncheon-on-the-grass.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 118019,
+            "height": 699,
+            "bytes": 150270,
             "source": "\u00c3\u2030douard Manet \u00e2\u20ac\u201c Das Fr\u00c3\u00bchst\u00c3\u00bcck im Gr\u00c3\u00bcnen (1863).jpg",
             "how": "alias"
         },
         "gauguin_where_do_we_come_from": {
             "file": "images/art/gauguin-where-do-we-come-from.jpg",
             "width": 900,
-            "height": 672,
-            "bytes": 122869,
+            "height": 331,
+            "bytes": 85814,
             "source": "Paul Gauguin \u00e2\u20ac\u201c Woher kommen wir Wer sind wir Wohin gehen wir (1897).jpg",
             "how": "alias"
         },

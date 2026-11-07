@@ -1,0 +1,590 @@
+[
+  {
+    "work_id": "durer_praying_hands",
+    "file": "images/art/durer-praying-hands.jpg",
+    "title": "Praying Hands",
+    "artist": "Albrecht Duerer",
+    "year": 1508
+  },
+  {
+    "work_id": "durer_young_hare_after",
+    "file": "images/art/durer-young-hare-after.jpg",
+    "title": "Young Hare, after the original",
+    "artist": "Albrecht Duerer",
+    "year": 1502
+  },
+  {
+    "work_id": "durer_melencolia",
+    "file": "images/art/durer-melencolia.jpg",
+    "title": "Melencolia I",
+    "artist": "Albrecht Duerer",
+    "year": 1514
+  },
+  {
+    "work_id": "mucha_slav_epic_note",
+    "file": "images/art/mucha-slav-epic-note.jpg",
+    "title": "Slav Epic, working note",
+    "artist": "Alphonse Mucha",
+    "year": 1912
+  },
+  {
+    "work_id": "pissarro_boulevard_montmartre",
+    "file": "images/art/pissarro-boulevard-montmartre.jpg",
+    "title": "pissarro_boulevard_montmartre",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "pissarro_red_roofs",
+    "file": "images/art/pissarro-red-roofs.jpg",
+    "title": "pissarro_red_roofs",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "pissarro_hoarfrost",
+    "file": "images/art/pissarro-hoarfrost.jpg",
+    "title": "pissarro_hoarfrost",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "caravaggio_bacchus",
+    "file": "images/art/caravaggio-bacchus.jpg",
+    "title": "caravaggio_bacchus",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "caravaggio_calling_of_saint_matthew",
+    "file": "images/art/caravaggio-calling-of-saint-matthew.jpg",
+    "title": "caravaggio_calling_of_saint_matthew",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "friedrich_wanderer",
+    "file": "images/art/friedrich-wanderer.jpg",
+    "title": "friedrich_wanderer",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "lorrain_queen_of_sheba",
+    "file": "images/art/lorrain-queen-of-sheba.jpg",
+    "title": "lorrain_queen_of_sheba",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "monet_impression_variant",
+    "file": "images/art/monet-impression-variant.jpg",
+    "title": "Impression, Sunrise, variant",
+    "artist": "Claude Monet",
+    "year": 1873
+  },
+  {
+    "work_id": "monet_water_lilies",
+    "file": "images/art/monet-water-lilies.jpg",
+    "title": "Water Lilies, pond study",
+    "artist": "Claude Monet",
+    "year": 1906
+  },
+  {
+    "work_id": "velazquez_man_in_black",
+    "file": "images/art/velazquez-man-in-black.jpg",
+    "title": "Portrait of a Man in Black",
+    "artist": "Diego Velazquez",
+    "year": 1640
+  },
+  {
+    "work_id": "velazquez_meninas_bozzetto",
+    "file": "images/art/velazquez-meninas-bozzetto.jpg",
+    "title": "Las Meninas, bozzetto",
+    "artist": "Diego Velazquez",
+    "year": 1656
+  },
+  {
+    "work_id": "degas_the_star",
+    "file": "images/art/degas-the-star.jpg",
+    "title": "The Star, ballet study",
+    "artist": "Edgar Degas",
+    "year": 1878
+  },
+  {
+    "work_id": "degas_little_dancer",
+    "file": "images/art/degas-little-dancer.jpg",
+    "title": "Little Dancer, plaster study",
+    "artist": "Edgar Degas",
+    "year": 1881
+  },
+  {
+    "work_id": "manet_folies_bergere",
+    "file": "images/art/manet-folies-bergere.jpg",
+    "title": "A Bar at the Folies-Bergere",
+    "artist": "Edouard Manet",
+    "year": 1882
+  },
+  {
+    "work_id": "manet_peonies",
+    "file": "images/art/manet-peonies.jpg",
+    "title": "Peonies in a Vase",
+    "artist": "Edouard Manet",
+    "year": 1864
+  },
+  {
+    "work_id": "manet_olympia_study",
+    "file": "images/art/manet-olympia-study.jpg",
+    "title": "Olympia, study",
+    "artist": "Edouard Manet",
+    "year": 1863
+  },
+  {
+    "work_id": "munch_sick_child",
+    "file": "images/art/munch-sick-child.jpg",
+    "title": "munch_sick_child",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "munch_the_scream",
+    "file": "images/art/munch-the-scream.jpg",
+    "title": "munch_the_scream",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "munch_madonna",
+    "file": "images/art/munch-madonna.jpg",
+    "title": "munch_madonna",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "schiele_self_portrait_physalis",
+    "file": "images/art/schiele-self-portrait-physalis.jpg",
+    "title": "schiele_self_portrait_physalis",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "schiele_death_and_maiden",
+    "file": "images/art/schiele-death-and-maiden.jpg",
+    "title": "schiele_death_and_maiden",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "leger_city",
+    "file": "images/art/leger-city.jpg",
+    "title": "leger_city",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "leger_nudes_in_the_forest",
+    "file": "images/art/leger-nudes-in-the-forest.jpg",
+    "title": "leger_nudes_in_the_forest",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "goya_the_colossus",
+    "file": "images/art/goya-the-colossus.jpg",
+    "title": "The Colossus",
+    "artist": "Francisco Goya",
+    "year": 1812
+  },
+  {
+    "work_id": "goya_sleep_of_reason",
+    "file": "images/art/goya-sleep-of-reason.jpg",
+    "title": "The Sleep of Reason Produces Monsters",
+    "artist": "Francisco Goya",
+    "year": 1799
+  },
+  {
+    "work_id": "goya_maja_study",
+    "file": "images/art/goya-maja-study.jpg",
+    "title": "La Maja, study",
+    "artist": "Francisco Goya",
+    "year": 1800
+  },
+  {
+    "work_id": "marc_blue_horse",
+    "file": "images/art/marc-blue-horse.jpg",
+    "title": "marc_blue_horse",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "marc_yellow_cow",
+    "file": "images/art/marc-yellow-cow.jpg",
+    "title": "marc_yellow_cow",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "marc_fate_of_the_animals",
+    "file": "images/art/marc-fate-of-the-animals.jpg",
+    "title": "marc_fate_of_the_animals",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "munter_flowers_still_life",
+    "file": "images/art/munter-flowers-still-life.jpg",
+    "title": "Still Life with Flowers",
+    "artist": "Gabriele Muenter",
+    "year": 1912
+  },
+  {
+    "work_id": "munter_jawlensky",
+    "file": "images/art/munter-jawlensky.jpg",
+    "title": "Portrait of Jawlensky",
+    "artist": "Gabriele Muenter",
+    "year": 1909
+  },
+  {
+    "work_id": "munter_boating",
+    "file": "images/art/munter-boating.jpg",
+    "title": "Boating, blue landscape",
+    "artist": "Gabriele Muenter",
+    "year": 1910
+  },
+  {
+    "work_id": "seurat_grande_jatte",
+    "file": "images/art/seurat-grande-jatte.jpg",
+    "title": "seurat_grande_jatte",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "klimt_adele_study",
+    "file": "images/art/klimt-adele-study.jpg",
+    "title": "Portrait of Adele, study",
+    "artist": "Gustav Klimt",
+    "year": 1907
+  },
+  {
+    "work_id": "klimt_the_kiss_study",
+    "file": "images/art/klimt-the-kiss-study.jpg",
+    "title": "The Kiss, preliminary study",
+    "artist": "Gustav Klimt",
+    "year": 1907
+  },
+  {
+    "work_id": "klimt_tree_of_life",
+    "file": "images/art/klimt-tree-of-life.jpg",
+    "title": "Tree of Life, mosaic cartoon",
+    "artist": "Gustav Klimt",
+    "year": 1909
+  },
+  {
+    "work_id": "toulouse_moulin_rouge",
+    "file": "images/art/toulouse-moulin-rouge.jpg",
+    "title": "toulouse_moulin_rouge",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "matisse_the_dance",
+    "file": "images/art/matisse-the-dance.jpg",
+    "title": "matisse_the_dance",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "vermeer_pearl_earring_copy",
+    "file": "images/art/vermeer-pearl-earring-copy.jpg",
+    "title": "Girl with a Pearl Earring, copy after",
+    "artist": "Johannes Vermeer",
+    "year": 1665
+  },
+  {
+    "work_id": "watteau_harlequin_study",
+    "file": "images/art/watteau-harlequin-study.jpg",
+    "title": "Harlequin, study",
+    "artist": "Antoine Watteau",
+    "year": 1716
+  },
+  {
+    "work_id": "watteau_cythera_reduction",
+    "file": "images/art/watteau-cythera-reduction.jpg",
+    "title": "Pilgrimage to Cythera, reduction",
+    "artist": "Antoine Watteau",
+    "year": 1717
+  },
+  {
+    "work_id": "watteau_fete_champetre",
+    "file": "images/art/watteau-fete-champetre.jpg",
+    "title": "The Fete Champetre",
+    "artist": "Antoine Watteau",
+    "year": 1718
+  },
+  {
+    "work_id": "fragonard_young_girl_reading",
+    "file": "images/art/fragonard-young-girl-reading.jpg",
+    "title": "A Young Girl Reading",
+    "artist": "Jean-Honore Fragonard",
+    "year": 1776
+  },
+  {
+    "work_id": "fragonard_gentleman_portrait",
+    "file": "images/art/fragonard-gentleman-portrait.jpg",
+    "title": "Portrait of a Gentleman",
+    "artist": "Jean-Honore Fragonard",
+    "year": 1770
+  },
+  {
+    "work_id": "vermeer_love_letter",
+    "file": "images/art/vermeer-love-letter.jpg",
+    "title": "The Love Letter, studio version",
+    "artist": "Johannes Vermeer",
+    "year": 1669
+  },
+  {
+    "work_id": "vermeer_music_lesson_study",
+    "file": "images/art/vermeer-music-lesson-study.jpg",
+    "title": "The Music Lesson, study",
+    "artist": "Johannes Vermeer",
+    "year": 1662
+  },
+  {
+    "work_id": "hokusai_great_wave",
+    "file": "images/art/hokusai-great-wave.jpg",
+    "title": "The Great Wave off Kanagawa",
+    "artist": "Katsushika Hokusai",
+    "year": 1883
+  },
+  {
+    "work_id": "hokusai_red_fuji",
+    "file": "images/art/hokusai-red-fuji.jpg",
+    "title": "Fine Wind, Clear Morning",
+    "artist": "Katsushika Hokusai",
+    "year": 1883
+  },
+  {
+    "work_id": "hokusai_sketchbook",
+    "file": "images/art/hokusai-sketchbook.jpg",
+    "title": "Random Sketches, Volume One",
+    "artist": "Katsushika Hokusai",
+    "year": 1883
+  },
+  {
+    "work_id": "leonardo_lady_with_an_ermine",
+    "file": "images/art/leonardo-lady-with-an-ermine.jpg",
+    "title": "leonardo_lady_with_an_ermine",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "leonardo_mona_lisa",
+    "file": "images/art/leonardo-mona-lisa.jpg",
+    "title": "leonardo_mona_lisa",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "chagall_birthday",
+    "file": "images/art/chagall-birthday.jpg",
+    "title": "chagall_birthday",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "chagall_i_and_the_village",
+    "file": "images/art/chagall-i-and-the-village.jpg",
+    "title": "chagall_i_and_the_village",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "chagall_paris_through_the_window",
+    "file": "images/art/chagall-paris-through-the-window.jpg",
+    "title": "chagall_paris_through_the_window",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "caravaggio_judith",
+    "file": "images/art/caravaggio-judith.jpg",
+    "title": "caravaggio_judith",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "picasso_demoiselles",
+    "file": "images/art/picasso-demoiselles.jpg",
+    "title": "picasso_demoiselles",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "cezanne_apples_oranges",
+    "file": "images/art/cezanne-apples-oranges.jpg",
+    "title": "Apples and Oranges",
+    "artist": "Paul Cezanne",
+    "year": 1899
+  },
+  {
+    "work_id": "cezanne_card_players",
+    "file": "images/art/cezanne-card-players.jpg",
+    "title": "The Card Players, reduced version",
+    "artist": "Paul Cezanne",
+    "year": 1892
+  },
+  {
+    "work_id": "cezanne_sainte_victoire",
+    "file": "images/art/cezanne-sainte-victoire.jpg",
+    "title": "Mont Sainte-Victoire",
+    "artist": "Paul Cezanne",
+    "year": 1887
+  },
+  {
+    "work_id": "gauguin_breton_sketch",
+    "file": "images/art/gauguin-breton-sketch.jpg",
+    "title": "Breton Village, sketch",
+    "artist": "Paul Gauguin",
+    "year": 1888
+  },
+  {
+    "work_id": "gauguin_tahitian_beach",
+    "file": "images/art/gauguin-tahitian-beach.jpg",
+    "title": "Tahitian Women on the Beach",
+    "artist": "Paul Gauguin",
+    "year": 1891
+  },
+  {
+    "work_id": "renoir_moulin_galette",
+    "file": "images/art/renoir-moulin-galette.jpg",
+    "title": "Dance at the Moulin de la Galette",
+    "artist": "Pierre-Auguste Renoir",
+    "year": 1876
+  },
+  {
+    "work_id": "renoir_boating_party",
+    "file": "images/art/renoir-boating-party.jpg",
+    "title": "Luncheon of the Boating Party",
+    "artist": "Pierre-Auguste Renoir",
+    "year": 1881
+  },
+  {
+    "work_id": "renoir_two_sisters",
+    "file": "images/art/renoir-two-sisters.jpg",
+    "title": "Two Sisters on the Terrace",
+    "artist": "Pierre-Auguste Renoir",
+    "year": 1881
+  },
+  {
+    "work_id": "rembrandt_three_trees",
+    "file": "images/art/rembrandt-three-trees.jpg",
+    "title": "The Three Trees",
+    "artist": "Rembrandt van Rijn",
+    "year": 1643
+  },
+  {
+    "work_id": "rembrandt_self_portrait",
+    "file": "images/art/rembrandt-self-portrait.jpg",
+    "title": "Self Portrait at the Easel",
+    "artist": "Rembrandt van Rijn",
+    "year": 1660
+  },
+  {
+    "work_id": "rembrandt_night_watch_sketch",
+    "file": "images/art/rembrandt-night-watch-sketch.jpg",
+    "title": "The Night Watch, oil sketch",
+    "artist": "Rembrandt van Rijn",
+    "year": 1642
+  },
+  {
+    "work_id": "botticelli_venus_study",
+    "file": "images/art/botticelli-venus-study.jpg",
+    "title": "The Birth of Venus, tempera study",
+    "artist": "Sandro Botticelli",
+    "year": 1485
+  },
+  {
+    "work_id": "botticelli_primavera_detail",
+    "file": "images/art/botticelli-primavera-detail.jpg",
+    "title": "Primavera, detail panel",
+    "artist": "Sandro Botticelli",
+    "year": 1482
+  },
+  {
+    "work_id": "botticelli_dante_comedy",
+    "file": "images/art/botticelli-dante-comedy.jpg",
+    "title": "Illustration for the Divine Comedy",
+    "artist": "Sandro Botticelli",
+    "year": 1490
+  },
+  {
+    "work_id": "van_gogh_starry_night_study",
+    "file": "images/art/van-gogh-starry-night-study.jpg",
+    "title": "The Starry Night, study",
+    "artist": "Vincent van Gogh",
+    "year": 1889
+  },
+  {
+    "work_id": "kandinsky_improvisation_26",
+    "file": "images/art/kandinsky-improvisation-26.jpg",
+    "title": "kandinsky_improvisation_26",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "kandinsky_composition_vii",
+    "file": "images/art/kandinsky-composition-vii.jpg",
+    "title": "kandinsky_composition_vii",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "turner_temeraire",
+    "file": "images/art/turner-temeraire.jpg",
+    "title": "The Fighting Temeraire",
+    "artist": "J. M. W. Turner",
+    "year": 1839
+  },
+  {
+    "work_id": "turner_rain_steam_speed",
+    "file": "images/art/turner-rain-steam-speed.jpg",
+    "title": "Rain, Steam and Speed",
+    "artist": "J. M. W. Turner",
+    "year": 1844
+  },
+  {
+    "work_id": "turner_venice_laguna",
+    "file": "images/art/turner-venice-laguna.jpg",
+    "title": "Venice, from the Laguna",
+    "artist": "J. M. W. Turner",
+    "year": 1840
+  },
+  {
+    "work_id": "goya_third_of_may",
+    "file": "images/art/goya-third-of-may.jpg",
+    "title": "goya_third_of_may",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "degas_the_ballet_class",
+    "file": "images/art/degas-ballet-class.jpg",
+    "title": "degas_the_ballet_class",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "manet_luncheon_on_the_grass",
+    "file": "images/art/manet-luncheon-on-the-grass.jpg",
+    "title": "manet_luncheon_on_the_grass",
+    "artist": "Unknown",
+    "year": ""
+  },
+  {
+    "work_id": "gauguin_where_do_we_come_from",
+    "file": "images/art/gauguin-where-do-we-come-from.jpg",
+    "title": "gauguin_where_do_we_come_from",
+    "artist": "Unknown",
+    "year": ""
+  }
+]
