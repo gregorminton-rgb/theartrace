@@ -91,7 +91,7 @@
     G.difficulty = A.DIFFICULTY[opts.difficulty] ? opts.difficulty : 'Easy';
     G.seed = (opts.seed | 0) || (Math.floor(Math.random() * 1e9) + 1);
     G.rng = A.makeRng(G.seed);
-    G.careerDays = A.DURATIONS[opts.durationIndex || 1].days;
+    G.careerDays = A.DURATIONS[opts.durationIndex !== undefined ? opts.durationIndex : 2].days;
     var diff = A.DIFFICULTY[G.difficulty];
     G.feeFactor = diff.fee;
     G.targetWorth = Math.round(CFG.targetNetWorth * diff.target);

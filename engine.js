@@ -235,8 +235,8 @@
   };
   var DURATIONS = [
     { days: 90,  label: 'short' },
-    { days: 180, label: 'medium' },
-    { days: 365, label: 'long' }
+    { days: 180, label: 'half-year' },
+    { days: 365, label: '1 year' }
   ];
   /* =====================================================================
    * PriceEngine.cs port

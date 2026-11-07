@@ -66,11 +66,11 @@
   /* the trade exchanges that pay a premium for a colonial crop */
   var TRADE_HUB_IDS = { london: true, newyork: true, tokio: true };
   var CROPS = [
-    { id: 'kakao',  label: 'Cocoa',    slug: 'kakao',  days: 12, cost: 900,  base: 2600 },
-    { id: 'tee',    label: 'Tea',      slug: 'tee',    days: 10, cost: 750,  base: 2200 },
-    { id: 'kaffee', label: 'Coffee',   slug: 'kaffee', days: 14, cost: 1100, base: 3200 },
-    { id: 'tabak',  label: 'Tobacco',  slug: 'tabak',  days: 16, cost: 1000, base: 3000 },
-    { id: 'stoffe', label: 'Textiles', slug: 'stoffe', days: 20, cost: 1500, base: 4600 }
+    { id: 'kakao',  label: 'Cocoa',    slug: 'kakao',  days: 12, cost: 900,  base: 2340 },
+    { id: 'tee',    label: 'Tea',      slug: 'tee',    days: 10, cost: 750,  base: 1980 },
+    { id: 'kaffee', label: 'Coffee',   slug: 'kaffee', days: 14, cost: 1100, base: 2880 },
+    { id: 'tabak',  label: 'Tobacco',  slug: 'tabak',  days: 16, cost: 1000, base: 2700 },
+    { id: 'stoffe', label: 'Textiles', slug: 'stoffe', days: 20, cost: 1500, base: 4140 }
   ];
   /* Two historically characteristic tradable goods per location.
      Existing fields and harvested inventory remain untouched in saved games. */

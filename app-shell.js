@@ -566,7 +566,7 @@
         return collectionRow(p, true);
       }).join('') : ''
     ].join('');
-    dialog('The Great Art Race — ' + count + ' picture' + (count === 1 ? '' : 's'),
+    dialog('Grand Art Tour 1925 — ' + count + ' picture' + (count === 1 ? '' : 's'),
       lines, [
       { label: 'Read the journal', onClick: function () { G.view = 'report'; G.ended = false; closeDialog(); renderAll(); G.ended = true; } },
       { label: 'New career', primary: true, onClick: backToTitle }
@@ -697,6 +697,7 @@
   }
   /* New Game asks the same four setup questions for every career. */
   function showNewGameForm() {
+    var german = window.ArtRaceLanguage && window.ArtRaceLanguage.get() === 'de';
     var cityOpts = A.cities.map(function (c, i) {
       return '<option value="' + c.id + '"' + (c.id === 'amsterdam' ? ' selected' : '') + '>' +
         h(c.name) + ', ' + h(c.country) + '</option>';
@@ -704,15 +705,18 @@
     var diffOpts = ['Easy', 'Normal', 'Hard'].map(function (d) {
       var v = A.DIFFICULTY[d];
       /* Existing economy is Easy; higher levels narrow commodity income. */
-      var german=window.ArtRaceLanguage && window.ArtRaceLanguage.get()==='de';
       var label=d==='Easy'?(german?'Leicht':'Easy'):d==='Normal'?(german?'Mittel':'Medium'):(german?'Schwer':'Hard');
       return '<option value="' + d + '"' + (d === 'Easy' ? ' selected' : '') + '>' +
         label + ' · ' + (german?'Startgeld ':'Starting cash ')+A.money(CFG.startingMoney * v.startingMoney) +
         ' · ' + (german?'Warenpreise ':'Commodity prices ')+Math.round(v.tradeIncome*100)+' %</option>';
     }).join('');
     var durOpts = A.DURATIONS.map(function (d, i) {
-      return '<option value="' + i + '"' + (i === 1 ? ' selected' : '') + '>' +
-        h(d.label) + ' (' + d.days + ' days)</option>';
+      var isDefault = d.days === 365;
+      var dLabel = german
+        ? (d.days === 365 ? '1 Jahr (Standard)' : d.days === 180 ? 'Halbes Jahr' : d.days === 90 ? 'Kurz' : d.label)
+        : (d.days === 365 ? '1 Year (Standard)' : d.days === 180 ? 'Half-year' : d.days === 90 ? 'Short' : d.label);
+      return '<option value="' + i + '"' + (isDefault ? ' selected' : '') + '>' +
+        dLabel + ' (' + d.days + (german ? ' Tage)' : ' days)') + '</option>';
     }).join('');
     dialog('Set up a career', '<div class="form career-setup-form career-setup-v2">' +
       '<fieldset class="race-setup"><legend>Four-player race</legend>' +

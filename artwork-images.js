@@ -455,9 +455,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "toulouse_jane_avril": {
             "file": "images/art/toulouse-jane-avril.jpg",
-            "width": 900,
-            "height": 1205,
-            "bytes": 222293,
+            "width": 681,
+            "height": 1025,
+            "bytes": 341749,
             "source": "Henri de Toulouse-Lautrec \u2013 Jane Avril (1893).jpg",
             "how": "alias"
         },
@@ -783,9 +783,9 @@ window.ART_ARTWORK_IMAGES = {
         },
         "van_gogh_starry_night_study": {
             "file": "images/art/van-gogh-starry-night-study.jpg",
-            "width": 900,
-            "height": 718,
-            "bytes": 298410,
+            "width": 875,
+            "height": 696,
+            "bytes": 518976,
             "source": "Vincent van Gogh \u2013 Die Sternennacht.jpg",
             "how": "alias"
         },
@@ -1266,7 +1266,7 @@ window.ART_ARTWORK_IMAGES = {
 
 // Append global cache buster to all image paths so browser never serves stale framed copies
 (function () {
-  var v = '?v=20261107-PUREZEROFRAMES3';
+  var v = '?v=20261107-PUREZEROFRAMES4';
   var imgs = window.ART_ARTWORK_IMAGES && window.ART_ARTWORK_IMAGES.images;
   if (!imgs) return;
   for (var k in imgs) {

@@ -1,4 +1,4 @@
-# The Great Art Race
+# Grand Art Tour 1925
 
 A browser trading game about buying art low, selling it high, and staying clear
 of forgeries and the bank. Travel between European, colonial and trade cities,
@@ -11,7 +11,7 @@ Plain HTML, CSS and JavaScript. No build step, no backend.
 
 ## ▶️ Play now
 
-**[Start The Great Art Race](https://gregorminton-rgb.github.io/theartrace/)**
+**[Start Grand Art Tour 1925](https://gregorminton-rgb.github.io/theartrace/)**
 
 No install, no account — it runs in the browser and works offline after the
 first visit.
