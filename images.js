@@ -51,8 +51,8 @@ window.ART_IMAGES = {
                    "berlin":  {
                                   "file":  "images/berlin.jpg",
                                   "width":  1600,
-                                  "height":  1220,
-                                  "bytes":  377658,
+                                  "height":  1195,
+                                  "bytes":  933929,
                                   "role":  "city",
                                   "source":  "Berlin.jpg",
                                   "folder":  "ArtRace3Artwork\\new",
@@ -63,8 +63,8 @@ window.ART_IMAGES = {
                    "brasilien":  {
                                      "file":  "images/brasilien.jpg",
                                      "width":  1600,
-                                     "height":  1202,
-                                     "bytes":  445510,
+                                     "height":  1195,
+                                     "bytes":  946612,
                                      "role":  "city",
                                      "source":  "Brasilien.jpg",
                                      "folder":  "ArtRace3Artwork\\new",
@@ -471,7 +471,7 @@ window.ART_IMAGES = {
                    "hd-02-colonial-town":  {
                                                "file":  "images/hd-02-colonial-town.jpg",
                                                "width":  1600,
-                                               "height":  1202,
+                                               "height":  1195,
                                                "bytes":  384735,
                                                "role":  "scene",
                                                "source":  "02_colonial_town.png",
@@ -483,7 +483,7 @@ window.ART_IMAGES = {
                    "hd-03-harbour-city":  {
                                               "file":  "images/hd-03-harbour-city.jpg",
                                               "width":  1600,
-                                              "height":  1202,
+                                              "height":  1195,
                                               "bytes":  452640,
                                               "role":  "scene",
                                               "source":  "03_harbour_city.png",
